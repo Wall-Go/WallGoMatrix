@@ -88,6 +88,43 @@ CreateOutOfEq[Indices_,Type_]:=Block[{},
 (*Matrix elements*)
 
 
+CreateMatrixElementV1V2toV3V4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=Block[{},
+(*In QCD this process depends on up to two Lorentz structures if the particles are all the same; and one if they are all different.*)
+If[particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="V"||particle4[[2]]!="V",
+	Return[0];
+,
+(*Coupling constants that we will need*)
+	g13=gvvv[[;;,particle1[[1]],particle3[[1]]]];
+	g24=gvvv[[;;,particle2[[1]],particle4[[1]]]];
+	g14=gvvv[[;;,particle1[[1]],particle4[[1]]]];
+	g23=gvvv[[;;,particle2[[1]],particle3[[1]]]];
+
+(*Group invariants that multiply various Lorentz Structures*)
+	C1=Table[Tr[g13[[a]] . Transpose[g13[[b]]]]Tr[g24[[a]] . Transpose[g24[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	C2=Table[Tr[g14[[a]] . Transpose[g14[[b]]]]Tr[g23[[a]] . Transpose[g23[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	C3=Table[Tr[g13[[a]] . Transpose[g23[[b]]] . g24[[a]] . Transpose[g14[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	C3+=Table[Tr[g14[[a]] . Transpose[g24[[b]]] . g23[[a]] . Transpose[g13[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+		
+(*Vector propagators*)
+	vectorPropT=Table[1/(t-i),{i,vectorMass}];
+	vectorPropU=Table[1/(u-i),{i,vectorMass}];
+
+(*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
+(*They are just hardcoded for now*)
+	A1=16(-1/4)(s-u)^2; (*squared t-channel diagram*)
+	A2=16(-1/4)(s-t)^2;  (*squared u-channel diagram*)
+
+(*We now generate the matrix element for Q1+Q2->Q3+Q4*)
+	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT];
+	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
+	
+	(*the 4 comes from anti-particle contributions*)
+	Return[-Total[Res1+Res2,-1]]
+]
+	
+];
+
+
 CreateMatrixElementQ1Q2toQ3Q4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=Block[{},
 (*In QCD this process depends on up to two Lorentz structures if the particles are all the same; and one if they are all different.*)
 If[particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="F"||particle4[[2]]!="F",
@@ -121,7 +158,7 @@ If[particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="F"||particle4[[2]]
 	Res3=A3*DiagonalMatrix[vectorPropU] . C3 . DiagonalMatrix[vectorPropT];
 	
 	(*the 4 comes from anti-particle contributions*)
-	Return[4 Total[Res1+Res2+Res3,-1]]
+	Return[ Total[Res1+Res2+Res3,-1]]
 ]
 	
 ];
@@ -180,7 +217,7 @@ If[((particle1[[2]]=="F"&&particle2[[2]]=="V")||(particle1[[2]]=="V"&&particle2[
 	Res2=A2*C2;
 
 	
-	Return[2(Res1+Res2)](*Factor of 2 from anti-particle contribution*)
+	Return[(Res1+Res2)](*Factor of 2 from anti-particle contribution*)
 ,
 	Return[0]
 ]	
@@ -250,13 +287,13 @@ If[particle1[[2]]=="V"&&particle2[[2]]=="V"&&particle3[[2]]=="F"&&particle4[[2]]
 	Res1=A1*C1;
 	Res2=A2*C2;
 	
-	Return[2*(Res1+Res2)](*Factor of 2 from anti-particles*)
+	Return[(Res1+Res2)](*Factor of 2 from anti-particles*)
 ]
 	
 ];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Getting the matrix elements for out - of - eq particles*)
 
 
@@ -264,14 +301,14 @@ degreeOfFreedom[particle_]:=Block[{},
 
 	dof=Length[particle[[1]]];
 
-	If[particle[[2]]=="F",dof*=2*2]; (*Factor of 2 from helicites, factor of 2 from anti-particles*)
+	If[particle[[2]]=="F",dof]; (*Factor of 2 from helicites, factor of 2 from anti-particles*)
 	If[particle[[2]]=="V",dof*=2]; (*Factor of 2 from spins*)
 	
 	Return[dof];
 ]
 
 
-ExtractOutOfEqElementQ1Q2toQ3Q4[incomingParticle_,deltaFparticle_,particleList_]:=Block[{},
+ExtractOutOfEqElementQ1Q2toQ3Q4[particleList_,LightParticles_]:=Block[{},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
@@ -279,17 +316,12 @@ ExtractOutOfEqElementQ1Q2toQ3Q4[incomingParticle_,deltaFparticle_,particleList_]
 (*particleList is the complete list of particles*)
 
 (*First we generate all matrix elements*)
-	MatrixElements=Table[CreateMatrixElementQ1Q2toQ3Q4[a,b,c,d,GluonMass],{a,particleList},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
+
+(*We divide the incoming particle by its degree's of freedom*)
+	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementQ1Q2toQ3Q4[particleList[[a]],b,c,d,GluonMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
 
-(*We now extract all matrix elements where the incoming particle is of "incomingParticle" type *)
-	PosIncoming=Position[Elements,{incomingParticle,__}];
-	Elements=Extract[Elements,PosIncoming];
-
-(*We now demand that, at least, one of the scattered particles need to be a deltaFparticle*)	
-	PosDeltaF=Union[Position[Elements,{_,deltaFparticle,__}],Position[Elements,{_,_,deltaFparticle,_}],Position[Elements,{_,__,deltaFparticle}]];
-	Elements=Extract[Elements,PosDeltaF];
-	
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
 	Return[{}]; 
@@ -297,17 +329,18 @@ If[Length[Elements]==0,
 
 (*Now we add identical contributions*)
 (*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
+symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
 	MultiPlicity=Table[Length[a],{a,symmetries}];
 	Elements=Table[i[[1]],{i,symmetries}];
 	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; (*MatrixElements is now just a list*)
-
+	
 (*We also divide by the number of degrees of freedom of incomingParticle*)
-	MatrixElements=MatrixElements/degreeOfFreedom[particleList[[incomingParticle]]];
+(*The 2 is from the anti-particle contribution. I.e q1 q2->q1 q2 +q1 q2Bar->q1 q2Bar*)
+	MatrixElements=2*MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
-	deltaF=(Elements/. x_?NumericQ /; Not@MatchQ[x, deltaFparticle ] -> 0 )/. x_?NumericQ /; MatchQ[x, deltaFparticle ] -> 1;
+	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; (*Gives all light-particle the label specified by the first lightparticle*)
 	
 (*Now we create the full list of distinct collision elements*)
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
@@ -323,7 +356,7 @@ If[Length[Elements]==0,
 ];
 
 
-ExtractOutOfEqElementQ1V1toQ1V1[incomingParticle_,deltaFparticle_,particleList_]:=Block[{},
+ExtractOutOfEqElementQ1V1toQ1V1[particleList_,LightParticles_]:=Block[{},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
@@ -331,17 +364,11 @@ ExtractOutOfEqElementQ1V1toQ1V1[incomingParticle_,deltaFparticle_,particleList_]
 (*particleList is the complete list of particles*)
 
 (*First we generate all matrix elements*)
-	MatrixElements=Table[CreateMatrixElementQ1V1toQ1V1[a,b,c,d,GluonMass,QuarkMass],{a,particleList},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
+	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementQ1V1toQ1V1[particleList[[a]],b,c,d,GluonMass,QuarkMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
 
-(*We now extract all matrix elements where the incoming particle is of "incomingParticle" type *)
-	PosIncoming=Position[Elements,{incomingParticle,__}];
-	Elements=Extract[Elements,PosIncoming];
-	
-(*We now demand that, at least, one of the scattered particles need to be a deltaFparticle*)	
-	PosDeltaF=Union[Position[Elements,{_,deltaFparticle,__}],Position[Elements,{_,_,deltaFparticle,_}],Position[Elements,{_,__,deltaFparticle}]];
-	Elements=Extract[Elements,PosDeltaF];
-	
+
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
 	Return[{}]; 
@@ -354,12 +381,11 @@ If[Length[Elements]==0,
 	Elements=Table[i[[1]],{i,symmetries}];
 	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; (*MatrixElements is now just a list*)
 
-(*We also divide by the number of degrees of freedom of incomingParticle*)
-	MatrixElements=MatrixElements/degreeOfFreedom[particleList[[incomingParticle]]];
+	MatrixElements=MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
-	deltaF=(Elements/. x_?NumericQ /; Not@MatchQ[x, deltaFparticle ] -> 0 )/. x_?NumericQ /; MatchQ[x, deltaFparticle ] -> 1;
+	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; (*Gives all light-particle the label specified by the first lightparticle*)
 	
 (*Now we create the full list of distinct collision elements*)
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
@@ -375,7 +401,7 @@ If[Length[Elements]==0,
 ];
 
 
-ExtractOutOfEqElementQ1Q2toV1V2[incomingParticle_,deltaFparticle_,particleList_]:=Block[{},
+ExtractOutOfEqElementQ1Q2toV1V2[particleList_,LightParticles_]:=Block[{},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
@@ -383,17 +409,10 @@ ExtractOutOfEqElementQ1Q2toV1V2[incomingParticle_,deltaFparticle_,particleList_]
 (*particleList is the complete list of particles*)
 
 (*First we generate all matrix elements*)
-	MatrixElements=Table[CreateMatrixElementQ1Q2toV1V2[a,b,c,d,QuarkMass],{a,particleList},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
+	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementQ1Q2toV1V2[particleList[[a]],b,c,d,QuarkMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
 
-(*We now extract all matrix elements where the incoming particle is of "incomingParticle" type *)
-	PosIncoming=Position[Elements,{incomingParticle,__}];
-	Elements=Extract[Elements,PosIncoming];
-
-(*We now demand that, at least, one of the scattered particles need to be a deltaFparticle*)	
-	PosDeltaF=Union[Position[Elements,{_,deltaFparticle,__}],Position[Elements,{_,_,deltaFparticle,_}],Position[Elements,{_,__,deltaFparticle}]];
-	Elements=Extract[Elements,PosDeltaF];
-	
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
 	Return[{}]; 
@@ -407,11 +426,11 @@ If[Length[Elements]==0,
 	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; (*MatrixElements is now just a list*)
 
 (*We also divide by the number of degrees of freedom of incomingParticle*)
-	MatrixElements=MatrixElements/degreeOfFreedom[particleList[[incomingParticle]]];
+	MatrixElements=MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
-	deltaF=(Elements/. x_?NumericQ /; Not@MatchQ[x, deltaFparticle ] -> 0 )/. x_?NumericQ /; MatchQ[x, deltaFparticle ] -> 1;
+	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; (*Gives all light-particle the label specified by the first lightparticle*)
 	
 (*Now we create the full list of distinct collision elements*)
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
@@ -427,7 +446,52 @@ If[Length[Elements]==0,
 ];
 
 
-ExtractOutOfEqElement[incomingParticle_,deltaFparticle_,particleList_]:=Block[{},
+ExtractOutOfEqElementV1V2toV3V4[particleList_,LightParticles_]:=Block[{},
+(*incomingParticle is the particle associated with the momentum p_1*)
+(*deltaFparticle is the particles whos deltaF contributions we want*)
+(*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
+
+(*particleList is the complete list of particles*)
+
+(*First we generate all matrix elements*)
+	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
+	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementV1V2toV3V4[particleList[[a]],b,c,d,GluonMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
+
+(*If there are no matching matrix elements we return 0*)
+If[Length[Elements]==0,
+	Return[{}]; 
+,
+
+(*Now we add identical contributions*)
+(*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
+	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
+	MultiPlicity=Table[Length[a],{a,symmetries}];
+	Elements=Table[i[[1]],{i,symmetries}];
+	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; (*MatrixElements is now just a list*)
+
+(*We also divide by the number of degrees of freedom of incomingParticle*)
+	MatrixElements=MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
+
+(*We now select all elements where deltaFparticle is amongst the scattered particles*)
+(*deltaF is here a list of 1 and 0s*)
+	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; (*Gives all light-particle the label specified by the first lightparticle*)
+	
+(*Now we create the full list of distinct collision elements*)
+	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
+
+(*We now add all elements with the same deltaF list*)
+	symmetries=Split[CollElements,#1[[2]]==#2[[2]]&];
+	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
+	
+	Return[CollElements]
+	
+]
+	
+];
+
+
+ExtractOutOfEqElement[particleList_,LightParticles_]:=Block[{},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
@@ -436,11 +500,12 @@ ExtractOutOfEqElement[incomingParticle_,deltaFparticle_,particleList_]:=Block[{}
 
 
 (*First we extract the result for all subprocesses*)
-CollEllQ1Q2toQ3Q4=ExtractOutOfEqElementQ1Q2toQ3Q4[incomingParticle,deltaFparticle,particleList];
-CollEllQ1V1toQ1V1=ExtractOutOfEqElementQ1V1toQ1V1[incomingParticle,deltaFparticle,particleList];
-CollEllQ1Q2toV1V2=ExtractOutOfEqElementQ1Q2toV1V2[incomingParticle,deltaFparticle,particleList];
+CollEllQ1Q2toQ3Q4=ExtractOutOfEqElementQ1Q2toQ3Q4[particleList,LightParticles];
+CollEllQ1V1toQ1V1=ExtractOutOfEqElementQ1V1toQ1V1[particleList,LightParticles];
+CollEllQ1Q2toV1V2=ExtractOutOfEqElementQ1Q2toV1V2[particleList,LightParticles];
+CollEllV1V2toV3V4=ExtractOutOfEqElementV1V2toV3V4[particleList,LightParticles];
 
-CollEllTotal=Join[CollEllQ1Q2toQ3Q4,CollEllQ1V1toQ1V1,CollEllQ1Q2toV1V2];
+CollEllTotal=Join[CollEllQ1Q2toQ3Q4,CollEllQ1V1toQ1V1,CollEllQ1Q2toV1V2,CollEllV1V2toV3V4];
 
 
 (*I have so far not added all the terms with the same deltaF indices, which we should of course do*)
@@ -451,16 +516,51 @@ Return[CollEllTotal]
 ];
 
 
+(* ::Section::Closed:: *)
+(*Exporting to C++*)
+
+
+ExportToC[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_]:=Block[{},
+
+(*Just extracting the out-of-eq particles*)
+	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
+
+(*Some replacement rules for converting to the format used by the c++ code*)	
+	RepMasses=Table[UserMasses[[i]]->msq[i-1],{i,1,Length[UserMasses]}];
+	RepCouplings=Table[UserCouplings[[i]]->Coupling[i-1],{i,1,Length[UserCouplings]}];
+	
+(*Now looping over all out-of-eq particles and extracting the matrix elements*)	
+
+	MatrixElements=ExtractOutOfEqElement[particleList,LightParticles]//FullSimplify;
+	
+(*Rewrite the matrix element to an export format*)
+	MatrixElements=Table[MatrixElemToC@i/.RepCouplings/.RepMasses,{i,MatrixElements}];
+	
+	
+	Export[file,MatrixElements];
+];
+
+
+MatrixElemToC[MatrixElem_]:=Block[{},
+	Ind=MatrixElem[[2]];
+	
+	Return[M[Ind[[1]]-1,Ind[[2]]-1,Ind[[3]]-1,Ind[[4]]-1]->MatrixElem[[1]]]
+]
+
+
+
+ExtractOutOfEqElement[particleList,LightParticles];
+
+
+ExtractOutOfEqElement[ParticleList,LightParticles]//FullSimplify
+
+
 (* ::Title:: *)
 (*A model with 6 quarks and 1 gluon*)
 
 
-(*Creating the reps*)
-
-
-PosScalar=PrintScalarRepPositions[];
-PosVector=PrintGaugeRepPositions[];
-PosFermion=PrintFermionRepPositions[];
+(* ::Subtitle:: *)
+(*UserInput*)
 
 
 (*In DRalgo fermion are Weyl. So to create one DIrac we need one left-handed and one right-handed fermoon*)
@@ -478,10 +578,13 @@ Rep6=CreateOutOfEq[{11,12},"F"];
 RepV=CreateOutOfEq[{1},"V"];
 
 
-ParticleList={Rep1,Rep2,Rep3,Rep4,Rep5,Rep6,RepV};
+ParticleList={Rep1,RepV,Rep2,Rep3,Rep4,Rep5,Rep6};
 
 
-(*Defining various masses*)
+LightParticles={3,4,5,6,7}; (*These particles do not have out-of-eq contributions*)
+
+
+(*Defining various masses and couplings*)
 
 
 GluonMass=Table[mg2,{i,1,Length[gvff]}];
@@ -490,37 +593,13 @@ GluonMass=Table[mg2,{i,1,Length[gvff]}];
 QuarkMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 
 
-(*The deltaC[top,top] contributions*)
+UserMasses={mq2,mg2}; (*up to the user to make sure that the same order is given in the python code*)
 
 
-ExtractOutOfEqElement[1,1,ParticleList]
+UserCouplings={gs};
 
 
-(*The deltaC[top,gluon] contributions*)
+SetDirectory[NotebookDirectory[]];
 
 
-ExtractOutOfEqElement[1,7,ParticleList]
-
-
-(*The deltaC[gluon,gluon] contributions*)
-
-
-ExtractOutOfEqElement[7,7,ParticleList]
-
-
-(*The deltaC[gluon,top] contributions*)
-
-
-ExtractOutOfEqElement[7,1,ParticleList]
-
-
-(*Examples of the scattering elements from various processes. With the top as an external particle, and the top deltaF terms*)
-
-
-ExtractOutOfEqElementQ1Q2toQ3Q4[1,1,ParticleList]//Expand
-
-
-ExtractOutOfEqElementQ1V1toQ1V1[1,1,ParticleList]//Expand
-
-
-ExtractOutOfEqElementQ1Q2toV1V2[1,1,ParticleList]//Expand
+ExportToC["MatrixElem.txt",ParticleList,LightParticles,UserMasses,UserCouplings]
