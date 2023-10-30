@@ -9,25 +9,26 @@ $LoadGroupMath=True;
 
 
 (* ::Chapter:: *)
-(*QCD*)
+(*QCD+W boson*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
-Group={"SU3"};
-RepAdjoint={{1,1}};
+Group={"SU3","SU2"};
+RepAdjoint={{1,1},{2}};
 RepScalar={};
-CouplingName={gs};
+CouplingName={gs,gw};
 
 
-Rep1={{{1,0}},"L"};
-Rep2={{{1,0}},"R"};
-RepFermion1Gen={Rep1,Rep2};
+Rep1={{{1,0},{1}},"L"};
+Rep2={{{1,0},{0}},"R"};
+Rep3={{{1,0},{0}},"R"};
+RepFermion1Gen={Rep1,Rep2,Rep3};
 
 
-RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
+RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
 
 
 (* ::Text:: *)
@@ -84,7 +85,7 @@ CreateOutOfEq[Indices_,Type_]:=Block[{},
 ];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Matrix elements*)
 
 
@@ -203,9 +204,11 @@ If[((particle1[[2]]=="F"&&particle2[[2]]=="V")||(particle1[[2]]=="V"&&particle2[
 	fermionPropU=Table[1/(u-i),{i,fermionMass}];
 	
 (*Group invariants that multiply various Lorentz Structures*)
+
+
 	C1=Sum[vectorPropT[[c]]vectorPropT[[d]]Tr[g13[[c]] . Transpose[g13[[d]]]]Tr[g24[[c]] . Transpose[g24[[d]]]],{c,1,LV},{d,1,LV}];
 	C2=Sum[fermionPropU[[L]] fermionPropU[[K]]Tr[g14[[L]] . Transpose[g14[[K]]]]Tr[g23[[L]] . Transpose[g23[[K]]]],{L,1,LF},{K,1,LF}];
-	
+
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are just hardcoded for now*)
@@ -368,7 +371,6 @@ ExtractOutOfEqElementQ1V1toQ1V1[particleList_,LightParticles_]:=Block[{},
 	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementQ1V1toQ1V1[particleList[[a]],b,c,d,GluonMass,QuarkMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
 
-
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
 	Return[{}]; 
@@ -520,9 +522,6 @@ Return[CollEllTotal]
 (*Exporting to C++*)
 
 
-Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}]
-
-
 ExportToC[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_]:=Block[{},
 
 (*Just extracting the out-of-eq particles*)
@@ -574,9 +573,14 @@ ExportToC[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,Particl
 	ExportH5=Reap[Do[
 		CijName=StringJoin["MatrixElements",ParticleName[[i]],ParticleName[[j]]];
 		Sow[
+			writeData=Table[{ToString[FortranForm[a[[1]]]],ToString[FortranForm[a[[2]]]]},{a,Cij[[i,j]]}];
+			
+		If[Length[Cij[[i,j]]]==0,writeData=""];
+		
 		CijName -> {
    "Data" -> 
-		Table[{ToString[FortranForm[a[[1]]]],ToString[FortranForm[a[[2]]]]},{a,Cij[[i,j]]}]}];
+		writeData}];
+		
 		,{i,OutOfEqParticles},{j,OutOfEqParticles}]];
 	
 	ExportH5=Flatten[ExportH5[[2]][[1]]];
@@ -601,7 +605,7 @@ MatrixElemToC[MatrixElem_]:=Block[{},
 
 
 (* ::Title:: *)
-(*A model with 6 quarks and 1 gluon*)
+(*SM quarks + gauge bosons*)
 
 
 (* ::Subtitle:: *)
@@ -614,40 +618,71 @@ MatrixElemToC[MatrixElem_]:=Block[{},
 (*Below Reps 1-6 are quarks, and rep 7 is a gluon*)
 
 
-Rep1=CreateOutOfEq[{1,2},"F"];
-Rep2=CreateOutOfEq[{3,4},"F"];
-Rep3=CreateOutOfEq[{5,6},"F"];
-Rep4=CreateOutOfEq[{7,8},"F"];
-Rep5=CreateOutOfEq[{9,10},"F"];
-Rep6=CreateOutOfEq[{11,12},"F"];
-RepV=CreateOutOfEq[{1},"V"];
+Rep1={{{1,0},{1}},"L"};
+Rep2={{{1,0},{0}},"R"};
+Rep3={{{1,0},{0}},"R"};
+RepFermion1Gen={Rep1,Rep2,Rep3};
 
 
-ParticleList={Rep1,RepV,Rep2,Rep3,Rep4,Rep5,Rep6};
+(*left-handed top-quark*)
 
 
-LightParticles={3,4,5,6,7}; (*These particles do not have out-of-eq contributions*)
+ReptL=CreateOutOfEq[{1},"F"];
+
+
+(*right-handed top-quark*)
+
+
+ReptR=CreateOutOfEq[{2},"F"];
+
+
+(*right-handed bottom-quark*)
+
+
+RepbR=CreateOutOfEq[{3},"F"];
+
+
+(*light quarks*)
+
+
+RepLight=CreateOutOfEq[{4,5,6,7,8,9},"F"];
+
+
+(*Vector bosons*)
+
+
+RepGluon=CreateOutOfEq[{1},"V"];
+RepW=CreateOutOfEq[{2},"V"];
+
+
+ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepLight};
+
+
+LightParticles={6}; (*These particles do not have out-of-eq contributions*)
 
 
 (*Defining various masses and couplings*)
 
 
-GluonMass=Table[mg2,{i,1,Length[gvff]}];
+RepGluon[[1]]//Length
+
+
+GluonMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}]];
 
 
 QuarkMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 
 
-UserMasses={mq2,mg2}; (*up to the user to make sure that the same order is given in the python code*)
+UserMasses={mq2,mw2,mg2}; (*up to the user to make sure that the same order is given in the python code*)
 
 
-UserCouplings={gs};
+UserCouplings={gs,gw};
 
 
 SetDirectory[NotebookDirectory[]];
 
 
-ParticleName={"Top","Gluon"};
+ParticleName={"TopL","TopR","BotR","Gluon","W"};
 
 
 ExportToC["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName]
@@ -656,10 +691,16 @@ ExportToC["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,Part
 Import["MatrixElem.hdf5"]
 
 
-Import["MatrixElem.hdf5","MatrixElementsTopTop"]
+Import["MatrixElem.hdf5","CouplingInfo"]
+
+
+Import["MatrixElem.hdf5","ParticleInfo"]
 
 
 Import["MatrixElem.hdf5","CouplingInfo"]
 
 
 Import["MatrixElem.hdf5","ParticleInfo"]
+
+
+gvff[[11]]//Normal
