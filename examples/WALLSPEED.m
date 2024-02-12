@@ -82,7 +82,10 @@ UserCouplings={gs};
 
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-ExportToC["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName]
+MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+
+
+MatrixElements//Expand
 
 
 Import["MatrixElem.hdf5"]

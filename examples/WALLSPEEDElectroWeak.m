@@ -13,7 +13,7 @@ $LoadGroupMath=True;
 (*QCD+W boson*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -86,7 +86,7 @@ CreateOutOfEq[Indices_,Type_]:=Block[{},
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Matrix elements*)
 
 
@@ -297,7 +297,7 @@ If[particle1[[2]]=="V"&&particle2[[2]]=="V"&&particle3[[2]]=="F"&&particle4[[2]]
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Getting the matrix elements for out - of - eq particles*)
 
 
@@ -519,7 +519,7 @@ Return[CollEllTotal]
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Exporting to C++*)
 
 
@@ -580,7 +580,7 @@ ExportToC[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,Particl
 		
 		CijName -> {
    "Data" -> 
-		writeData}];
+		}];
 		
 		,{i,OutOfEqParticles},{j,OutOfEqParticles}]];
 	
@@ -626,40 +626,27 @@ RepFermion1Gen={Rep1,Rep2,Rep3};
 
 
 (*left-handed top-quark*)
-
-
 ReptL=CreateOutOfEq[{1},"F"];
 
-
 (*right-handed top-quark*)
-
-
 ReptR=CreateOutOfEq[{2},"F"];
 
-
 (*right-handed bottom-quark*)
-
-
 RepbR=CreateOutOfEq[{3},"F"];
 
-
 (*light quarks*)
-
-
 RepLight=CreateOutOfEq[{4,5,6,7,8,9},"F"];
 
-
 (*Vector bosons*)
-
-
 RepGluon=CreateOutOfEq[{1},"V"];
 RepW=CreateOutOfEq[{2},"V"];
 
 
 ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepLight};
-
-
-LightParticles={6}; (*These particles do not have out-of-eq contributions*)
+(*
+These particles do not have out-of-eq contributions
+*)
+LightParticles={6};
 
 
 (*Defining various masses and couplings*)
@@ -669,11 +656,7 @@ RepGluon[[1]]//Length
 
 
 GluonMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}]];
-
-
 QuarkMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-
-
 (*
 up to the user to make sure that the same order is given in the python code
 *)
@@ -683,7 +666,7 @@ UserCouplings={gs,gw};
 
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W"};
-ExportToC["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName]
+ExportMatrixElements["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
 
 Import["MatrixElem.hdf5"]

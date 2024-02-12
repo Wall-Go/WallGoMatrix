@@ -312,7 +312,7 @@ If[
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Getting the matrix elements for out-of-Equilibrium particles*)
 
 
@@ -330,11 +330,12 @@ degreeOfFreedom[particle_]:=Block[{dof},
 ]
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1Q2toQ3Q4*)
 
 
-ExtractOutOfEqElementQ1Q2toQ3Q4[particleList_,LightParticles_]:=Block[{},
+ExtractOutOfEqElementQ1Q2toQ3Q4[particleList_,LightParticles_]:=
+Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
@@ -387,11 +388,12 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1V1toQ1V1*)
 
 
-ExtractOutOfEqElementQ1V1toQ1V1[particleList_,LightParticles_]:=Block[{},
+ExtractOutOfEqElementQ1V1toQ1V1[particleList_,LightParticles_]:=
+Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
@@ -444,11 +446,12 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1Q2toV1V2*)
 
 
-ExtractOutOfEqElementQ1Q2toV1V2[particleList_,LightParticles_]:=Block[{},
+ExtractOutOfEqElementQ1Q2toV1V2[particleList_,LightParticles_]:=
+Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
@@ -500,7 +503,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*V1V2toV3V4*)
 
 
@@ -591,7 +594,7 @@ Return[CollEllTotal]
 (*Exporting to C++*)
 
 
-ExportToC[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_]:=
+ExportMatrixElements[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_]:=
 Block[{ExportTXT,ExportH5,
 	Cij,ParticleInfo,CouplingInfo,MatrixElements,
 	OutOfEqParticles,RepMasses,RepCouplings
@@ -670,7 +673,8 @@ In the text-file all matrix elements are directly listed
 	
 (*Writing the final result to file*)
 	Export[StringJoin[file,".hdf5"],ExportH5];
-	
+
+	Return[MatrixElements]
 ];
 
 
