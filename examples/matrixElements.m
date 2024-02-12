@@ -55,9 +55,22 @@ CreateOutOfEq[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion},
 (*Matrix elements*)
 
 
-CreateMatrixElementV1V2toV3V4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=Block[{},
-(*In QCD this process depends on up to two Lorentz structures if the particles are all the same; and one if they are all different.*)
-If[particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="V"||particle4[[2]]!="V",
+(* ::Subsubsection:: *)
+(*V1V2toV3V4*)
+
+
+CreateMatrixElementV1V2toV3V4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
+Block[{s,t,u},
+(*
+In QCD this process depends on up to
+two Lorentz structures if the particles are all the same; and
+one Lorentz structure if they are all different.
+*)
+If[
+	particle1[[2]]!="V"||
+	particle2[[2]]!="V"||
+	particle3[[2]]!="V"||
+	particle4[[2]]!="V",
 	Return[0];
 ,
 (*Coupling constants that we will need*)
@@ -85,16 +98,29 @@ If[particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="V"||particle4[[2]]
 	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT];
 	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
 	
-	(*the 4 comes from anti-particle contributions*)
+(*Factor 4 from anti-particle contributions*)
 	Return[-Total[Res1+Res2,-1]]
 ]
 	
 ];
 
 
-CreateMatrixElementQ1Q2toQ3Q4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=Block[{},
-(*In QCD this process depends on up to two Lorentz structures if the particles are all the same; and one if they are all different.*)
-If[particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="F"||particle4[[2]]!="F",
+(* ::Subsubsection:: *)
+(*Q1Q2toQ3Q4*)
+
+
+CreateMatrixElementQ1Q2toQ3Q4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
+Block[{s,t,u},
+(*
+In QCD this process depends on up to
+two Lorentz structures if the particles are all the same; and
+one Lorentz structure if they are all different.
+*)
+If[
+	particle1[[2]]!="F"||
+	particle2[[2]]!="F"||
+	particle3[[2]]!="F"||
+	particle4[[2]]!="F",
 	Return[0];
 ,
 (*Coupling constants that we will need*)
@@ -113,7 +139,10 @@ If[particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="F"||particle4[[2]]
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
 	vectorPropU=Table[1/(u-i),{i,vectorMass}];
 
-(*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
+(*
+Since there are two diagrams there can be
+3 Lorentz structures after squaring and summing over spins
+*)
 (*They are just hardcoded for now*)
 	A1=2(s^2+u^2); (*squared t-channel diagram*)
 	A2=2(s^2+t^2); (*squared u-channel diagram*)
@@ -124,23 +153,35 @@ If[particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="F"||particle4[[2]]
 	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
 	Res3=A3*DiagonalMatrix[vectorPropU] . C3 . DiagonalMatrix[vectorPropT];
 	
-	(*the 4 comes from anti-particle contributions*)
+(*Factor 4 from anti-particle contributions*)
 	Return[ Total[Res1+Res2+Res3,-1]]
 ]
-	
 ];
 
 
-CreateMatrixElementQ1V1toQ1V1[particle1_,particle2_,particle3_,particle4_,vectorMass_,fermionMass_]:=Block[{},
-(*In QCD this process depends on up to two Lorentz structures if the particles are all the same; and one if they are all different.*)
-If[((particle1[[2]]=="F"&&particle2[[2]]=="V")||(particle1[[2]]=="V"&&particle2[[2]]=="F"))
-	&&((particle3[[2]]=="F"&&particle4[[2]]=="V")||(particle3[[2]]=="V"&&particle4[[2]]=="F")),
+(* ::Subsubsection:: *)
+(*Q1V1toQ1V1*)
+
+
+CreateMatrixElementQ1V1toQ1V1[particle1_,particle2_,particle3_,particle4_,vectorMass_,fermionMass_]:=
+Block[{s,t,u},
+(*
+In QCD this process depends on up to
+two Lorentz structures if the particles are all the same; and
+one Lorentz structure if they are all different.
+*)
+If[ (
+	(particle1[[2]]=="F"&&particle2[[2]]=="V")||
+	(particle1[[2]]=="V"&&particle2[[2]]=="F")
+	)&&(
+	(particle3[[2]]=="F"&&particle4[[2]]=="V")||
+	(particle3[[2]]=="V"&&particle4[[2]]=="F")),
 
 	p1=particle1[[1]];
 	p2=particle2[[1]];
 	p3=particle3[[1]];
 	p4=particle4[[1]];
-(*Just changing the order of the particles so that it is always QV->QV*)	
+(*Changing the order of the particles so that it is always QV->QV*)	
 	If[particle1[[2]]=="V"&&particle2[[2]]=="F",
 		temp=p1;
 		p1=p2;
@@ -177,32 +218,45 @@ If[((particle1[[2]]=="F"&&particle2[[2]]=="V")||(particle1[[2]]=="V"&&particle2[
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are just hardcoded for now*)
 	A1=16(s^2+t^2); (*squared t-channel diagram*)
-	A2=-4*16 s u; (*squared u-channel diagram*)
+	A2=-4*16*s*u; (*squared u-channel diagram*)
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*C1;
 	Res2=A2*C2;
 
-	
-	Return[(Res1+Res2)](*Factor of 2 from anti-particle contribution*)
+(*Factor of 2 from anti-particle contribution*)
+	Return[(Res1+Res2)]
 ,
 	Return[0]
 ]	
-	
 ];
 
 
-CreateMatrixElementQ1Q2toV1V2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=Block[{},
-(*In QCD this process depends on up to two Lorentz structures if the particles are all the same; and one if they are all different.*)
+(* ::Subsubsection:: *)
+(*Q1Q2toV1V2*)
 
-If[(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="V"||particle4[[2]]!="V")&&(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="F"||particle4[[2]]!="F"),
+
+CreateMatrixElementQ1Q2toV1V2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
+Block[{s,t,u},
+(*
+In QCD this process depends on up to
+two Lorentz structures if the particles are all the same; and
+one Lorentz structure if they are all different.
+*)
+If[
+	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="V"||particle4[[2]]!="V")&&
+	(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="F"||particle4[[2]]!="F"),
 	Return[0];
 ,
 	p1=particle1[[1]];
 	p2=particle2[[1]];
 	p3=particle3[[1]];
 	p4=particle4[[1]];
-If[particle1[[2]]=="V"&&particle2[[2]]=="V"&&particle3[[2]]=="F"&&particle4[[2]]=="F",
+If[
+	particle1[[2]]=="V"&&
+	particle2[[2]]=="V"&&
+	particle3[[2]]=="F"&&
+	particle4[[2]]=="F",
 (*Just changing the order of the particles so that it is always QQ->VV*)	
 		temp=p1;
 		p1=p3;
@@ -217,7 +271,6 @@ If[particle1[[2]]=="V"&&particle2[[2]]=="V"&&particle3[[2]]=="F"&&particle4[[2]]
 	g24=gvff[[p4,;;,p2]];
 	g13T=gvff[[p3,;;,p1]];
 	g24T=gvff[[p4,p2,;;]];
-
 
 	g14=gvff[[p4,p1,;;]];
 	g23=gvff[[p3,;;,p2]];
@@ -245,22 +298,22 @@ If[particle1[[2]]=="V"&&particle2[[2]]=="V"&&particle3[[2]]=="F"&&particle4[[2]]
 	
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
-(*They are just hardcoded for now*)
+(*They are hardcoded for now*)
 	A1=4 t u; (*squared t-channel diagram*)
 	A2=4 t u; (*squared u-channel diagram*)
 
-(*We now generate the matrix element for Q1+Q2->Q3+Q4*)
+(*Generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*C1;
 	Res2=A2*C2;
-	
-	Return[(Res1+Res2)](*Factor of 2 from anti-particles*)
-]
-	
+
+(*Factor of 2 from anti-particles*)
+	Return[(Res1+Res2)]
+]	
 ];
 
 
-(* ::Section:: *)
-(*Getting the matrix elements for out - of - eq particles*)
+(* ::Section::Closed:: *)
+(*Getting the matrix elements for out-of-Equilibrium particles*)
 
 
 degreeOfFreedom[particle_]:=Block[{dof},
@@ -277,6 +330,10 @@ degreeOfFreedom[particle_]:=Block[{dof},
 ]
 
 
+(* ::Subsubsection::Closed:: *)
+(*Q1Q2toQ3Q4*)
+
+
 ExtractOutOfEqElementQ1Q2toQ3Q4[particleList_,LightParticles_]:=Block[{},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -284,12 +341,16 @@ ExtractOutOfEqElementQ1Q2toQ3Q4[particleList_,LightParticles_]:=Block[{},
 
 (*particleList is the complete list of particles*)
 
-(*First we generate all matrix elements*)
+(*Generate all matrix elements*)
 	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
 
-(*We divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementQ1Q2toQ3Q4[particleList[[a]],b,c,d,GluonMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
+(*Divide the incoming particle by its degree's of freedom*)
+	MatrixElements=Table[
+		1/degreeOfFreedom[particleList[[a]]]
+		CreateMatrixElementQ1Q2toQ3Q4[particleList[[a]],b,c,d,GluonMass],
+		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+(*This is a list of all non-zero matrix elements*)
+	Elements=MatrixElements["NonzeroPositions"];  
 
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
@@ -298,18 +359,21 @@ If[Length[Elements]==0,
 
 (*Now we add identical contributions*)
 (*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
+	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
 	MultiPlicity=Table[Length[a],{a,symmetries}];
 	Elements=Table[i[[1]],{i,symmetries}];
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; (*MatrixElements is now just a list*)
+	(*MatrixElements is now just a list*)
+	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; 
 	
 (*We also divide by the number of degrees of freedom of incomingParticle*)
 (*The 2 is from the anti-particle contribution. I.e q1 q2->q1 q2 +q1 q2Bar->q1 q2Bar*)
-	MatrixElements=2*MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
+(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
+	MatrixElements=2*MatrixElements/2;
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
-	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; (*Gives all light-particle the label specified by the first lightparticle*)
+(*Gives all light-particle the label specified by the first lightparticle*)
+	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
 	
 (*Now we create the full list of distinct collision elements*)
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
@@ -319,10 +383,12 @@ symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
 	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
 	
 	Return[CollElements]
-	
 ]
-	
 ];
+
+
+(* ::Subsubsection::Closed:: *)
+(*Q1V1toQ1V1*)
 
 
 ExtractOutOfEqElementQ1V1toQ1V1[particleList_,LightParticles_]:=Block[{},
@@ -334,8 +400,14 @@ ExtractOutOfEqElementQ1V1toQ1V1[particleList_,LightParticles_]:=Block[{},
 
 (*First we generate all matrix elements*)
 	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementQ1V1toQ1V1[particleList[[a]],b,c,d,GluonMass,QuarkMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
+
+(*Divide the incoming particle by its degree's of freedom*)
+	MatrixElements=Table[
+		1/degreeOfFreedom[particleList[[a]]]
+		CreateMatrixElementQ1V1toQ1V1[particleList[[a]],b,c,d,GluonMass,QuarkMass],
+		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+	(*This is a list of all non-zero matrix elements*)
+	Elements=MatrixElements["NonzeroPositions"];
 
 
 (*If there are no matching matrix elements we return 0*)
@@ -348,13 +420,15 @@ If[Length[Elements]==0,
 	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
 	MultiPlicity=Table[Length[a],{a,symmetries}];
 	Elements=Table[i[[1]],{i,symmetries}];
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; (*MatrixElements is now just a list*)
+	(*MatrixElements is now just a list*)
+	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 
 	MatrixElements=MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
-	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; (*Gives all light-particle the label specified by the first lightparticle*)
+(*Gives all light-particle the label specified by the first lightparticle*)
+	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]];
 	
 (*Now we create the full list of distinct collision elements*)
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
@@ -368,6 +442,10 @@ If[Length[Elements]==0,
 ]
 	
 ];
+
+
+(* ::Subsubsection::Closed:: *)
+(*Q1Q2toV1V2*)
 
 
 ExtractOutOfEqElementQ1Q2toV1V2[particleList_,LightParticles_]:=Block[{},
@@ -379,8 +457,14 @@ ExtractOutOfEqElementQ1Q2toV1V2[particleList_,LightParticles_]:=Block[{},
 
 (*First we generate all matrix elements*)
 	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementQ1Q2toV1V2[particleList[[a]],b,c,d,QuarkMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
+
+(*Divide the incoming particle by its degree's of freedom*)
+	MatrixElements=Table[
+		1/degreeOfFreedom[particleList[[a]]]
+		CreateMatrixElementQ1Q2toV1V2[particleList[[a]],b,c,d,QuarkMass],
+		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+	(*This is a list of all non-zero matrix elements*)
+	Elements=MatrixElements["NonzeroPositions"];
 
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
@@ -392,14 +476,17 @@ If[Length[Elements]==0,
 	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
 	MultiPlicity=Table[Length[a],{a,symmetries}];
 	Elements=Table[i[[1]],{i,symmetries}];
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; (*MatrixElements is now just a list*)
+	(*MatrixElements is now just a list*)
+	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 
 (*We also divide by the number of degrees of freedom of incomingParticle*)
-	MatrixElements=MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
+(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
+	MatrixElements=MatrixElements/2;
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
-	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; (*Gives all light-particle the label specified by the first lightparticle*)
+(*Gives all light-particle the label specified by the first lightparticle*)
+	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]];
 	
 (*Now we create the full list of distinct collision elements*)
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
@@ -408,11 +495,13 @@ If[Length[Elements]==0,
 	symmetries=Split[CollElements,#1[[2]]==#2[[2]]&];
 	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
 	
-	Return[CollElements]
-	
-]
-	
+	Return[CollElements]	
+]	
 ];
+
+
+(* ::Subsubsection::Closed:: *)
+(*V1V2toV3V4*)
 
 
 ExtractOutOfEqElementV1V2toV3V4[particleList_,LightParticles_]:=
@@ -423,10 +512,16 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 
 (*particleList is the complete list of particles*)
 
-(*First we generate all matrix elements*)
+(*Generate all matrix elements*)
 	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementV1V2toV3V4[particleList[[a]],b,c,d,GluonMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
+	
+(*Divide the incoming particle by its degree's of freedom*)
+	MatrixElements=Table[
+		1/degreeOfFreedom[particleList[[a]]]
+		CreateMatrixElementV1V2toV3V4[particleList[[a]],b,c,d,GluonMass],
+		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+	(*This is a list of all non-zero matrix elements*)
+	Elements=MatrixElements["NonzeroPositions"];
 
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
@@ -438,14 +533,17 @@ If[Length[Elements]==0,
 	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
 	MultiPlicity=Table[Length[a],{a,symmetries}];
 	Elements=Table[i[[1]],{i,symmetries}];
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; (*MatrixElements is now just a list*)
+	(*MatrixElements is now just a list*)
+	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 
 (*We also divide by the number of degrees of freedom of incomingParticle*)
-	MatrixElements=MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
+(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
+	MatrixElements=MatrixElements/2;
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
-	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; (*Gives all light-particle the label specified by the first lightparticle*)
+(*Gives all light-particle the label specified by the first lightparticle*)
+	deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]];
 	
 (*Now we create the full list of distinct collision elements*)
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
@@ -454,11 +552,13 @@ If[Length[Elements]==0,
 	symmetries=Split[CollElements,#1[[2]]==#2[[2]]&];
 	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
 	
-	Return[CollElements]
-	
-]
-	
+	Return[CollElements]	
+]	
 ];
+
+
+(* ::Subsubsection::Closed:: *)
+(*Extract elements*)
 
 
 ExtractOutOfEqElement[particleList_,LightParticles_]:=
@@ -556,7 +656,7 @@ In the text-file all matrix elements are directly listed
 	ExportH5=Reap[Do[
 		CijName=StringJoin["MatrixElements",ParticleName[[i]],ParticleName[[j]]];
 		Sow[
-			writeData->Table[{ToString[FortranForm[a[[1]]]],ToString[FortranForm[a[[2]]]]},{a,Cij[[i,j]]}];
+			writeData=Table[{ToString[FortranForm[a[[1]]]],ToString[FortranForm[a[[2]]]]},{a,Cij[[i,j]]}];
 			If[Length[Cij[[i,j]]]==0,writeData=""];
 			CijName -> {"Data" -> writeData}
 			];
@@ -579,4 +679,3 @@ MatrixElemToC[MatrixElem_]:=Block[{Ind},
 	
 	Return[M[Ind[[1]]-1,Ind[[2]]-1,Ind[[3]]-1,Ind[[4]]-1]->MatrixElem[[1]]]
 ]
-
