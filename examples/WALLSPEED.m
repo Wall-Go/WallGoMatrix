@@ -88,6 +88,17 @@ MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,Use
 MatrixElements//Expand
 
 
+(*comparison with https://arxiv.org/pdf/hep-ph/0302165.pdf*)
+(*q1q1->gg*)
+M[0,0,1,1]/.MatrixElements/.{Coupling[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
+1/(4CA)*(8*dF*CF^2(u/tt+t/uu)-8*dF*CF*CA((t^2+u^2)/s^2)*sChannel)/.{tt->(-t+msq[0])^2/t,uu->(-u+msq[0])^2/u,sChannel->0}/.{CA->3,CF->4/3,dF->3}
+%-%%//Simplify
+(*q1 g->q1 g*)
+M[0,1,0,1]/.MatrixElements/.{Coupling[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)//FullSimplify
+1/(2CA)*(-8*dF*CF^2(sChannel*u/s +s/uu)+8*dF*CF*CA((s^2+u^2)/ttsq))/.{ttsq->(-t+msq[1])^2,tt->(-t+msq[1])^2/t,uu->(-u+msq[0])^2/u,sChannel->0}/.{CA->3,CF->4/3,dF->3}//FullSimplify
+%-%%//Simplify
+
+
 Import["MatrixElem.hdf5"]
 
 

@@ -217,7 +217,7 @@ If[ (
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are just hardcoded for now*)
-	A1=16(s^2+t^2); (*squared t-channel diagram*)
+	A1=16(s^2+u^2); (*squared t-channel diagram*)
 	A2=-4*16*s*u; (*squared u-channel diagram*)
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
