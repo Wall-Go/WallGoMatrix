@@ -1,46 +1,11 @@
 (* ::Package:: *)
 
-Quit[];
+(* ::Title:: *)
+(*Matrix elements*)
 
 
-SetDirectory[NotebookDirectory[]];
-$LoadGroupMath=True;
-<<../DRalgo.m
-<<matrixElements.m
-
-
-(* ::Chapter:: *)
-(*QCD+W boson*)
-
-
-(* ::Section::Closed:: *)
-(*Model*)
-
-
-Group={"SU3","SU2"};
-RepAdjoint={{1,1},{2}};
-RepScalar={};
-CouplingName={gs,gw};
-
-
-Rep1={{{1,0},{1}},"L"};
-Rep2={{{1,0},{0}},"R"};
-Rep3={{{1,0},{0}},"R"};
-RepFermion1Gen={Rep1,Rep2,Rep3};
-
-
-RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
-
-
-(* ::Text:: *)
-(*The input for the gauge interactions toDRalgo are then given by*)
-
-
-{gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
-
-
-(* ::Section::Closed:: *)
-(*Help Functions*)
+(* ::Section:: *)
+(*Help functions*)
 
 
 DiagonalTensor2[s_SparseArray,a_Integer,b_Integer] := With[
@@ -63,7 +28,7 @@ RepToIndices[ListI_]:=Block[{},
 ];
 
 
-CreateOutOfEq[Indices_,Type_]:=Block[{},
+CreateOutOfEq[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion},
 (*Combines selected representations and obtain their indices*)
 	PosScalar=PrintScalarRepPositions[];
 	PosVector=PrintGaugeRepPositions[];
@@ -86,7 +51,7 @@ CreateOutOfEq[Indices_,Type_]:=Block[{},
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Matrix elements*)
 
 
@@ -114,7 +79,7 @@ If[particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="V"||particle4[[2]]
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*They are just hardcoded for now*)
 	A1=16(-1/4)(s-u)^2; (*squared t-channel diagram*)
-	A2=16(-1/4)(s-t)^2;  (*squared u-channel diagram*)
+	A2=16(-1/4)(s-t)^2; (*squared u-channel diagram*)
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT];
@@ -205,11 +170,9 @@ If[((particle1[[2]]=="F"&&particle2[[2]]=="V")||(particle1[[2]]=="V"&&particle2[
 	fermionPropU=Table[1/(u-i),{i,fermionMass}];
 	
 (*Group invariants that multiply various Lorentz Structures*)
-
-
 	C1=Sum[vectorPropT[[c]]vectorPropT[[d]]Tr[g13[[c]] . Transpose[g13[[d]]]]Tr[g24[[c]] . Transpose[g24[[d]]]],{c,1,LV},{d,1,LV}];
 	C2=Sum[fermionPropU[[L]] fermionPropU[[K]]Tr[g14[[L]] . Transpose[g14[[K]]]]Tr[g23[[L]] . Transpose[g23[[K]]]],{L,1,LF},{K,1,LF}];
-
+	
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are just hardcoded for now*)
@@ -235,7 +198,6 @@ CreateMatrixElementQ1Q2toV1V2[particle1_,particle2_,particle3_,particle4_,fermio
 If[(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="V"||particle4[[2]]!="V")&&(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="F"||particle4[[2]]!="F"),
 	Return[0];
 ,
-
 	p1=particle1[[1]];
 	p2=particle2[[1]];
 	p3=particle3[[1]];
@@ -297,16 +259,19 @@ If[particle1[[2]]=="V"&&particle2[[2]]=="V"&&particle3[[2]]=="F"&&particle4[[2]]
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Getting the matrix elements for out - of - eq particles*)
 
 
-degreeOfFreedom[particle_]:=Block[{},
+degreeOfFreedom[particle_]:=Block[{dof},
 
 	dof=Length[particle[[1]]];
-
-	If[particle[[2]]=="F",dof]; (*Factor of 2 from helicites, factor of 2 from anti-particles*)
-	If[particle[[2]]=="V",dof*=2]; (*Factor of 2 from spins*)
+	
+	(*Factor of 2 from helicites, factor of 2 from anti-particles*)
+	If[particle[[2]]=="F",dof];
+	
+	(*Factor of 2 from spins*)
+	If[particle[[2]]=="V",dof*=2]; 
 	
 	Return[dof];
 ]
@@ -371,6 +336,7 @@ ExtractOutOfEqElementQ1V1toQ1V1[particleList_,LightParticles_]:=Block[{},
 	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
 	MatrixElements=Table[1/degreeOfFreedom[particleList[[a]]]CreateMatrixElementQ1V1toQ1V1[particleList[[a]],b,c,d,GluonMass,QuarkMass],{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	Elements=MatrixElements["NonzeroPositions"];  (*This is a list of all non-zero matrix elements*)
+
 
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
@@ -449,7 +415,8 @@ If[Length[Elements]==0,
 ];
 
 
-ExtractOutOfEqElementV1V2toV3V4[particleList_,LightParticles_]:=Block[{},
+ExtractOutOfEqElementV1V2toV3V4[particleList_,LightParticles_]:=
+Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
@@ -494,7 +461,8 @@ If[Length[Elements]==0,
 ];
 
 
-ExtractOutOfEqElement[particleList_,LightParticles_]:=Block[{},
+ExtractOutOfEqElement[particleList_,LightParticles_]:=
+Block[{CollEllQ1Q2toQ3Q4,CollEllQ1V1toQ1V1,CollEllQ1Q2toV1V2,CollEllV1V2toV3V4,CollEllTotal},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
@@ -519,24 +487,35 @@ Return[CollEllTotal]
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Exporting to C++*)
 
 
-ExportToC[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_]:=Block[{},
+ExportToC[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_]:=
+Block[{ExportTXT,ExportH5,
+	Cij,ParticleInfo,CouplingInfo,MatrixElements,
+	OutOfEqParticles,RepMasses,RepCouplings
+	},
 
-(*Just extracting the out-of-eq particles*)
+(*
+Extracting the out-of-eq particles
+*)
 	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
 
-
-(*Some replacement rules for converting to the format used by the c++ code*)	
+(*
+Replacement rules for converting to the format used by the c++ code
+*)	
 	RepMasses=Table[UserMasses[[i]]->msq[i-1],{i,1,Length[UserMasses]}];
 	RepCouplings=Table[UserCouplings[[i]]->Coupling[i-1],{i,1,Length[UserCouplings]}];
 	
-(*Now looping over all out-of-eq particles and extracting the matrix elements*)	
+(*
+Loop over all out-of-eq particles and extracting the matrix elements
+*)	
 	MatrixElements=ExtractOutOfEqElement[particleList,LightParticles]//FullSimplify;
 	
-(*Getting the various C^{ij} components*)	
+(*
+Extract various C^{ij} components
+*)	
 	Cij=ConstantArray[0,{Length[OutOfEqParticles],Length[OutOfEqParticles]}];
 
 	Do[
@@ -553,41 +532,39 @@ ExportToC[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,Particl
 	
 	CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Coupling[i-1]]},{i,1,Length[UserCouplings]}];
 	
-(*Rewrite the matrix element to an export format*)
+(*
+Rewrite the matrix element to an export format
+*)
 	MatrixElements=Table[MatrixElemToC@i/.RepCouplings/.RepMasses,{i,MatrixElements}];
 	
 	Table[
-		Cij[[i,j]]=Table[MatrixElemToC@k/.RepCouplings/.RepMasses,{k,Cij[[i,j]]}];
-	,{i,OutOfEqParticles},{j,OutOfEqParticles}];
+		Cij[[i,j]]=Table[MatrixElemToC@k/.RepCouplings/.RepMasses,{k,Cij[[i,j]]}];,
+		{i,OutOfEqParticles},{j,OutOfEqParticles}];
 	
 	ExportTXT=MatrixElements;
 	
-(*Adding some metadata*)
+(*Adding metadata*)
 	PrependTo[ExportTXT,ParticleInfo];
 	PrependTo[ExportTXT,CouplingInfo];	
 	
-(*In the text-file all matrix elements are directly listed*)
+(*
+In the text-file all matrix elements are directly listed
+*)
 	Export[StringJoin[file,".txt"],ExportTXT];
-	
 	
 (*In the hdf5 file we separate them into Cij components*)
 	ExportH5=Reap[Do[
 		CijName=StringJoin["MatrixElements",ParticleName[[i]],ParticleName[[j]]];
 		Sow[
-			writeData=Table[{ToString[FortranForm[a[[1]]]],ToString[FortranForm[a[[2]]]]},{a,Cij[[i,j]]}];
-			
-		If[Length[Cij[[i,j]]]==0,writeData=""];
-		
-		CijName -> {
-   "Data" -> 
-		writeData}];
-		
+			writeData->Table[{ToString[FortranForm[a[[1]]]],ToString[FortranForm[a[[2]]]]},{a,Cij[[i,j]]}];
+			If[Length[Cij[[i,j]]]==0,writeData=""];
+			CijName -> {"Data" -> writeData}
+			];
 		,{i,OutOfEqParticles},{j,OutOfEqParticles}]];
 	
 	ExportH5=Flatten[ExportH5[[2]][[1]]];
 
-
-(*Adding some metadata*)
+(*Adding metadata*)
 	AppendTo[ExportH5,"ParticleInfo"->{"Data"->ParticleInfo}];
 	AppendTo[ExportH5,"CouplingInfo"->{"Data"->CouplingInfo}];
 	
@@ -597,108 +574,9 @@ ExportToC[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,Particl
 ];
 
 
-MatrixElemToC[MatrixElem_]:=Block[{},
+MatrixElemToC[MatrixElem_]:=Block[{Ind},
 	Ind=MatrixElem[[2]];
 	
 	Return[M[Ind[[1]]-1,Ind[[2]]-1,Ind[[3]]-1,Ind[[4]]-1]->MatrixElem[[1]]]
 ]
 
-
-
-(* ::Title:: *)
-(*SM quarks + gauge bosons*)
-
-
-(* ::Subtitle:: *)
-(*UserInput*)
-
-
-(*In DRalgo fermion are Weyl. So to create one Dirac we need one left-handed and one right-handed fermoon*)
-
-
-(*Below Reps 1-6 are quarks, and rep 7 is a gluon*)
-
-
-Rep1={{{1,0},{1}},"L"};
-Rep2={{{1,0},{0}},"R"};
-Rep3={{{1,0},{0}},"R"};
-RepFermion1Gen={Rep1,Rep2,Rep3};
-
-
-(*left-handed top-quark*)
-
-
-ReptL=CreateOutOfEq[{1},"F"];
-
-
-(*right-handed top-quark*)
-
-
-ReptR=CreateOutOfEq[{2},"F"];
-
-
-(*right-handed bottom-quark*)
-
-
-RepbR=CreateOutOfEq[{3},"F"];
-
-
-(*light quarks*)
-
-
-RepLight=CreateOutOfEq[{4,5,6,7,8,9},"F"];
-
-
-(*Vector bosons*)
-
-
-RepGluon=CreateOutOfEq[{1},"V"];
-RepW=CreateOutOfEq[{2},"V"];
-
-
-ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepLight};
-
-
-LightParticles={6}; (*These particles do not have out-of-eq contributions*)
-
-
-(*Defining various masses and couplings*)
-
-
-RepGluon[[1]]//Length
-
-
-GluonMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}]];
-
-
-QuarkMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-
-
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mw2,mg2}; 
-UserCouplings={gs,gw};
-
-
-SetDirectory[NotebookDirectory[]];
-ParticleName={"TopL","TopR","BotR","Gluon","W"};
-ExportToC["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName]
-
-
-Import["MatrixElem.hdf5"]
-
-
-Import["MatrixElem.hdf5","CouplingInfo"]
-
-
-Import["MatrixElem.hdf5","ParticleInfo"]
-
-
-Import["MatrixElem.hdf5","CouplingInfo"]
-
-
-Import["MatrixElem.hdf5","ParticleInfo"]
-
-
-gvff[[11]]//Normal
