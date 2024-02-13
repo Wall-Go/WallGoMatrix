@@ -101,11 +101,10 @@ If[
 (*Factor 4 from anti-particle contributions*)
 	Return[-Total[Res1+Res2,-1]]
 ]
-	
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1Q2toQ3Q4*)
 
 
@@ -159,7 +158,7 @@ Since there are two diagrams there can be
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1V1toQ1V1*)
 
 
@@ -232,7 +231,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1Q2toV1V2*)
 
 
