@@ -104,7 +104,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1Q2toQ3Q4*)
 
 
@@ -158,7 +158,7 @@ Since there are two diagrams there can be
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1V1toQ1V1*)
 
 
@@ -231,7 +231,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1Q2toV1V2*)
 
 
@@ -559,7 +559,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Extract elements*)
 
 
@@ -596,7 +596,7 @@ Return[CollEllTotal]
 ExportMatrixElements[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_]:=
 Block[{ExportTXT,ExportH5,
 	Cij,ParticleInfo,CouplingInfo,MatrixElements,
-	OutOfEqParticles,RepMasses,RepCouplings
+	OutOfEqParticles,RepMasses,RepCouplings,C
 	},
 
 (*
@@ -608,7 +608,7 @@ Extracting the out-of-eq particles
 Replacement rules for converting to the format used by the c++ code
 *)	
 	RepMasses=Table[UserMasses[[i]]->msq[i-1],{i,1,Length[UserMasses]}];
-	RepCouplings=Table[UserCouplings[[i]]->Coupling[i-1],{i,1,Length[UserCouplings]}];
+	RepCouplings=Table[UserCouplings[[i]]->C[i-1],{i,1,Length[UserCouplings]}];
 	
 (*
 Loop over all out-of-eq particles and extracting the matrix elements
@@ -632,7 +632,7 @@ Extract various C^{ij} components
 	ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
 	AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
 	
-	CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Coupling[i-1]]},{i,1,Length[UserCouplings]}];
+	CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[C[i-1]]},{i,1,Length[UserCouplings]}];
 	
 (*
 Rewrite the matrix element to an export format
