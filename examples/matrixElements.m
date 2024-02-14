@@ -608,7 +608,7 @@ Extracting the out-of-eq particles
 Replacement rules for converting to the format used by the c++ code
 *)	
 	RepMasses=Table[UserMasses[[i]]->msq[i-1],{i,1,Length[UserMasses]}];
-	RepCouplings=Table[UserCouplings[[i]]->C[i-1],{i,1,Length[UserCouplings]}];
+	RepCouplings=Table[UserCouplings[[i]]->Symbol["c"][i-1],{i,1,Length[UserCouplings]}];
 	
 (*
 Loop over all out-of-eq particles and extracting the matrix elements
@@ -632,7 +632,7 @@ Extract various C^{ij} components
 	ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
 	AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
 	
-	CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[C[i-1]]},{i,1,Length[UserCouplings]}];
+	CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 	
 (*
 Rewrite the matrix element to an export format
