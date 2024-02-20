@@ -30,6 +30,7 @@ RepFermion1Gen={Rep1,Rep2,Rep3};
 
 
 RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
+RepFermion3Gen={Rep1}(*//Flatten[#,1]&*)
 
 
 (* ::Text:: *)
@@ -62,6 +63,17 @@ Rep1={{{1,0},{1}},"L"};
 Rep2={{{1,0},{0}},"R"};
 Rep3={{{1,0},{0}},"R"};
 RepFermion1Gen={Rep1,Rep2,Rep3};
+
+
+PosFermion=PrintFermionRepPositions[]
+
+
+gvff[[;;,1;;3,1;;3]]//Normal
+gvff[[;;,4;;6,4;;6]]//Normal
+%//Length
+gvff//Normal
+%//Length
+(*check group math, branching su2 -> u1*)
 
 
 (*left-handed top-quark*)
@@ -112,11 +124,13 @@ MatrixElements//Expand;
 
 
 (*g g->g g*)
+M[0,3,0,3]/.MatrixElements
+(*g g->g g*)
 M[3,3,3,3]/.MatrixElements
 (*t g->t g*)
 M[1,3,1,3]/.MatrixElements
 (*t q->t q*)
-M[1,5,1,5]/.MatrixElements
+5/4*M[1,5,1,5]/.MatrixElements
 
 
 Import["MatrixElem.hdf5"]

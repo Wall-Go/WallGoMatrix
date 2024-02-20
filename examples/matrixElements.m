@@ -51,11 +51,43 @@ CreateOutOfEq[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion},
 ];
 
 
+SymmetryBreaking[Indices_,vev_] :=Block[{PosScalar,PosVector,PosFermion},
+(*
+Routine that extracts representations given their vev.
+This way one can identify which e.g. parts of multiplet fermions are light or heavy
+*)
+	PosScalar=PrintScalarRepPositions[];
+	PosVector=PrintGaugeRepPositions[];
+	PosFermion=PrintFermionRepPositions[];
+	
+(*Fermions*)
+	massF=vev . Ysff;
+	fermionInd=Delete[massF//ArrayRules,-1]/.(({a_,b_}->x_)->a);
+	
+	posHeavy=Intersection[RangeToIndices[PosFermion[[Indices]]],fermionInd];
+	posLight=Complement[RangeToIndices[PosFermion[[Indices]]],fermionInd];
+		
+	val=massF[[posHeavy,;;]]["NonzeroValues"]//DeleteDuplicates;
+	pos=Table[i,{i,Length[posHeavy]}];
+	
+	rep={};
+	
+	Do[
+	pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[massF[[posHeavy,;;]]["NonzeroValues"],a]}];
+	AppendTo[rep,{pos2,a}];
+	,{a,val}];
+
+	AppendTo[rep,{posLight,0}];
+	
+	rep
+]
+
+
 (* ::Section:: *)
 (*Matrix elements*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*V1V2toV3V4*)
 
 
@@ -158,7 +190,7 @@ Since there are two diagrams there can be
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1V1toQ1V1*)
 
 
@@ -347,7 +379,7 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
 		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementQ1Q2toQ3Q4[particleList[[a]],b,c,d,GluonMass],
+		CreateMatrixElementQ1Q2toQ3Q4[particleList[[a]],b,c,d,VectorMass],
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 (*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];  
@@ -405,7 +437,7 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
 		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementQ1V1toQ1V1[particleList[[a]],b,c,d,GluonMass,QuarkMass],
+		CreateMatrixElementQ1V1toQ1V1[particleList[[a]],b,c,d,VectorMass,FermionMass],
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
@@ -463,7 +495,7 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
 		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementQ1Q2toV1V2[particleList[[a]],b,c,d,QuarkMass],
+		CreateMatrixElementQ1Q2toV1V2[particleList[[a]],b,c,d,FermionMass],
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
@@ -520,7 +552,7 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
 		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementV1V2toV3V4[particleList[[a]],b,c,d,GluonMass],
+		CreateMatrixElementV1V2toV3V4[particleList[[a]],b,c,d,VectorMass],
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
