@@ -87,7 +87,7 @@ This way one can identify which e.g. parts of multiplet fermions are light or he
 (*Matrix elements*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*V1V2toV3V4*)
 
 
@@ -391,7 +391,8 @@ If[Length[Elements]==0,
 
 (*Now we add identical contributions*)
 (*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
+	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
+	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
 	MultiPlicity=Table[Length[a],{a,symmetries}];
 	Elements=Table[i[[1]],{i,symmetries}];
 	(*MatrixElements is now just a list*)
@@ -411,7 +412,7 @@ If[Length[Elements]==0,
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
 
 (*We now add all elements with the same deltaF list*)
-	symmetries=Split[CollElements,#1[[2]]==#2[[2]]&];
+	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
 	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
 	
 	Return[CollElements]
@@ -450,7 +451,9 @@ If[Length[Elements]==0,
 
 (*Now we add identical contributions*)
 (*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
+	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
+	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
+
 	MultiPlicity=Table[Length[a],{a,symmetries}];
 	Elements=Table[i[[1]],{i,symmetries}];
 	(*MatrixElements is now just a list*)
@@ -467,7 +470,7 @@ If[Length[Elements]==0,
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
 
 (*We now add all elements with the same deltaF list*)
-	symmetries=Split[CollElements,#1[[2]]==#2[[2]]&];
+	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
 	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
 	
 	Return[CollElements]
@@ -507,7 +510,8 @@ If[Length[Elements]==0,
 
 (*Now we add identical contributions*)
 (*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
+	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
+	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
 	MultiPlicity=Table[Length[a],{a,symmetries}];
 	Elements=Table[i[[1]],{i,symmetries}];
 	(*MatrixElements is now just a list*)
@@ -526,7 +530,7 @@ If[Length[Elements]==0,
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
 
 (*We now add all elements with the same deltaF list*)
-	symmetries=Split[CollElements,#1[[2]]==#2[[2]]&];
+	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
 	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
 	
 	Return[CollElements]	
@@ -564,7 +568,8 @@ If[Length[Elements]==0,
 
 (*Now we add identical contributions*)
 (*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Split[Elements,#1[[3;;4]]==Sort[#2[[3;;4]]]&];
+	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
+	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
 	MultiPlicity=Table[Length[a],{a,symmetries}];
 	Elements=Table[i[[1]],{i,symmetries}];
 	(*MatrixElements is now just a list*)
@@ -583,7 +588,7 @@ If[Length[Elements]==0,
 	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
 
 (*We now add all elements with the same deltaF list*)
-	symmetries=Split[CollElements,#1[[2]]==#2[[2]]&];
+	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
 	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
 	
 	Return[CollElements]	
