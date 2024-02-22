@@ -110,12 +110,14 @@ If[
 	g24=gvvv[[;;,particle2[[1]],particle4[[1]]]];
 	g14=gvvv[[;;,particle1[[1]],particle4[[1]]]];
 	g23=gvvv[[;;,particle2[[1]],particle3[[1]]]];
+	g12=gvvv[[;;,particle1[[1]],particle2[[1]]]];
+	g34=gvvv[[;;,particle3[[1]],particle4[[1]]]];
 
 (*Group invariants that multiply various Lorentz Structures*)
 	C1=Table[Tr[g13[[a]] . Transpose[g13[[b]]]]Tr[g24[[a]] . Transpose[g24[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
 	C2=Table[Tr[g14[[a]] . Transpose[g14[[b]]]]Tr[g23[[a]] . Transpose[g23[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-	C3=Table[Tr[g13[[a]] . Transpose[g23[[b]]] . g24[[a]] . Transpose[g14[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-	C3+=Table[Tr[g14[[a]] . Transpose[g24[[b]]] . g23[[a]] . Transpose[g13[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	
+	C3=Table[Tr[g12[[a]] . Transpose[g12[[b]]]]Tr[g34[[a]] . Transpose[g34[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
 		
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
@@ -125,13 +127,18 @@ If[
 (*They are just hardcoded for now*)
 	A1=16(-1/4)(s-u)^2; (*squared t-channel diagram*)
 	A2=16(-1/4)(s-t)^2; (*squared u-channel diagram*)
+	A3=16 t u/s^2; (*squared s-channel diagram*)
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT];
 	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
+	Res3=A3*C3;
+(*finally we terms that don't depend on the mandelstam variables*)
+
+	Res4=-16*((C1+C2)*(1+1/4)+C3);
 	
 (*Factor 4 from anti-particle contributions*)
-	Return[-Total[Res1+Res2,-1]]
+	Return[-Total[Res1+Res2+Res3+Res4,-1]]
 ]
 ];
 
@@ -159,16 +166,32 @@ If[
 	g24=gvff[[;;,particle2[[1]],particle4[[1]]]];
 	g14=gvff[[;;,particle1[[1]],particle4[[1]]]];
 	g23=gvff[[;;,particle2[[1]],particle3[[1]]]];
+	g12=gvff[[;;,particle1[[1]],particle2[[1]]]];
+	g34=gvff[[;;,particle3[[1]],particle4[[1]]]];
 
+	g31=gvff[[;;,particle3[[1]],particle1[[1]]]];
+	g42=gvff[[;;,particle4[[1]],particle2[[1]]]];
+	g41=gvff[[;;,particle4[[1]],particle1[[1]]]];
+	g32=gvff[[;;,particle3[[1]],particle2[[1]]]];
+	g21=gvff[[;;,particle2[[1]],particle1[[1]]]];
+	g43=gvff[[;;,particle4[[1]],particle3[[1]]]];
 (*Group invariants that multiply various Lorentz Structures*)
 	C1=Table[Tr[g13[[a]] . Transpose[g13[[b]]]]Tr[g24[[a]] . Transpose[g24[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	
 	C2=Table[Tr[g14[[a]] . Transpose[g14[[b]]]]Tr[g23[[a]] . Transpose[g23[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-	C3=Table[Tr[g13[[a]] . Transpose[g23[[b]]] . g24[[a]] . Transpose[g14[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-	C3+=Table[Tr[g14[[a]] . Transpose[g24[[b]]] . g23[[a]] . Transpose[g13[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-		
+	
+	C3=Table[Tr[g31[[a]] . g14[[b]] . g42[[a]] . g23[[b]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	C3+=Table[Tr[g13[[a]] . g32[[b]] . g24[[a]] . g41[[b]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	
+	C4=Table[Tr[g12[[a]] . Transpose[g12[[b]]]]Tr[g34[[a]] . Transpose[g34[[b]]]],{a,1,Length[g12]},{b,1,Length[g12]}];
+	
+	C5=Table[Tr[g13[[a]] . g34[[b]] . g42[[a]] . g21[[b]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	C5+=Table[Tr[g31[[a]] . g12[[b]] . g24[[a]] . g43[[b]]],{a,1,Length[g13]},{b,1,Length[g13]}];	
+	
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
 	vectorPropU=Table[1/(u-i),{i,vectorMass}];
+	vectorPropS=Table[1/(s-i),{i,vectorMass}];
 
 (*
 Since there are two diagrams there can be
@@ -178,19 +201,24 @@ Since there are two diagrams there can be
 	A1=2(s^2+u^2); (*squared t-channel diagram*)
 	A2=2(s^2+t^2); (*squared u-channel diagram*)
 	A3=4 s^2; (*Interference between u and t channel diagrams*)
+	A4=2(t^2+u^2)/s^2; (*Squared s-channel*)
+	A5=4 u^2; (*Interference between s and t channel diagrams*)
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
-	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT];
-	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
-	Res3=A3*DiagonalMatrix[vectorPropU] . C3 . DiagonalMatrix[vectorPropT];
-	
-(*Factor 4 from anti-particle contributions*)
-	Return[ Total[Res1+Res2+Res3,-1]]
+	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT]; 
+	Res2=1/2*A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
+	Res3=1/2*(A3*DiagonalMatrix[vectorPropU] . C3 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);
+	Res4=A4*C4;
+	Res5=(A5*DiagonalMatrix[vectorPropS] . C5 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);
+
+	Return[ Total[Res1+Res2+Res3+Res4+Res5,-1]]
 ]
+
+
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1V1toQ1V1*)
 
 
@@ -240,23 +268,27 @@ If[ (
 	
 (*Fermion propagators*)
 	fermionPropU=Table[1/(u-i),{i,fermionMass}];
+	fermionPropS=Table[1/(s),{i,fermionMass}];
 	
 (*Group invariants that multiply various Lorentz Structures*)
 	C1=Sum[vectorPropT[[c]]vectorPropT[[d]]Tr[g13[[c]] . Transpose[g13[[d]]]]Tr[g24[[c]] . Transpose[g24[[d]]]],{c,1,LV},{d,1,LV}];
 	C2=Sum[fermionPropU[[L]] fermionPropU[[K]]Tr[g14[[L]] . Transpose[g14[[K]]]]Tr[g23[[L]] . Transpose[g23[[K]]]],{L,1,LF},{K,1,LF}];
+	C3=Sum[fermionPropS[[L]] fermionPropS[[K]]Tr[g12[[L]] . Transpose[g12[[K]]]]Tr[g34[[L]] . Transpose[g34[[K]]]],{L,1,LF},{K,1,LF}];
 	
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are just hardcoded for now*)
 	A1=16(s^2+u^2); (*squared t-channel diagram*)
 	A2=-4*16*s*u; (*squared u-channel diagram*)
+	A3=-4*16*u*s;  (*squared s-channel diagram*)
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*C1;
 	Res2=A2*C2;
+	Res3=A3*C3;
 
 (*Factor of 2 from anti-particle contribution*)
-	Return[(Res1+Res2)]
+	Return[(Res1+Res2+Res3)]
 ,
 	Return[0]
 ]	
@@ -283,6 +315,7 @@ If[
 	p2=particle2[[1]];
 	p3=particle3[[1]];
 	p4=particle4[[1]];
+	symmFac=1;
 If[
 	particle1[[2]]=="V"&&
 	particle2[[2]]=="V"&&
@@ -296,6 +329,7 @@ If[
 		temp=p2;
 		p2=p4;
 		p4=temp;
+		symmFac=2; (*for quark final states we have to add vv-> q qbar+vv->qbar q; this overcounting is always compensated for later*)
 	];
 (*Coupling constants that we will need*)
 	g13=gvff[[p3,p1,;;]];
@@ -307,6 +341,9 @@ If[
 	g23=gvff[[p3,;;,p2]];
 	g14T=gvff[[p4,;;,p1]];
 	g23T=gvff[[p3,p2,;;]];
+	
+	g12=gvff[[;;,p1,p2]];
+	g34=gvvv[[;;,p3,p4]];
 	
 	LV=Length[g13];
 	F=Length[g12[[1]]];
@@ -326,19 +363,22 @@ If[
 	g14=DiagonalTensor2[TensorProduct[g14,fermionPropU],3,4]//Flatten[#,{{2},{3},{1}}]&;
 
 	C2=Sum[Tr[g14[[a]] . g23[[b]] . g23T[[b]] . g14T[[a]]],{a,Length[g14]},{b,Length[g23]}];
-	
+
+	C3=-Sum[Tr[g12[[a]] . Transpose[g12[[b]]]]Tr[g34[[a]] . Transpose[g34[[b]]]],{a,Length[g34]},{b,Length[g34]}];
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are hardcoded for now*)
 	A1=4 t u; (*squared t-channel diagram*)
 	A2=4 t u; (*squared u-channel diagram*)
+	A3=4 (t^2+u^2)/s^2; (*squared s-channel diagram*)
 
 (*Generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*C1;
 	Res2=A2*C2;
+	Res3=A3*C3;
 
 (*Factor of 2 from anti-particles*)
-	Return[(Res1+Res2)]
+	Return[symmFac*(Res1+Res2+Res3)]
 ]	
 ];
 
