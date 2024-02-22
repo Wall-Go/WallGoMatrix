@@ -116,7 +116,6 @@ If[
 (*Group invariants that multiply various Lorentz Structures*)
 	C1=Table[Tr[g13[[a]] . Transpose[g13[[b]]]]Tr[g24[[a]] . Transpose[g24[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
 	C2=Table[Tr[g14[[a]] . Transpose[g14[[b]]]]Tr[g23[[a]] . Transpose[g23[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-	
 	C3=Table[Tr[g12[[a]] . Transpose[g12[[b]]]]Tr[g34[[a]] . Transpose[g34[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
 		
 (*Vector propagators*)
@@ -127,15 +126,14 @@ If[
 (*They are just hardcoded for now*)
 	A1=16(-1/4)(s-u)^2; (*squared t-channel diagram*)
 	A2=16(-1/4)(s-t)^2; (*squared u-channel diagram*)
-	A3=16 t u/s^2; (*squared s-channel diagram*)
+	A3=16*t*u/s^2; (*squared s-channel diagram*)
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT];
 	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
 	Res3=A3*C3;
-(*finally we terms that don't depend on the mandelstam variables*)
-
-	Res4=-16*((C1+C2)*(1+1/4)+C3);
+(*add terms independent on the mandelstam variables*)
+	Res4=-16*((C1+C2)*(1-1/4)+C3);
 	
 (*Factor 4 from anti-particle contributions*)
 	Return[-Total[Res1+Res2+Res3+Res4,-1]]
@@ -363,14 +361,13 @@ If[
 	g14=DiagonalTensor2[TensorProduct[g14,fermionPropU],3,4]//Flatten[#,{{2},{3},{1}}]&;
 
 	C2=Sum[Tr[g14[[a]] . g23[[b]] . g23T[[b]] . g14T[[a]]],{a,Length[g14]},{b,Length[g23]}];
-
 	C3=-Sum[Tr[g12[[a]] . Transpose[g12[[b]]]]Tr[g34[[a]] . Transpose[g34[[b]]]],{a,Length[g34]},{b,Length[g34]}];
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are hardcoded for now*)
-	A1=4 t u; (*squared t-channel diagram*)
-	A2=4 t u; (*squared u-channel diagram*)
-	A3=4 (t^2+u^2)/s^2; (*squared s-channel diagram*)
+	A1=4*t*u; (*squared t-channel diagram*)
+	A2=4*t*u; (*squared u-channel diagram*)
+	A3=16*(t^2+u^2)/s^2; (*squared s-channel diagram*)
 
 (*Generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*C1;
@@ -409,7 +406,10 @@ ExtractOutOfEqElementQ1Q2toQ3Q4[particleList_,LightParticles_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
-(*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
+(*
+	Essentially this is generates the elements going into
+	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
+*)
 
 (*particleList is the complete list of particles*)
 
@@ -468,7 +468,10 @@ ExtractOutOfEqElementQ1V1toQ1V1[particleList_,LightParticles_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
-(*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
+(*
+	Essentially this is generates the elements going into
+	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
+*)
 
 (*particleList is the complete list of particles*)
 
@@ -515,8 +518,7 @@ If[Length[Elements]==0,
 	
 	Return[CollElements]
 	
-]
-	
+]	
 ];
 
 
@@ -528,7 +530,10 @@ ExtractOutOfEqElementQ1Q2toV1V2[particleList_,LightParticles_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
-(*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
+(*
+	Essentially this is generates the elements going into
+	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
+*)
 
 (*particleList is the complete list of particles*)
 
@@ -586,7 +591,10 @@ ExtractOutOfEqElementV1V2toV3V4[particleList_,LightParticles_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
-(*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
+(*
+	Essentially this is generates the elements going into Sum_deltaFparticle
+	\[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
+*)
 
 (*particleList is the complete list of particles*)
 
@@ -690,7 +698,7 @@ Replacement rules for converting to the format used by the c++ code
 (*
 Loop over all out-of-eq particles and extracting the matrix elements
 *)	
-	MatrixElements=ExtractOutOfEqElement[particleList,LightParticles]//FullSimplify;
+	MatrixElements=ExtractOutOfEqElement[particleList,LightParticles];
 	
 (*
 Extract various C^{ij} components

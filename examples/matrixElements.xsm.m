@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 SetDirectory[NotebookDirectory[]];
@@ -17,15 +17,19 @@ $GroupMathMultipleModels=True; (*Put this if you want to create multiple model-f
 (*see 2102.11145 [hep-ph]*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
+
+
+HypY={Yl,Ye,Yq,Yu,Yd,Y\[Phi],Y\[Eta]};
+repY=Thread[HypY->{-1,-2,1/3,4/3,-(2/3),1,2}];
 
 
 Group={"SU3","SU2","U1"};
 RepAdjoint={{1,1},{2},0};
 scalar1={{{0,0},{1},Y\[Phi]/2},"C"};
 scalar2={{{0,0},{0},0},"R"};
-RepScalar={scalar1,scalar2};
+RepScalar={scalar1,scalar2}/.repY;
 CouplingName={g3,gw,g1};
 
 
@@ -34,14 +38,14 @@ Rep2={{{1,0},{0},Yu/2},"R"};
 Rep3={{{1,0},{0},Yd/2},"R"};
 Rep4={{{0,0},{1},Yl/2},"L"};
 Rep5={{{0,0},{0},Ye/2},"R"};
-RepFermion1Gen={Rep1,Rep2,Rep3,Rep4,Rep5};
+RepFermion1Gen={Rep1,Rep2,Rep3,Rep4,Rep5}/.repY;
 
 
 (* ::Text:: *)
 (*The input for the gauge interactions to DRalgo are then given by*)
 
 
-RepFermion1Gen={Rep1,Rep2,Rep3,Rep4,Rep5};
+RepFermion1Gen={Rep1,Rep2,Rep3,Rep1,Rep2,Rep3,Rep1,Rep2,Rep3,Rep4,Rep5}/.repY;
 RepFermion3Gen={RepFermion1Gen}//Flatten[#,1]&;
 (*RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;*)
 
@@ -50,7 +54,7 @@ RepFermion3Gen={RepFermion1Gen}//Flatten[#,1]&;
 (*The first element is the vector self-interaction matrix:*)
 
 
-{gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
+{gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar]/.repY;
 
 
 InputInv={{1,1},{True,False}};
@@ -211,34 +215,29 @@ one right-handed fermoon
 *)
 
 
+(* ::Subsection:: *)
+(*TopL, TopR*)
+
+
+(*split left doublet into top-left and bottom-left*) 
 \[Phi]={v,0,0,0,0};
 IndtL=SymmetryBreaking[1,\[Phi]][[1]];
 IndbL=SymmetryBreaking[1,\[Phi]][[2]];
-IndtL[[2]]="F";
 IndbL[[2]]="F";
-IndtL
-IndbL
-
-
-{Join[ReptL[[1]],ReptR[[1]]],"F"}
-ReptR
+IndtL[[2]]="F";
 
 
 (*left-handed top-quark*)
-(*ReptL=CreateOutOfEq[{1},"F"];*)
 ReptL=IndtL;
 
 (*right-handed top-quark*)
 ReptR=CreateOutOfEq[{2},"F"];
-Rept={Join[ReptL[[1]],ReptR[[1]]],"F"}
 
-(*(*right-handed bottom-quark*)
-RepbR=CreateOutOfEq[{3},"F"];*)
+(*left-handed bottom-quark*)
 RepbL=IndbL;
 
 (*light quarks*)
-RepLight=CreateOutOfEq[{3,4,5(*,6,7,8,9,10,11,12,13,14,15*)},"F"]
-(*RepLight={Join[RepbL[[1]],RepLight[[1]]],"F"}*)
+RepLight=CreateOutOfEq[Range[3,2*4+3],"F"];
 
 (*Vector bosons*)
 RepGluon=CreateOutOfEq[{1},"V"];
@@ -246,7 +245,80 @@ RepW=CreateOutOfEq[{2},"V"];
 RepZ=CreateOutOfEq[{3},"V"];
 
 
-(*ParticleList={ReptL,ReptR,RepGluon,RepbL,RepW,RepZ,RepLight};*)
+ParticleList={ReptL,ReptR,RepGluon,RepW,RepZ,RepbL,RepLight};
+(*
+These particles do not have out-of-eq contributions
+*)
+LightParticles=Range[4,Length[ParticleList]];
+
+
+VectorMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}],Table[mz2,{i,1,RepZ[[1]]//Length}]];
+FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
+(*
+up to the user to make sure that the same order is given in the python code
+*)
+UserMasses={mq2,mz2,mw2,mg2}; 
+UserCouplings={g3,gw,g1};
+
+
+SetDirectory[NotebookDirectory[]];
+ParticleName={"TopL","TopR","Gluon"};
+MatrixElements=ExportMatrixElements["MatrixElements.xsm",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+
+
+(*tL q->tL q*)
+M[0,3,0,3]/.MatrixElements;
+%(*/.{c[1]->0,c[2]->0}*)
+(*tR q->tR q*)
+M[1,3,1,3]/.MatrixElements;
+%/.{c[1]->0,c[2]->0}
+(*tL tL->gg*)
+M[0,0,2,2]/.MatrixElements;
+%(*/.{c[1]->0,c[2]->0}*)
+(*tR tR->gg*)
+M[1,1,2,2]/.MatrixElements;
+%(*/.{c[1]->0,c[2]->0}*)
+(*tL g->tL g*)
+M[0,2,0,2]/.MatrixElements//FullSimplify;
+%/.{c[1]->0,c[2]->0}
+(*tR g->tR g*)
+M[1,2,1,2]/.MatrixElements//FullSimplify;
+%/.{c[1]->0,c[2]->0}
+
+
+(* ::Subsection:: *)
+(*QCD -like*)
+
+
+(*split left doublet into top-left and bottom-left*) 
+\[Phi]={v,0,0,0,0};
+IndtL=SymmetryBreaking[1,\[Phi]][[1]];
+IndbL=SymmetryBreaking[1,\[Phi]][[2]];
+IndtL[[2]]="F";
+IndbL[[2]]="F";
+
+
+(*left-handed top-quark*)
+ReptL=IndtL;
+
+(*right-handed top-quark*)
+ReptR=CreateOutOfEq[{2},"F"];
+
+(*join topL and topR into one rep*)
+Rept={Join[ReptL[[1]],ReptR[[1]]],"F"};
+
+(*left-handed bottom-quark*)
+RepbL=IndbL;
+
+(*light quarks*)
+RepLight=CreateOutOfEq[Range[3,2*4+3],"F"];
+
+(*Vector bosons*)
+RepGluon=CreateOutOfEq[{1},"V"];
+RepW=CreateOutOfEq[{2},"V"];
+RepZ=CreateOutOfEq[{3},"V"];
+
+
 ParticleList={Rept,RepGluon,RepW,RepZ,RepbL,RepLight};
 (*
 These particles do not have out-of-eq contributions
@@ -264,7 +336,6 @@ UserCouplings={g3,gw,g1};
 
 
 SetDirectory[NotebookDirectory[]];
-ParticleName={"TopL","TopR","Gluon"};
 ParticleName={"Top","Gluon"};
 MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
@@ -281,6 +352,7 @@ M[0,0,1,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*);
 (*tg->tg*)
 M[0,1,0,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*)//FullSimplify;
 %/.{c[1]->0,c[2]->0}
+
 
 
 

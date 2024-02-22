@@ -4,6 +4,7 @@
 
 
 SetDirectory[NotebookDirectory[]];
+$GroupMathMultipleModels=True; (*Put this if you want to create multiple model-files with the same kernel*)
 $LoadGroupMath=True;
 <<../DRalgo.m
 <<matrixElements.m
@@ -79,8 +80,8 @@ LightParticles={3,4,5,6,7};
 (*Defining various masses and couplings*)
 
 
-GluonMass=Table[mg2,{i,1,Length[gvff]}];
-QuarkMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
+VectorMass=Table[mg2,{i,1,Length[gvff]}];
+FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
@@ -96,35 +97,37 @@ MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,Use
 MatrixElements
 
 
+ParticleList[[1]]
+
+
+CreateMatrixElementQ1Q2toV1V2[ParticleList[[1]],ParticleList[[1]],ParticleList[[2]],ParticleList[[2]],FermionMass]
+
+
+8*dF*CF*CA/.{Nf->3,CA->3,CF->4/3,dF->3}
+
+
 (*comparison with https://arxiv.org/pdf/hep-ph/0302165.pdf*)
 (*q1q2->q1q2*)
 (*5 light quarks*)
-M[0,2,0,2]/.MatrixElements/.{Coupling[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
+M[0,2,0,2]/.MatrixElements/.{c[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
 5*2/(2*CA)*(8*dF^2*CF^2/dA((s^2+u^2)/ttsq))/.{ttsq->(-t+msq[1])^2}/.{Nf->3,CA->3,CF->4/3,dF->3,dA->8}
 %-%%//Simplify
 (*q1q1->gg*)
-M[0,0,1,1]/.MatrixElements/.{Coupling[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
-1/(2*2*CA)*(8*dF*CF^2(u/tt+t/uu)-8*dF*CF*CA((t^2+u^2)/s^2)*sChannel)/.{tt->(-t+msq[0])^2/t,uu->(-u+msq[0])^2/u,sChannel->0}/.{Nf->3,CA->3,CF->4/3,dF->3}
+M[0,0,1,1]/.MatrixElements/.{c[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
+1/(2*2*CA)*(8*dF*CF^2(u/tt+t/uu)-8*dF*CF*CA((t^2+u^2)/s^2))/.{tt->(-t+msq[0])^2/t,uu->(-u+msq[0])^2/u}/.{Nf->3,CA->3,CF->4/3,dF->3}
 %-%%//Simplify
 (*q1 g->q1 g*)
-M[0,1,0,1]/.MatrixElements/.{Coupling[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)//FullSimplify
-1/(2*CA)*(-8*dF*CF^2(sChannel*u/s +s/uu)+8*dF*CF*CA((s^2+u^2)/ttsq))/.{ttsq->(-t+msq[1])^2,tt->(-t+msq[1])^2/t,uu->(-u+msq[0])^2/u,sChannel->0}/.{Nf->3,CA->3,CF->4/3,dF->3}//FullSimplify
+M[0,1,0,1]/.MatrixElements/.{c[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)//Simplify
+1/(2*CA)*(-8*dF*CF^2(u/s +s/uu)+8*dF*CF*CA((s^2+u^2)/ttsq))/.{ttsq->(-t+msq[1])^2,tt->(-t+msq[1])^2/t,uu->(-u+msq[0])^2/u}/.{Nf->3,CA->3,CF->4/3,dF->3}//Simplify
 %-%%//Simplify
 
 
 (*g g->g g*)
-M[1,1,1,1]/.MatrixElements;
-resAE=9 Coupling[0]^4 ((s-u)^2/(-t+msq[1])^2+(s-t)^2/(-u+msq[1])^2)
-resAMY=16*dA*CA^2(3*sChannel-s*u/ttsq-s*t/uusq-t*u/ss*sChannel);
-(*resAE/.{Coupling[0]->1}/.{(s-u)^2->4*s*s,(s-t)^2->4*s*s}//FullSimplify*)
+M[1,1,1,1]/.MatrixElements/.{c[0]->1}//Simplify
 (*Final states are the same -> divide out 1/2 symmetry factor*)
-1/(2*2(CA^2-1))resAMY/.{s*t/uusq->-1/4(s-t)^2/(-u+msq[1])^2,s*u/ttsq->-1/4(s-u)^2/(-t+msq[1])^2,(*ttsq->(-t+msq[1])^2,tt->(-t+msq[1])^2/t,uu->(-u+msq[1])^2/u,uusq->(-u+msq[1])^2,*)sChannel->0}/.{Nf->3,dA->8,CA->3,CF->4/3,dF->3};
-%//Simplify
-(*%/.{s*u->-s*s,s*t->-s*s}//FullSimplify
-%- %%%//Simplify*)
-
-
-9/288
+1/(2*2(CA^2-1))(16*dA*CA^2(3-s*u/ttsq-s*t/uusq-t*u/s^2));
+%/.{s*t/uusq->1/4-1/4(s-t)^2/(-u+msq[1])^2,s*u/ttsq->1/4-1/4(s-u)^2/(-t+msq[1])^2}/.{Nf->3,dA->8,CA->3,CF->4/3,dF->3}//Simplify
+%%%-%//Simplify
 
 
 Import["MatrixElem.hdf5"]

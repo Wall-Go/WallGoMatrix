@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 SetDirectory[NotebookDirectory[]];
@@ -30,7 +30,6 @@ RepFermion1Gen={Rep1,Rep2,Rep3};
 
 
 RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
-RepFermion3Gen={Rep1}(*//Flatten[#,1]&*)
 
 
 (* ::Text:: *)
@@ -56,26 +55,10 @@ one right-handed fermoon
 *)
 
 
-(*Below Reps 1-6 are quarks, and rep 7 is a gluon*)
-
-
-Rep1={{{1,0},{1}},"L"};
-Rep2={{{1,0},{0}},"R"};
-Rep3={{{1,0},{0}},"R"};
-RepFermion1Gen={Rep1,Rep2,Rep3};
-
-
-PosFermion=PrintFermionRepPositions[]
-
-
-gvff[[;;,1;;3,1;;3]]//Normal
-gvff[[;;,4;;6,4;;6]]//Normal
-%//Length
-gvff//Normal
-%//Length
-(*check group math, branching su2 -> u1*)
-
-
+(*
+	Reps 1-4 are quarks,
+	reps 5,6 are vector bosons
+*)
 (*left-handed top-quark*)
 ReptL=CreateOutOfEq[{1},"F"];
 
@@ -103,11 +86,8 @@ LightParticles={6};
 (*Defining various masses and couplings*)
 
 
-RepGluon[[1]]//Length
-
-
-GluonMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}]];
-QuarkMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
+VectorMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}]];
+FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
