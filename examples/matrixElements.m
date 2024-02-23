@@ -204,7 +204,7 @@ Since there are two diagrams there can be
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT]; 
-	Res2=1/2*A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
+	Res2=1/2*(A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU]);
 	Res3=1/2*(A3*DiagonalMatrix[vectorPropU] . C3 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);
 	Res4=A4*C4;
 	Res5=(A5*DiagonalMatrix[vectorPropS] . C5 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);

@@ -300,10 +300,12 @@ M[1,2,1,2]/.MatrixElements//FullSimplify;
 %/.{c[1]->0,c[2]->0}
 
 
+(*off-diagonal entries do not agree*)
 M[1,0,0,1]/.MatrixElements//FullSimplify;
 %/.{c[1]->0,c[2]->0}
 M[0,1,0,1]/.MatrixElements//FullSimplify;
 %/.{c[1]->0,c[2]->0}
+(*diagonal entries agree*)
 M[1,1,0,0]/.MatrixElements//FullSimplify;
 %/.{c[1]->0,c[2]->0}
 M[0,0,1,1]/.MatrixElements//FullSimplify;
@@ -312,6 +314,25 @@ M[0,0,0,0]/.MatrixElements;
 %/.{c[1]->0,c[2]->0}
 M[1,1,1,1]/.MatrixElements;
 %/.{c[1]->0,c[2]->0}
+
+
+(*crosscheck for Matrix for collisions*)
+M[1,1,1,1]+xx*M[1,0,0,1]+M[1,1,0,0];
+%/.MatrixElements/.{c[0]->1};
+%/.{c[1]->0,c[2]->0}//FullSimplify
+M[0,0,0,0]+xx*M[0,1,0,1]+M[0,0,1,1];
+%/.MatrixElements/.{c[0]->1};
+%/.{c[1]->0,c[2]->0}//FullSimplify
+
+
+(*sum over all tL,tR channels*)
+M[1,1,1,1]+M[0,0,0,0]+M[1,0,0,1]+M[0,1,0,1]+M[1,1,0,0]+M[0,0,1,1];
+%/.MatrixElements/.{c[0]->1};
+%/.{c[1]->0,c[2]->0}//FullSimplify
+
+
+(*pure qcd result differs by factor 2 which is compensated by additonal factor 2 in EOM*)
+1/6 (-((16 s^2)/(3 t u))-(32 u^2)/(3 s t)+(16 (t^2+u^2))/s^2+(16 (s^2+u^2))/(t-msq[1])^2+(8 (s^2+t^2))/(u-msq[1])^2)//FullSimplify
 
 
 (* ::Subsection::Closed:: *)
