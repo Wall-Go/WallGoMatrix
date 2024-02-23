@@ -92,7 +92,7 @@ This way one can identify which e.g. parts of multiplet fermions are light or he
 
 
 CreateMatrixElementV1V2toV3V4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
-Block[{s,t,u},
+Block[{s,t,u,gTensor},
 (*
 In QCD this process depends on up to
 two Lorentz structures if the particles are all the same; and
@@ -106,17 +106,23 @@ If[
 	Return[0];
 ,
 (*Coupling constants that we will need*)
-	g13=gvvv[[;;,particle1[[1]],particle3[[1]]]];
-	g24=gvvv[[;;,particle2[[1]],particle4[[1]]]];
-	g14=gvvv[[;;,particle1[[1]],particle4[[1]]]];
-	g23=gvvv[[;;,particle2[[1]],particle3[[1]]]];
-	g12=gvvv[[;;,particle1[[1]],particle2[[1]]]];
-	g34=gvvv[[;;,particle3[[1]],particle4[[1]]]];
+	gTensor=Table[gvvv[[;;,Particle1[[1]],Particle2[[1]]]],
+		{Particle1,{particle1,particle2,particle3,particle4}},
+		{Particle2,{particle1,particle2,particle3,particle4}}];
 
 (*Group invariants that multiply various Lorentz Structures*)
-	C1=Table[Tr[g13[[a]] . Transpose[g13[[b]]]]Tr[g24[[a]] . Transpose[g24[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-	C2=Table[Tr[g14[[a]] . Transpose[g14[[b]]]]Tr[g23[[a]] . Transpose[g23[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-	C3=Table[Tr[g12[[a]] . Transpose[g12[[b]]]]Tr[g34[[a]] . Transpose[g34[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	C1=Table[
+		Tr[gTensor[[1,3]][[a]] . Transpose[gTensor[[1,3]][[b]]]]
+		Tr[gTensor[[2,4]][[a]] . Transpose[gTensor[[2,4]][[b]]]],
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
+	C2=Table[
+		Tr[gTensor[[1,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]]
+		Tr[gTensor[[2,3]][[a]] . Transpose[gTensor[[2,3]][[b]]]],
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
+	C3=Table[
+		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
+		Tr[gTensor[[3,4]][[a]] . Transpose[gTensor[[3,4]][[b]]]],
+		{a,1,Length[g13]},{b,1,Length[g13]}];
 		
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
@@ -146,7 +152,7 @@ If[
 
 
 CreateMatrixElementQ1Q2toQ3Q4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
-Block[{s,t,u},
+Block[{s,t,u,gTensor},
 (*
 In QCD this process depends on up to
 two Lorentz structures if the particles are all the same; and
@@ -160,31 +166,38 @@ If[
 	Return[0];
 ,
 (*Coupling constants that we will need*)
-	g13=gvff[[;;,particle1[[1]],particle3[[1]]]];
-	g24=gvff[[;;,particle2[[1]],particle4[[1]]]];
-	g14=gvff[[;;,particle1[[1]],particle4[[1]]]];
-	g23=gvff[[;;,particle2[[1]],particle3[[1]]]];
-	g12=gvff[[;;,particle1[[1]],particle2[[1]]]];
-	g34=gvff[[;;,particle3[[1]],particle4[[1]]]];
-
-	g31=gvff[[;;,particle3[[1]],particle1[[1]]]];
-	g42=gvff[[;;,particle4[[1]],particle2[[1]]]];
-	g41=gvff[[;;,particle4[[1]],particle1[[1]]]];
-	g32=gvff[[;;,particle3[[1]],particle2[[1]]]];
-	g21=gvff[[;;,particle2[[1]],particle1[[1]]]];
-	g43=gvff[[;;,particle4[[1]],particle3[[1]]]];
+	gTensor=Table[gvff[[;;,Particle1[[1]],Particle2[[1]]]],
+		{Particle1,{particle1,particle2,particle3,particle4}},
+		{Particle2,{particle1,particle2,particle3,particle4}}];
+		
 (*Group invariants that multiply various Lorentz Structures*)
-	C1=Table[Tr[g13[[a]] . Transpose[g13[[b]]]]Tr[g24[[a]] . Transpose[g24[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	C1=Table[
+		Tr[gTensor[[1,3]][[a]] . Transpose[gTensor[[1,3]][[b]]]]
+		Tr[gTensor[[2,4]][[a]] . Transpose[gTensor[[2,4]][[b]]]],
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
+	C2=Table[
+		Tr[gTensor[[1,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]]
+		Tr[gTensor[[2,3]][[a]] . Transpose[gTensor[[2,3]][[b]]]],
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
 	
-	C2=Table[Tr[g14[[a]] . Transpose[g14[[b]]]]Tr[g23[[a]] . Transpose[g23[[b]]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	C3=Table[
+		Tr[gTensor[[3,1]][[a]] . gTensor[[1,4]][[b]] . gTensor[[4,2]][[a]] . gTensor[[2,3]][[b]]],
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
+	C3+=Table[
+		Tr[gTensor[[1,3]][[a]] . gTensor[[3,2]][[b]] . gTensor[[2,4]][[a]] . gTensor[[4,1]][[b]]],
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
 	
-	C3=Table[Tr[g31[[a]] . g14[[b]] . g42[[a]] . g23[[b]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-	C3+=Table[Tr[g13[[a]] . g32[[b]] . g24[[a]] . g41[[b]]],{a,1,Length[g13]},{b,1,Length[g13]}];
+	C4=Table[
+		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
+		Tr[gTensor[[3,4]][[a]] . Transpose[gTensor[[3,4]][[b]]]],
+		{a,1,Length[gTensor[[1,2]]]},{b,1,Length[gTensor[[1,2]]]}];
 	
-	C4=Table[Tr[g12[[a]] . Transpose[g12[[b]]]]Tr[g34[[a]] . Transpose[g34[[b]]]],{a,1,Length[g12]},{b,1,Length[g12]}];
-	
-	C5=Table[Tr[g13[[a]] . g34[[b]] . g42[[a]] . g21[[b]]],{a,1,Length[g13]},{b,1,Length[g13]}];
-	C5+=Table[Tr[g31[[a]] . g12[[b]] . g24[[a]] . g43[[b]]],{a,1,Length[g13]},{b,1,Length[g13]}];	
+	C5=Table[
+		Tr[gTensor[[1,3]][[a]] . gTensor[[3,4]][[b]] . gTensor[[4,2]][[a]] . gTensor[[2,1]][[b]]],
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
+	C5+=Table[
+		Tr[gTensor[[3,1]][[a]] . gTensor[[1,2]][[b]] . gTensor[[2,4]][[a]] . gTensor[[4,3]][[b]]],
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];	
 	
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
@@ -221,7 +234,7 @@ Since there are two diagrams there can be
 
 
 CreateMatrixElementQ1V1toQ1V1[particle1_,particle2_,particle3_,particle4_,vectorMass_,fermionMass_]:=
-Block[{s,t,u},
+Block[{s,t,u,gTensor},
 (*
 In QCD this process depends on up to
 two Lorentz structures if the particles are all the same; and
@@ -250,16 +263,16 @@ If[ (
 		p4=temp;
 	];
 (*Coupling constants that we will need*)
-	g13=gvff[[;;,p1,p3]];
-	g12=gvff[[p2,p1,;;]]//Flatten[#,{{3},{2},{1}}]&;
-	g14=gvff[[p4,p1,;;]]//Flatten[#,{{3},{2},{1}}]&;
+	gTensor[1,3]=gvff[[;;,p1,p3]];
+	gTensor[1,2]=gvff[[p2,p1,;;]]//Flatten[#,{{3},{2},{1}}]&;
+	gTensor[1,4]=gvff[[p4,p1,;;]]//Flatten[#,{{3},{2},{1}}]&;
 	
-	g34=gvff[[p4,;;,p3]]//Flatten[#,{{2},{3},{1}}]&;
-	g24=gvvv[[p2,p4,;;]]//Flatten[#,{{3},{1},{2}}]&;
-	g23=gvff[[p2,;;,p3]]//Flatten[#,{{2},{3},{1}}]&;
+	gTensor[3,4]=gvff[[p4,;;,p3]]//Flatten[#,{{2},{3},{1}}]&;
+	gTensor[2,4]=gvvv[[p2,p4,;;]]//Flatten[#,{{3},{1},{2}}]&;
+	gTensor[2,3]=gvff[[p2,;;,p3]]//Flatten[#,{{2},{3},{1}}]&;
 
-	LV=Length[g13];
-	LF=Length[g12];
+	LV=Length[gTensor[1,3]];
+	LF=Length[gTensor[1,2]];
 
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
@@ -269,9 +282,15 @@ If[ (
 	fermionPropS=Table[1/(s),{i,fermionMass}];
 	
 (*Group invariants that multiply various Lorentz Structures*)
-	C1=Sum[vectorPropT[[c]]vectorPropT[[d]]Tr[g13[[c]] . Transpose[g13[[d]]]]Tr[g24[[c]] . Transpose[g24[[d]]]],{c,1,LV},{d,1,LV}];
-	C2=Sum[fermionPropU[[L]] fermionPropU[[K]]Tr[g14[[L]] . Transpose[g14[[K]]]]Tr[g23[[L]] . Transpose[g23[[K]]]],{L,1,LF},{K,1,LF}];
-	C3=Sum[fermionPropS[[L]] fermionPropS[[K]]Tr[g12[[L]] . Transpose[g12[[K]]]]Tr[g34[[L]] . Transpose[g34[[K]]]],{L,1,LF},{K,1,LF}];
+	C1=Sum[vectorPropT[[c]]vectorPropT[[d]]
+		Tr[gTensor[1,3][[c]] . Transpose[gTensor[1,3][[d]]]]
+		Tr[gTensor[2,4][[c]] . Transpose[gTensor[2,4][[d]]]],{c,1,LV},{d,1,LV}];
+	C2=Sum[fermionPropU[[L]] fermionPropU[[K]]
+		Tr[gTensor[1,4][[L]] . Transpose[gTensor[1,4][[K]]]]
+		Tr[gTensor[2,3][[L]] . Transpose[gTensor[2,3][[K]]]],{L,1,LF},{K,1,LF}];
+	C3=Sum[fermionPropS[[L]] fermionPropS[[K]]
+		Tr[gTensor[1,2][[L]] . Transpose[gTensor[1,2][[K]]]]
+		Tr[gTensor[3,4][[L]] . Transpose[gTensor[3,4][[K]]]],{L,1,LF},{K,1,LF}];
 	
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
@@ -298,7 +317,7 @@ If[ (
 
 
 CreateMatrixElementQ1Q2toV1V2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
-Block[{s,t,u},
+Block[{s,t,u,gTensor,gTensorT},
 (*
 In QCD this process depends on up to
 two Lorentz structures if the particles are all the same; and
@@ -330,21 +349,21 @@ If[
 		symmFac=2; (*for quark final states we have to add vv-> q qbar+vv->qbar q; this overcounting is always compensated for later*)
 	];
 (*Coupling constants that we will need*)
-	g13=gvff[[p3,p1,;;]];
-	g24=gvff[[p4,;;,p2]];
-	g13T=gvff[[p3,;;,p1]];
-	g24T=gvff[[p4,p2,;;]];
+	gTensor[1,3]=gvff[[p3,p1,;;]];
+	gTensor[2,4]=gvff[[p4,;;,p2]];
+	gTensorT[1,3]=gvff[[p3,;;,p1]];
+	gTensorT[2,4]=gvff[[p4,p2,;;]];
 
-	g14=gvff[[p4,p1,;;]];
-	g23=gvff[[p3,;;,p2]];
-	g14T=gvff[[p4,;;,p1]];
-	g23T=gvff[[p3,p2,;;]];
+	gTensor[1,4]=gvff[[p4,p1,;;]];
+	gTensor[2,3]=gvff[[p3,;;,p2]];
+	gTensorT[1,4]=gvff[[p4,;;,p1]];
+	gTensorT[2,3]=gvff[[p3,p2,;;]];
 	
-	g12=gvff[[;;,p1,p2]];
-	g34=gvvv[[;;,p3,p4]];
+	gTensor[1,2]=gvff[[;;,p1,p2]];
+	gTensor[3,4]=gvvv[[;;,p3,p4]];
 	
-	LV=Length[g13];
-	F=Length[g12[[1]]];
+	LV=Length[gTensor[1,3]];
+	F=Length[gTensor[1,2][[1]]];
 
 (*Fermion propagators*)
 	fermionPropU=Table[1/(u-i),{i,fermionMass}];
@@ -352,16 +371,23 @@ If[
 
 (*Group invariants that multiply various Lorentz Structures*)
 (*Multiplying with propagators for each particle*)
-	g13T=DiagonalTensor2[TensorProduct[g13T,fermionPropT],2,4]//Flatten[#,{{2},{1},{3}}]&;
-	g13=DiagonalTensor2[TensorProduct[g13,fermionPropT],3,4]//Flatten[#,{{2},{3},{1}}]&;
+	gTensorT[1,3]=DiagonalTensor2[TensorProduct[gTensorT[1,3],fermionPropT],2,4]//Flatten[#,{{2},{1},{3}}]&;
+	gTensor[1,3]=DiagonalTensor2[TensorProduct[gTensor[1,3],fermionPropT],3,4]//Flatten[#,{{2},{3},{1}}]&;
 	
-	C1=Sum[Tr[g13[[a]] . g24[[b]] . g24T[[b]] . g13T[[a]]],{a,Length[g13]},{b,Length[g24]}];
+	C1=Sum[
+		Tr[gTensor[1,3][[a]] . gTensor[2,4][[b]] . gTensorT[2,4][[b]] . gTensorT[1,3][[a]]],
+		{a,Length[gTensor[1,3]]},{b,Length[gTensor[2,4]]}];
 
-	g14T=DiagonalTensor2[TensorProduct[g14T,fermionPropU],2,4]//Flatten[#,{{2},{1},{3}}]&;
-	g14=DiagonalTensor2[TensorProduct[g14,fermionPropU],3,4]//Flatten[#,{{2},{3},{1}}]&;
+	gTensorT[1,4]=DiagonalTensor2[TensorProduct[gTensorT[1,4],fermionPropU],2,4]//Flatten[#,{{2},{1},{3}}]&;
+	gTensor[1,4]=DiagonalTensor2[TensorProduct[gTensor[1,4],fermionPropU],3,4]//Flatten[#,{{2},{3},{1}}]&;
 
-	C2=Sum[Tr[g14[[a]] . g23[[b]] . g23T[[b]] . g14T[[a]]],{a,Length[g14]},{b,Length[g23]}];
-	C3=-Sum[Tr[g12[[a]] . Transpose[g12[[b]]]]Tr[g34[[a]] . Transpose[g34[[b]]]],{a,Length[g34]},{b,Length[g34]}];
+	C2=Sum[
+		Tr[gTensor[1,4][[a]] . gTensor[2,3][[b]] . gTensorT[2,3][[b]] . gTensorT[1,4][[a]]],
+		{a,Length[gTensor[1,4]]},{b,Length[gTensor[2,3]]}];
+	C3=-Sum[
+		Tr[gTensor[1,2][[a]] . Transpose[gTensor[1,2][[b]]]]
+		Tr[gTensor[3,4][[a]] . Transpose[gTensor[3,4][[b]]]],
+		{a,Length[gTensor[3,4]]},{b,Length[gTensor[3,4]]}];
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are hardcoded for now*)

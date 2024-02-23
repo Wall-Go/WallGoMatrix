@@ -241,6 +241,27 @@ gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal
 CreateMatrixElementQ1Q2toQ3Q4[ReptL,ReptR,ReptL,ReptR,VectorMass]
 
 
+ClearAll[gTensor]
+
+
+CreateMatrixElementQ1V1toQ1V1[ReptL,RepGluon,ReptL,RepGluon,VectorMass,FermionMass]
+
+
+-((64 g3^4 u)/(3 s))-(64 g3^4 s u)/(3 (-mq2+u)^2)+(48 g3^4 (s^2+u^2))/(-mg2+t)^2
+
+
+CreateMatrixElementQ1Q2toV1V2[ReptL,ReptL,RepGluon,RepGluon,FermionMass]
+
+
+(64 g3^4 t u)/(3 (-mq2+t)^2)+(64 g3^4 t u)/(3 (-mq2+u)^2)-(48 g3^4 (t^2+u^2))/s^2
+
+
+CreateMatrixElementV1V2toV3V4[RepGluon,RepGluon,RepGluon,RepGluon,VectorMass]
+
+
+2880 g3^4+(288 g3^4 (s-u)^2)/(-mg2+t)^2-(1152 g3^4 t u)/s^2+(288 g3^4 (s-t)^2)/(-mg2+u)^2
+
+
 (*left-handed top-quark*)
 ReptL=IndtL;
 
@@ -314,6 +335,18 @@ M[0,0,0,0]/.MatrixElements;
 %/.{c[1]->0,c[2]->0}
 M[1,1,1,1]/.MatrixElements;
 %/.{c[1]->0,c[2]->0}
+
+
+gvff
+
+
+particle1
+
+
+trytable=Table[bbb[[;;,x[[1]],y[[1]]]],{x,{xx1,xx2}},{y,{xx1,xx2}}]
+
+
+trytable[[1,1]]
 
 
 (*crosscheck for Matrix for collisions*)
