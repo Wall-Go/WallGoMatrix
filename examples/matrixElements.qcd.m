@@ -4,10 +4,11 @@ Quit[];
 
 
 SetDirectory[NotebookDirectory[]];
-$GroupMathMultipleModels=True; (*Put this if you want to create multiple model-files with the same kernel*)
+(*Put this if you want to create multiple model-files with the same kernel*)
+$GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../DRalgo.m
-<<matrixElements.m
+<<../DRalgo/DRalgo.m
+<<../src/matrixElements.m
 
 
 (* ::Chapter:: *)
