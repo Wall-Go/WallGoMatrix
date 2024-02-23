@@ -92,12 +92,13 @@ This way one can identify which e.g. parts of multiplet fermions are light or he
 
 
 CreateMatrixElementV1V2toV3V4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
-Block[{s,t,u,gTensor},
+Block[{s,t,u,gTensor,leadingLog},
 (*
 In QCD this process depends on up to
 two Lorentz structures if the particles are all the same; and
 one Lorentz structure if they are all different.
 *)
+leadingLog=False;
 If[
 	particle1[[2]]!="V"||
 	particle2[[2]]!="V"||
@@ -142,7 +143,7 @@ If[
 	Res4=-16*((C1+C2)*(1-1/4)+C3);
 	
 (*Factor 4 from anti-particle contributions*)
-	Return[-Total[Res1+Res2+Res3+Res4,-1]]
+	Return[-Total[Res1+Res2+If[leadingLog,Res3+Res4,0],-1]]
 ]
 ];
 
@@ -152,12 +153,13 @@ If[
 
 
 CreateMatrixElementQ1Q2toQ3Q4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
-Block[{s,t,u,gTensor},
+Block[{s,t,u,gTensor,leadingLog},
 (*
 In QCD this process depends on up to
 two Lorentz structures if the particles are all the same; and
 one Lorentz structure if they are all different.
 *)
+leadingLog=False;
 If[
 	particle1[[2]]!="F"||
 	particle2[[2]]!="F"||
@@ -222,7 +224,7 @@ Since there are two diagrams there can be
 	Res4=A4*C4;
 	Res5=(A5*DiagonalMatrix[vectorPropS] . C5 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);
 
-	Return[ Total[Res1+Res2+Res3+Res4+Res5,-1]]
+	Return[ Total[Res1+Res2+Res3+If[leadingLog,Res4+Res5,0],-1]]
 ]
 
 
@@ -234,12 +236,13 @@ Since there are two diagrams there can be
 
 
 CreateMatrixElementQ1V1toQ1V1[particle1_,particle2_,particle3_,particle4_,vectorMass_,fermionMass_]:=
-Block[{s,t,u,gTensor},
+Block[{s,t,u,gTensor,leadingLog},
 (*
 In QCD this process depends on up to
 two Lorentz structures if the particles are all the same; and
 one Lorentz structure if they are all different.
 *)
+leadingLog=False;
 If[ (
 	(particle1[[2]]=="F"&&particle2[[2]]=="V")||
 	(particle1[[2]]=="V"&&particle2[[2]]=="F")
@@ -305,7 +308,7 @@ If[ (
 	Res3=A3*C3;
 
 (*Factor of 2 from anti-particle contribution*)
-	Return[(Res1+Res2+Res3)]
+	Return[(Res1+Res2+If[leadingLog,Res3,0])]
 ,
 	Return[0]
 ]	
@@ -317,12 +320,13 @@ If[ (
 
 
 CreateMatrixElementQ1Q2toV1V2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
-Block[{s,t,u,gTensor,gTensorT},
+Block[{s,t,u,gTensor,gTensorT,leadingLog},
 (*
 In QCD this process depends on up to
 two Lorentz structures if the particles are all the same; and
 one Lorentz structure if they are all different.
 *)
+leadingLog=False;
 If[
 	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="V"||particle4[[2]]!="V")&&
 	(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="F"||particle4[[2]]!="F"),
@@ -401,7 +405,7 @@ If[
 	Res3=A3*C3;
 
 (*Factor of 2 from anti-particles*)
-	Return[symmFac*(Res1+Res2+Res3)]
+	Return[symmFac*(Res1+Res2+If[leadingLog,Res3,0])]
 ]	
 ];
 

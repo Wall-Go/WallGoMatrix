@@ -242,13 +242,13 @@ gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal*)
 (*CreateMatrixElementQ1Q2toQ3Q4[ReptL,ReptR,ReptL,ReptR,VectorMass]*)
 
 
-CreateMatrixElementQ1V1toQ1V1[ReptL,RepGluon,ReptL,RepGluon,VectorMass,FermionMass]
+(*CreateMatrixElementQ1V1toQ1V1[ReptL,RepGluon,ReptL,RepGluon,VectorMass,FermionMass]*)
 
 
 -((64 g3^4 u)/(3 s))-(64 g3^4 s u)/(3 (-mq2+u)^2)+(48 g3^4 (s^2+u^2))/(-mg2+t)^2
 
 
-CreateMatrixElementQ1Q2toV1V2[ReptL,ReptL,RepGluon,RepGluon,FermionMass]
+(*CreateMatrixElementQ1Q2toV1V2[ReptL,ReptL,RepGluon,RepGluon,FermionMass]*)
 
 
 (64 g3^4 t u)/(3 (-mq2+t)^2)+(64 g3^4 t u)/(3 (-mq2+u)^2)-(48 g3^4 (t^2+u^2))/s^2
@@ -307,10 +307,10 @@ M[1,3,1,3]/.MatrixElements;
 %/.{c[1]->0,c[2]->0}
 (*tL tL->gg*)
 M[0,0,2,2]/.MatrixElements;
-%(*/.{c[1]->0,c[2]->0}*)
+%/.{c[1]->0,c[2]->0}
 (*tR tR->gg*)
 M[1,1,2,2]/.MatrixElements;
-%(*/.{c[1]->0,c[2]->0}*)
+%/.{c[1]->0,c[2]->0}
 (*tL g->tL g*)
 M[0,2,0,2]/.MatrixElements//FullSimplify;
 %/.{c[1]->0,c[2]->0}
@@ -420,3 +420,6 @@ M[0,0,1,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*);
 (*tg->tg*)
 M[0,1,0,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*)//FullSimplify;
 %/.{c[1]->0,c[2]->0}
+
+
+
