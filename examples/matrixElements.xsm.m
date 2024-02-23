@@ -17,7 +17,7 @@ $GroupMathMultipleModels=True; (*Put this if you want to create multiple model-f
 (*see 2102.11145 [hep-ph]*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -227,6 +227,20 @@ IndbL[[2]]="F";
 IndtL[[2]]="F";
 
 
+IndtL
+
+
+Ysff//Normal;
+
+
+gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal
+gvff[[;;,ReptR[[1]],ReptR[[1]]]]//Normal
+gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal
+
+
+CreateMatrixElementQ1Q2toQ3Q4[ReptL,ReptR,ReptL,ReptR,VectorMass]
+
+
 (*left-handed top-quark*)
 ReptL=IndtL;
 
@@ -268,7 +282,7 @@ MatrixElements=ExportMatrixElements["MatrixElements.xsm",ParticleList,LightParti
 
 (*tL q->tL q*)
 M[0,3,0,3]/.MatrixElements;
-%(*/.{c[1]->0,c[2]->0}*)
+%/.{c[1]->0,c[2]->0}
 (*tR q->tR q*)
 M[1,3,1,3]/.MatrixElements;
 %/.{c[1]->0,c[2]->0}
@@ -286,7 +300,21 @@ M[1,2,1,2]/.MatrixElements//FullSimplify;
 %/.{c[1]->0,c[2]->0}
 
 
-(* ::Subsection:: *)
+M[1,0,0,1]/.MatrixElements//FullSimplify;
+%/.{c[1]->0,c[2]->0}
+M[0,1,0,1]/.MatrixElements//FullSimplify;
+%/.{c[1]->0,c[2]->0}
+M[1,1,0,0]/.MatrixElements//FullSimplify;
+%/.{c[1]->0,c[2]->0}
+M[0,0,1,1]/.MatrixElements//FullSimplify;
+%/.{c[1]->0,c[2]->0}
+M[0,0,0,0]/.MatrixElements;
+%/.{c[1]->0,c[2]->0}
+M[1,1,1,1]/.MatrixElements;
+%/.{c[1]->0,c[2]->0}
+
+
+(* ::Subsection::Closed:: *)
 (*QCD -like*)
 
 
@@ -352,7 +380,5 @@ M[0,0,1,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*);
 (*tg->tg*)
 M[0,1,0,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*)//FullSimplify;
 %/.{c[1]->0,c[2]->0}
-
-
 
 
