@@ -122,7 +122,7 @@ If[
 	C3=Table[
 		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
 		Tr[gTensor[[3,4]][[a]] . Transpose[gTensor[[3,4]][[b]]]],
-		{a,1,Length[g13]},{b,1,Length[g13]}];
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
 		
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];

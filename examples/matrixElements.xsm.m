@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 SetDirectory[NotebookDirectory[]];
@@ -234,15 +234,12 @@ IndtL
 Ysff//Normal;
 
 
-gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal
+(*gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal
 gvff[[;;,ReptR[[1]],ReptR[[1]]]]//Normal
-gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal
+gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal*)
 
 
-CreateMatrixElementQ1Q2toQ3Q4[ReptL,ReptR,ReptL,ReptR,VectorMass]
-
-
-ClearAll[gTensor]
+(*CreateMatrixElementQ1Q2toQ3Q4[ReptL,ReptR,ReptL,ReptR,VectorMass]*)
 
 
 CreateMatrixElementQ1V1toQ1V1[ReptL,RepGluon,ReptL,RepGluon,VectorMass,FermionMass]
@@ -336,18 +333,6 @@ M[0,0,0,0]/.MatrixElements;
 %/.{c[1]->0,c[2]->0}
 M[1,1,1,1]/.MatrixElements;
 %/.{c[1]->0,c[2]->0}
-
-
-gvff
-
-
-particle1
-
-
-trytable=Table[bbb[[;;,x[[1]],y[[1]]]],{x,{xx1,xx2}},{y,{xx1,xx2}}]
-
-
-trytable[[1,1]]
 
 
 (*crosscheck for Matrix for collisions*)
