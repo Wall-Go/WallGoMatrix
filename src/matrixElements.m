@@ -87,7 +87,7 @@ This way one can identify which e.g. parts of multiplet fermions are light or he
 (*Matrix elements*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*V1V2toV3V4*)
 
 
@@ -152,6 +152,14 @@ If[
 (*Q1Q2toQ3Q4*)
 
 
+CreateMatrixElementQ1Q2toQ3Q4Pre[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=Block[{},
+	Return[
+		1/2*(CreateMatrixElementQ1Q2toQ3Q4[particle1,particle2,particle3,particle4,vectorMass]
+		+CreateMatrixElementQ1Q2toQ3Q4[particle1,particle2,particle4,particle3,vectorMass])
+	];
+];
+
+
 CreateMatrixElementQ1Q2toQ3Q4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
 Block[{s,t,u,gTensor,leadingLog},
 (*
@@ -174,25 +182,25 @@ If[
 		
 (*Group invariants that multiply various Lorentz Structures*)
 	C1=Table[
-		Tr[gTensor[[1,3]][[a]] . Transpose[gTensor[[1,3]][[b]]]]
-		Tr[gTensor[[2,4]][[a]] . Transpose[gTensor[[2,4]][[b]]]],
-		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
+		Tr[gTensor[[1,3]][[a]] . gTensor[[3,1]][[b]]]
+		Tr[gTensor[[2,4]][[a]] . gTensor[[4,2]][[b]]],
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[2,4]]]}];
 	C2=Table[
-		Tr[gTensor[[1,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]]
-		Tr[gTensor[[2,3]][[a]] . Transpose[gTensor[[2,3]][[b]]]],
+		Tr[gTensor[[1,4]][[a]] . gTensor[[4,1]][[b]]]
+		Tr[gTensor[[2,3]][[a]] . gTensor[[3,2]][[b]]],
 		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
 	
 	C3=Table[
-		Tr[gTensor[[3,1]][[a]] . gTensor[[1,4]][[b]] . gTensor[[4,2]][[a]] . gTensor[[2,3]][[b]]],
-		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
-	C3+=Table[
 		Tr[gTensor[[1,3]][[a]] . gTensor[[3,2]][[b]] . gTensor[[2,4]][[a]] . gTensor[[4,1]][[b]]],
-		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
+		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[2,4]]]}];
+	C3+=Table[
+		Tr[gTensor[[3,1]][[a]] . gTensor[[1,4]][[b]] . gTensor[[4,2]][[a]] . gTensor[[2,3]][[b]]],
+		{a,1,Length[gTensor[[1,4]]]},{b,1,Length[gTensor[[2,3]]]}];
 	
 	C4=Table[
-		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
-		Tr[gTensor[[3,4]][[a]] . Transpose[gTensor[[3,4]][[b]]]],
-		{a,1,Length[gTensor[[1,2]]]},{b,1,Length[gTensor[[1,2]]]}];
+		Tr[gTensor[[1,2]][[a]] . gTensor[[2,1]][[b]]]
+		Tr[gTensor[[3,4]][[a]] . gTensor[[4,3]][[b]]],
+		{a,1,Length[gTensor[[1,2]]]},{b,1,Length[gTensor[[3,4]]]}];
 	
 	C5=Table[
 		Tr[gTensor[[1,3]][[a]] . gTensor[[3,4]][[b]] . gTensor[[4,2]][[a]] . gTensor[[2,1]][[b]]],
@@ -213,21 +221,22 @@ Since there are two diagrams there can be
 (*They are just hardcoded for now*)
 	A1=2(s^2+u^2); (*squared t-channel diagram*)
 	A2=2(s^2+t^2); (*squared u-channel diagram*)
-	A3=4 s^2; (*Interference between u and t channel diagrams*)
+	A3=4*s^2; (*Interference between u and t channel diagrams*)
 	A4=2(t^2+u^2)/s^2; (*Squared s-channel*)
-	A5=4 u^2; (*Interference between s and t channel diagrams*)
+	A5=4*u^2; (*Interference between s and t channel diagrams*)
+	A6=4*s^2; (*Interference between s and u channel diagrams*)
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT]; 
-	Res2=1/2*(A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU]);
-	Res3=1/2*(A3*DiagonalMatrix[vectorPropU] . C3 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);
+	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
+	Res3=A3*DiagonalMatrix[vectorPropU] . C3 . DiagonalMatrix[vectorPropT]/.(#->0&/@VectorMass);
 	Res4=A4*C4;
-	Res5=(A5*DiagonalMatrix[vectorPropS] . C5 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);
+	Res5=1/2*(A5*DiagonalMatrix[vectorPropS] . C5 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);
+	Res5+=1/2*(A6*DiagonalMatrix[vectorPropS] . C5 . DiagonalMatrix[vectorPropU])/.(#->0&/@VectorMass);
+
 
 	Return[ Total[Res1+Res2+Res3+If[leadingLog,Res4+Res5,0],-1]]
 ]
-
-
 ];
 
 
@@ -266,16 +275,17 @@ If[ (
 		p4=temp;
 	];
 (*Coupling constants that we will need*)
-	gTensor[1,3]=gvff[[;;,p1,p3]];
-	gTensor[1,2]=gvff[[p2,p1,;;]]//Flatten[#,{{3},{2},{1}}]&;
-	gTensor[1,4]=gvff[[p4,p1,;;]]//Flatten[#,{{3},{2},{1}}]&;
+	gTensor[1,2]=gvff[[p2,p1,;;]];
+	gTensor[2,1]=gvff[[p2,;;,p1]];
 	
-	gTensor[3,4]=gvff[[p4,;;,p3]]//Flatten[#,{{2},{3},{1}}]&;
-	gTensor[2,4]=gvvv[[p2,p4,;;]]//Flatten[#,{{3},{1},{2}}]&;
-	gTensor[2,3]=gvff[[p2,;;,p3]]//Flatten[#,{{2},{3},{1}}]&;
-
-	LV=Length[gTensor[1,3]];
-	LF=Length[gTensor[1,2]];
+	gTensor[3,4]=gvff[[p4,p3,;;]];
+	gTensor[4,3]=gvff[[p4,;;,p3]];
+	
+	gTensor[1,4]=gvff[[p4,p1,;;]];
+	gTensor[4,1]=gvff[[p4,;;,p1]];
+	
+	gTensor[2,3]=gvff[[p2,p3,;;]];
+	gTensor[3,2]=gvff[[p2,;;,p3]];
 
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
@@ -285,29 +295,40 @@ If[ (
 	fermionPropS=Table[1/(s),{i,fermionMass}];
 	
 (*Group invariants that multiply various Lorentz Structures*)
-	C1=Sum[vectorPropT[[c]]vectorPropT[[d]]
-		Tr[gTensor[1,3][[c]] . Transpose[gTensor[1,3][[d]]]]
-		Tr[gTensor[2,4][[c]] . Transpose[gTensor[2,4][[d]]]],{c,1,LV},{d,1,LV}];
-	C2=Sum[fermionPropU[[L]] fermionPropU[[K]]
-		Tr[gTensor[1,4][[L]] . Transpose[gTensor[1,4][[K]]]]
-		Tr[gTensor[2,3][[L]] . Transpose[gTensor[2,3][[K]]]],{L,1,LF},{K,1,LF}];
-	C3=Sum[fermionPropS[[L]] fermionPropS[[K]]
-		Tr[gTensor[1,2][[L]] . Transpose[gTensor[1,2][[K]]]]
-		Tr[gTensor[3,4][[L]] . Transpose[gTensor[3,4][[K]]]],{L,1,LF},{K,1,LF}];
+	C1=Tr[
+		Sum[gTensor[2,1][[a]] . gTensor[1,2][[a]],{a,Length[gTensor[1,2]]}] .
+		Sum[gTensor[4,3][[b]] . gTensor[3,4][[b]],{b,Length[gTensor[3,4]]}]];
+	
+	C2=Tr[
+		DiagonalMatrix[fermionPropU] . Sum[gTensor[4,1][[a]] . gTensor[1,4][[a]],{a,Length[gTensor[1,4]]}] .
+		DiagonalMatrix[fermionPropU] . Sum[gTensor[3,2][[b]] . gTensor[2,3][[b]],{b,Length[gTensor[2,3]]}]];
+	
+	C3=Sum[vectorPropT[[a]]vectorPropT[[b]]
+		Tr[gTensor[4,1][[b]] . gTensor[1,4][[a]] . gTensor[4,3][[b]] . gTensor[2,3][[a]]],
+		{a,Length[gTensor[1,2]]},{b,Length[gTensor[1,4]]}];
+	C3+=Sum[vectorPropT[[a]]vectorPropT[[b]]
+		Tr[gTensor[2,1][[b]] . gTensor[1,4][[a]] . gTensor[3,2][[b]] . gTensor[3,4][[a]]],
+		{a,Length[gTensor[1,4]]},{b,Length[gTensor[3,2]]}];
+	
+	C4=Tr[
+		Sum[vectorPropT[[a]]gTensor[2,1][[a]] . gTensor[1,2][[a]],{a,Length[gTensor[1,2]]}] .
+		Sum[vectorPropT[[b]]gTensor[4,3][[b]] . gTensor[3,4][[b]],{b,Length[gTensor[3,4]]}]];
+	C5=Tr[
+		Sum[vectorPropT[[a]]gTensor[4,1][[a]] . gTensor[1,4][[a]],{a,Length[gTensor[1,4]]}] .
+		Sum[vectorPropT[[b]]gTensor[3,2][[b]] . gTensor[2,3][[b]],{b,Length[gTensor[2,3]]}]];
 	
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are just hardcoded for now*)
-	A1=16(s^2+u^2); (*squared t-channel diagram*)
-	A2=-4*16*s*u; (*squared u-channel diagram*)
-	A3=-4*16*u*s;  (*squared s-channel diagram*)
+	A1=-4*u/s; (*squared t-channel diagram*)
+	A2=-4*s*u; (*squared u-channel diagram*)
+	A3=4*(s^2+u^2);  (*squared s-channel diagram*)
 
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*C1;
 	Res2=A2*C2;
-	Res3=A3*C3;
+	Res3=-(A3*C3-8*(C4*s^2+C5*u^2))//Simplify;
 
-(*Factor of 2 from anti-particle contribution*)
 	Return[(Res1+Res2+If[leadingLog,Res3,0])]
 ,
 	Return[0]
@@ -354,55 +375,50 @@ If[
 	];
 (*Coupling constants that we will need*)
 	gTensor[1,3]=gvff[[p3,p1,;;]];
-	gTensor[2,4]=gvff[[p4,;;,p2]];
-	gTensorT[1,3]=gvff[[p3,;;,p1]];
-	gTensorT[2,4]=gvff[[p4,p2,;;]];
+	gTensor[3,1]=gvff[[p3,;;,p1]];
+	
+	gTensor[2,4]=gvff[[p4,p2,;;]];
+	gTensor[4,2]=gvff[[p4,;;,p2]];
 
 	gTensor[1,4]=gvff[[p4,p1,;;]];
-	gTensor[2,3]=gvff[[p3,;;,p2]];
-	gTensorT[1,4]=gvff[[p4,;;,p1]];
-	gTensorT[2,3]=gvff[[p3,p2,;;]];
+	gTensor[4,1]=gvff[[p4,;;,p1]];
 	
-	gTensor[1,2]=gvff[[;;,p1,p2]];
-	gTensor[3,4]=gvvv[[;;,p3,p4]];
-	
-	LV=Length[gTensor[1,3]];
-	F=Length[gTensor[1,2][[1]]];
+	gTensor[2,3]=gvff[[p3,p2,;;]];
+	gTensor[3,2]=gvff[[p3,;;,p2]];
 
 (*Fermion propagators*)
 	fermionPropU=Table[1/(u-i),{i,fermionMass}];
 	fermionPropT=Table[1/(t-i),{i,fermionMass}];
 
 (*Group invariants that multiply various Lorentz Structures*)
+	C1=Tr[
+		DiagonalMatrix[fermionPropT] . Sum[gTensor[3,1][[a]] . gTensor[1,3][[a]],{a,Length[gTensor[1,3]]}] .
+		DiagonalMatrix[fermionPropT] . Sum[gTensor[4,2][[b]] . gTensor[2,4][[b]],{b,Length[gTensor[2,4]]}]];
+	C2=Tr[
+		DiagonalMatrix[fermionPropU] . Sum[gTensor[4,1][[a]] . gTensor[1,4][[a]],{a,Length[gTensor[1,4]]}] .
+		DiagonalMatrix[fermionPropU] . Sum[gTensor[3,2][[b]] . gTensor[2,3][[b]],{b,Length[gTensor[2,3]]}]];
+	C3=Sum[
+		Tr[gTensor[4,1][[b]] . gTensor[1,3][[a]] . gTensor[4,2][[b]] . gTensor[2,3][[a]]],
+		{a,Length[gTensor[1,3]]},{b,Length[gTensor[4,2]]}];
+	C3+=Sum[
+		Tr[gTensor[3,1][[b]] . gTensor[1,4][[a]] . gTensor[3,2][[b]] . gTensor[2,4][[a]]],
+		{a,Length[gTensor[1,4]]},{b,Length[gTensor[3,2]]}];
+
 (*Multiplying with propagators for each particle*)
-	gTensorT[1,3]=DiagonalTensor2[TensorProduct[gTensorT[1,3],fermionPropT],2,4]//Flatten[#,{{2},{1},{3}}]&;
-	gTensor[1,3]=DiagonalTensor2[TensorProduct[gTensor[1,3],fermionPropT],3,4]//Flatten[#,{{2},{3},{1}}]&;
-	
-	C1=Sum[
-		Tr[gTensor[1,3][[a]] . gTensor[2,4][[b]] . gTensorT[2,4][[b]] . gTensorT[1,3][[a]]],
-		{a,Length[gTensor[1,3]]},{b,Length[gTensor[2,4]]}];
 
-	gTensorT[1,4]=DiagonalTensor2[TensorProduct[gTensorT[1,4],fermionPropU],2,4]//Flatten[#,{{2},{1},{3}}]&;
-	gTensor[1,4]=DiagonalTensor2[TensorProduct[gTensor[1,4],fermionPropU],3,4]//Flatten[#,{{2},{3},{1}}]&;
-
-	C2=Sum[
-		Tr[gTensor[1,4][[a]] . gTensor[2,3][[b]] . gTensorT[2,3][[b]] . gTensorT[1,4][[a]]],
-		{a,Length[gTensor[1,4]]},{b,Length[gTensor[2,3]]}];
-	C3=-Sum[
-		Tr[gTensor[1,2][[a]] . Transpose[gTensor[1,2][[b]]]]
-		Tr[gTensor[3,4][[a]] . Transpose[gTensor[3,4][[b]]]],
-		{a,Length[gTensor[3,4]]},{b,Length[gTensor[3,4]]}];
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
 (*The interference diagram does however not contribute at leading-log, so I omit it*)
 (*They are hardcoded for now*)
 	A1=4*t*u; (*squared t-channel diagram*)
 	A2=4*t*u; (*squared u-channel diagram*)
-	A3=16*(t^2+u^2)/s^2; (*squared s-channel diagram*)
+	A3=4*(t^2+u^2)/s^2; (*squared s-channel diagram*)
 
 (*Generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*C1;
 	Res2=A2*C2;
-	Res3=A3*C3;
+	Res3=A3*C3
+		-8*t^2/s^2(t^2 C1/.(#->0&/@fermionMass))
+		-8*u^2/s^2(u^2 C2/.(#->0&/@fermionMass))//Simplify;
 
 (*Factor of 2 from anti-particles*)
 	Return[symmFac*(Res1+Res2+If[leadingLog,Res3,0])]
@@ -449,7 +465,7 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements},
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
 		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementQ1Q2toQ3Q4[particleList[[a]],b,c,d,VectorMass],
+		CreateMatrixElementQ1Q2toQ3Q4Pre[particleList[[a]],b,c,d,VectorMass],
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 (*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];  
