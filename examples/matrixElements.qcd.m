@@ -92,19 +92,10 @@ UserCouplings={gs};
 
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements["matrixElements.qcd",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
 
 MatrixElements
-
-
-ParticleList[[1]]
-
-
-CreateMatrixElementQ1Q2toV1V2[ParticleList[[1]],ParticleList[[1]],ParticleList[[2]],ParticleList[[2]],FermionMass]
-
-
-8*dF*CF*CA/.{Nf->3,CA->3,CF->4/3,dF->3}
 
 
 (*comparison with https://arxiv.org/pdf/hep-ph/0302165.pdf*)
@@ -134,7 +125,7 @@ M[0,0,0,0]/.MatrixElements/.{c[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
 1/(2*CA)*(xx*%%+%)/.{ttsq->(-t+msq[1])^2,uusq->(-u+msq[1])^2}/.{Nf->3,CA->3,CF->4/3,dF->3,dA->8}
 bb %-%%%%//FullSimplify
 (*result only agrees by assuming factor 1/2 for same particles in final state*)
-%/.{xx->1/2,bb->1}
+%/.{xx->xx,bb->xx}/.{xx->1}
 
 
 (*g g->g g*)

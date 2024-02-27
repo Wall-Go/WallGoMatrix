@@ -228,38 +228,6 @@ IndbL[[2]]="F";
 IndtL[[2]]="F";
 
 
-IndtL
-
-
-Ysff//Normal;
-
-
-(*gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal
-gvff[[;;,ReptR[[1]],ReptR[[1]]]]//Normal
-gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal*)
-
-
-(*CreateMatrixElementQ1Q2toQ3Q4[ReptL,ReptR,ReptL,ReptR,VectorMass]*)
-
-
-(*CreateMatrixElementQ1V1toQ1V1[ReptL,RepGluon,ReptL,RepGluon,VectorMass,FermionMass]*)
-
-
--((64 g3^4 u)/(3 s))-(64 g3^4 s u)/(3 (-mq2+u)^2)+(48 g3^4 (s^2+u^2))/(-mg2+t)^2
-
-
-(*CreateMatrixElementQ1Q2toV1V2[ReptL,ReptL,RepGluon,RepGluon,FermionMass]*)
-
-
-(64 g3^4 t u)/(3 (-mq2+t)^2)+(64 g3^4 t u)/(3 (-mq2+u)^2)-(48 g3^4 (t^2+u^2))/s^2
-
-
-CreateMatrixElementV1V2toV3V4[RepGluon,RepGluon,RepGluon,RepGluon,VectorMass]
-
-
-2880 g3^4+(288 g3^4 (s-u)^2)/(-mg2+t)^2-(1152 g3^4 t u)/s^2+(288 g3^4 (s-t)^2)/(-mg2+u)^2
-
-
 (*left-handed top-quark*)
 ReptL=IndtL;
 
@@ -294,17 +262,18 @@ UserMasses={mq2,mz2,mw2,mg2};
 UserCouplings={g3,gw,g1};
 
 
+RepOptional={c[1]->0,c[2]->0};
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","Gluon"};
-MatrixElements=ExportMatrixElements["MatrixElements.xsm",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements["MatrixElements.xsm",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName,RepOptional];
 
 
 (*tL q->tL q*)
 M[0,3,0,3]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
+%/.{c[1]->0,c[2]->0}//FullSimplify
 (*tR q->tR q*)
 M[1,3,1,3]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
+%/.{c[1]->0,c[2]->0}//FullSimplify
 (*tL tL->gg*)
 M[0,0,2,2]/.MatrixElements;
 %/.{c[1]->0,c[2]->0}
@@ -330,18 +299,29 @@ M[1,1,0,0]/.MatrixElements//FullSimplify;
 M[0,0,1,1]/.MatrixElements//FullSimplify;
 %/.{c[1]->0,c[2]->0}
 M[0,0,0,0]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
+%/.{c[1]->0,c[2]->0}//Simplify
 M[1,1,1,1]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
+%/.{c[1]->0,c[2]->0}//Simplify
+
+
+(*result pure qcd*)
+1/12 (-((32 s^2)/(3 t u))+(32 (s^2+u^2))/(t-msq[1])^2+(32 (s^2+t^2))/(u-msq[1])^2)//Simplify
 
 
 (*crosscheck for Matrix for collisions*)
-M[1,1,1,1]+xx*M[1,0,0,1]+M[1,1,0,0];
+M[1,1,1,1]+M[1,0,0,1]+M[1,1,0,0];
 %/.MatrixElements/.{c[0]->1};
 %/.{c[1]->0,c[2]->0}//FullSimplify
-M[0,0,0,0]+xx*M[0,1,0,1]+M[0,0,1,1];
+M[0,0,0,0]+M[0,1,0,1]+M[0,0,1,1];
 %/.MatrixElements/.{c[0]->1};
 %/.{c[1]->0,c[2]->0}//FullSimplify
+
+
+(*check eigenvalues*)
+{{M[0,0,0,0],M[0,1,0,1]},{M[1,0,0,1],M[1,1,1,1]}};
+%/.MatrixElements/.{c[0]->1};
+%/.{c[1]->0,c[2]->0};
+Eigenvalues[%]//FullSimplify(*//Total//Simplify*)
 
 
 (*sum over all tL,tR channels*)

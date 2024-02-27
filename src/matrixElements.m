@@ -153,10 +153,10 @@ If[
 
 
 CreateMatrixElementQ1Q2toQ3Q4Pre[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=Block[{},
-	Return[
-		1/2*(CreateMatrixElementQ1Q2toQ3Q4[particle1,particle2,particle3,particle4,vectorMass]
-		+CreateMatrixElementQ1Q2toQ3Q4[particle1,particle2,particle4,particle3,vectorMass])
-	];
+	Return[1/2*(
+		+CreateMatrixElementQ1Q2toQ3Q4[particle1,particle2,particle3,particle4,vectorMass]
+		+CreateMatrixElementQ1Q2toQ3Q4[particle1,particle2,particle4,particle3,vectorMass]
+		)];
 ];
 
 
@@ -229,13 +229,13 @@ Since there are two diagrams there can be
 (*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT]; 
 	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
-	Res3=A3*DiagonalMatrix[vectorPropU] . C3 . DiagonalMatrix[vectorPropT]/.(#->0&/@VectorMass);
+	Res3=1/2(A3*DiagonalMatrix[vectorPropU] . C3 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);
 	Res4=A4*C4;
 	Res5=1/2*(A5*DiagonalMatrix[vectorPropS] . C5 . DiagonalMatrix[vectorPropT])/.(#->0&/@VectorMass);
 	Res5+=1/2*(A6*DiagonalMatrix[vectorPropS] . C5 . DiagonalMatrix[vectorPropU])/.(#->0&/@VectorMass);
 
 
-	Return[ Total[Res1+Res2+Res3+If[leadingLog,Res4+Res5,0],-1]]
+	Return[Total[Res1+Res2+Res3+If[leadingLog,Res4+Res5,0],-1]]
 ]
 ];
 
@@ -263,11 +263,13 @@ If[ (
 	p2=particle2[[1]];
 	p3=particle3[[1]];
 	p4=particle4[[1]];
+	symmFac=1;
 (*Changing the order of the particles so that it is always QV->QV*)	
 	If[particle1[[2]]=="V"&&particle2[[2]]=="F",
 		temp=p1;
 		p1=p2;
 		p2=temp;
+		symmFac=2;
 	];
 	If[particle3[[2]]=="V"&&particle4[[2]]=="F",
 		temp=p3;
@@ -304,7 +306,7 @@ If[ (
 		DiagonalMatrix[fermionPropU] . Sum[gTensor[3,2][[b]] . gTensor[2,3][[b]],{b,Length[gTensor[2,3]]}]];
 	
 	C3=Sum[vectorPropT[[a]]vectorPropT[[b]]
-		Tr[gTensor[4,1][[b]] . gTensor[1,4][[a]] . gTensor[4,3][[b]] . gTensor[2,3][[a]]],
+		Tr[gTensor[4,1][[b]] . gTensor[1,2][[a]] . gTensor[4,3][[b]] . gTensor[2,3][[a]]],
 		{a,Length[gTensor[1,2]]},{b,Length[gTensor[1,4]]}];
 	C3+=Sum[vectorPropT[[a]]vectorPropT[[b]]
 		Tr[gTensor[2,1][[b]] . gTensor[1,4][[a]] . gTensor[3,2][[b]] . gTensor[3,4][[a]]],
@@ -329,7 +331,7 @@ If[ (
 	Res2=A2*C2;
 	Res3=-(A3*C3-8*(C4*s^2+C5*u^2))//Simplify;
 
-	Return[(Res1+Res2+If[leadingLog,Res3,0])]
+	Return[symmFac*(If[leadingLog,Res1,0]+Res2+Res3)]
 ,
 	Return[0]
 ]	
@@ -724,7 +726,10 @@ Return[CollEllTotal]
 (*Exporting to C++*)
 
 
-ExportMatrixElements[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_]:=
+?Complement
+
+
+ExportMatrixElements[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_,RepOptional: {}]:=
 Block[{ExportTXT,ExportH5,
 	Cij,ParticleInfo,CouplingInfo,MatrixElements,
 	OutOfEqParticles,RepMasses,RepCouplings,C
@@ -768,7 +773,7 @@ Extract various C^{ij} components
 (*
 Rewrite the matrix element to an export format
 *)
-	MatrixElements=Table[MatrixElemToC@i/.RepCouplings/.RepMasses,{i,MatrixElements}];
+	MatrixElements=Table[MatrixElemToC@i/.RepCouplings/.RepMasses/.RepOptional,{i,MatrixElements}];
 	
 	Table[
 		Cij[[i,j]]=Table[MatrixElemToC@k/.RepCouplings/.RepMasses,{k,Cij[[i,j]]}];,
