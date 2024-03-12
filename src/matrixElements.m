@@ -729,7 +729,7 @@ Return[CollEllTotal]
 ?Complement
 
 
-ExportMatrixElements[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_,RepOptional: {}]:=
+ExportMatrixElements[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_,RepOptional_:{}]:=
 Block[{ExportTXT,ExportH5,
 	Cij,ParticleInfo,CouplingInfo,MatrixElements,
 	OutOfEqParticles,RepMasses,RepCouplings,C
