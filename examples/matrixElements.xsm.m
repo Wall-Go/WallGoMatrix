@@ -258,7 +258,7 @@ FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mz2,mw2,mg2}; 
+UserMasses={mq2,mq2,mg2,mz2,mw2}; 
 UserCouplings={g3,gw,g1};
 
 
@@ -334,6 +334,32 @@ M[1,1,1,1]+M[0,0,0,0]+M[1,0,0,1]+M[0,1,0,1]+M[1,1,0,0]+M[0,0,1,1];
 1/6 (-((16 s^2)/(3 t u))-(32 u^2)/(3 s t)+(16 (t^2+u^2))/s^2+(16 (s^2+u^2))/(t-msq[1])^2+(8 (s^2+t^2))/(u-msq[1])^2)//FullSimplify
 
 
+(* ::Subsubsection:: *)
+(*Test collision integrals*)
+
+
+Import["hdf5/collisions_top_top.hdf5"]
+tttt=Import["hdf5/collisions_top_top.hdf5","top, top"];
+
+
+ttLL=Import["hdf5/collisions_topL_topL.hdf5","topL, topL"];
+ttRR=Import["hdf5/collisions_topR_topR.hdf5","topR, topR"];
+ttLR=Import["hdf5/collisions_topL_topR.hdf5","topL, topR"];
+ttRL=Import["hdf5/collisions_topR_topL.hdf5","topR, topL"];
+
+
+(ttLL)-(ttRR);
+(ttLR)-(ttRL);
+
+
+(ttLL+ttLR)-(ttRR+ttRL);
+(ttLL+ttRL)-(ttRR+ttLR)
+
+
+(*tttt*)
+((ttLL+ttRL)+(ttRR+ttLR))/2
+
+
 (* ::Subsection::Closed:: *)
 (*QCD -like*)
 
@@ -400,6 +426,7 @@ M[0,0,1,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*);
 (*tg->tg*)
 M[0,1,0,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*)//FullSimplify;
 %/.{c[1]->0,c[2]->0}
+
 
 
 
