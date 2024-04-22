@@ -28,66 +28,158 @@ RepToIndices[ListI_]:=Block[{},
 ];
 
 
-CreateOutOfEq[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion},
+CreateOutOfEq[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion,temp,Particle},
 (*Combines selected representations and obtain their indices*)
-	PosScalar=PrintScalarRepPositions[];
-	PosVector=PrintGaugeRepPositions[];
-	PosFermion=PrintFermionRepPositions[];
 	If[Type=="F",
-		temp=PosFermion[[Indices]];
-		Return[{RepToIndices[temp],Type}]
+		Particle={};
+		PosFermion=PrintFermionRepPositions[];
+		Do[
+			If[Length[i]>=2,
+					AppendTo[Particle,{FermionMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
+				,
+					AppendTo[Particle,{RepToIndices[{PosFermion[[i]]}]}]
+			];
+		,{i,Indices}];
+		Return[{Flatten[Particle],Type}]
 	];
 
-	If[Type=="S",
-		temp=PosScalar[[Indices]];
-		Return[{RepToIndices[temp],Type}]
-	];
 
 	If[Type=="V",
-		temp=PosVector[[Indices]];
-		Return[{RepToIndices[temp],Type}]
+		Particle={};
+		PosVector=PrintGaugeRepPositions[];
+		Do[
+			If[Length[i]>=2,
+					AppendTo[Particle,{GaugeMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
+				,
+					AppendTo[Particle,{RepToIndices[{PosVector[[i]]}]}]
+			];
+		,{i,Indices}];
+		Return[{Flatten[Particle],Type}]
 	];
 
 ];
 
 
-SymmetryBreaking[Indices_,vev_] :=Block[{PosScalar,PosVector,PosFermion},
+SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion},
 (*
-Routine that extracts representations given their vev.
-This way one can identify which e.g. parts of multiplet fermions are light or heavy
+	
 *)
-	PosScalar=PrintScalarRepPositions[];
 	PosVector=PrintGaugeRepPositions[];
+	
+	GaugeMassiveReps=Table[SymmetryBreakingGauge[i,vev],{i,1,Length[PosVector]}];
+	
+	Do[
+		If[!NumericQ[Total[GaugeMassiveReps[[i]][[;;,2]],-1]],
+			Print[Style[StringJoin["Gauge rep ",ToString[i]," splits into:"],Bold]];
+			Do[
+				Print["One particle with mass ",particle[[2]] ];
+				,{particle,GaugeMassiveReps[[i]]}]
+		]
+	,{i,1,Length[PosVector]}];
+
+
+	PosFermion=PrintFermionRepPositions[];
+	
+	FermionMassiveReps=Table[SymmetryBreakingFermion[i,vev],{i,1,Length[PosFermion]}];
+	
+	Do[
+		If[!NumericQ[Total[FermionMassiveReps[[i]][[;;,2]],-1]],
+			Print[Style[StringJoin["Fermion rep ",ToString[i]," splits into:"],Bold]];
+			Do[
+				Print["One particle with mass ",particle[[2]] ];
+				,{particle,FermionMassiveReps[[i]]}]
+		]
+	,{i,1,Length[PosFermion]}];
+	
+]
+
+
+SymmetryBreakingGauge[Indices_,vev_] :=Block[{PosVector,Habij,massV,gaugeInd,posHeavy,posLight,rep,val,val2,pos,pos2},
+(*
+	Finds the masses for the gauge-representation Indices.
+*)
+	PosVector=PrintGaugeRepPositions[];
+	
+(*Gauge bosons*)
+	Habij=Contract[gvss,gvss,{{3,5}}]//Transpose[#,{1,3,2,4}]&//SparseArray;
+	massV=-1/2 Activate@TensorContract[Inactive@TensorProduct[Habij,vev,vev],{{3,5},{4,6}}]//SparseArray;
+	gaugeInd=Delete[DiagonalTensor2[massV,1,2]//Normal//ArrayRules,-1]/.(({a_}->x_)->a);
+	
+	posHeavy=Intersection[RangeToIndices[PosVector[[Indices]]],gaugeInd];
+	posLight=Complement[RangeToIndices[PosVector[[Indices]]],gaugeInd];
+		
+	If[Length[DiagonalTensor2[massV,1,2][[posHeavy]]]==0,
+			rep={{posLight,0}};
+		,
+			rep={};
+			val=DiagonalTensor2[massV,1,2][[posHeavy]]["NonzeroValues"]//DeleteDuplicates;
+			val2=DiagonalTensor2[massV,1,2][[posHeavy]]["NonzeroValues"];
+			pos=Table[i,{i,Length[posHeavy]}];
+	
+			rep={};
+	
+			Do[
+				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[val2,a]}];
+				AppendTo[rep,{pos2,a}];
+			,{a,val}];
+
+			AppendTo[rep,{posLight,0}];
+			If[posLight=={},rep=Drop[rep,-1]];
+	];
+	rep
+]
+
+
+SymmetryBreakingFermion[Indices_,vev_] :=Block[{PosFermion,fermionInd,massF,posHeavy,posLight,rep,val,val2,pos,pos2},
+(*
+	Finds the masses for the fermion-representation Indices.
+*)
 	PosFermion=PrintFermionRepPositions[];
 	
 (*Fermions*)
-	massF=vev . Ysff;
+	massF=\[Mu]IJ+vev . Ysff;
 	fermionInd=Delete[massF//ArrayRules,-1]/.(({a_,b_}->x_)->a);
 	
 	posHeavy=Intersection[RangeToIndices[PosFermion[[Indices]]],fermionInd];
 	posLight=Complement[RangeToIndices[PosFermion[[Indices]]],fermionInd];
-		
-	val=massF[[posHeavy,;;]]["NonzeroValues"]//DeleteDuplicates;
-	pos=Table[i,{i,Length[posHeavy]}];
 	
-	rep={};
+	If[Length[massF[[posHeavy,;;]]]==0,
+			rep={{posLight,0}};
+		,	
+			val=massF[[posHeavy,;;]]["NonzeroValues"]//DeleteDuplicates;
+			pos=Table[i,{i,Length[posHeavy]}];
 	
-	Do[
-	pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[massF[[posHeavy,;;]]["NonzeroValues"],a]}];
-	AppendTo[rep,{pos2,a}];
-	,{a,val}];
+			rep={};
+	
+			Do[
+				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[massF[[posHeavy,;;]]["NonzeroValues"],a]}];
+				AppendTo[rep,{pos2,a}];
+			,{a,val}];
 
-	AppendTo[rep,{posLight,0}];
-	
+			AppendTo[rep,{posLight,0}];
+			If[posLight=={},rep=Drop[rep,-1]];
+	];
 	rep
 ]
+
+
+Contract[tensor1_,tensor2_,indices_]:=Activate @ TensorContract[
+        Inactive[TensorProduct][tensor1,tensor2], indices]
+
+
+Contract[tensor1_,tensor2_,tensor3_,indices_]:=Activate @ TensorContract[
+        Inactive[TensorProduct][tensor1,tensor2,tensor3], indices]
+
+
+Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContract[
+        Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
 
 
 (* ::Section:: *)
 (*Matrix elements*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*V1V2toV3V4*)
 
 
@@ -148,7 +240,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1Q2toQ3Q4*)
 
 
@@ -231,7 +323,7 @@ Since there are two diagrams there can be
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1V1toQ1V1*)
 
 
@@ -315,7 +407,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1Q2toV1V2*)
 
 
@@ -428,7 +520,7 @@ degreeOfFreedom[particle_]:=Block[{dof},
 ]
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1Q2toQ3Q4*)
 
 
@@ -490,7 +582,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1V1toQ1V1*)
 
 
@@ -552,7 +644,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Q1Q2toV1V2*)
 
 
@@ -613,7 +705,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*V1V2toV3V4*)
 
 
@@ -674,7 +766,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Extract elements*)
 
 
@@ -704,7 +796,7 @@ Return[CollEllTotal]
 ];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Exporting to C++*)
 
 
