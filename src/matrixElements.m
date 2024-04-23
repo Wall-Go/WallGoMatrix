@@ -726,9 +726,6 @@ Return[CollEllTotal]
 (*Exporting to C++*)
 
 
-?Complement
-
-
 ExportMatrixElements[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_,RepOptional_:{}]:=
 Block[{ExportTXT,ExportH5,
 	Cij,ParticleInfo,CouplingInfo,MatrixElements,
