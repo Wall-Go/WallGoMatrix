@@ -338,6 +338,9 @@ M[1,1,1,1]+M[0,0,0,0]+M[1,0,0,1]+M[0,1,0,1]+M[1,1,0,0]+M[0,0,1,1];
 (*Test collision integrals*)
 
 
+Export[StringJoin[file,".hdf5"],ExportH5];
+
+
 Import["hdf5/collisions_top_top.hdf5"]
 tttt=Import["hdf5/collisions_top_top.hdf5","top, top"];
 
