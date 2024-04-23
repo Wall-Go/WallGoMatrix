@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 SetDirectory[NotebookDirectory[]];
@@ -15,13 +15,12 @@ $LoadGroupMath=True;
 (*QCD+W boson*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
 Group={"SU3","SU2"};
 RepAdjoint={{1,1},{2}};
-RepScalar={};
 CouplingName={gs,gw};
 
 
@@ -29,6 +28,13 @@ Rep1={{{1,0},{1}},"L"};
 Rep2={{{1,0},{0}},"R"};
 Rep3={{{1,0},{0}},"R"};
 RepFermion1Gen={Rep1,Rep2,Rep3};
+
+
+HiggsDoublet={{{0,0},{1}},"C"};
+RepScalar={HiggsDoublet};
+
+
+
 
 
 RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
@@ -41,8 +47,21 @@ RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
 {gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
 
 
+InputInv={{1,1,2},{False,False,True}}; 
+YukawaDoublet=CreateInvariantYukawa[Group,RepScalar,RepFermion3Gen,InputInv]//Simplify;
+Ysff=-GradYukawa[yt*YukawaDoublet[[1]]];
+
+
 (* ::Title:: *)
 (*SM quarks + gauge bosons*)
+
+
+(* ::Subtitle:: *)
+(*SymmetryBreaking*)
+
+
+vev={0,v,0,0};
+SymmetryBreaking[vev]
 
 
 (* ::Subtitle:: *)
@@ -75,7 +94,7 @@ RepLight=CreateOutOfEq[{4,5,6,7,8,9},"F"];
 
 (*Vector bosons*)
 RepGluon=CreateOutOfEq[{1},"V"];
-RepW=CreateOutOfEq[{2},"V"];
+RepW=CreateOutOfEq[{{2,1}},"V"];
 
 
 ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepLight};
@@ -88,21 +107,23 @@ LightParticles={6};
 (*Defining various masses and couplings*)
 
 
-VectorMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}]];
+VectorMass=Join[
+	Table[mg2,{i,1,RepGluon[[1]]//Length}],
+	Table[mw2,{i,1,RepW[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
 UserMasses={mq2,mw2,mg2}; 
-UserCouplings={gs,gw};
+UserCouplings=CouplingName;
 
 
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W"};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements["MatrixElements.ew",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
 
-MatrixElements//Expand;
+MatrixElements//Expand
 
 
 (*g g->g g*)

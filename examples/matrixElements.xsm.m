@@ -220,30 +220,26 @@ one right-handed fermoon
 (*TopL, TopR*)
 
 
-(*split left doublet into top-left and bottom-left*) 
-\[Phi]={v,0,0,0,0};
-IndtL=SymmetryBreaking[1,\[Phi]][[1]];
-IndbL=SymmetryBreaking[1,\[Phi]][[2]];
-IndbL[[2]]="F";
-IndtL[[2]]="F";
+vev={0,v,0,0,0};
+SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=IndtL;
+ReptL=CreateOutOfEq[{{1,1}},"F"];
 
 (*right-handed top-quark*)
 ReptR=CreateOutOfEq[{2},"F"];
 
 (*left-handed bottom-quark*)
-RepbL=IndbL;
+RepbL=CreateOutOfEq[{{1,2}},"F"];
 
 (*light quarks*)
 RepLight=CreateOutOfEq[Range[3,2*4+3],"F"];
 
 (*Vector bosons*)
 RepGluon=CreateOutOfEq[{1},"V"];
-RepW=CreateOutOfEq[{2},"V"];
-RepZ=CreateOutOfEq[{3},"V"];
+RepW=CreateOutOfEq[{{2,1}},"V"];
+RepZ=CreateOutOfEq[{{3,1}},"V"];
 
 
 ParticleList={ReptL,ReptR,RepGluon,RepW,RepZ,RepbL,RepLight};
@@ -253,7 +249,10 @@ These particles do not have out-of-eq contributions
 LightParticles=Range[4,Length[ParticleList]];
 
 
-VectorMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}],Table[mz2,{i,1,RepZ[[1]]//Length}]];
+VectorMass=Join[
+	Table[mg2,{i,1,RepGluon[[1]]//Length}],
+	Table[mw2,{i,1,RepW[[1]]//Length}],
+	Table[mz2,{i,1,RepZ[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
@@ -334,49 +333,16 @@ M[1,1,1,1]+M[0,0,0,0]+M[1,0,0,1]+M[0,1,0,1]+M[1,1,0,0]+M[0,0,1,1];
 1/6 (-((16 s^2)/(3 t u))-(32 u^2)/(3 s t)+(16 (t^2+u^2))/s^2+(16 (s^2+u^2))/(t-msq[1])^2+(8 (s^2+t^2))/(u-msq[1])^2)//FullSimplify
 
 
-(* ::Subsubsection:: *)
-(*Test collision integrals*)
-
-
-Export[StringJoin[file,".hdf5"],ExportH5];
-
-
-Import["hdf5/collisions_top_top.hdf5"]
-tttt=Import["hdf5/collisions_top_top.hdf5","top, top"];
-
-
-ttLL=Import["hdf5/collisions_topL_topL.hdf5","topL, topL"];
-ttRR=Import["hdf5/collisions_topR_topR.hdf5","topR, topR"];
-ttLR=Import["hdf5/collisions_topL_topR.hdf5","topL, topR"];
-ttRL=Import["hdf5/collisions_topR_topL.hdf5","topR, topL"];
-
-
-(ttLL)-(ttRR);
-(ttLR)-(ttRL);
-
-
-(ttLL+ttLR)-(ttRR+ttRL);
-(ttLL+ttRL)-(ttRR+ttLR)
-
-
-(*tttt*)
-((ttLL+ttRL)+(ttRR+ttLR))/2
-
-
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*QCD -like*)
 
 
-(*split left doublet into top-left and bottom-left*) 
-\[Phi]={v,0,0,0,0};
-IndtL=SymmetryBreaking[1,\[Phi]][[1]];
-IndbL=SymmetryBreaking[1,\[Phi]][[2]];
-IndtL[[2]]="F";
-IndbL[[2]]="F";
+vev={0,v,0,0,0};
+SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=IndtL;
+ReptL=CreateOutOfEq[{{1,1}},"F"];
 
 (*right-handed top-quark*)
 ReptR=CreateOutOfEq[{2},"F"];
@@ -385,7 +351,7 @@ ReptR=CreateOutOfEq[{2},"F"];
 Rept={Join[ReptL[[1]],ReptR[[1]]],"F"};
 
 (*left-handed bottom-quark*)
-RepbL=IndbL;
+RepbL=CreateOutOfEq[{{1,2}},"F"];
 
 (*light quarks*)
 RepLight=CreateOutOfEq[Range[3,2*4+3],"F"];
@@ -403,7 +369,10 @@ These particles do not have out-of-eq contributions
 LightParticles=Range[3,Length[ParticleList]];
 
 
-VectorMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}],Table[mz2,{i,1,RepZ[[1]]//Length}]];
+VectorMass=Join[
+	Table[mg2,{i,1,RepGluon[[1]]//Length}],
+	Table[mw2,{i,1,RepW[[1]]//Length}],
+	Table[mz2,{i,1,RepZ[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
@@ -414,7 +383,7 @@ UserCouplings={g3,gw,g1};
 
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements["MatrixElemx",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
 
 MatrixElements//Expand;
@@ -429,7 +398,6 @@ M[0,0,1,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*);
 (*tg->tg*)
 M[0,1,0,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*)//FullSimplify;
 %/.{c[1]->0,c[2]->0}
-
 
 
 
