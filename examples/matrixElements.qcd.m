@@ -15,7 +15,7 @@ $LoadGroupMath=True;
 (*QCD*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -40,11 +40,11 @@ RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepF
 {gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
 
 
-(* ::Title:: *)
+(* ::Section:: *)
 (*A model with 6 quarks and 1 gluon*)
 
 
-(* ::Subtitle:: *)
+(* ::Subsection:: *)
 (*UserInput*)
 
 
@@ -90,12 +90,20 @@ UserMasses={mq2,mg2};
 UserCouplings={gs};
 
 
+(*
+	output of matrix elements
+*)
+OutputFile="matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements["matrixElements.qcd",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
 
 MatrixElements
+
+
+(* ::Subsection:: *)
+(*Crosschecks*)
 
 
 (*comparison with https://arxiv.org/pdf/hep-ph/0302165.pdf*)
@@ -136,13 +144,13 @@ M[1,1,1,1]/.MatrixElements/.{c[0]->1}//Simplify
 %%%-%//Simplify
 
 
-Import["MatrixElem.hdf5"]
+Import[OutputFile<>".hdf5"]
 
 
-Import["MatrixElem.hdf5","MatrixElementsTopTop"]
+Import[OutputFile<>".hdf5","MatrixElementsTopTop"]
 
 
-Import["MatrixElem.hdf5","CouplingInfo"]
+Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
-Import["MatrixElem.hdf5","ParticleInfo"]
+Import[OutputFile<>".hdf5","ParticleInfo"]

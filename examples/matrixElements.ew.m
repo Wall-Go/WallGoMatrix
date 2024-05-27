@@ -52,11 +52,11 @@ YukawaDoublet=CreateInvariantYukawa[Group,RepScalar,RepFermion3Gen,InputInv]//Si
 Ysff=-GradYukawa[yt*YukawaDoublet[[1]]];
 
 
-(* ::Title:: *)
+(* ::Section:: *)
 (*SM quarks + gauge bosons*)
 
 
-(* ::Subtitle:: *)
+(* ::Subsection:: *)
 (*SymmetryBreaking*)
 
 
@@ -64,7 +64,11 @@ vev={0,v,0,0};
 SymmetryBreaking[vev]
 
 
-(* ::Subtitle:: *)
+(* ::Print:: *)
+(*SequenceForm["One particle with mass ", 2^Rational[-1, 2] v yt]*)
+
+
+(* ::Subsection:: *)
 (*UserInput*)
 
 
@@ -118,34 +122,28 @@ UserMasses={mq2,mw2,mg2};
 UserCouplings=CouplingName;
 
 
+(*
+	output of matrix elements
+*)
+OutputFile="matrixElements.ew";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W"};
-MatrixElements=ExportMatrixElements["MatrixElements.ew",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
 
 MatrixElements//Expand
 
 
-(*g g->g g*)
-M[0,3,0,3]/.MatrixElements
-(*g g->g g*)
-M[3,3,3,3]/.MatrixElements
-(*t g->t g*)
-M[1,3,1,3]/.MatrixElements
-(*t q->t q*)
-5/4*M[1,5,1,5]/.MatrixElements
+Import[OutputFile<>".hdf5"]
 
 
-Import["MatrixElem.hdf5"]
+Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
-Import["MatrixElem.hdf5","CouplingInfo"]
+Import[OutputFile<>".hdf5","ParticleInfo"]
 
 
-Import["MatrixElem.hdf5","ParticleInfo"]
+Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
-Import["MatrixElem.hdf5","CouplingInfo"]
-
-
-Import["MatrixElem.hdf5","ParticleInfo"]
+Import[OutputFile<>".hdf5","ParticleInfo"]
