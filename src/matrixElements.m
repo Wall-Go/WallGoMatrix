@@ -4,7 +4,7 @@
 (*Matrix elements*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Help functions*)
 
 
@@ -56,11 +56,24 @@ CreateOutOfEq[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion,temp,Partic
 		,{i,Indices}];
 		Return[{Flatten[Particle],Type}]
 	];
+	
+	If[Type=="S",
+		Particle={};
+		PosScalar=PrintScalarRepPositions[];
+		Do[
+			If[Length[i]>=2,
+					AppendTo[Particle,{ScalarMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
+				,
+					AppendTo[Particle,{RepToIndices[{PosScalar[[i]]}]}]
+			];
+		,{i,Indices}];
+		Return[{Flatten[Particle],Type}]
+	];
 
 ];
 
 
-SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion},
+SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion,PosScalar},
 (*
 	
 *)
@@ -91,6 +104,20 @@ SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion},
 		]
 	,{i,1,Length[PosFermion]}];
 	
+
+	PosScalar=PrintScalarRepPositions[];
+	
+	ScalarMassiveReps=Table[SymmetryBreakingScalar[i,vev],{i,1,Length[PosScalar]}];
+	
+	Do[
+		If[!NumericQ[Total[ScalarMassiveReps[[i]][[;;,2]],-1]],
+			Print[Style[StringJoin["Scalar rep ",ToString[i]," splits into:"],Bold]];
+			Do[
+				Print["One particle with mass ",particle[[2]] ];
+				,{particle,ScalarMassiveReps[[i]]}]
+		]
+	,{i,1,Length[PosScalar]}];
+	
 ]
 
 
@@ -102,7 +129,7 @@ SymmetryBreakingGauge[Indices_,vev_] :=Block[{PosVector,Habij,massV,gaugeInd,pos
 	
 (*Gauge bosons*)
 	Habij=Contract[gvss,gvss,{{3,5}}]//Transpose[#,{1,3,2,4}]&//SparseArray;
-	massV=-1/2 Activate@TensorContract[Inactive@TensorProduct[Habij,vev,vev],{{3,5},{4,6}}]//SparseArray;
+	massV=-Activate@TensorContract[Inactive@TensorProduct[Habij,vev,vev],{{3,5},{4,6}}]//SparseArray;
 	gaugeInd=Delete[DiagonalTensor2[massV,1,2]//Normal//ArrayRules,-1]/.(({a_}->x_)->a);
 	
 	posHeavy=Intersection[RangeToIndices[PosVector[[Indices]]],gaugeInd];
@@ -120,6 +147,39 @@ SymmetryBreakingGauge[Indices_,vev_] :=Block[{PosVector,Habij,massV,gaugeInd,pos
 	
 			Do[
 				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[val2,a]}];
+				AppendTo[rep,{pos2,a}];
+			,{a,val}];
+
+			AppendTo[rep,{posLight,0}];
+			If[posLight=={},rep=Drop[rep,-1]];
+	];
+	rep
+]
+
+
+SymmetryBreakingScalar[Indices_,vev_] :=Block[{PosScalar,scalarInd,massS,posHeavy,posLight,rep,val,val2,pos,pos2},
+(*
+	Finds the masses for the fermion-representation Indices.
+*)
+	PosScalar=PrintScalarRepPositions[];
+	
+(*Fermions*)
+	massS=\[Mu]ij+vev . \[Lambda]4 . vev/2;
+	scalarInd=Delete[massS//ArrayRules,-1]/.(({a_,b_}->x_)->a);
+
+	posHeavy=Intersection[RangeToIndices[PosScalar[[Indices]]],scalarInd];
+	posLight=Complement[RangeToIndices[PosScalar[[Indices]]],scalarInd];
+	
+	If[Length[massS[[posHeavy,;;]]]==0,
+			rep={{posLight,0}};
+		,	
+			val=massS[[posHeavy,;;]]["NonzeroValues"]//DeleteDuplicates;
+			pos=Table[i,{i,Length[posHeavy]}];
+	
+			rep={};
+	
+			Do[
+				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[massS[[posHeavy,;;]]["NonzeroValues"],a]}];
 				AppendTo[rep,{pos2,a}];
 			,{a,val}];
 
@@ -502,7 +562,247 @@ If[
 ];
 
 
-(* ::Section:: *)
+(* ::Subsubsection::Closed:: *)
+(*S1S2toS3S4*)
+
+
+CreateMatrixElementS1S2toS3S4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
+Block[{s,t,u,gTensor,leadingLog},
+(*
+
+*)
+leadingLog=True;
+If[
+	particle1[[2]]!="S"||
+	particle2[[2]]!="S"||
+	particle3[[2]]!="S"||
+	particle4[[2]]!="S",
+	Return[0];
+,
+(*Coupling constants that we will need*)
+	gTensor=Table[gvss[[;;,Particle1[[1]],Particle2[[1]]]],
+		{Particle1,{particle1,particle2,particle3,particle4}},
+		{Particle2,{particle1,particle2,particle3,particle4}}];
+
+(*Group invariants that multiply various Lorentz Structures*)
+	CSS=Table[
+		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
+		Tr[gTensor[[3,4]][[a]] . Transpose[gTensor[[3,4]][[b]]]],
+		{a,1,Length[gvss]},{b,1,Length[gvss]}];
+	CTT=Table[
+		Tr[gTensor[[1,3]][[a]] . Transpose[gTensor[[1,3]][[b]]]]
+		Tr[gTensor[[2,4]][[a]] . Transpose[gTensor[[2,4]][[b]]]],
+		{a,1,Length[gvss]},{b,1,Length[gvss]}];
+	CUU=Table[
+		Tr[gTensor[[1,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]]
+		Tr[gTensor[[2,3]][[a]] . Transpose[gTensor[[2,3]][[b]]]],
+		{a,1,Length[gvss]},{b,1,Length[gvss]}];
+		
+	CMixST=Table[
+		Tr[gTensor[[1,2]][[a]] . gTensor[[2,4]][[b]] . Transpose[gTensor[[3,4]][[a]]] . Transpose[gTensor[[1,3]][[b]]]],
+		{a,1,Length[gvss]},{b,1,Length[gvss]}];
+		
+	CMixSU=Table[
+		Tr[gTensor[[1,2]][[a]] . gTensor[[2,3]][[b]] . gTensor[[3,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]],
+		{a,1,Length[gvss]},{b,1,Length[gvss]}];
+	CMixTU=Table[
+		Tr[gTensor[[1,3]][[a]] . Transpose[gTensor[[2,3]][[b]]] . gTensor[[2,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]],
+		{a,1,Length[gvss]},{b,1,Length[gvss]}];
+		
+(*Vector propagators*)
+	vectorPropT=Table[1/(t-i),{i,vectorMass}];
+	vectorPropU=Table[1/(u-i),{i,vectorMass}];
+	
+(*Lorentz structures*)
+	ASS=(t-u)^2; (*squared u-channel diagram*)
+	ATT=(s-u)^2; (*squared t-channel diagram*)
+	AUU=(t-s)^2; (*squared u-channel diagram*)
+	
+	ASU=-2(t-u)*(u-s);
+	AST=-2(t-u)*(t-s);
+	ATU=2(u-s)(t-s);
+
+(*Leading-log terms*)
+	ResLL=ATT*vectorPropT . CTT . vectorPropT+AUU vectorPropU . CUU . vectorPropU;
+	
+(*non-divergent terms*)
+	ResBLL=Total[ASU*CMixSU/(s*u)+AST*CMixST/(s*t)+ATU*CMixTU/(t*u),-1];
+	
+	ResQuartic=Total[\[Lambda]4[[particle1[[1]],particle2[[1]],particle3[[1]],particle4[[1]]]]^2,-1];
+	
+	
+	Return[ResLL+If[leadingLog,ResBLL+ResQuartic,0]]
+]
+];
+
+
+CreateMatrixElementS1S2toF1F2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
+Block[{s,t,u,gTensor,gTensorT,gTensorC,gTensorCT,leadingLog},
+(*
+
+*)
+leadingLog=False;
+If[
+	(particle1[[2]]!="S"||particle2[[2]]!="S"||particle3[[2]]!="F"||particle4[[2]]!="F")&&
+	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="S"||particle4[[2]]!="S"),
+	Return[0];
+,
+	p1=particle1[[1]];
+	p2=particle2[[1]];
+	p3=particle3[[1]];
+	p4=particle4[[1]];
+If[
+	particle1[[2]]=="F"&&
+	particle2[[2]]=="F"&&
+	particle3[[2]]=="S"&&
+	particle4[[2]]=="S",
+(*Just changing the order of the particles so that it is always QQ->VV*)	
+		temp=p1;
+		p1=p3;
+		p3=temp;
+		
+		temp=p2;
+		p2=p4;
+		p4=temp;
+	];
+(*Coupling constants that we will need*)
+	gTensor[1,3]=Ysff[[p1,p3,;;]];
+	gTensor[2,4]=Ysff[[p2,p4,;;]];
+	gTensor[1,4]=Ysff[[p1,p4,;;]];
+	gTensor[2,3]=Ysff[[p2,p3,;;]];
+
+	gTensorT[1,3]=Ysff[[p1,;;,p3]];
+	gTensorT[2,4]=Ysff[[p2,;;,p4]];
+	gTensorT[1,4]=Ysff[[p1,;;,p4]];
+	gTensorT[2,3]=Ysff[[p2,;;,p3]];
+		
+	gTensorC[1,3]=YsffC[[p1,p3,;;]];
+	gTensorC[2,4]=YsffC[[p2,p4,;;]];
+	gTensorC[1,4]=YsffC[[p1,p4,;;]];
+	gTensorC[2,3]=YsffC[[p2,p3,;;]];
+
+	gTensorCT[1,3]=YsffC[[p1,;;,p3]];
+	gTensorCT[2,4]=YsffC[[p2,;;,p4]];
+	gTensorCT[1,4]=YsffC[[p1,;;,p4]];
+	gTensorCT[2,3]=YsffC[[p2,;;,p3]];
+
+(*Fermion propagators*)
+	fermionPropT=Table[1/(t-i),{i,FermionMass}];
+	fermionPropU=Table[1/(u-i),{i,FermionMass}];
+	
+(*Coupling factors that appear*)
+	CTT=Table[
+	Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorC[1,3][[;;,;;,a]]]]Tr[gTensor[2,4][[;;,;;,b]] . Transpose[gTensorC[2,4][[;;,;;,b]]]],{a,1,Length[gvff[[1,;;]]]},{b,1,Length[gvff[[1,;;]]]}
+	];
+	CUU=Table[
+	Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,a]]]]Tr[gTensor[2,3][[;;,;;,b]] . Transpose[gTensorC[2,3][[;;,;;,b]]]],{a,1,Length[gvff[[1,;;]]]},{b,1,Length[gvff[[1,;;]]]}
+	];
+	
+	CUT=Sum[Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorCT[2,3][[;;,b,;;]]] . gTensorT[2,4][[;;,a,;;]] . Transpose[gTensorC[1,4][[;;,;;,b]]]],{a,1,Length[gvff[[1,;;]]]},{b,1,Length[gvff[[1,;;]]]}
+	];
+(*Lorentz structures*)
+
+	ATT=t u;
+	AUU=t u;
+	
+	AUT=-2;
+	
+(*The result*)
+	ResLL=ATT fermionPropT . CTT . fermionPropT+AUU fermionPropU . CUU . fermionPropU;
+	
+	ResBLL=AUT*CUT;
+(*The full result*)
+	Return[ResLL+ResBLL]
+]	
+];
+
+
+(* ::Subsubsection::Closed:: *)
+(*S1S2toF1F2*)
+
+
+CreateMatrixElementS1S2toF1F2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
+Block[{s,t,u,gTensor,gTensorT,gTensorC,gTensorCT,leadingLog},
+(*
+
+*)
+leadingLog=False;
+If[
+	(particle1[[2]]!="S"||particle2[[2]]!="S"||particle3[[2]]!="F"||particle4[[2]]!="F")&&
+	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="S"||particle4[[2]]!="S"),
+	Return[0];
+,
+	p1=particle1[[1]];
+	p2=particle2[[1]];
+	p3=particle3[[1]];
+	p4=particle4[[1]];
+If[
+	particle1[[2]]=="F"&&
+	particle2[[2]]=="F"&&
+	particle3[[2]]=="S"&&
+	particle4[[2]]=="S",
+(*Just changing the order of the particles so that it is always QQ->VV*)	
+		temp=p1;
+		p1=p3;
+		p3=temp;
+		
+		temp=p2;
+		p2=p4;
+		p4=temp;
+	];
+(*Coupling constants that we will need*)
+	gTensor[1,3]=Ysff[[p1,p3,;;]];
+	gTensor[2,4]=Ysff[[p2,p4,;;]];
+	gTensor[1,4]=Ysff[[p1,p4,;;]];
+	gTensor[2,3]=Ysff[[p2,p3,;;]];
+
+	gTensorT[1,3]=Ysff[[p1,;;,p3]];
+	gTensorT[2,4]=Ysff[[p2,;;,p4]];
+	gTensorT[1,4]=Ysff[[p1,;;,p4]];
+	gTensorT[2,3]=Ysff[[p2,;;,p3]];
+		
+	gTensorC[1,3]=YsffC[[p1,p3,;;]];
+	gTensorC[2,4]=YsffC[[p2,p4,;;]];
+	gTensorC[1,4]=YsffC[[p1,p4,;;]];
+	gTensorC[2,3]=YsffC[[p2,p3,;;]];
+
+	gTensorCT[1,3]=YsffC[[p1,;;,p3]];
+	gTensorCT[2,4]=YsffC[[p2,;;,p4]];
+	gTensorCT[1,4]=YsffC[[p1,;;,p4]];
+	gTensorCT[2,3]=YsffC[[p2,;;,p3]];
+
+(*Fermion propagators*)
+	fermionPropT=Table[1/(t-i),{i,FermionMass}];
+	fermionPropU=Table[1/(u-i),{i,FermionMass}];
+	
+(*Coupling factors that appear*)
+	CTT=Table[
+	Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorC[1,3][[;;,;;,a]]]]Tr[gTensor[2,4][[;;,;;,b]] . Transpose[gTensorC[2,4][[;;,;;,b]]]],{a,1,Length[gvff[[1,;;]]]},{b,1,Length[gvff[[1,;;]]]}
+	];
+	CUU=Table[
+	Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,a]]]]Tr[gTensor[2,3][[;;,;;,b]] . Transpose[gTensorC[2,3][[;;,;;,b]]]],{a,1,Length[gvff[[1,;;]]]},{b,1,Length[gvff[[1,;;]]]}
+	];
+	
+	CUT=Sum[Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorCT[2,3][[;;,b,;;]]] . gTensorT[2,4][[;;,a,;;]] . Transpose[gTensorC[1,4][[;;,;;,b]]]],{a,1,Length[gvff[[1,;;]]]},{b,1,Length[gvff[[1,;;]]]}
+	];
+(*Lorentz structures*)
+
+	ATT=t u;
+	AUU=t u;
+	
+	AUT=-2;
+	
+(*The result*)
+	ResLL=ATT fermionPropT . CTT . fermionPropT+AUU fermionPropU . CUU . fermionPropU;
+	
+	ResBLL=AUT*CUT;
+(*The full result*)
+	Return[ResLL+ResBLL]
+]	
+];
+
+
+(* ::Section::Closed:: *)
 (*Getting the matrix elements for out-of-Equilibrium particles*)
 
 
@@ -515,6 +815,8 @@ degreeOfFreedom[particle_]:=Block[{dof},
 	
 	(*Factor of 2 from spins*)
 	If[particle[[2]]=="V",dof*=2]; 
+	
+	If[particle[[2]]=="S",dof];
 	
 	Return[dof];
 ]
@@ -800,17 +1102,31 @@ Return[CollEllTotal]
 (*Exporting to C++*)
 
 
-ExportMatrixElements[file_,particleList_,LightParticles_,UserMasses_,UserCouplings_,ParticleName_]:=
+ExportMatrixElements[file_,particleList__,UserMasses_,UserCouplings_,ParticleName_]:=
 Block[{ExportTXT,ExportH5,
-	Cij,ParticleInfo,CouplingInfo,MatrixElements,
+	Cij,ParticleInfo,LightParticles,particleListFull,CouplingInfo,MatrixElements,
 	OutOfEqParticles,RepMasses,RepCouplings,C
 	},
 
 (*
 Extracting the out-of-eq particles
 *)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
+		OutOfEqParticles=Table[i,{i,1,Length[particleList]}];
+		particleListFull=particleList; (*This list includes the light particles which are added below*)
+		
+(*Adding all remaining particles as light*)
+	posFermions=Position[particleList, _?(# =="F" &)][[;;,1]];
+	NonEqFermions=Table[particleList[[i]][[1]],{i,posFermions}]//Flatten[#]&;
+	LightFermions={Complement[RepToIndices[PrintFermionRepPositions[]],NonEqFermions],"F"};
+	
+	posVectors=Position[particleList, _?(# =="F" &)][[;;,1]];
+	NonEqVectors=Table[particleList[[i]][[1]],{i,posVectors}]//Flatten[#]&;
+	LightVectors={Complement[RepToIndices[PrintGaugeRepPositions[]],NonEqVectors],"V"};
+	
+	If[Length[LightVectors[[1]]]>0,AppendTo[particleListFull,LightVectors]];
+	If[Length[LightFermions[[1]]]>0,AppendTo[particleListFull,LightFermions]];
 
+	LightParticles=Table[i,{i,Length[particleListFull]-Length[particleList]}];
 (*
 Replacement rules for converting to the format used by the c++ code
 *)	
@@ -820,7 +1136,7 @@ Replacement rules for converting to the format used by the c++ code
 (*
 Loop over all out-of-eq particles and extracting the matrix elements
 *)	
-	MatrixElements=ExtractOutOfEqElement[particleList,LightParticles];
+	MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles];
 	
 (*
 Extract various C^{ij} components
