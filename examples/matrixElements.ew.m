@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 SetDirectory[NotebookDirectory[]];
@@ -11,14 +11,11 @@ $LoadGroupMath=True;
 <<../src/matrixElements.m
 
 
-
-
-
 (* ::Chapter:: *)
 (*QCD+W boson*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -55,21 +52,19 @@ YukawaDoublet=CreateInvariantYukawa[Group,RepScalar,RepFermion3Gen,InputInv]//Si
 Ysff=-GradYukawa[yt*YukawaDoublet[[1]]];
 
 
-(* ::Title:: *)
+(* ::Section:: *)
 (*SM quarks + gauge bosons*)
 
 
-(* ::Subtitle:: *)
+(* ::Subsection:: *)
 (*SymmetryBreaking*)
 
 
 vev={0,v,0,0};
-
-
 SymmetryBreaking[vev]
 
 
-(* ::Subtitle:: *)
+(* ::Subsection:: *)
 (*UserInput*)
 
 
@@ -112,43 +107,39 @@ LightParticles={6};
 (*Defining various masses and couplings*)
 
 
-VectorMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}]];
+VectorMass=Join[
+	Table[mg2,{i,1,RepGluon[[1]]//Length}],
+	Table[mw2,{i,1,RepW[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mw2,mg2}; 
+UserMasses={mq2,mq2,mq2,mg2,mw2}; 
 UserCouplings=CouplingName;
 
 
+(*
+	output of matrix elements
+*)
+OutputFile="matrixElements.ew";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W"};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
 
 MatrixElements//Expand
 
 
-(*g g->g g*)
-M[0,3,0,3]/.MatrixElements
-(*g g->g g*)
-M[3,3,3,3]/.MatrixElements
-(*t g->t g*)
-M[1,3,1,3]/.MatrixElements
-(*t q->t q*)
-5/4*M[1,5,1,5]/.MatrixElements
+Import[OutputFile<>".hdf5"]
 
 
-Import["MatrixElem.hdf5"]
+Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
-Import["MatrixElem.hdf5","CouplingInfo"]
+Import[OutputFile<>".hdf5","ParticleInfo"]
 
 
-Import["MatrixElem.hdf5","ParticleInfo"]
+Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
-Import["MatrixElem.hdf5","CouplingInfo"]
-
-
-Import["MatrixElem.hdf5","ParticleInfo"]
+Import[OutputFile<>".hdf5","ParticleInfo"]
