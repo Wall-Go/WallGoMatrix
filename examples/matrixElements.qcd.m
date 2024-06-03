@@ -15,7 +15,7 @@ $LoadGroupMath=True;
 (*QCD*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -40,11 +40,11 @@ RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepF
 {gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
 
 
-(* ::Title:: *)
+(* ::Section:: *)
 (*A model with 6 quarks and 1 gluon*)
 
 
-(* ::Subtitle:: *)
+(* ::Subsection:: *)
 (*UserInput*)
 
 
@@ -90,21 +90,20 @@ UserMasses={mq2,mg2};
 UserCouplings={gs};
 
 
+(*
+	output of matrix elements
+*)
+OutputFile="matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
 
 MatrixElements
 
 
-ParticleList[[1]]
-
-
-CreateMatrixElementQ1Q2toV1V2[ParticleList[[1]],ParticleList[[1]],ParticleList[[2]],ParticleList[[2]],FermionMass]
-
-
-8*dF*CF*CA/.{Nf->3,CA->3,CF->4/3,dF->3}
+(* ::Subsection:: *)
+(*Crosschecks*)
 
 
 (*comparison with https://arxiv.org/pdf/hep-ph/0302165.pdf*)
@@ -134,7 +133,7 @@ M[0,0,0,0]/.MatrixElements/.{c[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
 1/(2*CA)*(xx*%%+%)/.{ttsq->(-t+msq[1])^2,uusq->(-u+msq[1])^2}/.{Nf->3,CA->3,CF->4/3,dF->3,dA->8}
 bb %-%%%%//FullSimplify
 (*result only agrees by assuming factor 1/2 for same particles in final state*)
-%/.{xx->1/2,bb->1}
+%/.{xx->xx,bb->xx}/.{xx->1}
 
 
 (*g g->g g*)
@@ -145,13 +144,13 @@ M[1,1,1,1]/.MatrixElements/.{c[0]->1}//Simplify
 %%%-%//Simplify
 
 
-Import["MatrixElem.hdf5"]
+Import[OutputFile<>".hdf5"]
 
 
-Import["MatrixElem.hdf5","MatrixElementsTopTop"]
+Import[OutputFile<>".hdf5","MatrixElementsTopTop"]
 
 
-Import["MatrixElem.hdf5","CouplingInfo"]
+Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
-Import["MatrixElem.hdf5","ParticleInfo"]
+Import[OutputFile<>".hdf5","ParticleInfo"]

@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 SetDirectory[NotebookDirectory[]];
@@ -123,87 +123,6 @@ Ysff=-yt1*GradYukawa[YukawaDoublet1[[1]]];
 YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt1>0}]];
 
 
-(* ::Section::Closed:: *)
-(*Dimensional Reduction*)
-
-
-ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
-PosFermion=PrintFermionRepPositions[];
-FermionMat=Table[{nF,i},{i,PosFermion}];
-DefineNF[FermionMat]
-PerformDRhard[]
-
-
-BetaFunctions4D[]
-PrintCouplings[]//Simplify
-
-
-PrintTadpoles["LO"]
-PrintTadpoles["NLO"]
-
-
-PrintTemporalScalarCouplings[]
-
-
-PrintDebyeMass["LO"]
-PrintDebyeMass["NLO"]
-
-
-PrintScalarMass["LO"]//Simplify
-PrintScalarMass["NLO"]//Simplify
-
-
-PerformDRsoft[{}]
-
-
-PrintCouplingsUS[]
-
-
-PrintScalarMassUS["LO"]
-PrintScalarMassUS["NLO"]
-
-
-BetaFunctions3DUS[]
-
-
-PrintTadpolesUS["LO"]
-
-
-PerformDRsoft[{5}];
-
-
-PrintCouplingsUS[]
-
-
-PrintScalarMassUS["LO"]
-PrintScalarMassUS["NLO"]
-
-
-BetaFunctions3DUS[]
-
-
-PrintTensorUSDRalgo[]
-
-
-PerformDRsoft[{1,2,3,4}]
-
-
-PrintCouplingsUS[]
-
-
-PrintScalarMassUS["LO"]
-
-
-PrintTadpolesUS["LO"]
-
-
-BetaFunctions3DUS[]
-
-
-PrintPressureUS["LO"]
-PrintPressureUS["NLO"]
-
-
 (* ::Section:: *)
 (*MatrixElements*)
 
@@ -220,62 +139,26 @@ one right-handed fermoon
 (*TopL, TopR*)
 
 
-(*split left doublet into top-left and bottom-left*) 
-\[Phi]={v,0,0,0,0};
-IndtL=SymmetryBreaking[1,\[Phi]][[1]];
-IndbL=SymmetryBreaking[1,\[Phi]][[2]];
-IndbL[[2]]="F";
-IndtL[[2]]="F";
-
-
-IndtL
-
-
-Ysff//Normal;
-
-
-(*gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal
-gvff[[;;,ReptR[[1]],ReptR[[1]]]]//Normal
-gvff[[;;,ReptL[[1]],ReptR[[1]]]]//Normal*)
-
-
-(*CreateMatrixElementQ1Q2toQ3Q4[ReptL,ReptR,ReptL,ReptR,VectorMass]*)
-
-
-(*CreateMatrixElementQ1V1toQ1V1[ReptL,RepGluon,ReptL,RepGluon,VectorMass,FermionMass]*)
-
-
--((64 g3^4 u)/(3 s))-(64 g3^4 s u)/(3 (-mq2+u)^2)+(48 g3^4 (s^2+u^2))/(-mg2+t)^2
-
-
-(*CreateMatrixElementQ1Q2toV1V2[ReptL,ReptL,RepGluon,RepGluon,FermionMass]*)
-
-
-(64 g3^4 t u)/(3 (-mq2+t)^2)+(64 g3^4 t u)/(3 (-mq2+u)^2)-(48 g3^4 (t^2+u^2))/s^2
-
-
-CreateMatrixElementV1V2toV3V4[RepGluon,RepGluon,RepGluon,RepGluon,VectorMass]
-
-
-2880 g3^4+(288 g3^4 (s-u)^2)/(-mg2+t)^2-(1152 g3^4 t u)/s^2+(288 g3^4 (s-t)^2)/(-mg2+u)^2
+vev={0,v,0,0,0};
+SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=IndtL;
+ReptL=CreateOutOfEq[{{1,1}},"F"];
 
 (*right-handed top-quark*)
 ReptR=CreateOutOfEq[{2},"F"];
 
 (*left-handed bottom-quark*)
-RepbL=IndbL;
+RepbL=CreateOutOfEq[{{1,2}},"F"];
 
 (*light quarks*)
 RepLight=CreateOutOfEq[Range[3,2*4+3],"F"];
 
 (*Vector bosons*)
 RepGluon=CreateOutOfEq[{1},"V"];
-RepW=CreateOutOfEq[{2},"V"];
-RepZ=CreateOutOfEq[{3},"V"];
+RepW=CreateOutOfEq[{{2,1}},"V"];
+RepZ=CreateOutOfEq[{{3,1}},"V"];
 
 
 ParticleList={ReptL,ReptR,RepGluon,RepW,RepZ,RepbL,RepLight};
@@ -285,89 +168,38 @@ These particles do not have out-of-eq contributions
 LightParticles=Range[4,Length[ParticleList]];
 
 
-VectorMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}],Table[mz2,{i,1,RepZ[[1]]//Length}]];
+VectorMass=Join[
+	Table[mg2,{i,1,RepGluon[[1]]//Length}],
+	Table[mw2,{i,1,RepW[[1]]//Length}],
+	Table[mz2,{i,1,RepZ[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mz2,mw2,mg2}; 
+UserMasses={mq2,mq2,mg2,mw2,mz2}; 
 UserCouplings={g3,gw,g1};
 
 
+(*
+	output of matrix elements
+*)
+OutputFile="matrixElements.xsm";
 SetDirectory[NotebookDirectory[]];
+RepOptional={c[1]->0,c[2]->0};
 ParticleName={"TopL","TopR","Gluon"};
-MatrixElements=ExportMatrixElements["MatrixElements.xsm",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName,RepOptional];
 
 
-(*tL q->tL q*)
-M[0,3,0,3]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
-(*tR q->tR q*)
-M[1,3,1,3]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
-(*tL tL->gg*)
-M[0,0,2,2]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
-(*tR tR->gg*)
-M[1,1,2,2]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
-(*tL g->tL g*)
-M[0,2,0,2]/.MatrixElements//FullSimplify;
-%/.{c[1]->0,c[2]->0}
-(*tR g->tR g*)
-M[1,2,1,2]/.MatrixElements//FullSimplify;
-%/.{c[1]->0,c[2]->0}
-
-
-(*off-diagonal entries do not agree*)
-M[1,0,0,1]/.MatrixElements//FullSimplify;
-%/.{c[1]->0,c[2]->0}
-M[0,1,0,1]/.MatrixElements//FullSimplify;
-%/.{c[1]->0,c[2]->0}
-(*diagonal entries agree*)
-M[1,1,0,0]/.MatrixElements//FullSimplify;
-%/.{c[1]->0,c[2]->0}
-M[0,0,1,1]/.MatrixElements//FullSimplify;
-%/.{c[1]->0,c[2]->0}
-M[0,0,0,0]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
-M[1,1,1,1]/.MatrixElements;
-%/.{c[1]->0,c[2]->0}
-
-
-(*crosscheck for Matrix for collisions*)
-M[1,1,1,1]+xx*M[1,0,0,1]+M[1,1,0,0];
-%/.MatrixElements/.{c[0]->1};
-%/.{c[1]->0,c[2]->0}//FullSimplify
-M[0,0,0,0]+xx*M[0,1,0,1]+M[0,0,1,1];
-%/.MatrixElements/.{c[0]->1};
-%/.{c[1]->0,c[2]->0}//FullSimplify
-
-
-(*sum over all tL,tR channels*)
-M[1,1,1,1]+M[0,0,0,0]+M[1,0,0,1]+M[0,1,0,1]+M[1,1,0,0]+M[0,0,1,1];
-%/.MatrixElements/.{c[0]->1};
-%/.{c[1]->0,c[2]->0}//FullSimplify
-
-
-(*pure qcd result differs by factor 2 which is compensated by additonal factor 2 in EOM*)
-1/6 (-((16 s^2)/(3 t u))-(32 u^2)/(3 s t)+(16 (t^2+u^2))/s^2+(16 (s^2+u^2))/(t-msq[1])^2+(8 (s^2+t^2))/(u-msq[1])^2)//FullSimplify
-
-
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*QCD -like*)
 
 
-(*split left doublet into top-left and bottom-left*) 
-\[Phi]={v,0,0,0,0};
-IndtL=SymmetryBreaking[1,\[Phi]][[1]];
-IndbL=SymmetryBreaking[1,\[Phi]][[2]];
-IndtL[[2]]="F";
-IndbL[[2]]="F";
+vev={0,v,0,0,0};
+SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=IndtL;
+ReptL=CreateOutOfEq[{{1,1}},"F"];
 
 (*right-handed top-quark*)
 ReptR=CreateOutOfEq[{2},"F"];
@@ -376,7 +208,7 @@ ReptR=CreateOutOfEq[{2},"F"];
 Rept={Join[ReptL[[1]],ReptR[[1]]],"F"};
 
 (*left-handed bottom-quark*)
-RepbL=IndbL;
+RepbL=CreateOutOfEq[{{1,2}},"F"];
 
 (*light quarks*)
 RepLight=CreateOutOfEq[Range[3,2*4+3],"F"];
@@ -394,32 +226,25 @@ These particles do not have out-of-eq contributions
 LightParticles=Range[3,Length[ParticleList]];
 
 
-VectorMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}],Table[mz2,{i,1,RepZ[[1]]//Length}]];
+VectorMass=Join[
+	Table[mg2,{i,1,RepGluon[[1]]//Length}],
+	Table[mw2,{i,1,RepW[[1]]//Length}],
+	Table[mz2,{i,1,RepZ[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mz2,mw2,mg2}; 
+UserMasses={mq2,mg2};
 UserCouplings={g3,gw,g1};
 
 
+(*
+	output of matrix elements
+*)
+OutputFile="matrixElements.xsm.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
 
 
-MatrixElements//Expand;
-
-
-(*tq->tq*)
-5*M[0,2,0,2]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*);
-%/.{c[1]->0,c[2]->0}
-(*tt->gg*)
-M[0,0,1,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*);
-%/.{c[1]->0,c[2]->0}
-(*tg->tg*)
-M[0,1,0,1]/.MatrixElements(*/.{-u->-t}/.{t*u->-s*t}*)//FullSimplify;
-%/.{c[1]->0,c[2]->0}
-
-
-
+MatrixElements//Expand
