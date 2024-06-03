@@ -161,11 +161,10 @@ RepW=CreateOutOfEq[{{2,1}},"V"];
 RepZ=CreateOutOfEq[{{3,1}},"V"];
 
 
-ParticleList={ReptL,ReptR,RepGluon,RepW,RepZ,RepbL,RepLight};
+ParticleList={ReptL,ReptR,RepGluon,RepW,RepZ};
 (*
 These particles do not have out-of-eq contributions
 *)
-LightParticles=Range[4,Length[ParticleList]];
 
 
 VectorMass=Join[
@@ -186,8 +185,9 @@ UserCouplings={g3,gw,g1};
 OutputFile="matrixElements.xsm";
 SetDirectory[NotebookDirectory[]];
 RepOptional={c[1]->0,c[2]->0};
-ParticleName={"TopL","TopR","Gluon"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName,RepOptional];
+(*RepOptional={};*)
+ParticleName={"TopL","TopR","Gluon","W","Z"};
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,RepOptional];
 
 
 (* ::Subsection:: *)
@@ -219,11 +219,10 @@ RepW=CreateOutOfEq[{2},"V"];
 RepZ=CreateOutOfEq[{3},"V"];
 
 
-ParticleList={Rept,RepGluon,RepW,RepZ,RepbL,RepLight};
+ParticleList={Rept,RepGluon};
 (*
 These particles do not have out-of-eq contributions
 *)
-LightParticles=Range[3,Length[ParticleList]];
 
 
 VectorMass=Join[
@@ -234,7 +233,7 @@ FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mg2};
+UserMasses={mq2,mg2,mw2,mz2};
 UserCouplings={g3,gw,g1};
 
 
@@ -243,8 +242,9 @@ UserCouplings={g3,gw,g1};
 *)
 OutputFile="matrixElements.xsm.qcd";
 SetDirectory[NotebookDirectory[]];
+RepOptional={c[1]->0,c[2]->0};
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,RepOptional];
 
 
 MatrixElements//Expand

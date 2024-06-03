@@ -15,7 +15,7 @@ $LoadGroupMath=True;
 (*QCD*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -71,11 +71,10 @@ RepGluon=CreateOutOfEq[{1},"V"];
 (*Rep2=CreateOutOfEq[{3,4,...,12},"F"];*)
 
 
-ParticleList={Rep1,RepGluon,Rep2,Rep3,Rep4,Rep5,Rep6};
+ParticleList={Rep1,RepGluon};
 (*
 These particles do not have out-of-eq contributions
 *)
-LightParticles={3,4,5,6,7};
 
 
 (*Defining various masses and couplings*)
@@ -96,7 +95,7 @@ UserCouplings={gs};
 OutputFile="matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName];
 
 
 MatrixElements

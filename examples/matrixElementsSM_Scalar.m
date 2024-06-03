@@ -10,9 +10,6 @@ $LoadGroupMath=True;
 <<../DRalgo/DRalgo.m
 
 
-
-
-
 (* ::Chapter:: *)
 (*QCD+W boson*)
 
@@ -62,6 +59,9 @@ YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt>0}]];
 
 (* ::Title:: *)
 (*Matrix elements*)
+
+
+(*move this to .m file*)
 
 
 (* ::Section::Closed:: *)
@@ -1736,18 +1736,21 @@ ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepHiggs};
 (*Defining various masses and couplings*)
 
 
-VectorMass=Join[Table[mg2,{i,1,RepGluon[[1]]//Length}],Table[mw2,{i,1,RepW[[1]]//Length}]];
+VectorMass=Join[
+	Table[mg2,{i,1,RepGluon[[1]]//Length}],
+	Table[mw2,{i,1,RepW[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mw2,mg2}; 
+UserMasses={mq2,mq2,mg2,mw2}; 
 UserCouplings=CouplingName;
 
 
+OutputFile="matrixElements.scalar";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W","Higgs"};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName];
 
 
 MatrixElements//Expand

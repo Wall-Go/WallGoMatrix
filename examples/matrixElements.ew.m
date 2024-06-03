@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 SetDirectory[NotebookDirectory[]];
@@ -97,11 +97,10 @@ RepGluon=CreateOutOfEq[{1},"V"];
 RepW=CreateOutOfEq[{{2,1}},"V"];
 
 
-ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepLight};
+ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW};
 (*
 These particles do not have out-of-eq contributions
 *)
-LightParticles={6};
 
 
 (*Defining various masses and couplings*)
@@ -124,7 +123,7 @@ UserCouplings=CouplingName;
 OutputFile="matrixElements.ew";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,LightParticles,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName];
 
 
 MatrixElements//Expand

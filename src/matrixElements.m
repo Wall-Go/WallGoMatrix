@@ -4,7 +4,7 @@
 (*Matrix elements*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Help functions*)
 
 
@@ -1528,7 +1528,7 @@ Return[CollEllTotal]
 (*Exporting to C++*)
 
 
-ExportMatrixElements[file_,particleList__,UserMasses_,UserCouplings_,ParticleName_]:=
+ExportMatrixElements[file_,particleList__,UserMasses_,UserCouplings_,ParticleName_,RepOptional_:{}]:=
 Block[{ExportTXT,ExportH5,
 	Cij,ParticleInfo,LightParticles,particleListFull,CouplingInfo,MatrixElements,
 	OutOfEqParticles,RepMasses,RepCouplings,C
