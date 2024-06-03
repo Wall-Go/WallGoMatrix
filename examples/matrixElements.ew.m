@@ -34,9 +34,6 @@ HiggsDoublet={{{0,0},{1}},"C"};
 RepScalar={HiggsDoublet};
 
 
-
-
-
 RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
 
 

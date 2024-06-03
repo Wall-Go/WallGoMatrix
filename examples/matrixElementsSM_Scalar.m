@@ -14,7 +14,7 @@ $LoadGroupMath=True;
 (*QCD+W boson*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -53,8 +53,8 @@ VQuartic=\[Lambda]1H*QuarticTerm1;
 
 InputInv={{1,1,2},{False,False,True}}; 
 YukawaDoublet=CreateInvariantYukawa[Group,RepScalar,RepFermion3Gen,InputInv]//Simplify;
-Ysff=-GradYukawa[yt*YukawaDoublet[[1]]];
-YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt>0}]];
+Ysff=-GradYukawa[yt1*YukawaDoublet[[1]]];
+YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt1>0}]];
 
 
 (* ::Title:: *)
@@ -1743,8 +1743,8 @@ FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mq2,mg2,mw2}; 
-UserCouplings=CouplingName;
+UserMasses={mq2,mq2,mg2,mw2};
+UserCouplings={CouplingName,\[Lambda]1H,yt1}//Flatten;
 
 
 OutputFile="matrixElements.scalar";
