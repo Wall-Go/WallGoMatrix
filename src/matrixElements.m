@@ -6,13 +6,13 @@ BeginPackage["matrixElements`"]
 (*List of public functions*)
 
 CreateOutOfEq::usage=
-"CreateOutOfEq[{{\!\(\*SubscriptBox[\(r\), \(1\)]\),\!\(\*SubscriptBox[\(s\), \(1\)]\)},...,{\!\(\*SubscriptBox[\(r\), \(n\)]\),\!\(\*SubscriptBox[\(s\), \(n\)]\)}},\"R\"] is a function that groups n particles into one representation for
+"CreateOutOfEq[{{\!\(\*SubscriptBox[\(r\), \(1\)]\),\!\(\*SubscriptBox[\(m\), \(1\)]\)},...,{\!\(\*SubscriptBox[\(r\), \(n\)]\),\!\(\*SubscriptBox[\(m\), \(n\)]\)}},\"R\"] is a function that groups n particles into one representation for
 Fermions (R=F),
 Vector Bosons (R=V), and
 Scalars (R=S)."
 SymmetryBreaking::usage=
 "Classify different scalar, fermion, and vector representations into respective particles using VEV induced masses.
-As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(s\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(s\), \(i\)]\) is the label of the particle in that representation"
+As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(m\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(m\), \(i\)]\) is the label of the particle mass in that representation"
 
 
 (*
@@ -107,7 +107,7 @@ SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion,PosScalar,count},
 	
 	Do[
 		If[!NumericQ[Total[GaugeMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Gauge rep ",ToString[i]," splits into particles with mass suqared:"],Bold]];
+			Print[Style[StringJoin["Gauge rep ",ToString[i]," splits into particles with mass squared:"],Bold]];
 			count=0;
 			Do[
 				count++;
@@ -123,7 +123,7 @@ SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion,PosScalar,count},
 	
 	Do[
 		If[!NumericQ[Total[FermionMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Fermion rep ",ToString[i]," splits into particles with mass suqared:"],Bold]];
+			Print[Style[StringJoin["Fermion rep ",ToString[i]," splits into particles with mass squared:"],Bold]];
 			count=0;
 			Do[
 				count++;
@@ -139,7 +139,7 @@ SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion,PosScalar,count},
 	
 	Do[
 		If[!NumericQ[Total[ScalarMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Scalar rep ",ToString[i]," splits into particles with mass suqared:"],Bold]];
+			Print[Style[StringJoin["Scalar rep ",ToString[i]," splits into particles with mass squared:"],Bold]];
 			count=0;
 			Do[
 				count++;
