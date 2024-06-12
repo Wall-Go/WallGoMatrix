@@ -1,8 +1,5 @@
 (* ::Package:: *)
 
-Quit[];
-
-
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
@@ -61,20 +58,10 @@ rep 1-6 are quarks,
 rep 7 is a gluon
 *)
 Rep1=CreateOutOfEq[{1,2},"F"];
-Rep2=CreateOutOfEq[{3,4},"F"];
-Rep3=CreateOutOfEq[{5,6},"F"];
-Rep4=CreateOutOfEq[{7,8},"F"];
-Rep5=CreateOutOfEq[{9,10},"F"];
-Rep6=CreateOutOfEq[{11,12},"F"];
 RepGluon=CreateOutOfEq[{1},"V"];
-(*check*)
-(*Rep2=CreateOutOfEq[{3,4,...,12},"F"];*)
 
 
 ParticleList={Rep1,RepGluon};
-(*
-These particles do not have out-of-eq contributions
-*)
 
 
 (*Defining various masses and couplings*)

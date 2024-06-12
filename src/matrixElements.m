@@ -11,7 +11,7 @@ Fermions (R=F),
 Vector Bosons (R=V), and
 Scalars (R=S)."
 SymmetryBreaking::usage=
-"Classify different scalar, fermion, and vector representations into respective particles using VEV induced masses.
+"Classify different scalar, fermion, and vector representations into respective particles using VEV-induced masses.
 As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(m\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(m\), \(i\)]\) is the label of the particle mass in that representation"
 
 
@@ -123,7 +123,7 @@ SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion,PosScalar,count},
 	
 	Do[
 		If[!NumericQ[Total[FermionMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Fermion rep ",ToString[i]," splits into particles with mass squared:"],Bold]];
+			Print[Style[StringJoin["Fermion rep ",ToString[i]," splits into particles with mass:"],Bold]];
 			count=0;
 			Do[
 				count++;
@@ -265,7 +265,7 @@ Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContrac
         Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Matrix elements*)
 
 
