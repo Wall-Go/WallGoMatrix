@@ -14,7 +14,7 @@ $LoadGroupMath=True;
 (*QCD+W boson*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
