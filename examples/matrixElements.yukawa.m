@@ -86,7 +86,7 @@ YsffC=y*GradYukawa[YukawaDoublet2];
 
 
 (* ::Section:: *)
-(*A model with 2 fermions and 1 vector bosons*)
+(*A model with 1 Dirac fermions and 1 scalar bosons*)
 
 
 (* ::Subsection:: *)
