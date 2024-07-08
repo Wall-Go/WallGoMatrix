@@ -63,10 +63,10 @@ VQuartic=\[Lambda]/24 MassTerm^2
 \[Lambda]4=GradQuartic[VQuartic];
 
 
-(* m(Subscript[\[Psi], R]^+Subscript[\[Psi], L]+Subscript[\[Psi]^+, L]Subscript[\[Psi], R])*)
-InputInv={{2,1},{True,False}}; (*Subscript[\[Psi], R]^+Subscript[\[Psi], L]*)
+(* m(Subscript[\[Psi], R]Subscript[\[Psi], L]+Subscript[\[Psi]^+, L]Subscript[\[Psi], R]^+)*)
+InputInv={{2,1},{True,True}}; (*Subscript[\[Psi], R]^+Subscript[\[Psi], L]*)
 MassTerm1=CreateInvariantFermion[Group,RepFermion,InputInv][[1]]
-InputInv={{1,2},{True,False}};  (*Subscript[\[Psi]^+, L]Subscript[\[Psi], R]*)
+InputInv={{1,2},{False,False}};  (*Subscript[\[Psi]^+, L]Subscript[\[Psi], R]*)
 MassTerm2=CreateInvariantFermion[Group,RepFermion,InputInv][[1]]
 
 
@@ -74,10 +74,10 @@ MassTerm2=CreateInvariantFermion[Group,RepFermion,InputInv][[1]]
 \[Mu]IJC=m\[Psi]*GradMassFermion[MassTerm2];
 
 
-(* y \[Phi](Subscript[\[Psi], R]^+Subscript[\[Psi], L]+Subscript[\[Psi]^+, L]Subscript[\[Psi], R])*)
- InputInv={{1,2,1},{True,True,False}};
+(* y \[Phi](Subscript[\[Psi], R]Subscript[\[Psi], L]+Subscript[\[Psi]^+, L]Subscript[\[Psi], R]^+)*)
+ InputInv={{1,2,1},{True,True,True}};
 YukawaDoublet1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-InputInv={{1,1,2},{True,True,False}}; 
+InputInv={{1,1,2},{True,False,False}}; 
 YukawaDoublet2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 
 
