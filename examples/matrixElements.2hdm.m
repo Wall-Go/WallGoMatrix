@@ -131,7 +131,7 @@ Reph = CreateOutOfEq[{{1,2}},"S"];
 RepG = CreateOutOfEq[{{1,1}},"S"];
 
 RepH = CreateOutOfEq[{{2,2}},"S"];
-RepA = CreateOutOfEq[{{2,4}},"S"];
+RepA = CreateOutOfEq[{{2,3}},"S"];
 RepHpm = CreateOutOfEq[{{2,1}},"S"];
 
 (*Vector bosons*)

@@ -160,7 +160,7 @@ SymmetryBreakingGauge[Indices_,vev_] :=Block[{PosVector,Habij,massV,gaugeInd,pos
 (*Gauge bosons*)
 	Habij=Contract[gvss,gvss,{{3,5}}]//Transpose[#,{1,3,2,4}]&//SparseArray;
 	massV=-Activate@TensorContract[Inactive@TensorProduct[Habij,vev,vev],{{3,5},{4,6}}]//SparseArray;
-	gaugeInd=Delete[DiagonalTensor2[massV,1,2]//Normal//ArrayRules,-1]/.(({a_}->x_)->a);
+	gaugeInd=Delete[DiagonalTensor2[massV,1,2]//Normal//ArrayRules,-1]/.(({i1_}->x_)->i1);
 	
 	posHeavy=Intersection[RangeToIndices[PosVector[[Indices]]],gaugeInd];
 	posLight=Complement[RangeToIndices[PosVector[[Indices]]],gaugeInd];
@@ -193,9 +193,9 @@ SymmetryBreakingScalar[Indices_,vev_] :=Block[{PosScalar,scalarInd,massS,posHeav
 *)
 	PosScalar=PrintScalarRepPositions[];
 	
-(*Fermions*)
-	massS=\[Mu]ij+vev . \[Lambda]4 . vev/2;
-	scalarInd=Delete[massS//ArrayRules,-1]/.(({a_,b_}->x_)->a);
+(*Scalars*)
+	massS=\[Mu]ij + (vev . \[Lambda]4 . vev/2)//Normal//SparseArray;
+	scalarInd=Delete[massS//ArrayRules,-1]/.(({i1_,i2_}->x_)->i1);
 
 	posHeavy=Intersection[RangeToIndices[PosScalar[[Indices]]],scalarInd];
 	posLight=Complement[RangeToIndices[PosScalar[[Indices]]],scalarInd];
@@ -227,8 +227,8 @@ SymmetryBreakingFermion[Indices_,vev_] :=Block[{PosFermion,fermionInd,massF,posH
 	PosFermion=PrintFermionRepPositions[];
 	
 (*Fermions*)
-	massF=\[Mu]IJ+vev . Ysff;
-	fermionInd=Delete[massF//ArrayRules,-1]/.(({a_,b_}->x_)->a);
+	massF=\[Mu]IJ + (vev . Ysff);
+	fermionInd=Delete[massF//ArrayRules,-1]/.(({i1_,i2_}->x_)->i1);
 	
 	posHeavy=Intersection[RangeToIndices[PosFermion[[Indices]]],fermionInd];
 	posLight=Complement[RangeToIndices[PosFermion[[Indices]]],fermionInd];
@@ -801,7 +801,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1S1toQ1S1*)
 
 
@@ -883,9 +883,9 @@ If[ (
 	ATT=u*s;
 	
 	ResSS=CSS*ASS;
-	ResUU=fermionPropU . CUU . fermionPropU;
+	ResUU=AUU*fermionPropU . CUU . fermionPropU;
 	
-	ResTT=vectorPropT . CTT . vectorPropT;
+	ResTT=ATT*vectorPropT . CTT . vectorPropT;
 	
 	Return[2*(ResSS+ResUU+ResTT)]
 ,
@@ -975,7 +975,7 @@ If[ (
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Getting the matrix elements for out-of-Equilibrium particles*)
 
 
@@ -995,7 +995,7 @@ degreeOfFreedom[particle_]:=Block[{dof},
 ]
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1Q2toQ3Q4*)
 
 
@@ -1057,7 +1057,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1V1toQ1V1*)
 
 
@@ -1119,7 +1119,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1Q2toV1V2*)
 
 
@@ -1180,7 +1180,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*V1V2toV3V4*)
 
 
@@ -1241,7 +1241,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3S4*)
 
 
@@ -1301,7 +1301,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -1362,7 +1362,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1S1toQ1S1*)
 
 
@@ -1424,7 +1424,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1S1toQ1V1*)
 
 
@@ -1486,7 +1486,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Extract elements*)
 
 
@@ -1506,12 +1506,25 @@ CollEllQ1V1toQ1V1=ExtractOutOfEqElementQ1V1toQ1V1[particleList,LightParticles];
 CollEllQ1Q2toV1V2=ExtractOutOfEqElementQ1Q2toV1V2[particleList,LightParticles];
 CollEllV1V2toV3V4=ExtractOutOfEqElementV1V2toV3V4[particleList,LightParticles];
 CollEllS1S2toS3S4=ExtractOutOfEqElementS1S2toS3S4[particleList,LightParticles];
+Print[debug1];
 CollEllS1S2toF1F2=ExtractOutOfEqElementS1S2toF1F2[particleList,LightParticles];
+Print[debug2];
 CollEllQ1S1toQ1S1=ExtractOutOfEqElementQ1S1toQ1S1[particleList,LightParticles];
+Print[debug3];
 CollEllQ1S1toQ1V1=ExtractOutOfEqElementQ1S1toQ1V1[particleList,LightParticles];
+Print[debug4];
 
-CollEllTotal=Join[CollEllQ1Q2toQ3Q4,CollEllQ1V1toQ1V1,CollEllQ1Q2toV1V2,CollEllV1V2toV3V4,CollEllS1S2toS3S4
-				,CollEllS1S2toF1F2,CollEllQ1S1toQ1S1,CollEllQ1S1toQ1V1];
+
+CollEllTotal=Join[
+	CollEllQ1Q2toQ3Q4,
+	CollEllQ1V1toQ1V1,
+	CollEllQ1Q2toV1V2,
+	CollEllV1V2toV3V4,
+	CollEllS1S2toS3S4,
+	CollEllS1S2toF1F2,
+	CollEllQ1S1toQ1S1,
+	CollEllQ1S1toQ1V1
+	];
 
 
 Return[CollEllTotal]
