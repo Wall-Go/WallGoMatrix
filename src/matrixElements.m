@@ -610,7 +610,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3S4*)
 
 
@@ -637,15 +637,18 @@ If[
 	CSS=Table[
 		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
 		Tr[gTensor[[3,4]][[a]] . Transpose[gTensor[[3,4]][[b]]]],
-		{a,1,Length[gvss]},{b,1,Length[gvss]}];
+		{a,1,Length[gvss]},
+		{b,1,Length[gvss]}];
 	CTT=Table[
 		Tr[gTensor[[1,3]][[a]] . Transpose[gTensor[[1,3]][[b]]]]
 		Tr[gTensor[[2,4]][[a]] . Transpose[gTensor[[2,4]][[b]]]],
-		{a,1,Length[gvss]},{b,1,Length[gvss]}];
+		{a,1,Length[gvss]},
+		{b,1,Length[gvss]}];
 	CUU=Table[
 		Tr[gTensor[[1,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]]
 		Tr[gTensor[[2,3]][[a]] . Transpose[gTensor[[2,3]][[b]]]],
-		{a,1,Length[gvss]},{b,1,Length[gvss]}];
+		{a,1,Length[gvss]},
+		{b,1,Length[gvss]}];
 		
 	CMixST=Table[
 		Tr[gTensor[[1,2]][[a]] . gTensor[[2,4]][[b]] . Transpose[gTensor[[3,4]][[a]]] . Transpose[gTensor[[1,3]][[b]]]],
@@ -663,110 +666,33 @@ If[
 	vectorPropU=Table[1/(u-i),{i,vectorMass}];
 	
 (*Lorentz structures*)
-	ASS=(t-u)^2; (*squared u-channel diagram*)
+	ASS=(t-u)^2; (*squared s-channel diagram*)
 	ATT=(s-u)^2; (*squared t-channel diagram*)
 	AUU=(t-s)^2; (*squared u-channel diagram*)
 	
 	ASU=-2(t-u)*(u-s);
 	AST=-2(t-u)*(t-s);
-	ATU=2(u-s)(t-s);
+	ATU=+2(u-s)*(t-s);
 
 (*Leading-log terms*)
-	ResLL=ATT*vectorPropT . CTT . vectorPropT+AUU vectorPropU . CUU . vectorPropU;
+	ResLL=(
+		+ATT*vectorPropT . CTT . vectorPropT
+		+AUU vectorPropU . CUU . vectorPropU);
 	
 (*non-divergent terms*)
-	ResBLL=Total[ASU*CMixSU/(s*u)+AST*CMixST/(s*t)+ATU*CMixTU/(t*u),-1];
+	ResBLL=Total[
+		+ASU*CMixSU/(s*u)
+		+AST*CMixST/(s*t)
+		+ATU*CMixTU/(t*u),-1];
 	
 	ResQuartic=Total[\[Lambda]4[[particle1[[1]],particle2[[1]],particle3[[1]],particle4[[1]]]]^2,-1];
-	
 	
 	Return[ResLL+If[leadingLog,ResBLL+ResQuartic,0]]
 ]
 ];
 
 
-CreateMatrixElementS1S2toF1F2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
-Block[{s,t,u,gTensor,gTensorT,gTensorC,gTensorCT,leadingLog},
-(*
-
-*)
-leadingLog=False;
-If[
-	(particle1[[2]]!="S"||particle2[[2]]!="S"||particle3[[2]]!="F"||particle4[[2]]!="F")&&
-	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="S"||particle4[[2]]!="S"),
-	Return[0];
-,
-	p1=particle1[[1]];
-	p2=particle2[[1]];
-	p3=particle3[[1]];
-	p4=particle4[[1]];
-If[
-	particle1[[2]]=="F"&&
-	particle2[[2]]=="F"&&
-	particle3[[2]]=="S"&&
-	particle4[[2]]=="S",
-(*Just changing the order of the particles so that it is always QQ->VV*)	
-		temp=p1;
-		p1=p3;
-		p3=temp;
-		
-		temp=p2;
-		p2=p4;
-		p4=temp;
-	];
-(*Coupling constants that we will need*)
-	gTensor[1,3]=Ysff[[p1,p3,;;]];
-	gTensor[2,4]=Ysff[[p2,p4,;;]];
-	gTensor[1,4]=Ysff[[p1,p4,;;]];
-	gTensor[2,3]=Ysff[[p2,p3,;;]];
-
-	gTensorT[1,3]=Ysff[[p1,;;,p3]];
-	gTensorT[2,4]=Ysff[[p2,;;,p4]];
-	gTensorT[1,4]=Ysff[[p1,;;,p4]];
-	gTensorT[2,3]=Ysff[[p2,;;,p3]];
-		
-	gTensorC[1,3]=YsffC[[p1,p3,;;]];
-	gTensorC[2,4]=YsffC[[p2,p4,;;]];
-	gTensorC[1,4]=YsffC[[p1,p4,;;]];
-	gTensorC[2,3]=YsffC[[p2,p3,;;]];
-
-	gTensorCT[1,3]=YsffC[[p1,;;,p3]];
-	gTensorCT[2,4]=YsffC[[p2,;;,p4]];
-	gTensorCT[1,4]=YsffC[[p1,;;,p4]];
-	gTensorCT[2,3]=YsffC[[p2,;;,p3]];
-
-(*Fermion propagators*)
-	fermionPropT=Table[1/(t-i),{i,FermionMass}];
-	fermionPropU=Table[1/(u-i),{i,FermionMass}];
-	
-(*Coupling factors that appear*)
-	CTT=Table[
-	Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorC[1,3][[;;,;;,a]]]]Tr[gTensor[2,4][[;;,;;,b]] . Transpose[gTensorC[2,4][[;;,;;,b]]]],{a,1,Length[gvff[[1,;;]]]},{b,1,Length[gvff[[1,;;]]]}
-	];
-	CUU=Table[
-	Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,a]]]]Tr[gTensor[2,3][[;;,;;,b]] . Transpose[gTensorC[2,3][[;;,;;,b]]]],{a,1,Length[gvff[[1,;;]]]},{b,1,Length[gvff[[1,;;]]]}
-	];
-	
-	CUT=Sum[Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorCT[2,3][[;;,b,;;]]] . gTensorT[2,4][[;;,a,;;]] . Transpose[gTensorC[1,4][[;;,;;,b]]]],{a,1,Length[gvff[[1,;;]]]},{b,1,Length[gvff[[1,;;]]]}
-	];
-(*Lorentz structures*)
-
-	ATT=t u;
-	AUU=t u;
-	
-	AUT=-2;
-	
-(*The result*)
-	ResLL=ATT fermionPropT . CTT . fermionPropT+AUU fermionPropU . CUU . fermionPropU;
-	
-	ResBLL=AUT*CUT;
-(*The full result*)
-	Return[ResLL+ResBLL]
-]	
-];
-
-
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -825,32 +751,50 @@ If[
 	gTensorVS=gvss[[;;,p1,p2]];
 	gTensorVF=gvff[[;;,p3,p4]];
 	gTensorVFC=gvff[[;;,p4,p3]];
+
 (*Fermion propagators*)
 	fermionPropT=Table[1/(t-i),{i,FermionMass}];
 	fermionPropU=Table[1/(u-i),{i,FermionMass}];
 
 (*Coupling factors that appear*)
-	CTT=1/4Table[
-	Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorC[1,3][[;;,;;,a]]]]Tr[gTensor[2,4][[;;,;;,b]] . Transpose[gTensorC[2,4][[;;,;;,b]]]],{a,1,Length[YsffC[[1,;;]]]},{b,1,Length[YsffC[[1,;;]]]}
+	CTT=1/4*Table[
+		Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorC[1,3][[;;,;;,a]]]]
+		Tr[gTensor[2,4][[;;,;;,b]] . Transpose[gTensorC[2,4][[;;,;;,b]]]],
+		{a,1,Length[YsffC[[1,;;]]]},
+		{b,1,Length[YsffC[[1,;;]]]}
 	];
-	CUU=1/4Table[
-	Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,a]]]]Tr[gTensor[2,3][[;;,;;,b]] . Transpose[gTensorC[2,3][[;;,;;,b]]]],{a,1,Length[YsffC[[1,;;]]]},{b,1,Length[YsffC[[1,;;]]]}
+	CUU=1/4*Table[
+		Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,a]]]]
+		Tr[gTensor[2,3][[;;,;;,b]] . Transpose[gTensorC[2,3][[;;,;;,b]]]],
+		{a,1,Length[YsffC[[1,;;]]]},
+		{b,1,Length[YsffC[[1,;;]]]}
 	];
 	
-	CUT=1/2 Sum[Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorCT[2,3][[;;,b,;;]]] . gTensorT[2,4][[;;,a,;;]] . Transpose[gTensorC[1,4][[;;,;;,b]]]],{a,1,Length[YsffC[[1,;;]]]},{b,1,Length[YsffC[[1,;;]]]}
+	CUT=1/2*Sum[
+		Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorCT[2,3][[;;,b,;;]]] . gTensorT[2,4][[;;,a,;;]] . Transpose[gTensorC[1,4][[;;,;;,b]]]],
+		{a,1,Length[YsffC[[1,;;]]]},
+		{b,1,Length[YsffC[[1,;;]]]}
 	];
 	
-	CSS=1/2Sum[Tr[gTensorVS[[a]] . gTensorVS[[b]]]Tr[gTensorVF[[a]] . gTensorVFC[[b]]],{a,1,Length[gvff]},{b,1,Length[gvff]}];
-(*Lorentz structures*)
+	CSS=1/2*Sum[
+		Tr[gTensorVS[[a]] . gTensorVS[[b]]]
+		Tr[gTensorVF[[a]] . gTensorVFC[[b]]],
+		{a,1,Length[gvff]},
+		{b,1,Length[gvff]}];
 
-	ATT=t u;
-	AUU=t u;
+(*Lorentz structures*)
+	ATT=t*u;
+	AUU=t*u;
 	AUT=-2;
-	ASS=u t /s^2;
-(*The result*)
-	ResLL=ATT fermionPropT . CTT . fermionPropT+AUU fermionPropU . CUU . fermionPropU;
+	ASS=u*t/s^2;
 	
-	ResBLL=AUT*CUT+ASS CSS;
+(*The result*)
+	ResLL=(
+		+ATT*fermionPropT . CTT . fermionPropT
+		+AUU*fermionPropU . CUU . fermionPropU);
+	
+	ResBLL=AUT*CUT+ASS*CSS;
+	
 (*The full result*)
 	Return[2(ResLL+ResBLL)]
 ]	
@@ -878,6 +822,7 @@ If[ (
 	p2=particle2[[1]];
 	p3=particle3[[1]];
 	p4=particle4[[1]];
+	
 (*Changing the order of the particles so that it is always QV->QV*)	
 	If[particle1[[2]]=="S"&&particle2[[2]]=="F",
 		temp=p1;
@@ -889,6 +834,7 @@ If[ (
 		p3=p4;
 		p4=temp;
 	];
+	
 (*Coupling constants that we will need*)
 	gTensor[1,2]=Ysff[[p2,p1,;;]];
 	gTensor[3,4]=Ysff[[p4,p3,;;]];
@@ -905,6 +851,7 @@ If[ (
 	gTensorVS=gvss[[;;,p2,p4]];
 	gTensorVF=gvff[[;;,p1,p3]];
 	gTensorVFC=gvff[[;;,p3,p1]];
+	
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
 	
@@ -912,24 +859,34 @@ If[ (
 	fermionPropU=Table[1/(u-i),{i,fermionMass}];
 	
 (*Group invariants that multiply various Lorentz Structures*)
-	CSS=1/4Sum[Tr[gTensor[1,2][[;;,;;,a]] . Transpose[gTensorC[1,2][[;;,;;,b]]]]Tr[gTensorC[3,4][[;;,;;,a]] . Transpose[gTensor[3,4][[;;,;;,b]]]],{a,Length[Ysff[[1]]]},{b,Length[Ysff[[1]]]}];
+	CSS=1/4*Sum[
+		Tr[gTensor[1,2][[;;,;;,a]] . Transpose[gTensorC[1,2][[;;,;;,b]]]]
+		Tr[gTensorC[3,4][[;;,;;,a]] . Transpose[gTensor[3,4][[;;,;;,b]]]],
+		{a,Length[Ysff[[1]]]},
+		{b,Length[Ysff[[1]]]}];
 
-	CUU=1/4 Table[Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,b]]]]Tr[gTensorC[3,2][[;;,;;,a]] . Transpose[gTensor[3,2][[;;,;;,b]]]],{a,Length[Ysff[[1]]]},{b,Length[Ysff[[1]]]}];
+	CUU=1/4*Table[
+		Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,b]]]]
+		Tr[gTensorC[3,2][[;;,;;,a]] . Transpose[gTensor[3,2][[;;,;;,b]]]],
+		{a,Length[Ysff[[1]]]},
+		{b,Length[Ysff[[1]]]}];
 
-	CTT=1/2 Table[Tr[gTensorVS[[a]] . gTensorVS[[b]]]Tr[gTensorVF[[a]] . gTensorVFC[[b]]],{a,Length[gvss]},{b,Length[gvss]}];
+	CTT=1/2*Table[
+		Tr[gTensorVS[[a]] . gTensorVS[[b]]]
+		Tr[gTensorVF[[a]] . gTensorVFC[[b]]],
+		{a,Length[gvss]},{b,Length[gvss]}];
+
 (*Lorentz structures that appear*)
 (*The first three are the fermion channels, the third is the vector channel*)
 	ASS=u/s;
-	AUU=s u;
+	AUU=s*u;
+	ATT=u*s;
 	
-	ATT=u s;
-	
-	ResSS=CSS ASS;
+	ResSS=CSS*ASS;
 	ResUU=fermionPropU . CUU . fermionPropU;
 	
 	ResTT=vectorPropT . CTT . vectorPropT;
 	
-
 	Return[2*(ResSS+ResUU+ResTT)]
 ,
 	Return[0]
@@ -992,9 +949,17 @@ If[ (
 	
 (*Fermion propagators*)
 	fermionPropU=Table[1/(u-i),{i,fermionMass}];
+	
 (*Group structures that appear*)
-	CSS=1/4 Sum[Tr[gTensor[1,2][[;;,;;,a]] . Transpose[gTensorC[1,2][[;;,;;,b]]]]Tr[gTensorVF[3,4][[;;,;;,a]] . Transpose[gTensorVFC[3,4][[;;,b,;;]]]],{a,Length[Ysff[[1]]]},{b,Length[Ysff[[1]]]}];
-	CUU=1/4 Table[Tr[gTensor[3,2][[;;,;;,a]] . Transpose[gTensorC[3,2][[;;,;;,b]]]]Tr[gTensorVF[1,4][[;;,;;,a]] . Transpose[gTensorVFC[1,4][[;;,b,;;]]]],{a,Length[Ysff[[1]]]},{b,Length[Ysff[[1]]]}];
+	CSS=1/4*Sum[
+		Tr[gTensor[1,2][[;;,;;,a]] . Transpose[gTensorC[1,2][[;;,;;,b]]]]
+		Tr[gTensorVF[3,4][[;;,;;,a]] . Transpose[gTensorVFC[3,4][[;;,b,;;]]]],
+		{a,Length[Ysff[[1]]]},{b,Length[Ysff[[1]]]}];
+		
+	CUU=1/4*Table[
+		Tr[gTensor[3,2][[;;,;;,a]] . Transpose[gTensorC[3,2][[;;,;;,b]]]]
+		Tr[gTensorVF[1,4][[;;,;;,a]] . Transpose[gTensorVFC[1,4][[;;,b,;;]]]],
+		{a,Length[Ysff[[1]]]},{b,Length[Ysff[[1]]]}];
 	
 (*Lorentz structures that appear*)
 	ASS=4*u/s;
@@ -1002,7 +967,7 @@ If[ (
 	
 (*Results*)
 	ResSS=CSS*ASS;
-	ResUU=AUU fermionPropU . CUU . fermionPropU;
+	ResUU=AUU*fermionPropU . CUU . fermionPropU;
 	Return[ResSS+ResUU]
 ,
 	Return[0]
