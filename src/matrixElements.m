@@ -690,13 +690,13 @@ If[
 (*Leading-log terms*)
 	ResLL=(
 		+ATT*vectorPropT . CTT . vectorPropT
-		+AUU vectorPropU . CUU . vectorPropU);
+		+AUU*vectorPropU . CUU . vectorPropU);
 		
-	ResLL+=scalarPropT . CTT\[Lambda] . scalarPropT
-		+ scalarPropU . CUU\[Lambda] . scalarPropU;
+	ResLL+=(
+		+ scalarPropT . CTT\[Lambda] . scalarPropT
+		+ scalarPropU . CUU\[Lambda] . scalarPropU);
 
 	ResQuartic=Total[\[Lambda]4[[particle1[[1]],particle2[[1]],particle3[[1]],particle4[[1]]]]^2,-1];
-	
 
 	Return[ResLL]
 ]

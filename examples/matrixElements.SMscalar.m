@@ -8,6 +8,7 @@ SetDirectory[NotebookDirectory[]];
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 <<../DRalgo/DRalgo.m
+<<../src/matrixElements.m
 
 
 (* ::Chapter:: *)
@@ -1705,7 +1706,7 @@ SymmetryBreaking[vev]
 In DRalgo fermions are Weyl.
 So to create one Dirac we need
 one left-handed and
-one right-handed fermoon
+one right-handed fermion
 *)
 
 
@@ -1740,6 +1741,8 @@ VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
 	Table[mw2,{i,1,RepW[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
+ScalarMass=Table[ms,{i,1,Length[gvss[[1]]]}];
+ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
@@ -1750,36 +1753,22 @@ UserCouplings={CouplingName,\[Lambda]1H,yt1}//Flatten;
 OutputFile="matrixElements.scalar";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W","Higgs"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses];
 
 
 MatrixElements//Expand
 
 
-(*g g->g g*)
-M[0,3,0,3]/.MatrixElements
-(*g g->g g*)
-M[3,3,3,3]/.MatrixElements
-(*t g->t g*)
-M[1,3,1,3]/.MatrixElements
-(*t q->t q*)
-5/4*M[1,5,1,5]/.MatrixElements
+Import[OutputFile<>".hdf5"]
 
 
-Import["MatrixElem.hdf5"]
+Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
-Import["MatrixElem.hdf5","CouplingInfo"]
+Import[OutputFile<>".hdf5","ParticleInfo"]
 
 
-Import["MatrixElem.hdf5","ParticleInfo"]
+Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
-Import["MatrixElem.hdf5","CouplingInfo"]
-
-
-Import["MatrixElem.hdf5","ParticleInfo"]
-
-
-(* ::Title:: *)
-(*Scalar processes*)
+Import[OutputFile<>".hdf5","ParticleInfo"]

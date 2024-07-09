@@ -18,7 +18,7 @@ $LoadGroupMath=True;
 (*see 2102.11145 [hep-ph]*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -131,7 +131,7 @@ YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt1>0}]];
 In DRalgo fermions are Weyl.
 So to create one Dirac we need
 one left-handed and
-one right-handed fermoon
+one right-handed fermion
 *)
 
 
@@ -189,7 +189,7 @@ SetDirectory[NotebookDirectory[]];
 RepOptional={c[1]->0,c[2]->0};
 (*RepOptional={};*)
 ParticleName={"TopL","TopR","Gluon","W","Z"};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
 
 
 (* ::Subsection:: *)
@@ -232,6 +232,8 @@ VectorMass=Join[
 	Table[mw2,{i,1,RepW[[1]]//Length}],
 	Table[mz2,{i,1,RepZ[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
+ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
+ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
@@ -246,7 +248,7 @@ OutputFile="matrixElements.xsm.qcd";
 SetDirectory[NotebookDirectory[]];
 RepOptional={c[1]->0,c[2]->0};
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,RepOptional];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
 
 
 MatrixElements//Expand

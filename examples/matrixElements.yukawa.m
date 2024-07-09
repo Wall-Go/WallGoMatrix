@@ -151,7 +151,7 @@ OutputFile="matrixElements.yukawa";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","PsiL","PsiR"};
 RepOptional={};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
 
 
 MatrixElements
