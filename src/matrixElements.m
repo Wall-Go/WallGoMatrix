@@ -265,7 +265,7 @@ Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContrac
         Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Matrix elements*)
 
 
@@ -330,7 +330,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Q1Q2toQ3Q4*)
 
 
@@ -412,8 +412,10 @@ Since there are two diagrams there can be
 	Res2=A2*Tr[DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU]];
 	
 	(*Yukawa contribution; the 2* takes into account anti-particles*)
-	Res1+=Tr[DiagonalMatrix[scalarPropT] . C1Y . DiagonalMatrix[scalarPropT]];
-	Res2+=Tr[DiagonalMatrix[scalarPropU] . C2Y . DiagonalMatrix[scalarPropU]];
+	If[Length[scalarPropU]>0&&Length[scalarPropT]>0,
+		Res1+=Tr[DiagonalMatrix[scalarPropT] . C1Y . DiagonalMatrix[scalarPropT]];
+		Res2+=Tr[DiagonalMatrix[scalarPropU] . C2Y . DiagonalMatrix[scalarPropU]];
+	];
 	
 	Return[Res1+Res2]
 ]
@@ -608,7 +610,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3S4*)
 
 
@@ -701,7 +703,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -1667,6 +1669,4 @@ End[]
 
 
 EndPackage[]
-
-
 
