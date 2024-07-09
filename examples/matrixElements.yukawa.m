@@ -1,8 +1,5 @@
 (* ::Package:: *)
 
-Quit[];
-
-
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
@@ -15,7 +12,7 @@ $LoadGroupMath=True;
 (*Yukawa Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -138,6 +135,8 @@ ParticleList={RepScalar,RepFermionL,RepFermionR};
 
 VectorMass=Table[mv,{i,1,RepZ[[1]]//Length}];
 FermionMass=Table[mf,{i,1,Length[gvff[[1]]]}];
+ScalarMass=Table[ms,{i,1,Length[gvss[[1]]]}];
+ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
@@ -151,7 +150,8 @@ UserCouplings={CouplingName,\[Lambda],y}//Flatten;
 OutputFile="matrixElements.yukawa";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","PsiL","PsiR"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName];
+RepOptional={};
+MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
 
 
 MatrixElements

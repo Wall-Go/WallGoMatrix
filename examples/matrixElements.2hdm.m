@@ -1,8 +1,5 @@
 (* ::Package:: *)
 
-Quit[];
-
-
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
@@ -152,10 +149,12 @@ VectorMass=Join[
 	Table[mw2,{i,1,RepW[[1]]//Length}],
 	Table[mz2,{i,1,RepZ[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
+ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mq2,mg2,mw2,mz2}; 
+UserMasses={mq2,mq2,mg2,mw2,mz2,ms2}; 
+ParticleMasses={VectorMass,FermionMass,ScalarMass};
 UserCouplings={CouplingName,yt1}//Flatten;
 
 
@@ -168,7 +167,5 @@ SetDirectory[NotebookDirectory[]];
 RepOptional={};
 (*ParticleName={"Top","Bottom","h","A","Gluon","W","Z"};*)
 ParticleName={"h","A"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,RepOptional];
-
-
+MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
 

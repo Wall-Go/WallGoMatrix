@@ -107,6 +107,8 @@ VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
 	Table[mw2,{i,1,RepW[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
+ScalarMass={};
+ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
@@ -120,7 +122,8 @@ UserCouplings=CouplingName;
 OutputFile="matrixElements.ew";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName];
+RepOptional={};
+MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
 
 
 MatrixElements//Expand

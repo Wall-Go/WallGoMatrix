@@ -69,6 +69,8 @@ ParticleList={Rep1,RepGluon};
 
 VectorMass=Table[mg2,{i,1,Length[gvff]}];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
+ScalarMass={};
+ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
@@ -82,7 +84,8 @@ UserCouplings={gs};
 OutputFile="matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName];
+RepOptional={};
+MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
 
 
 MatrixElements
