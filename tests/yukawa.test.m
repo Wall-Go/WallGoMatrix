@@ -58,7 +58,7 @@ VMass=msq/2 MassTerm
 (* 1/6\[Gamma]\[Phi]^3 *)
 InputInv={{1,1,1},{True,True,True}};
 CubicTerm=CreateInvariant[Group,RepScalar,InputInv][[1]];
-VCubic=0;(* turned off *)\[Gamma]/6 CubicTerm
+VCubic=\[Gamma]/6 CubicTerm
 \[Lambda]3=GradCubic[VCubic];
 
 
@@ -150,7 +150,7 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 up to the user to make sure that the same order is given in the python code
 *)
 UserMasses={ms,mf,mf};
-UserCouplings={CouplingName,\[Lambda],y}//Flatten;
+UserCouplings={CouplingName,\[Lambda],\[Gamma],y}//Flatten;
 
 
 (*
@@ -177,15 +177,43 @@ MatrixElements
 testList={};
 
 
-(*5 light quarks*)
+(* scalar-scalar scattering*)
+TestCreate[M[0,0,0,0]/.MatrixElements/.msq[i_]->0,
+	(c[1] + c[2]^2 (1/s + 1/t + 1/u))^2
+]];
+
+
+(* scalar to fermions *)
+TestCreate[M[0,0,1,1]+M[0,0,2,2]+M[0,0,1,2]/.MatrixElements/.msq[i_]->0,
+	c[3]^4 (2 t/u + 2 u/t - 4) + c[2]^2 c[3]^2 (2/s)
+]];
+
+
+(* fermions to scalar *)
 AppendTo[testList,
 TestCreate[M[1,1,0,0]+M[1,2,0,0]+M[2,1,0,0]+M[2,2,0,0]/.MatrixElements/.msq[i_]->0,
-	+2 (+((4 t)/u)+(4 u)/t) c[2]^4
+	c[3]^4 (8 t/u + 8 u/t - 4 s^2/(t u)) + c[2]^2 c[3]^2 (4/s)
+]];
+
+
+(* scalar-fermion scattering *)
+TestCreate[M[0,1,0,1]+M[0,2,0,2]/.MatrixElements/.msq[i_]->0,
+	c[3]^4 (4 s/u + 4 u/s - 8) + c[2]^2 c[3]^2 (4/t)
+]];
+
+
+(* fermion-scalar scattering *)
+TestCreate[M[1,0,0,1]+M[2,0,0,2]/.MatrixElements/.msq[i_]->0,
+	c[3]^4 (8 s/t + 8 t/s - 4 u^2/(s t)) + c[2]^2 c[3]^2 (4/u)
+]];
+
+
+(* fermion-fermion scattering*)
+TestCreate[M[1,2,1,2]/.MatrixElements/.msq[i_]->0,
+	c[3]^4 (24)
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
