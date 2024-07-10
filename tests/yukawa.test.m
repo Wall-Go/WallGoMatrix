@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 (* Check Mathematica version *)
@@ -195,8 +195,8 @@ TestCreate[M[0,0,1,1]+M[0,0,2,2]+M[0,0,1,2]/.MatrixElements/.msq[i_]->0,
 (* fermions to scalar *)
 AppendTo[testList,
 TestCreate[M[1,1,0,0]+M[1,2,0,0]+M[2,1,0,0]+M[2,2,0,0]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (8 t/u + 8 u/t - 4 s^2/(t u)) + c[2]^2 c[3]^2 (4/s)*)(* all channels *)
-	 c[3]^4 (8 t/u + 8 u/t - 4 s^2/(t u))(* just IR sensitive terms *)
+	(*c[3]^4 (4 t/u + 4 u/t - 8) + c[2]^2 c[3]^2 (4/s)*)(* all channels *)
+	 c[3]^4 (4 t/u + 4 u/t)(* just IR sensitive terms *)
 ]];
 
 
@@ -211,8 +211,8 @@ TestCreate[M[0,1,0,1]+M[0,2,0,2]/.MatrixElements/.msq[i_]->0,
 (* fermion-scalar scattering *)
 AppendTo[testList,
 TestCreate[M[1,0,0,1]+M[2,0,0,2]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (8 s/t + 8 t/s - 4 u^2/(s t)) + c[2]^2 c[3]^2 (4/u)*)(* all channels *)
-	 c[3]^4 (8 s/t - 4 u^2/(s t)) + c[2]^2 c[3]^2 (4/u)(* just IR sensitive terms *)
+	(*c[3]^4 (4 s/t + 4 t/s - 8) + c[2]^2 c[3]^2 (4/u)*)(* all channels *)
+	 c[3]^4 (4 s/t + 4 t/s) + c[2]^2 c[3]^2 (4/u)(* just IR sensitive terms *)
 ]];
 
 
@@ -226,6 +226,7 @@ TestCreate[M[1,2,1,2]+M[2,1,1,2]/.MatrixElements/.msq[i_]->0,
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
