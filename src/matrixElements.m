@@ -417,7 +417,7 @@ Since there are two diagrams there can be
 		Res2+=Tr[DiagonalMatrix[scalarPropU] . C2Y . DiagonalMatrix[scalarPropU]];
 	];
 	
-	Return[Res1+Res2]
+	Return[4*(Res1+Res2)] (*factor of 4 from adding anti-quark contributions*)
 ]
 ];
 
@@ -445,13 +445,11 @@ If[ (
 	p2=particle2[[1]];
 	p3=particle3[[1]];
 	p4=particle4[[1]];
-	symmFac=1;
 (*Changing the order of the particles so that it is always QV->QV*)	
 	If[particle1[[2]]=="V"&&particle2[[2]]=="F",
 		temp=p1;
 		p1=p2;
 		p2=temp;
-		symmFac=2;
 	];
 	If[particle3[[2]]=="V"&&particle4[[2]]=="F",
 		temp=p3;
@@ -513,7 +511,7 @@ If[ (
 	Res2=A2*C2;
 	Res3=-(A3*C3-8*(C4*s^2+C5*u^2))//Simplify;
 
-	Return[symmFac*(If[leadingLog,Res1,0]+Res2+Res3)]
+	Return[2(If[leadingLog,Res1,0]+Res2+Res3)] (*Factor of 2 from anti-quark contribution*)
 ,
 	Return[0]
 ]	
@@ -541,7 +539,6 @@ If[
 	p2=particle2[[1]];
 	p3=particle3[[1]];
 	p4=particle4[[1]];
-	symmFac=1;
 If[
 	particle1[[2]]=="V"&&
 	particle2[[2]]=="V"&&
@@ -555,7 +552,6 @@ If[
 		temp=p2;
 		p2=p4;
 		p4=temp;
-		symmFac=2; (*for quark final states we have to add vv-> q qbar+vv->qbar q; this overcounting is always compensated for later*)
 	];
 (*Coupling constants that we will need*)
 	gTensor[1,3]=gvff[[p3,p1,;;]];
@@ -604,8 +600,7 @@ If[
 		-8*t^2/s^2(t^2 C1/.(#->0&/@fermionMass))
 		-8*u^2/s^2(u^2 C2/.(#->0&/@fermionMass))//Simplify;
 
-(*Factor of 2 from anti-particles*)
-	Return[symmFac*(Res1+Res2+If[leadingLog,Res3,0])]
+	Return[2*(Res1+Res2+If[leadingLog,Res3,0])](*Factor of 2 from anti-particles*)
 ]	
 ];
 
@@ -708,14 +703,13 @@ If[
 
 
 CreateMatrixElementS1S2toF1F2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
-Block[{s,t,u,gTensor,gTensorT,gTensorC,gTensorCT,leadingLog,gTensorVF,gTensorVFC,gTensorVS,symfac,
+Block[{s,t,u,gTensor,gTensorT,gTensorC,gTensorCT,gTensorVF,gTensorVFC,gTensorVS,
 		Res,CTT,CUU,ATT,AUU},
 (*
 		There is no trilinear scalar interaction taken into account as the symmetric phase is assumed.
 		The full Yukawa contribution is included, as well as the s-channel exchange of gauge bosons.
 		No mixing between gauge and Yukawa terms was added.
 *)
-leadingLog=False;
 If[
 	(particle1[[2]]!="S"||particle2[[2]]!="S"||particle3[[2]]!="F"||particle4[[2]]!="F")&&
 	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="S"||particle4[[2]]!="S"),
@@ -725,7 +719,6 @@ If[
 	p2=particle2[[1]];
 	p3=particle3[[1]];
 	p4=particle4[[1]];
-	symfac=2; (*If the fermions are the final state we have to sum over anti-particle/particles*)
 If[
 	particle1[[2]]=="F"&&
 	particle2[[2]]=="F"&&
@@ -739,7 +732,6 @@ If[
 		temp=p2;
 		p2=p4;
 		p4=temp;
-		symfac=1;
 	];
 (*Coupling constants that we will need*)
 	gTensor[1,3]=Ysff[[p1,p3,;;]];
@@ -767,20 +759,20 @@ If[
 	gTensorVFC=gvff[[;;,p4,p3]];
 
 (*Fermion propagators*)
-	fermionPropT=Table[1/(t-i),{i,FermionMass}];
-	fermionPropU=Table[1/(u-i),{i,FermionMass}];
+	fermionPropT=Table[1/(t-i),{i,fermionMass}];
+	fermionPropU=Table[1/(u-i),{i,fermionMass}];
 
 (*Coupling factors that appear*)
 	CTT=Table[
-		Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorC[1,3][[;;,;;,a]]]]
-		Tr[gTensor[2,4][[;;,;;,b]] . Transpose[gTensorC[2,4][[;;,;;,b]]]],
+		Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorC[1,3][[;;,;;,b]]]]
+		Tr[gTensor[2,4][[;;,;;,b]] . Transpose[gTensorC[2,4][[;;,;;,a]]]],
 		{a,1,Length[YsffC[[1,;;]]]},
 		{b,1,Length[YsffC[[1,;;]]]}
 	];
 	
 	CUU=Table[
-		Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,a]]]]
-		Tr[gTensor[2,3][[;;,;;,b]] . Transpose[gTensorC[2,3][[;;,;;,b]]]],
+		Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,b]]]]
+		Tr[gTensor[2,3][[;;,;;,b]] . Transpose[gTensorC[2,3][[;;,;;,a]]]],
 		{a,1,Length[YsffC[[1,;;]]]},
 		{b,1,Length[YsffC[[1,;;]]]}
 	];
@@ -794,9 +786,8 @@ If[
 		+ATT*fermionPropT . CTT . fermionPropT
 		+AUU*fermionPropU . CUU . fermionPropU);
 	
-	
 (*The full result*)
-	Return[symfac*Res]
+	Return[2*Res] (*factor of 2 from anti-particles*)
 ]	
 ];
 
@@ -882,7 +873,7 @@ If[ (
 		AUU*fermionPropU . CUU . fermionPropU
 		+ATT*vectorPropT . CTT . vectorPropT);
 	
-	Return[symfac*Res]
+	Return[2*Res] (*Factor of 2 from anti-quark contribution*)
 ,
 	Return[0]
 ]	
@@ -978,7 +969,7 @@ degreeOfFreedom[particle_]:=Block[{dof},
 
 	dof=Length[particle[[1]]];
 	
-	(*Factor of 2 from helicites, factor of 2 from anti-particles*)
+	(*factor of 2 from anti-particles*)
 	If[particle[[2]]=="F",dof];
 	
 	(*Factor of 2 from spins*)
@@ -1017,26 +1008,12 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 (*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];  
-
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
 	Return[{}]; 
 ,
 
-(*Now we add identical contributions*)
-(*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
-	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
-	MultiPlicity=Table[Length[a],{a,symmetries}];
-	Elements=Table[i[[1]],{i,symmetries}];
-	(*MatrixElements is now just a list*)
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; 
-	
-(*We also divide by the number of degrees of freedom of incomingParticle*)
-(*The 2 is from the anti-particle contribution. I.e q1 q2->q1 q2 +q1 q2Bar->q1 q2Bar*)
-(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
-	MatrixElements=2*MatrixElements/2;
-
+	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
 (*Gives all light-particle the label specified by the first lightparticle*)
@@ -1088,18 +1065,7 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 If[Length[Elements]==0,
 	Return[{}]; 
 ,
-
-(*Now we add identical contributions*)
-(*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
-	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
-
-	MultiPlicity=Table[Length[a],{a,symmetries}];
-	Elements=Table[i[[1]],{i,symmetries}];
-	(*MatrixElements is now just a list*)
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-	MatrixElements=MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
+	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
@@ -1152,18 +1118,7 @@ If[Length[Elements]==0,
 	Return[{}]; 
 ,
 
-(*Now we add identical contributions*)
-(*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
-	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
-	MultiPlicity=Table[Length[a],{a,symmetries}];
-	Elements=Table[i[[1]],{i,symmetries}];
-	(*MatrixElements is now just a list*)
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We also divide by the number of degrees of freedom of incomingParticle*)
-(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
-	MatrixElements=MatrixElements/2;
+	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
@@ -1215,19 +1170,7 @@ If[Length[Elements]==0,
 	Return[{}]; 
 ,
 
-(*Now we add identical contributions*)
-(*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
-	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
-	MultiPlicity=Table[Length[a],{a,symmetries}];
-	Elements=Table[i[[1]],{i,symmetries}];
-	(*MatrixElements is now just a list*)
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We also divide by the number of degrees of freedom of incomingParticle*)
-(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
-	MatrixElements=MatrixElements/2;
-
+	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
 (*Gives all light-particle the label specified by the first lightparticle*)
@@ -1278,17 +1221,7 @@ If[Length[Elements]==0,
 	Return[{}]; 
 ,
 
-(*Now we add identical contributions*)
-	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
-	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
-	MultiPlicity=Table[Length[a],{a,symmetries}];
-	Elements=Table[i[[1]],{i,symmetries}];
-	(*MatrixElements is now just a list*)
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We also divide by the number of degrees of freedom of incomingParticle*)
-(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
-	MatrixElements=MatrixElements/2;
+	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
@@ -1340,19 +1273,7 @@ If[Length[Elements]==0,
 	Return[{}]; 
 ,
 
-(*Now we add identical contributions*)
-(*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
-	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
-	MultiPlicity=Table[Length[a],{a,symmetries}];
-	Elements=Table[i[[1]],{i,symmetries}];
-	(*MatrixElements is now just a list*)
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We also divide by the number of degrees of freedom of incomingParticle*)
-(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
-	MatrixElements=MatrixElements/2;
-
+	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
 (*Gives all light-particle the label specified by the first lightparticle*)
@@ -1405,18 +1326,7 @@ If[Length[Elements]==0,
 	Return[{}]; 
 ,
 
-(*Now we add identical contributions*)
-(*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
-	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
-
-	MultiPlicity=Table[Length[a],{a,symmetries}];
-	Elements=Table[i[[1]],{i,symmetries}];
-	(*MatrixElements is now just a list*)
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-	MatrixElements=2 MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
-
+	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
 (*Gives all light-particle the label specified by the first lightparticle*)
@@ -1470,17 +1380,7 @@ If[Length[Elements]==0,
 	Return[{}]; 
 ,
 
-(*Now we add identical contributions*)
-(*The Q1Q2->Q1Q2 process is the same as the Q1Q2->Q2Q1 process*)
-	symmetries=Gather[Elements,(#1[[1;;2]]==#2[[1;;2]])&];
-	symmetries=Gather[#,#1[[3;;4]]==Sort[#2[[3;;4]]]&]&/@symmetries//Flatten[#,1]&;
-
-	MultiPlicity=Table[Length[a],{a,symmetries}];
-	Elements=Table[i[[1]],{i,symmetries}];
-	(*MatrixElements is now just a list*)
-	MatrixElements=Table[MultiPlicity[[i]] Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-	MatrixElements=MatrixElements/2;(*Factor of 2 from over-counting ab->cd +ab->dc, or if c=d the 1/2 is a symmetry factor*)
+	MatrixElements=Table[ Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
@@ -1540,7 +1440,7 @@ Return[CollEllTotal]
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Exporting to C++*)
 
 
@@ -1664,6 +1564,9 @@ End[]
 
 
 EndPackage[]
+
+
+
 
 
 
