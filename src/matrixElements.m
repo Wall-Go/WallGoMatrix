@@ -265,7 +265,7 @@ Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContrac
         Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Matrix elements*)
 
 
@@ -961,7 +961,7 @@ If[ (
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Getting the matrix elements for out-of-Equilibrium particles*)
 
 
@@ -970,7 +970,7 @@ degreeOfFreedom[particle_]:=Block[{dof},
 	dof=Length[particle[[1]]];
 	
 	(*factor of 2 from anti-particles*)
-	If[particle[[2]]=="F",dof];
+	If[particle[[2]]=="F",dof*=2];
 	
 	(*Factor of 2 from spins*)
 	If[particle[[2]]=="V",dof*=2]; 
@@ -1440,7 +1440,7 @@ Return[CollEllTotal]
 ];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Exporting to C++*)
 
 
