@@ -28,7 +28,7 @@ Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Pri
 (*Matrix elements*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Help functions*)
 
 
@@ -617,9 +617,9 @@ If[
 
 
 CreateMatrixElementS1S2toS3S4[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_]:=
-Block[{s,t,u,gTensor,leadingLog,\[Lambda]3Tensor,\[Lambda]4Tensor,vectorPropT,scalarPropT,vectorPropU,scalarPropU,
-		CSS,CTT,CUU,CSS\[Lambda],CTT\[Lambda],CUU\[Lambda],ASS,ATT,AUU,ResLL,ResQuartic
-		,CST\[Lambda],CSU\[Lambda],CTU\[Lambda],scalarPropS,CQuarticCubic\[Lambda],Particle3,Particle4},
+Block[{s,t,u,gTensor,leadingLog,\[Lambda]3Tensor,\[Lambda]4Tensor,vectorPropT,scalarPropT,vectorPropU,scalarPropU,vectorPropS,
+		CSS,CTT,CUU,CSS\[Lambda],CTT\[Lambda],CUU\[Lambda],,ASS,ATT,AUU,ResLL,ResQuartic
+		,CST\[Lambda],CSU\[Lambda],CTU\[Lambda],CST,CSU,CTU,scalarPropS,CQuarticCubic\[Lambda],Particle3,Particle4},
 (*
 	There is no trilinear scalar interaction taken into account as the symmetric phase is assumed.
 	Thus only vector trillinear processes and quartic scalar processes are taken into account.
@@ -649,14 +649,21 @@ If[
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
 	vectorPropU=Table[1/(u-i),{i,vectorMass}];
+	vectorPropS=Table[1/(s),{i,vectorMass}];
 
 (*Scalar propagators*)
 	scalarPropT=Table[1/(t-i),{i,scalarMass}];
 	scalarPropU=Table[1/(u-i),{i,scalarMass}];
 	scalarPropS=Table[1/(s),{i,scalarMass}];
 	
+(*Lorentz structures for gauge diagrams*)
+	ASS=(t-u)^2/4; (*squared s-channel diagram*)
+	ATT=(s-u)^2/4; (*squared t-channel diagram*)
+	AUU=(t-s)^2/4; (*squared u-channel diagram*)
+
+		
 			
-(*Group invariants that multiply various Lorentz Structures*)
+(*Gauge-coupling group invariants*)
 	CSS=Table[
 		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
 		Tr[gTensor[[3,4]][[a]] . Transpose[gTensor[[3,4]][[b]]]],
@@ -672,8 +679,27 @@ If[
 		Tr[gTensor[[2,3]][[a]] . Transpose[gTensor[[2,3]][[b]]]],
 		{a,1,Length[gvss]},
 		{b,1,Length[gvss]}];
+		
+	CST=2*Table[
+		Tr[gTensor[[1,2]][[a]] . gTensor[[2,4]][[b]] . Transpose[gTensor[[3,4]][[a]]] . Transpose[gTensor[[1,3]][[b]]]]
+			,
+		{a,1,Length[\[Lambda]3]},
+		{b,1,Length[\[Lambda]3]}];	
 
-				
+	CSU=2*Table[
+		Tr[gTensor[[1,2]][[a]] . gTensor[[2,3]][[b]] . gTensor[[3,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]]
+			,
+		{a,1,Length[\[Lambda]3]},
+		{b,1,Length[\[Lambda]3]}];	
+
+	CTU=2*Table[
+		Tr[gTensor[[1,3]][[a]] . Transpose[gTensor[[2,3]][[b]]] . gTensor[[2,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]]
+			,
+		{a,1,Length[\[Lambda]3]},
+		{b,1,Length[\[Lambda]3]}];
+	
+(*Scalar-coupling group invariants*)
+					
 	CSS\[Lambda]=Table[
 		Tr[\[Lambda]3Tensor[[1,2]][[a]] . Transpose[\[Lambda]3Tensor[[1,2]][[b]]]]
 		Tr[\[Lambda]3Tensor[[3,4]][[a]] . Transpose[\[Lambda]3Tensor[[3,4]][[b]]]],
@@ -715,24 +741,24 @@ If[
 	CQuarticCubic\[Lambda]+=2*Total[Sum[\[Lambda]3Tensor[[1,4]][[a]] \[Lambda]3Tensor[[2,3]][[a]]scalarPropU[[a]],
 		{a,1,Length[\[Lambda]3]} ]\[Lambda]4Tensor[[1,4,2,3]],-1];(*u-channel times quartic*)
 					
-
-	
 		
-(*Lorentz structures*)
-	ASS=(t-u)^2/4; (*squared s-channel diagram*)
-	ATT=(s-u)^2/4; (*squared t-channel diagram*)
-	AUU=(t-s)^2/4; (*squared u-channel diagram*)
 
 
 (*Vector-coupling channels*)
 	ResLL=(
 		+ATT*vectorPropT . CTT . vectorPropT
-		+AUU*vectorPropU . CUU . vectorPropU);
+		+AUU*vectorPropU . CUU . vectorPropU
+		+ASS*vectorPropS . CSS . vectorPropS
+		+scalarPropS . CST\[Lambda] . scalarPropT
+		+scalarPropS . CSU\[Lambda] . scalarPropU
+		+scalarPropT . CTU\[Lambda] . scalarPropU
+		);
 
 (*Scalar-coupling channels*)		
 	ResLL+=(
 		+ scalarPropT . CTT\[Lambda] . scalarPropT
 		+ scalarPropU . CUU\[Lambda] . scalarPropU
+		+ scalarPropS . CSS\[Lambda] . scalarPropS
 		+scalarPropS . CST\[Lambda] . scalarPropT
 		+scalarPropS . CSU\[Lambda] . scalarPropU
 		+scalarPropT . CTU\[Lambda] . scalarPropU
