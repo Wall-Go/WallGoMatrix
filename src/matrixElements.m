@@ -28,7 +28,7 @@ Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Pri
 (*Matrix elements*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Help functions*)
 
 
@@ -272,7 +272,7 @@ Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContrac
         Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Matrix elements*)
 
 
@@ -617,13 +617,13 @@ If[
 
 
 CreateMatrixElementS1S2toS3S4[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_]:=
-Block[{s,t,u,gTensor,leadingLog,\[Lambda]3Tensor,vectorPropT,scalarPropT,vectorPropU,scalarPropU,
-		CSS,CTT,CUU,CSS\[Lambda],CTT\[Lambda],CUU\[Lambda],ASS,ATT,AUU,ResLL,ResQuartic},
+Block[{s,t,u,gTensor,leadingLog,\[Lambda]3Tensor,\[Lambda]4Tensor,vectorPropT,scalarPropT,vectorPropU,scalarPropU,
+		CSS,CTT,CUU,CSS\[Lambda],CTT\[Lambda],CUU\[Lambda],ASS,ATT,AUU,ResLL,ResQuartic
+		,CST\[Lambda],CSU\[Lambda],CTU\[Lambda],scalarPropS,CQuarticCubic\[Lambda],Particle3,Particle4},
 (*
 	There is no trilinear scalar interaction taken into account as the symmetric phase is assumed.
 	Thus only vector trillinear processes and quartic scalar processes are taken into account.
 *)
-leadingLog=True;
 If[
 	particle1[[2]]!="S"||
 	particle2[[2]]!="S"||
@@ -639,7 +639,23 @@ If[
 	\[Lambda]3Tensor=Table[\[Lambda]3[[;;,Particle1[[1]],Particle2[[1]]]],
 		{Particle1,{particle1,particle2,particle3,particle4}},
 		{Particle2,{particle1,particle2,particle3,particle4}}];
+	
+	\[Lambda]4Tensor=Table[\[Lambda]4[[Particle1[[1]],Particle2[[1]],Particle3[[1]],Particle4[[1]]]],
+		{Particle1,{particle1,particle2,particle3,particle4}},
+		{Particle2,{particle1,particle2,particle3,particle4}},
+		{Particle3,{particle1,particle2,particle3,particle4}},
+		{Particle4,{particle1,particle2,particle3,particle4}}];
 		
+(*Vector propagators*)
+	vectorPropT=Table[1/(t-i),{i,vectorMass}];
+	vectorPropU=Table[1/(u-i),{i,vectorMass}];
+
+(*Scalar propagators*)
+	scalarPropT=Table[1/(t-i),{i,scalarMass}];
+	scalarPropU=Table[1/(u-i),{i,scalarMass}];
+	scalarPropS=Table[1/(s),{i,scalarMass}];
+	
+			
 (*Group invariants that multiply various Lorentz Structures*)
 	CSS=Table[
 		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
@@ -672,16 +688,35 @@ If[
 		Tr[\[Lambda]3Tensor[[1,4]][[a]] . Transpose[\[Lambda]3Tensor[[1,4]][[b]]]]
 		Tr[\[Lambda]3Tensor[[2,3]][[a]] . Transpose[\[Lambda]3Tensor[[2,3]][[b]]]],
 		{a,1,Length[\[Lambda]3]},
-		{b,1,Length[\[Lambda]3]}];		
-	
-		
-(*Vector propagators*)
-	vectorPropT=Table[1/(t-i),{i,vectorMass}];
-	vectorPropU=Table[1/(u-i),{i,vectorMass}];
+		{b,1,Length[\[Lambda]3]}];	
 
-(*Scalar propagators*)
-	scalarPropT=Table[1/(t-i),{i,scalarMass}];
-	scalarPropU=Table[1/(u-i),{i,scalarMass}];
+	CST\[Lambda]=2*Table[
+		Tr[\[Lambda]3Tensor[[1,2]][[a]] . \[Lambda]3Tensor[[2,4]][[b]] . Transpose[\[Lambda]3Tensor[[3,4]][[a]]] . Transpose[\[Lambda]3Tensor[[1,3]][[b]]]]
+			,
+		{a,1,Length[\[Lambda]3]},
+		{b,1,Length[\[Lambda]3]}];	
+
+	CSU\[Lambda]=2*Table[
+		Tr[\[Lambda]3Tensor[[1,2]][[a]] . \[Lambda]3Tensor[[2,3]][[b]] . \[Lambda]3Tensor[[3,4]][[a]] . Transpose[\[Lambda]3Tensor[[1,4]][[b]]]]
+			,
+		{a,1,Length[\[Lambda]3]},
+		{b,1,Length[\[Lambda]3]}];	
+
+	CTU\[Lambda]=2*Table[
+		Tr[\[Lambda]3Tensor[[1,3]][[a]] . Transpose[\[Lambda]3Tensor[[2,3]][[b]]] . \[Lambda]3Tensor[[2,4]][[a]] . Transpose[\[Lambda]3Tensor[[1,4]][[b]]]]
+			,
+		{a,1,Length[\[Lambda]3]},
+		{b,1,Length[\[Lambda]3]}];
+		
+	CQuarticCubic\[Lambda]=2*Total[Sum[\[Lambda]3Tensor[[1,3]][[a]] \[Lambda]3Tensor[[2,4]][[a]]scalarPropT[[a]],
+		{a,1,Length[\[Lambda]3]} ]\[Lambda]4Tensor[[1,3,2,4]],-1]; (*t-channel times quartic*)
+	CQuarticCubic\[Lambda]+=2*Total[Sum[\[Lambda]3Tensor[[1,2]][[a]] \[Lambda]3Tensor[[3,4]][[a]]scalarPropS[[a]],
+		{a,1,Length[\[Lambda]3]} ]\[Lambda]4Tensor[[1,2,3,4]],-1];(*s-channel times quartic*)
+	CQuarticCubic\[Lambda]+=2*Total[Sum[\[Lambda]3Tensor[[1,4]][[a]] \[Lambda]3Tensor[[2,3]][[a]]scalarPropU[[a]],
+		{a,1,Length[\[Lambda]3]} ]\[Lambda]4Tensor[[1,4,2,3]],-1];(*u-channel times quartic*)
+					
+
+	
 		
 (*Lorentz structures*)
 	ASS=(t-u)^2/4; (*squared s-channel diagram*)
@@ -689,17 +724,23 @@ If[
 	AUU=(t-s)^2/4; (*squared u-channel diagram*)
 
 
-(*Leading-log terms*)
+(*Vector-coupling channels*)
 	ResLL=(
 		+ATT*vectorPropT . CTT . vectorPropT
 		+AUU*vectorPropU . CUU . vectorPropU);
-		
+
+(*Scalar-coupling channels*)		
 	ResLL+=(
 		+ scalarPropT . CTT\[Lambda] . scalarPropT
-		+ scalarPropU . CUU\[Lambda] . scalarPropU);
-
+		+ scalarPropU . CUU\[Lambda] . scalarPropU
+		+scalarPropS . CST\[Lambda] . scalarPropT
+		+scalarPropS . CSU\[Lambda] . scalarPropU
+		+scalarPropT . CTU\[Lambda] . scalarPropU
+		);
 	ResQuartic=Total[\[Lambda]4[[particle1[[1]],particle2[[1]],particle3[[1]],particle4[[1]]]]^2,-1];
-	Return[ResLL]
+	
+	
+	Return[ResLL+ResQuartic+CQuarticCubic\[Lambda]]
 ]
 ];
 
@@ -967,7 +1008,7 @@ If[ (
 ];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Getting the matrix elements for out-of-Equilibrium particles*)
 
 
