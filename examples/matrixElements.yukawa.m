@@ -12,7 +12,7 @@ $LoadGroupMath=True;
 (*Yukawa Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -49,7 +49,7 @@ VMass=msq/2 MassTerm
 (* 1/6\[Gamma]\[Phi]^3 *)
 InputInv={{1,1,1},{True,True,True}};
 CubicTerm=CreateInvariant[Group,RepScalar,InputInv][[1]];
-VCubic=0;(* turned off *)\[Gamma]/6 CubicTerm
+VCubic=\[Gamma]/6 CubicTerm
 \[Lambda]3=GradCubic[VCubic];
 
 
@@ -91,6 +91,7 @@ YsffC=y*GradYukawa[YukawaDoublet2];
 
 
 vev={v};
+(*SymmetryBreaking[vev,VevDependentCouplings->True]*) (*uncomment if you want vev-dependent couplings*)
 SymmetryBreaking[vev]
 
 
@@ -141,7 +142,7 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 up to the user to make sure that the same order is given in the python code
 *)
 UserMasses={ms,mf,mf};
-UserCouplings={CouplingName,\[Lambda],y}//Flatten;
+UserCouplings={CouplingName,\[Lambda],y,\[Gamma]}//Flatten;
 
 
 (*
