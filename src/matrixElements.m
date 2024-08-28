@@ -28,7 +28,7 @@ Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Pri
 (*Matrix elements*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Help functions*)
 
 
@@ -97,7 +97,10 @@ CreateOutOfEq[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion,temp,Partic
 ];
 
 
-SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion,PosScalar,count},
+	Options[SymmetryBreaking] = { VevDependentCouplings-> False};
+
+
+SymmetryBreaking[vev_,OptionsPattern[]] :=Block[{PosVector,PosFermion,PosScalar,count},
 (*
 	
 *)
@@ -148,6 +151,10 @@ SymmetryBreaking[vev_] :=Block[{PosVector,PosFermion,PosScalar,count},
 		]
 	,{i,1,Length[PosScalar]}];
 	
+	
+	If[OptionValue[VevDependentCouplings]==True, (*Additional terms are added to scalar trillinear coupligs if the VevDependentCouplings option is used*)
+		\[Lambda]3=\[Lambda]3+\[Lambda]4 . vev;
+	]
 ]
 
 
@@ -265,7 +272,7 @@ Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContrac
         Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Matrix elements*)
 
 
@@ -605,7 +612,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3S4*)
 
 
@@ -692,7 +699,6 @@ If[
 		+ scalarPropU . CUU\[Lambda] . scalarPropU);
 
 	ResQuartic=Total[\[Lambda]4[[particle1[[1]],particle2[[1]],particle3[[1]],particle4[[1]]]]^2,-1];
-
 	Return[ResLL]
 ]
 ];
@@ -1422,7 +1428,6 @@ CollEllV1V2toV3V4=ExtractOutOfEqElementV1V2toV3V4[particleList,LightParticles,Pa
 CollEllS1S2toS3S4=ExtractOutOfEqElementS1S2toS3S4[particleList,LightParticles,ParticleMasses];
 CollEllS1S2toF1F2=ExtractOutOfEqElementS1S2toF1F2[particleList,LightParticles,ParticleMasses];
 CollEllQ1S1toQ1S1=ExtractOutOfEqElementQ1S1toQ1S1[particleList,LightParticles,ParticleMasses];
-
 
 CollEllTotal=Join[
 	CollEllQ1Q2toQ3Q4,
