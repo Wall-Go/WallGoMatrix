@@ -28,7 +28,7 @@ Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Pri
 (*Matrix elements*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Help functions*)
 
 
@@ -708,6 +708,7 @@ If[
 		{a,1,Length[\[Lambda]3]},
 		{b,1,Length[\[Lambda]3]}];
 		
+	
 	CQuarticCubic\[Lambda]=2*Total[Sum[\[Lambda]3Tensor[[1,3]][[a]] \[Lambda]3Tensor[[2,4]][[a]]scalarPropT[[a]],
 		{a,1,Length[\[Lambda]3]} ]\[Lambda]4Tensor[[1,3,2,4]],-1]; (*t-channel times quartic*)
 	CQuarticCubic\[Lambda]+=2*Total[Sum[\[Lambda]3Tensor[[1,2]][[a]] \[Lambda]3Tensor[[3,4]][[a]]scalarPropS[[a]],
@@ -719,9 +720,9 @@ If[
 	
 		
 (*Lorentz structures*)
-	ASS=(t-u)^2/4; (*squared s-channel diagram*)
-	ATT=(s-u)^2/4; (*squared t-channel diagram*)
-	AUU=(t-s)^2/4; (*squared u-channel diagram*)
+	ASS=(t-u)^2; (*squared s-channel diagram*)
+	ATT=(s-u)^2; (*squared t-channel diagram*)
+	AUU=(t-s)^2; (*squared u-channel diagram*)
 
 
 (*Vector-coupling channels*)
@@ -741,7 +742,7 @@ If[
 	ResQuartic=Total[\[Lambda]4[[particle1[[1]],particle2[[1]],particle3[[1]],particle4[[1]]]]^2,-1];
 	
 	
-	Return[ResLL+ResQuartic]
+	Return[ResLL+ResQuartic+CQuarticCubic\[Lambda]]
 ]
 ];
 
