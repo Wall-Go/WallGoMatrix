@@ -807,13 +807,13 @@ If[
 	(*Squared Yukawa diagrams with fermion exchanges*)
 	TotRes+=A Total[CYT Conjugate[CYT],-1]; (*squared t-channel diagram*)
 	TotRes+=A Total[CYU Conjugate[CYU],-1]; (*squared u-channel diagram*)
-	TotRes+=-A Total[CYU Conjugate[CYT]+CYT Conjugate[CYU],-1]; (*mixed u & t-channel diagrams*)
+	TotRes+=A Total[CYU Conjugate[CYT]+CYT Conjugate[CYU],-1]; (*mixed u & t-channel diagrams*)
 	
 	(*Squared s-channel diagram with a vector boson*)
 	TotRes+=4*A*Total[CVS Conjugate[CVS],-1]; (*Not yet independently checked*)
 	
 	(*Mix between vector- and fermion-exchange diagrams*)
-	TotRes+=2*A*Total[(CYT-CYU) Conjugate[CVS]+CVS Conjugate[(CYT-CYU)],-1]; (*Not yet independently checked*)
+	TotRes+=2*A*Total[(CYT+CYU) Conjugate[CVS]+CVS Conjugate[(CYT+CYU)],-1]; (*Not yet independently checked*)
 	
 (*The full result*)
 	Return[2*Simplify[TotRes,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
