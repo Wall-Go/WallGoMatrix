@@ -40,6 +40,24 @@ DiagonalTensor2[s_SparseArray,a_Integer,b_Integer] := With[
     ]
 
 
+OrderArray[s_SparseArray,a_Integer,b_Integer,c_Integer,d_Integer] := Flatten[s,{{a},{b},{c},{d}}]
+
+
+Contract[tensor1_,tensor2_,indices_]:=Activate @ TensorContract[
+        Inactive[TensorProduct][tensor1,tensor2], indices]
+
+
+Contract[tensor1_,tensor2_,tensor3_,indices_]:=Activate @ TensorContract[
+        Inactive[TensorProduct][tensor1,tensor2,tensor3], indices]
+
+
+Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContract[
+        Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
+
+
+ListToMat[list1_] := DiagonalMatrix[list1]//SparseArray
+
+
 RangeToIndices[ListI_]:=Block[{},
 (*Creates a list of numbers between i and j when ListI=i;;j*)
 	Table[i,{i,ListI[[1]],ListI[[2]]}]
@@ -97,7 +115,7 @@ CreateOutOfEq[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion,temp,Partic
 ];
 
 
-	Options[SymmetryBreaking] = { VevDependentCouplings-> False};
+Options[SymmetryBreaking] = { VevDependentCouplings-> False};
 
 
 SymmetryBreaking[vev_,OptionsPattern[]] :=Block[{PosVector,PosFermion,PosScalar,count},
@@ -272,7 +290,7 @@ Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContrac
         Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Matrix elements*)
 
 
@@ -617,9 +635,9 @@ If[
 
 
 CreateMatrixElementS1S2toS3S4[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_]:=
-Block[{s,t,u,gTensor,leadingLog,\[Lambda]3Tensor,\[Lambda]4Tensor,vectorPropT,scalarPropT,vectorPropU,scalarPropU,
-		CSS,CTT,CUU,CSS\[Lambda],CTT\[Lambda],CUU\[Lambda],ASS,ATT,AUU,ResLL,ResQuartic
-		,CST\[Lambda],CSU\[Lambda],CTU\[Lambda],scalarPropS,CQuarticCubic\[Lambda],Particle3,Particle4},
+Block[{s,t,u,gTensor,leadingLog,\[Lambda]3Tensor,\[Lambda]4Tensor,vectorPropT,scalarPropT,vectorPropU,scalarPropU,Particle3,Particle4,
+		AS,AU,AT,scalarPropS,vectorPropS,
+		TotRes,CS,CT,CU,CS\[Lambda],CT\[Lambda],CU\[Lambda],C\[Lambda]},
 (*
 	There is no trilinear scalar interaction taken into account as the symmetric phase is assumed.
 	Thus only vector trillinear processes and quartic scalar processes are taken into account.
@@ -647,102 +665,40 @@ If[
 		{Particle4,{particle1,particle2,particle3,particle4}}];
 		
 (*Vector propagators*)
-	vectorPropT=Table[1/(t-i),{i,vectorMass}];
-	vectorPropU=Table[1/(u-i),{i,vectorMass}];
+	vectorPropT=Table[1/(t-i),{i,vectorMass}]//ListToMat;
+	vectorPropU=Table[1/(u-i),{i,vectorMass}]//ListToMat;
+	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
 
 (*Scalar propagators*)
-	scalarPropT=Table[1/(t-i),{i,scalarMass}];
-	scalarPropU=Table[1/(u-i),{i,scalarMass}];
-	scalarPropS=Table[1/(s),{i,scalarMass}];
+	scalarPropT=Table[1/(t-i),{i,scalarMass}]//ListToMat;
+	scalarPropU=Table[1/(u-i),{i,scalarMass}]//ListToMat;
+	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
+
+(*Lorentz structures for vector exchanges*)
+	AS=(t-u); (* s-channel diagram*)
+	AT=(s-u); (* t-channel diagram*)
+	AU=(t-s); (* u-channel diagram*)
 	
-			
-(*Group invariants that multiply various Lorentz Structures*)
-	CSS=Table[
-		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
-		Tr[gTensor[[3,4]][[a]] . Transpose[gTensor[[3,4]][[b]]]],
-		{a,1,Length[gvss]},
-		{b,1,Length[gvss]}];
-	CTT=Table[
-		Tr[gTensor[[1,3]][[a]] . Transpose[gTensor[[1,3]][[b]]]]
-		Tr[gTensor[[2,4]][[a]] . Transpose[gTensor[[2,4]][[b]]]],
-		{a,1,Length[gvss]},
-		{b,1,Length[gvss]}];
-	CUU=Table[
-		Tr[gTensor[[1,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]]
-		Tr[gTensor[[2,3]][[a]] . Transpose[gTensor[[2,3]][[b]]]],
-		{a,1,Length[gvss]},
-		{b,1,Length[gvss]}];
 
-				
-	CSS\[Lambda]=Table[
-		Tr[\[Lambda]3Tensor[[1,2]][[a]] . Transpose[\[Lambda]3Tensor[[1,2]][[b]]]]
-		Tr[\[Lambda]3Tensor[[3,4]][[a]] . Transpose[\[Lambda]3Tensor[[3,4]][[b]]]],
-		{a,1,Length[\[Lambda]3]},
-		{b,1,Length[\[Lambda]3]}];
-	CTT\[Lambda]=Table[
-		Tr[\[Lambda]3Tensor[[1,3]][[a]] . Transpose[\[Lambda]3Tensor[[1,3]][[b]]]]
-		Tr[\[Lambda]3Tensor[[2,4]][[a]] . Transpose[\[Lambda]3Tensor[[2,4]][[b]]]],
-		{a,1,Length[\[Lambda]3]},
-		{b,1,Length[\[Lambda]3]}];
-	CUU\[Lambda]=Table[
-		Tr[\[Lambda]3Tensor[[1,4]][[a]] . Transpose[\[Lambda]3Tensor[[1,4]][[b]]]]
-		Tr[\[Lambda]3Tensor[[2,3]][[a]] . Transpose[\[Lambda]3Tensor[[2,3]][[b]]]],
-		{a,1,Length[\[Lambda]3]},
-		{b,1,Length[\[Lambda]3]}];	
+(*Group invariants from vector diagrams*)
 
-	CST\[Lambda]=2*Table[
-		Tr[\[Lambda]3Tensor[[1,2]][[a]] . \[Lambda]3Tensor[[2,4]][[b]] . Transpose[\[Lambda]3Tensor[[3,4]][[a]]] . Transpose[\[Lambda]3Tensor[[1,3]][[b]]]]
-			,
-		{a,1,Length[\[Lambda]3]},
-		{b,1,Length[\[Lambda]3]}];	
-
-	CSU\[Lambda]=2*Table[
-		Tr[\[Lambda]3Tensor[[1,2]][[a]] . \[Lambda]3Tensor[[2,3]][[b]] . \[Lambda]3Tensor[[3,4]][[a]] . Transpose[\[Lambda]3Tensor[[1,4]][[b]]]]
-			,
-		{a,1,Length[\[Lambda]3]},
-		{b,1,Length[\[Lambda]3]}];	
-
-	CTU\[Lambda]=2*Table[
-		Tr[\[Lambda]3Tensor[[1,3]][[a]] . Transpose[\[Lambda]3Tensor[[2,3]][[b]]] . \[Lambda]3Tensor[[2,4]][[a]] . Transpose[\[Lambda]3Tensor[[1,4]][[b]]]]
-			,
-		{a,1,Length[\[Lambda]3]},
-		{b,1,Length[\[Lambda]3]}];
-		
+	CS=AS*Contract[gTensor[[1,2]],vectorPropS . gTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CT=AT*Contract[gTensor[[1,3]],vectorPropT . gTensor[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
+	CU=AU*Contract[gTensor[[1,4]],vectorPropU . gTensor[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
 	
-	CQuarticCubic\[Lambda]=2*Total[Sum[\[Lambda]3Tensor[[1,3]][[a]] \[Lambda]3Tensor[[2,4]][[a]]scalarPropT[[a]],
-		{a,1,Length[\[Lambda]3]} ]\[Lambda]4Tensor[[1,3,2,4]],-1]; (*t-channel times quartic*)
-	CQuarticCubic\[Lambda]+=2*Total[Sum[\[Lambda]3Tensor[[1,2]][[a]] \[Lambda]3Tensor[[3,4]][[a]]scalarPropS[[a]],
-		{a,1,Length[\[Lambda]3]} ]\[Lambda]4Tensor[[1,2,3,4]],-1];(*s-channel times quartic*)
-	CQuarticCubic\[Lambda]+=2*Total[Sum[\[Lambda]3Tensor[[1,4]][[a]] \[Lambda]3Tensor[[2,3]][[a]]scalarPropU[[a]],
-		{a,1,Length[\[Lambda]3]} ]\[Lambda]4Tensor[[1,4,2,3]],-1];(*u-channel times quartic*)
-					
+(*Group invariants from scalar diagrams*)	
+	
+	CS\[Lambda]= \[Lambda]3Tensor[[1,2]] . scalarPropS . \[Lambda]3Tensor[[3,4]]//OrderArray[#,1,2,3,4]&;
+	CT\[Lambda]= \[Lambda]3Tensor[[1,3]] . scalarPropT . \[Lambda]3Tensor[[2,4]]//OrderArray[#,1,3,2,4]&;
+	CU\[Lambda]= \[Lambda]3Tensor[[1,4]] . scalarPropU . \[Lambda]3Tensor[[2,3]]//OrderArray[#,1,3,4,2]&;
+	C\[Lambda]=\[Lambda]4[[particle1[[1]],particle2[[1]],particle3[[1]],particle4[[1]]]];
 
 	
-		
-(*Lorentz structures*)
-	ASS=(t-u)^2; (*squared s-channel diagram*)
-	ATT=(s-u)^2; (*squared t-channel diagram*)
-	AUU=(t-s)^2; (*squared u-channel diagram*)
-
-
-(*Vector-coupling channels*)
-	ResLL=(
-		+ATT*vectorPropT . CTT . vectorPropT
-		+AUU*vectorPropU . CUU . vectorPropU);
-
-(*Scalar-coupling channels*)		
-	ResLL+=(
-		+ scalarPropT . CTT\[Lambda] . scalarPropT
-		+ scalarPropU . CUU\[Lambda] . scalarPropU
-		+ scalarPropS . CSS\[Lambda] . scalarPropS
-		+scalarPropS . CST\[Lambda] . scalarPropT
-		+scalarPropS . CSU\[Lambda] . scalarPropU
-		+scalarPropT . CTU\[Lambda] . scalarPropU
-		);
-	ResQuartic=Total[\[Lambda]4[[particle1[[1]],particle2[[1]],particle3[[1]],particle4[[1]]]]^2,-1];
+(*Total contribution*)		
+	TotRes=Total[(CS\[Lambda]+CT\[Lambda]+CU\[Lambda]+C\[Lambda]+CS+CT+CU)^2,-1]; (*total amplitude-squared contribution from all diagrams*)
 	
-	
-	Return[ResLL+ResQuartic+CQuarticCubic\[Lambda]]
+
+	Return[TotRes]
 ]
 ];
 
@@ -751,9 +707,11 @@ If[
 (*S1S2toF1F2*)
 
 
-CreateMatrixElementS1S2toF1F2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
+CreateMatrixElementS1S2toF1F2[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_,fermionMass_]:=
 Block[{s,t,u,gTensor,gTensorT,gTensorC,gTensorCT,gTensorVF,gTensorVFC,gTensorVS,
-		Res,CTT,CUU,ATT,AUU},
+		Res,CTT,CUU,ATT,AUU,p1,p2,p3,p4,gTensorS,gTensorF,YTensor,YTensorC,particleNull,
+		\[Lambda]3Tensor,YTensor2,YTensor2C,vectorPropS,scalarPropS,fermionPropT,fermionPropU,CVS,
+		CYS,CYT,CYU,ASSY,A,TotRes},
 (*
 		There is no trilinear scalar interaction taken into account as the symmetric phase is assumed.
 		The full Yukawa contribution is included, as well as the s-channel exchange of gauge bosons.
@@ -773,7 +731,7 @@ If[
 	particle2[[2]]=="F"&&
 	particle3[[2]]=="S"&&
 	particle4[[2]]=="S",
-(*Just changing the order of the particles so that it is always QQ->VV*)	
+(*Just changing the order of the particles so that it is always SS->FF*)	
 		temp=p1;
 		p1=p3;
 		p3=temp;
@@ -782,61 +740,83 @@ If[
 		p2=p4;
 		p4=temp;
 	];
+	
+	particleNull={}; (*Just a trick to not confuse the ordering of particles*)
 (*Coupling constants that we will need*)
-	gTensor[1,3]=Ysff[[p1,p3,;;]];
-	gTensor[2,4]=Ysff[[p2,p4,;;]];
-	gTensor[1,4]=Ysff[[p1,p4,;;]];
-	gTensor[2,3]=Ysff[[p2,p3,;;]];
-
-	gTensorT[1,3]=Ysff[[p1,;;,p3]];
-	gTensorT[2,4]=Ysff[[p2,;;,p4]];
-	gTensorT[1,4]=Ysff[[p1,;;,p4]];
-	gTensorT[2,3]=Ysff[[p2,;;,p3]];
+	gTensorS=Table[gvss[[;;,Particle1,Particle2]],
+		{Particle1,{p1,p2,particleNull,particleNull}},
+		{Particle2,{p1,p2,particleNull,particleNull}}];
+	
+	gTensorF=Table[gvff[[;;,Particle1,Particle2]],
+		{Particle1,{particleNull,particleNull,p3,p4}},
+		{Particle2,{particleNull,particleNull,p3,p4}}];
 		
-	gTensorC[1,3]=YsffC[[p1,p3,;;]];
-	gTensorC[2,4]=YsffC[[p2,p4,;;]];
-	gTensorC[1,4]=YsffC[[p1,p4,;;]];
-	gTensorC[2,3]=YsffC[[p2,p3,;;]];
+	YTensor=Table[Ysff[[;;,Particle1,Particle2]],
+		{Particle1,{particleNull,particleNull,p3,p4}},
+		{Particle2,{particleNull,particleNull,p3,p4}}];
+		
+	YTensorC=Table[YsffC[[;;,Particle1,Particle2]],
+		{Particle1,{particleNull,particleNull,p3,p4}},
+		{Particle2,{particleNull,particleNull,p3,p4}}];
+		
+	\[Lambda]3Tensor=Table[\[Lambda]3[[;;,Particle1,Particle2]],
+		{Particle1,{p1,p2,particleNull,particleNull}},
+		{Particle2,{p1,p2,particleNull,particleNull}}];
+		
+	YTensor2=Table[Ysff[[Particle1,Particle2,;;]],
+		{Particle1,{p1,p2,particleNull,particleNull}},
+		{Particle2,{particleNull,particleNull,p3,p4}}];
 
-	gTensorCT[1,3]=YsffC[[p1,;;,p3]];
-	gTensorCT[2,4]=YsffC[[p2,;;,p4]];
-	gTensorCT[1,4]=YsffC[[p1,;;,p4]];
-	gTensorCT[2,3]=YsffC[[p2,;;,p3]];
+	YTensor2C=Table[YsffC[[Particle1,Particle2,;;]],
+		{Particle1,{p1,p2,particleNull,particleNull}},
+		{Particle2,{particleNull,particleNull,p3,p4}}];
 
-	gTensorVS=gvss[[;;,p1,p2]];
-	gTensorVF=gvff[[;;,p3,p4]];
-	gTensorVFC=gvff[[;;,p4,p3]];
+(*Vector propagators*)
+	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
+
+(*Scalar propagators*)
+	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
 
 (*Fermion propagators*)
-	fermionPropT=Table[1/(t-i),{i,fermionMass}];
-	fermionPropU=Table[1/(u-i),{i,fermionMass}];
+	fermionPropT=Table[1/(t-i),{i,fermionMass}]//ListToMat;
+	fermionPropU=Table[1/(u-i),{i,fermionMass}]//ListToMat;
+	
 
-(*Coupling factors that appear*)
-	CTT=Table[
-		Tr[gTensor[1,3][[;;,;;,a]] . Transpose[gTensorC[1,3][[;;,;;,b]]]]
-		Tr[gTensor[2,4][[;;,;;,b]] . Transpose[gTensorC[2,4][[;;,;;,a]]]],
-		{a,1,Length[YsffC[[1,;;]]]},
-		{b,1,Length[YsffC[[1,;;]]]}
-	];
+(*Group invariants from vector diagrams*)
+	CVS=Contract[gTensorS[[1,2]],vectorPropS . gTensorF[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
 	
-	CUU=Table[
-		Tr[gTensor[1,4][[;;,;;,a]] . Transpose[gTensorC[1,4][[;;,;;,b]]]]
-		Tr[gTensor[2,3][[;;,;;,b]] . Transpose[gTensorC[2,3][[;;,;;,a]]]],
-		{a,1,Length[YsffC[[1,;;]]]},
-		{b,1,Length[YsffC[[1,;;]]]}
-	];
+(*Group invariants from Yukawa diagrams*)	
+	CYS=Contract[\[Lambda]3Tensor[[1,2]],scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; (*scalar-exchange*)
 	
-(*Lorentz structures*)
-	ATT=t*u;
-	AUU=t*u;
+	CYT=Contract[YTensor2[[1,3]] . fermionPropT,YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+	CYU=Contract[YTensor2[[1,4]] . fermionPropU,YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+
+(*Lorentz structures for vector exchanges*)
+(*
+	Due to angular momentum conservation the SS->S->FF diagram does not mix with the other channels.
+*)
+	ASSY=s; (*Squared SS->S->FF diagram*)
+	
+	A=t*u; (*All other squared diagrams are proportional to t*u *)
 	
 (*The result*)
-	Res=(
-		+ATT*fermionPropT . CTT . fermionPropT
-		+AUU*fermionPropU . CUU . fermionPropU);
+
+	(*SS->S->FF squared*)
+	TotRes=ASSY *Total[CYS Conjugate[CYS],-1];
+	
+	(*Squared Yukawa diagrams with fermion exchanges*)
+	TotRes+=A Total[CYT Conjugate[CYT],-1]; (*squared t-channel diagram*)
+	TotRes+=A Total[CYU Conjugate[CYU],-1]; (*squared u-channel diagram*)
+	TotRes+=-A Total[CYU Conjugate[CYT]+CYT Conjugate[CYU],-1]; (*mixed u & t-channel diagrams*)
+	
+	(*Squared s-channel diagram with a vector boson*)
+	TotRes+=4*A*Total[CVS Conjugate[CVS],-1]; (*Not yet independently checked*)
+	
+	(*Mix between vector- and fermion-exchange diagrams*)
+	TotRes+=2*A*Total[(CYT-CYU) Conjugate[CVS]+CVS Conjugate[(CYT-CYU)],-1]; (*Not yet independently checked*)
 	
 (*The full result*)
-	Return[2*Res] (*factor of 2 from anti-particles*)
+	Return[2*Simplify[TotRes,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
 ]	
 ];
 
@@ -1262,9 +1242,9 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 		1/degreeOfFreedom[particleList[[a]]]
 		CreateMatrixElementS1S2toS3S4[particleList[[a]],b,c,d,VectorMass,ScalarMass],
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+		Print[MatrixElements//Normal];
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
-
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
 	Return[{}]; 
@@ -1312,7 +1292,7 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
 		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementS1S2toF1F2[particleList[[a]],b,c,d,FermionMass],
+		CreateMatrixElementS1S2toF1F2[particleList[[a]],b,c,d,VectorMass,ScalarMass,FermionMass],
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
@@ -1495,7 +1475,7 @@ Return[CollEllTotal]
 ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,RepOptional_:{}]:=
 Block[{ExportTXT,ExportH5,
 	Cij,ParticleInfo,LightParticles,particleListFull,CouplingInfo,MatrixElements,
-	OutOfEqParticles,RepMasses,RepCouplings,C
+	OutOfEqParticles,RepMasses,RepCouplings,
 	},
 
 (*
@@ -1530,6 +1510,9 @@ Replacement rules for converting to the format used by the c++ code
 *)	
 	RepMasses=Table[UserMasses[[i]]->msq[i-1],{i,1,Length[UserMasses]}];
 	RepCouplings=Table[UserCouplings[[i]]->Symbol["c"][i-1],{i,1,Length[UserCouplings]}];
+	
+	VarAsum=#>0&/@Variables@Total[Union[Ysff//Normal,gvss//Normal,gvff//Normal
+	,gvvv//Normal,\[Lambda]4//Normal,\[Lambda]3//Normal,ParticleMasses//Normal,{t},{u},{s}],-1]; (*All variables are assumed to be real*)
 	
 	
 (*
@@ -1605,17 +1588,3 @@ MatrixElemToC[MatrixElem_]:=Block[{Ind},
 	
 	Return[M[Ind[[1]]-1,Ind[[2]]-1,Ind[[3]]-1,Ind[[4]]-1]->MatrixElem[[1]]]
 ]
-
-
-Begin["`Private`"]
-End[]
-
-
-EndPackage[]
-
-
-
-
-
-
-
