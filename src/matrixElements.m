@@ -547,17 +547,20 @@ If[ (
 
 
 (* ::Subsubsection::Closed:: *)
-(*Q1Q2toV1V2*)
+(*Q1Q2toV1V2-D*)
 
 
-CreateMatrixElementQ1Q2toV1V2[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
-Block[{s,t,u,gTensor,gTensorT,leadingLog},
+CreateMatrixElementQ1Q2toV1V2[particle1_,particle2_,particle3_,particle4_,fermionMass_,vectorMass_]:=
+Block[{s,t,u,gTensor,gTensorT,vectorPropS,gVTensor,fermionPropU,fermionPropT,CS,CTrS,
+		fermionIdentity,
+		C1,C2,C3,C4,C5,C6,p1,p2,p3,p4,
+		temp,A1,A2,A3,Res1,Res2,Res3,Res4},
 (*
-In QCD this process depends on up to
-two Lorentz structures if the particles are all the same; and
-one Lorentz structure if they are all different.
+	In QCD this process depends on up to
+	two Lorentz structures if the particles are all the same; and
+	one Lorentz structure if they are all different.
 *)
-leadingLog=False;
+
 If[
 	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="V"||particle4[[2]]!="V")&&
 	(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="F"||particle4[[2]]!="F"),
@@ -581,6 +584,7 @@ If[
 		p2=p4;
 		p4=temp;
 	];
+
 (*Coupling constants that we will need*)
 	gTensor[1,3]=gvff[[p3,p1,;;]];
 	gTensor[3,1]=gvff[[p3,;;,p1]];
@@ -593,10 +597,13 @@ If[
 	
 	gTensor[2,3]=gvff[[p3,p2,;;]];
 	gTensor[3,2]=gvff[[p3,;;,p2]];
-
+	
 (*Fermion propagators*)
 	fermionPropU=Table[1/(u-i),{i,fermionMass}];
 	fermionPropT=Table[1/(t-i),{i,fermionMass}];
+	vectorPropS=Table[1/(s-i),{i,vectorMass}];
+	
+	fermionIdentity=Table[1,{i,fermionMass}];
 
 (*Group invariants that multiply various Lorentz Structures*)
 	C1=Tr[
@@ -612,25 +619,39 @@ If[
 		Tr[gTensor[3,1][[b]] . gTensor[1,4][[a]] . gTensor[3,2][[b]] . gTensor[2,4][[a]]],
 		{a,Length[gTensor[1,4]]},{b,Length[gTensor[3,2]]}];
 
-(*Multiplying with propagators for each particle*)
+	C4=Tr[
+		DiagonalMatrix[fermionIdentity] . Sum[vectorPropS[[a]]gTensor[3,1][[a]] . gTensor[1,3][[a]],{a,Length[gTensor[1,3]]}] .
+		DiagonalMatrix[fermionIdentity] . Sum[vectorPropS[[b]]gTensor[4,2][[b]] . gTensor[2,4][[b]],{b,Length[gTensor[2,4]]}]];
+	C5=Tr[
+		DiagonalMatrix[fermionIdentity] . Sum[vectorPropS[[a]] gTensor[4,1][[a]] . gTensor[1,4][[a]],{a,Length[gTensor[1,4]]}] .
+		DiagonalMatrix[fermionIdentity] . Sum[vectorPropS[[b]]gTensor[3,2][[b]] . gTensor[2,3][[b]],{b,Length[gTensor[2,3]]}]];
+		
+	C6=Sum[
+		Tr[vectorPropS[[a]]vectorPropS[[b]]gTensor[4,1][[b]] . gTensor[1,3][[a]] . gTensor[4,2][[b]] . gTensor[2,3][[a]]],
+		{a,Length[gTensor[1,3]]},{b,Length[gTensor[4,2]]}];
+	C6+=Sum[
+		Tr[vectorPropS[[a]]vectorPropS[[b]]gTensor[3,1][[b]] . gTensor[1,4][[a]] . gTensor[3,2][[b]] . gTensor[2,4][[a]]],
+		{a,Length[gTensor[1,4]]},{b,Length[gTensor[3,2]]}];
 
 (*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
-(*The interference diagram does however not contribute at leading-log, so I omit it*)
-(*They are hardcoded for now*)
 	A1=4*t*u; (*squared t-channel diagram*)
 	A2=4*t*u; (*squared u-channel diagram*)
-	A3=4*(t^2+u^2)/s^2; (*squared s-channel diagram*)
+	A3=4*(t^2+u^2); (*squared s-channel diagram*)
 
 (*Generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*C1;
 	Res2=A2*C2;
-	Res3=A3*C3
-		-8*t^2/s^2(t^2 C1/.(#->0&/@fermionMass))
-		-8*u^2/s^2(u^2 C2/.(#->0&/@fermionMass))//Simplify;
+	Res3=A3*C6;
+	Res3+=-8*t^2 C4;
+	Res3+=-8*u^2 C5;
+	
 
-	Return[2*(Res1+Res2+If[leadingLog,Res3,0])](*Factor of 2 from anti-particles*)
+	Return[2*(Res1+Res2+Res3)](*Factor of 2 from anti-particles*)
 ]	
 ];
+
+
+MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
 
 
 (* ::Subsubsection::Closed:: *)
@@ -1103,7 +1124,7 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
 		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementQ1Q2toV1V2[particleList[[a]],b,c,d,FermionMass],
+		CreateMatrixElementQ1Q2toV1V2[particleList[[a]],b,c,d,FermionMass,VectorMass],
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
@@ -1216,7 +1237,6 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 		1/degreeOfFreedom[particleList[[a]]]
 		CreateMatrixElementS1S2toS3S4[particleList[[a]],b,c,d,VectorMass,ScalarMass],
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-		Print[MatrixElements//Normal];
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
 (*If there are no matching matrix elements we return 0*)
