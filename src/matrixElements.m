@@ -295,17 +295,16 @@ Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContrac
 
 
 (* ::Subsubsection::Closed:: *)
-(*V1V2toV3V4*)
+(*V1V2toV3V4-D*)
 
 
 CreateMatrixElementV1V2toV3V4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
-Block[{s,t,u,gTensor,leadingLog},
+Block[{s,t,u,gTensor},
 (*
 In QCD this process depends on up to
 two Lorentz structures if the particles are all the same; and
 one Lorentz structure if they are all different.
 *)
-leadingLog=False;
 If[
 	particle1[[2]]!="V"||
 	particle2[[2]]!="V"||
@@ -335,22 +334,19 @@ If[
 (*Vector propagators*)
 	vectorPropT=Table[1/(t-i),{i,vectorMass}];
 	vectorPropU=Table[1/(u-i),{i,vectorMass}];
+	vectorPropS=Table[1/(s-i),{i,vectorMass}];
 
-(*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins*)
-(*They are just hardcoded for now*)
 	A1=16(-1/4)(s-u)^2; (*squared t-channel diagram*)
 	A2=16(-1/4)(s-t)^2; (*squared u-channel diagram*)
-	A3=16*t*u/s^2; (*squared s-channel diagram*)
+	A3=16(-1/4)(u-t)^2; (*squared s-channel diagram*)
 
-(*We now generate the matrix element for Q1+Q2->Q3+Q4*)
 	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT];
 	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
-	Res3=A3*C3;
+	Res3=A3*DiagonalMatrix[vectorPropS] . C3 . DiagonalMatrix[vectorPropS];
 (*add terms independent on the mandelstam variables*)
-	Res4=-16*((C1+C2)*(1-1/4)+C3);
+	Res4=-16*((C1+C2+C3)*(1-1/4));
 	
-(*Factor 4 from anti-particle contributions*)
-	Return[-Total[Res1+Res2+If[leadingLog,Res3+Res4,0],-1]]
+	Return[-Total[Res1+Res2+Res3+Res4,-1]]
 ]
 ];
 
