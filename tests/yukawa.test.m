@@ -21,7 +21,7 @@ $LoadGroupMath=True;
 (*Yukawa Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -178,54 +178,56 @@ testList={};
 
 
 (* scalar-scalar scattering*)
-TestCreate[M[0,0,0,0]/.MatrixElements/.msq[i_]->0,
-	(*(c[1] + c[2]^2 (1/s + 1/t + 1/u))^2*) (* all channels *)
-	(c[2]^2 (1/t + 1/u))^2 (* just IR sensitive terms *)
-];
+AppendTo[testList,
+TestCreate[M[0,0,0,0]/.MatrixElements/.msq[i_]->0//Expand,
+	(c[1] + c[2]^2 (1/s + 1/t + 1/u))^2//Expand (* all channels *)
+	(*(c[2]^2 (1/t + 1/u))^2 *)(* just IR sensitive terms *)
+]];
 
 
 (* scalar to fermions *)
 AppendTo[testList,
-TestCreate[M[0,0,1,1]+M[0,0,2,2]+M[0,0,1,2]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (2 t/u + 2 u/t - 4) + c[2]^2 c[3]^2 (2/s)*)(* all channels *)
-	 c[3]^4 (2 t/u + 2 u/t) (* just IR sensitive terms *)
+TestCreate[M[0,0,1,1]+M[0,0,2,2]+M[0,0,1,2]/.MatrixElements/.msq[i_]->0//Expand,
+	c[3]^4 (2 t/u + 2 u/t - 4) + c[2]^2 c[3]^2 (2/s)//Expand(* all channels *)
+	 (*c[3]^4 (2 t/u + 2 u/t)*) (* just IR sensitive terms *)
 ]];
 
 
 (* fermions to scalar *)
 AppendTo[testList,
-TestCreate[M[1,1,0,0]+M[1,2,0,0]+M[2,1,0,0]+M[2,2,0,0]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (4 t/u + 4 u/t - 8) + c[2]^2 c[3]^2 (4/s)*)(* all channels *)
-	 c[3]^4 (4 t/u + 4 u/t)(* just IR sensitive terms *)
+TestCreate[M[1,1,0,0]+M[1,2,0,0]+M[2,1,0,0]+M[2,2,0,0]/.MatrixElements/.msq[i_]->0//Expand,
+	c[3]^4 (4 t/u + 4 u/t - 8) + c[2]^2 c[3]^2 (4/s)//Expand(* all channels *)
+	(* c[3]^4 (4 t/u + 4 u/t)*)(* just IR sensitive terms *)
 ]];
 
 
 (* scalar-fermion scattering *)
 AppendTo[testList,
-TestCreate[M[0,1,0,1]+M[0,2,0,2]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (4 s/u + 4 u/s - 8) + c[2]^2 c[3]^2 (4/t)*)(* all channels *)
-	 c[3]^4 (4 s/u) + c[2]^2 c[3]^2 (4/t)(* just IR sensitive terms *)
+TestCreate[M[0,1,0,1]+M[0,2,0,2]/.MatrixElements/.msq[i_]->0//Expand,
+	c[3]^4 (4 s/u + 4 u/s - 8) + c[2]^2 c[3]^2 (4/t)//Expand(* all channels *)
+	(* c[3]^4 (4 s/u) + c[2]^2 c[3]^2 (4/t)*)(* just IR sensitive terms *)
 ]];
 
 
 (* fermion-scalar scattering *)
 AppendTo[testList,
-TestCreate[M[1,0,0,1]+M[2,0,0,2]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (4 s/t + 4 t/s - 8) + c[2]^2 c[3]^2 (4/u)*)(* all channels *)
-	 c[3]^4 (4 s/t + 4 t/s) + c[2]^2 c[3]^2 (4/u)(* just IR sensitive terms *)
+TestCreate[M[1,0,0,1]+M[2,0,0,2]/.MatrixElements/.msq[i_]->0//Expand,
+	c[3]^4 (4 s/t + 4 t/s - 8) + c[2]^2 c[3]^2 (4/u)//Expand(* all channels *)
+	(* c[3]^4 (4 s/t + 4 t/s) + c[2]^2 c[3]^2 (4/u)*)(* just IR sensitive terms *)
 ]];
 
 
 (* fermion-fermion scattering*)
 AppendTo[testList,
-TestCreate[M[1,2,1,2]+M[2,1,1,2]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (24)*)(* all channels *)
-	0 (* just IR sensitive terms *)
+TestCreate[M[1,2,1,2]+M[2,1,1,2]/.MatrixElements/.msq[i_]->0//Expand,
+	c[3]^4 (24)//Expand(* all channels *)
+	(*0*) (* just IR sensitive terms *)
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
