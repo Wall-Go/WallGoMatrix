@@ -599,9 +599,6 @@ If[
 ];
 
 
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
-
-
 (* ::Subsubsection::Closed:: *)
 (*S1S2toS3S4-D*)
 
@@ -931,16 +928,20 @@ If[
 
 
 degreeOfFreedom[particle_]:=Block[{dof},
-
-	dof=Length[particle[[1]]];
 	
-	(*factor of 2 from anti-particles*)
-	If[particle[[2]]=="F",dof*=2];
+	If[NormalizationDOF==True,
+		dof=Length[particle[[1]]];
 	
-	(*Factor of 2 from spins*)
-	If[particle[[2]]=="V",dof*=2]; 
+		(*factor of 2 from anti-particles*)
+		If[particle[[2]]=="F",dof*=2];
 	
-	If[particle[[2]]=="S",dof];
+		(*Factor of 2 from spins*)
+		If[particle[[2]]=="V",dof*=2]; 
+	
+		If[particle[[2]]=="S",dof];
+	,
+		dof=1;
+	];
 	
 	Return[dof];
 ]
@@ -1456,7 +1457,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Extract elements*)
 
 
@@ -1505,7 +1506,10 @@ Return[CollEllTotal]
 (*Exporting to C++*)
 
 
-ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,RepOptional_:{}]:=
+Options[ExportMatrixElements] = {NormalizeWithDOF-> True};
+
+
+ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,RepOptional_:{},OptionsPattern[]]:=
 Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
 	Cij,ParticleInfo,LightParticles,particleListFull,CouplingInfo,MatrixElements,
 	OutOfEqParticles,RepMasses,RepCouplings,
@@ -1552,6 +1556,13 @@ Replacement rules for converting to the format used by the c++ code
 	If[ParticleMasses[[2]]=={},ParticleMassesI[[2]]={msq}];
 	If[ParticleMasses[[3]]=={},ParticleMassesI[[3]]={msq}];
 
+	If[OptionValue[NormalizeWithDOF]==True,
+		NormalizationDOF=True;
+	,
+		NormalizationDOF=False;
+	];
+	
+	
 (*
 Loop over all out-of-eq particles and extracting the matrix elements
 *)	
