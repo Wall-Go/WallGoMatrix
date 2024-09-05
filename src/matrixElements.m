@@ -921,7 +921,7 @@ If[
 	,
 	
 	(*The result for FF->SV is the same as  FS->VS if we do some renaming of the mandelstam variables*)
-	resTot=CreateMatrixElementQ1S1toQ1V1[particle1,particle3,particle2,particle4,fermionMass]/.{s->s1,t->t1,u->u1};
+	resTot=CreateMatrixElementF1S1toF1V1[particle1,particle3,particle2,particle4,fermionMass]/.{s->s1,t->t1,u->u1};
 	resTot=resTot/.{t1->s,s1->t,u1->u}//Simplify;	
 	Return[resTot]
 ,
