@@ -16,12 +16,15 @@ As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*S
 
 
 (*
-	Functions from groupmath are used to create the model.
+	Functions from GroupMath are used to create the model.
 *)
-Get["DRalgo`"];
-Print["DRalgo is an independent package"];
-Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Print: 2205.08815 [hep-th]
-"];
+If[FreeQ[Union[$ContextPath, $Packages],"DRalgo`"],
+	If[Not[ValueQ[$GroupMathMultipleModels]],$GroupMathMultipleModels=True];
+	If[Not[ValueQ[$LoadGroupMath]],$LoadGroupMath=True];
+	Get["DRalgo`"];
+	Print["DRalgo is an independent package"];
+	Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Print: 2205.08815 [hep-th]"];
+];
 
 
 (* ::Title:: *)
