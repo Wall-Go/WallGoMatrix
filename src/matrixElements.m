@@ -19,8 +19,8 @@ As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*S
 	Functions from GroupMath are used to create the model.
 *)
 If[FreeQ[Union[$ContextPath, $Packages],"DRalgo`"],
-	If[Not[ValueQ[$GroupMathMultipleModels]],$GroupMathMultipleModels=True];
-	If[Not[ValueQ[$LoadGroupMath]],$LoadGroupMath=True];
+	If[Not[ValueQ[$GroupMathMultipleModels]],Global`$GroupMathMultipleModels=True];
+	If[Not[ValueQ[$LoadGroupMath]],Global`matrixElements`$LoadGroupMath=True];
 	Get["DRalgo`"];
 	Print["DRalgo is an independent package"];
 	Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Print: 2205.08815 [hep-th]"];

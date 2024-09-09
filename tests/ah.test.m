@@ -11,9 +11,10 @@ If[$VersionNumber < 13.3,
 
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
-$GroupMathMultipleModels=True;
-$LoadGroupMath=True;
-Needs["DRalgo`","../DRalgo/DRalgo.m"]
+Global`$GroupMathMultipleModels=True;
+Global`$LoadGroupMath=True;
+(*Needs["DRalgo`","../DRalgo/DRalgo.m"]*)
+(*<<DRalgo`*)
 Needs["matrixElements`","../src/matrixElements.m"]
 
 
@@ -46,7 +47,7 @@ InputInv={{1,1},{True,False}}; (*This specifies that we want a \[Phi]^+\[Phi] te
 MassTerm1=CreateInvariant[Group,RepScalar,InputInv]//Simplify//FullSimplify;
 
 
-VMass=ms^2*MassTerm1[[1]];(*This is the \[Phi]^+\[Phi] term written in component form*)
+VMass=msq*MassTerm1[[1]];(*This is the \[Phi]^+\[Phi] term written in component form*)
 
 
 \[Mu]ij=GradMass[VMass]//Simplify//SparseArray;
@@ -78,13 +79,12 @@ SymmetryBreaking[vev]*)
 
 
 (* scalar *)
-RepScalar=CreateOutOfEq[{1},"S"];
-
+RepScalar=CreateParticle[{1},"S"];
 (* fermion *)
-(*RepFermion={};*)
+RepFermion={};
 
 (* vector *)
-RepVector=CreateOutOfEq[{1},"V"];
+RepVector=CreateParticle[{1},"V"];
 
 
 
@@ -101,11 +101,11 @@ ParticleList={RepScalar,RepVector};
 VectorMass=Table[mv,{i,1,Length[RepVector[[1]]]}];
 FermionMass={};
 ScalarMass=Table[ms,{i,1,Length[RepScalar[[1]]]}];
-ParticleMasses={VectorMass,ScalarMass};
+ParticleMasses={ScalarMass,VectorMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={ms,mv};
+UserMasses={ms,ms,mv};
 UserCouplings={CouplingName,\[Lambda]}//Flatten;
 
 
