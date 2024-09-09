@@ -78,13 +78,14 @@ SymmetryBreaking[vev]*)
 (*UserInput*)
 
 
-(* scalar *)
-RepScalar=CreateParticle[{1},"S"];
+(* vector *)
+RepVector=CreateParticle[{1},"V"];
+
 (* fermion *)
 RepFermion={};
 
-(* vector *)
-RepVector=CreateParticle[{1},"V"];
+(* scalar *)
+RepScalar=CreateParticle[{1},"S"];
 
 
 
@@ -101,7 +102,7 @@ ParticleList={RepScalar,RepVector};
 VectorMass=Table[mv,{i,1,Length[RepVector[[1]]]}];
 FermionMass={};
 ScalarMass=Table[ms,{i,1,Length[RepScalar[[1]]]}];
-ParticleMasses={ScalarMass,VectorMass};
+ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
@@ -124,29 +125,30 @@ MatrixElements
 
 (* ::Section:: *)
 (*Tests*)
+(**)
 
 
-FeynMatrixElements={M(0,0,0,0)->((2 s^2)/(t u)+s^2/t^2+s^2/u^2-(2 u s)/t^2-(2 s)/t-(2 s)/u-(2 t s)/u^2+u^2/t^2+t^2/u^2+2) e^4+lam (-((8 s)/t)-(8 s)/u+(8 u)/t+(8 t)/u) e^2+16 lam^2,
-M(0,1,0,1)->(s^2/t^2-(2 u s)/t^2+u^2/t^2-(2 u)/t+2+(2 u^2)/(t s)-(2 u)/s+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/t-(8 u)/t+(8 t)/s-(8 u)/s) e^2+16 lam^2,
-M(0,1,1,0)->(s^2/u^2-(2 t s)/u^2-(2 t)/u+t^2/u^2+2-(2 t)/s+(2 t^2)/(u s)+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/u-(8 t)/u-(8 t)/s+(8 u)/s) e^2+16 lam^2,
-M(0,1,2,2)->e^4 (s^2/(2 t u)+s/t+s/u+u/(2 t)+t/(2 u)+9),
-M(0,2,0,2)->e^4 (t^2/(2 s u)+t/s+t/u+u/(2 s)+s/(2 u)+9),
-M(0,2,2,0)->e^4 (u^2/(2 s t)+u/s+u/t+t/(2 s)+s/(2 t)+9),
-M(1,0,0,1)->(s^2/u^2-(2 t s)/u^2-(2 t)/u+t^2/u^2+2-(2 t)/s+(2 t^2)/(u s)+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/u-(8 t)/u-(8 t)/s+(8 u)/s) e^2+16 lam^2,
-M(1,0,1,0)->(s^2/t^2-(2 u s)/t^2+u^2/t^2-(2 u)/t+2+(2 u^2)/(t s)-(2 u)/s+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/t-(8 u)/t+(8 t)/s-(8 u)/s) e^2+16 lam^2,
-M(1,0,2,2)->e^4 (s^2/(2 t u)+s/t+s/u+u/(2 t)+t/(2 u)+9),
-M(1,1,1,1)->((2 s^2)/(t u)+s^2/t^2+s^2/u^2-(2 u s)/t^2-(2 s)/t-(2 s)/u-(2 t s)/u^2+u^2/t^2+t^2/u^2+2) e^4+lam (-((8 s)/t)-(8 s)/u+(8 u)/t+(8 t)/u) e^2+16 lam^2,
-M(1,2,1,2)->e^4 (t^2/(2 s u)+t/s+t/u+u/(2 s)+s/(2 u)+9),
-M(1,2,2,1)->e^4 (u^2/(2 s t)+u/s+u/t+t/(2 s)+s/(2 t)+9),
-M(2,0,0,2)->e^4 ((4 u^2)/(s t)+(4 u)/s+(4 u)/t+8),
-M(2,0,2,0)->e^4 ((4 t^2)/(s u)+(4 t)/s+(4 t)/u+8),
-M(2,1,1,2)->e^4 ((4 u^2)/(s t)+(4 u)/s+(4 u)/t+8),
-M(2,1,2,1)->e^4 ((4 t^2)/(s u)+(4 t)/s+(4 t)/u+8),
-M(2,2,0,1)->e^4 ((4 s^2)/(t u)+(4 s)/t+(4 s)/u+8),
-M(2,2,1,0)->e^4 ((4 s^2)/(t u)+(4 s)/t+(4 s)/u+8)};
+FeynMatrixElements={M[0,0,0,0]->((2 s^2)/(t u)+s^2/t^2+s^2/u^2-(2 u s)/t^2-(2 s)/t-(2 s)/u-(2 t s)/u^2+u^2/t^2+t^2/u^2+2) e^4+lam (-((8 s)/t)-(8 s)/u+(8 u)/t+(8 t)/u) e^2+16 lam^2,
+M[0,1,0,1]->(s^2/t^2-(2 u s)/t^2+u^2/t^2-(2 u)/t+2+(2 u^2)/(t s)-(2 u)/s+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/t-(8 u)/t+(8 t)/s-(8 u)/s) e^2+16 lam^2,
+M[0,1,1,0]->(s^2/u^2-(2 t s)/u^2-(2 t)/u+t^2/u^2+2-(2 t)/s+(2 t^2)/(u s)+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/u-(8 t)/u-(8 t)/s+(8 u)/s) e^2+16 lam^2,
+M[0,1,2,2]->e^4 (s^2/(2 t u)+s/t+s/u+u/(2 t)+t/(2 u)+9),
+M[0,2,0,2]->e^4 (t^2/(2 s u)+t/s+t/u+u/(2 s)+s/(2 u)+9),
+M[0,2,2,0]->e^4 (u^2/(2 s t)+u/s+u/t+t/(2 s)+s/(2 t)+9),
+M[1,0,0,1]->(s^2/u^2-(2 t s)/u^2-(2 t)/u+t^2/u^2+2-(2 t)/s+(2 t^2)/(u s)+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/u-(8 t)/u-(8 t)/s+(8 u)/s) e^2+16 lam^2,
+M[1,0,1,0]->(s^2/t^2-(2 u s)/t^2+u^2/t^2-(2 u)/t+2+(2 u^2)/(t s)-(2 u)/s+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/t-(8 u)/t+(8 t)/s-(8 u)/s) e^2+16 lam^2,
+M[1,0,2,2]->e^4 (s^2/(2 t u)+s/t+s/u+u/(2 t)+t/(2 u)+9),
+M[1,1,1,1]->((2 s^2)/(t u)+s^2/t^2+s^2/u^2-(2 u s)/t^2-(2 s)/t-(2 s)/u-(2 t s)/u^2+u^2/t^2+t^2/u^2+2) e^4+lam (-((8 s)/t)-(8 s)/u+(8 u)/t+(8 t)/u) e^2+16 lam^2,
+M[1,2,1,2]->e^4 (t^2/(2 s u)+t/s+t/u+u/(2 s)+s/(2 u)+9),
+M[1,2,2,1]->e^4 (u^2/(2 s t)+u/s+u/t+t/(2 s)+s/(2 t)+9),
+M[2,0,0,2]->e^4 ((4 u^2)/(s t)+(4 u)/s+(4 u)/t+8),
+M[2,0,2,0]->e^4 ((4 t^2)/(s u)+(4 t)/s+(4 t)/u+8),
+M[2,1,1,2]->e^4 ((4 u^2)/(s t)+(4 u)/s+(4 u)/t+8),
+M[2,1,2,1]->e^4 ((4 t^2)/(s u)+(4 t)/s+(4 t)/u+8),
+M[2,2,0,1]->e^4 ((4 s^2)/(t u)+(4 s)/t+(4 s)/u+8),
+M[2,2,1,0]->e^4 ((4 s^2)/(t u)+(4 s)/t+(4 s)/u+8)};
 
 
-insertCouplings={c[1]->e,c[2]->lam};
+insertCouplings={c[0]->e,c[1]->lam};
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
@@ -167,48 +169,49 @@ testList={};
 
 (* scalar-scalar scattering*)
 AppendTo[testList,
-TestCreate[Sum[M[a,b,c,d],{a,0,1},{b,0,1},{c,0,1},{d,0,1}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[a,b,c,d],{a,0,1},{b,0,1},{c,0,1},{d,0,1}]/.FeynMatrixElements//fixConvention//removeMissing
+TestCreate[M[0,0,0,0]/.MatrixElements//fixConvention//removeMissing,
+	1/2 Sum[M[a,b,c,d],{a,0,1},{b,0,1},{c,0,1},{d,0,1}]/.FeynMatrixElements//fixConvention//removeMissing(* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 (* scalar to vector *)
 AppendTo[testList,
-TestCreate[Sum[M[a,b,2,2],{a,0,1},{b,0,1}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[a,b,2,2],{a,0,1},{b,0,1}]/.FeynMatrixElements//fixConvention//removeMissing
+TestCreate[M[0,0,1,1]/.MatrixElements//fixConvention//removeMissing,
+	1/2 Sum[M[a,b,2,2],{a,0,1},{b,0,1}]/.FeynMatrixElements//fixConvention//removeMissing(* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 (* vector to scalar *)
 AppendTo[testList,
-TestCreate[Sum[M[2,2,a,b],{a,0,1},{b,0,1}]/.MatrixElements//fixConvention//removeMissing,
-	1/2 M[2,2,a,b],{a,0,1},{b,0,1}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
+TestCreate[M[1,1,0,0]/.MatrixElements//fixConvention//removeMissing,
+	1/2 Sum[M[2,2,a,b],{a,0,1},{b,0,1}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 (* scalar-vector scattering *)
 AppendTo[testList,
-TestCreate[Sum[M[a,2,2,b]+M[a,2,b,2],{a,0,1},{b,0,1}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[a,2,2,b]+M[a,2,b,2],{a,0,1},{b,0,1}]/.FeynMatrixElements//fixConvention//removeMissing
+TestCreate[M[0,1,1,0]+M[0,1,0,1]/.MatrixElements//fixConvention//removeMissing,
+	1/2 Sum[M[a,2,2,b]+M[a,2,b,2],{a,0,1},{b,0,1}]/.FeynMatrixElements//fixConvention//removeMissing(* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 (* vector-scalar scattering *)
 AppendTo[testList,
-TestCreate[Sum[M[2,a,2,b]+M[2,a,b,2],{a,0,1},{b,0,1}]/.MatrixElements//fixConvention//removeMissing,
+TestCreate[M[1,0,1,0]+M[1,0,0,1]/.MatrixElements//fixConvention//removeMissing,
 	1/2 Sum[M[2,a,2,b]+M[2,a,b,2],{a,0,1},{b,0,1}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 (* vector-vector scattering*)
 AppendTo[testList,
-TestCreate[M[2,2,2,2]/.MatrixElements//fixConvention//removeMissing,
+TestCreate[M[1,1,1,1]/.MatrixElements//fixConvention//removeMissing,
 	1/2 M[2,2,2,2]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
