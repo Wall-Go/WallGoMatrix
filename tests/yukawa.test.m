@@ -21,7 +21,7 @@ $LoadGroupMath=True;
 (*Yukawa Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -170,6 +170,66 @@ MatrixElements
 (*Tests*)
 
 
+FeynMatrixElements={M[0, 0, 0, 0] -> g^4/s^2 + g^4/t^2 + (2*g^4)/(s*t) + g^4/u^2 + 
+   (2*g^4)/(s*u) + (2*g^4)/(t*u) + 
+   lam*((2*g^2)/s + (2*g^2)/t + (2*g^2)/u + (4*g^3*v)/s^2 + 
+     (4*g^3*v)/t^2 + (8*g^3*v)/(s*t) + (4*g^3*v)/u^2 + 
+     (8*g^3*v)/(s*u) + (8*g^3*v)/(t*u)) + 
+   lam^2*(1 + (4*g*v)/s + (4*g*v)/t + (4*g*v)/u + 
+     (6*g^2*v^2)/s^2 + (6*g^2*v^2)/t^2 + (12*g^2*v^2)/(s*t) + 
+     (6*g^2*v^2)/u^2 + (12*g^2*v^2)/(s*u) + 
+     (12*g^2*v^2)/(t*u)) + lam^3*((2*v^2)/s + (2*v^2)/t + 
+     (2*v^2)/u + (4*g*v^3)/s^2 + (4*g*v^3)/t^2 + 
+     (8*g*v^3)/(s*t) + (4*g*v^3)/u^2 + (8*g*v^3)/(s*u) + 
+     (8*g*v^3)/(t*u)) + lam^4*(v^4/s^2 + v^4/t^2 + 
+     (2*v^4)/(s*t) + v^4/u^2 + (2*v^4)/(s*u) + (2*v^4)/(t*u)), 
+ M[0, 0, 1, 2] -> ((2*g^2)/s + (4*g*lam*v)/s + (2*lam^2*v^2)/s)*
+    y^2 + (-4 + (2*t)/u + (2*u)/t)*y^4, 
+ M[0, 0, 2, 1] -> ((2*g^2)/s + (4*g*lam*v)/s + (2*lam^2*v^2)/s)*
+    y^2 + (-4 + (2*t)/u + (2*u)/t)*y^4, 
+ M[0, 1, 0, 1] -> ((2*g^2)/t + (4*g*lam*v)/t + (2*lam^2*v^2)/t)*
+    y^2 + (-4 + (2*s)/u + (2*u)/s)*y^4, 
+ M[0, 1, 1, 0] -> ((2*g^2)/u + (4*g*lam*v)/u + (2*lam^2*v^2)/u)*
+    y^2 + (-4 + (2*s)/t + (2*t)/s)*y^4, 
+ M[0, 2, 0, 2] -> ((2*g^2)/t + (4*g*lam*v)/t + (2*lam^2*v^2)/t)*
+    y^2 + (-4 + (2*s)/u + (2*u)/s)*y^4, 
+ M[0, 2, 2, 0] -> ((2*g^2)/u + (4*g*lam*v)/u + (2*lam^2*v^2)/u)*
+    y^2 + (-4 + (2*s)/t + (2*t)/s)*y^4, 
+ M[1, 0, 0, 1] -> ((2*g^2)/u + (4*g*lam*v)/u + (2*lam^2*v^2)/u)*
+    y^2 + ((4*s)/t + (4*t)/s - (2*u^2)/(s*t))*y^4, 
+ M[1, 0, 1, 0] -> ((2*g^2)/t + (4*g*lam*v)/t + (2*lam^2*v^2)/t)*
+    y^2 + ((4*s)/u - (2*t^2)/(s*u) + (4*u)/s)*y^4, 
+ M[1, 1, 1, 1] -> (8 + (2*s^2)/(t*u) - (2*t)/u - (2*u)/t)*y^4, 
+ M[1, 2, 0, 0] -> ((2*g^2)/s + (4*g*lam*v)/s + (2*lam^2*v^2)/s)*
+    y^2 + ((-2*s^2)/(t*u) + (4*t)/u + (4*u)/t)*y^4, 
+ M[1, 2, 1, 2] -> (8 - (2*s)/t - (2*t)/s + (2*u^2)/(s*t))*y^4, 
+ M[1, 2, 2, 1] -> (8 - (2*s)/u + (2*t^2)/(s*u) - (2*u)/s)*y^4, 
+ M[2, 0, 0, 2] -> ((2*g^2)/u + (4*g*lam*v)/u + (2*lam^2*v^2)/u)*
+    y^2 + ((4*s)/t + (4*t)/s - (2*u^2)/(s*t))*y^4, 
+ M[2, 0, 2, 0] -> ((2*g^2)/t + (4*g*lam*v)/t + (2*lam^2*v^2)/t)*
+    y^2 + ((4*s)/u - (2*t^2)/(s*u) + (4*u)/s)*y^4, 
+ M[2, 1, 0, 0] -> ((2*g^2)/s + (4*g*lam*v)/s + (2*lam^2*v^2)/s)*
+    y^2 + ((-2*s^2)/(t*u) + (4*t)/u + (4*u)/t)*y^4, 
+ M[2, 1, 1, 2] -> (8 - (2*s)/u + (2*t^2)/(s*u) - (2*u)/s)*y^4, 
+ M[2, 1, 2, 1] -> (8 - (2*s)/t - (2*t)/s + (2*u^2)/(s*t))*y^4, 
+ M[2, 2, 2, 2] -> (8 + (2*s^2)/(t*u) - (2*t)/u - (2*u)/t)*y^4};
+
+
+feynAssociation=Association[feynResults];
+
+
+insertCouplings={c[1]->lam,c[2]->(g+lam v),c[3]->y};
+
+
+symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
+
+
+fixConvention[arg_]:=symmetriseTU[arg/.msq[i_]->0/.{s->(-t-u)}/.insertCouplings]//Expand//Simplify//Expand
+
+
+removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
+
+
 (* ::Subsection:: *)
 (*Test hard*)
 
@@ -178,54 +238,51 @@ testList={};
 
 
 (* scalar-scalar scattering*)
-TestCreate[M[0,0,0,0]/.MatrixElements/.msq[i_]->0,
-	(*(c[1] + c[2]^2 (1/s + 1/t + 1/u))^2*) (* all channels *)
-	(c[2]^2 (1/t + 1/u))^2 (* just IR sensitive terms *)
-];
+AppendTo[testList,
+TestCreate[M[0,0,0,0]/.MatrixElements//fixConvention//removeMissing,
+	M[0,0,0,0]/.FeynMatrixElements//fixConvention//removeMissing
+]];
 
 
 (* scalar to fermions *)
 AppendTo[testList,
-TestCreate[M[0,0,1,1]+M[0,0,2,2]+M[0,0,1,2]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (2 t/u + 2 u/t - 4) + c[2]^2 c[3]^2 (2/s)*)(* all channels *)
-	 c[3]^4 (2 t/u + 2 u/t) (* just IR sensitive terms *)
+TestCreate[Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+	Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing
 ]];
 
 
 (* fermions to scalar *)
 AppendTo[testList,
-TestCreate[M[1,1,0,0]+M[1,2,0,0]+M[2,1,0,0]+M[2,2,0,0]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (4 t/u + 4 u/t - 8) + c[2]^2 c[3]^2 (4/s)*)(* all channels *)
-	 c[3]^4 (4 t/u + 4 u/t)(* just IR sensitive terms *)
+TestCreate[Sum[M[c,d,0,0],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+	Sum[1/2 M[c,d,0,0],{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 (* scalar-fermion scattering *)
 AppendTo[testList,
-TestCreate[M[0,1,0,1]+M[0,2,0,2]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (4 s/u + 4 u/s - 8) + c[2]^2 c[3]^2 (4/t)*)(* all channels *)
-	 c[3]^4 (4 s/u) + c[2]^2 c[3]^2 (4/t)(* just IR sensitive terms *)
+TestCreate[Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+	Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing
 ]];
 
 
 (* fermion-scalar scattering *)
 AppendTo[testList,
-TestCreate[M[1,0,0,1]+M[2,0,0,2]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (4 s/t + 4 t/s - 8) + c[2]^2 c[3]^2 (4/u)*)(* all channels *)
-	 c[3]^4 (4 s/t + 4 t/s) + c[2]^2 c[3]^2 (4/u)(* just IR sensitive terms *)
+TestCreate[Sum[M[c,0,d,0]+M[c,0,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+	Sum[1/2 (M[c,0,d,0]+M[c,0,0,d]),{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 (* fermion-fermion scattering*)
 AppendTo[testList,
-TestCreate[M[1,2,1,2]+M[2,1,1,2]/.MatrixElements/.msq[i_]->0,
-	(*c[3]^4 (24)*)(* all channels *)
-	0 (* just IR sensitive terms *)
+TestCreate[Sum[M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+	Sum[1/2 M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
 
 
 
