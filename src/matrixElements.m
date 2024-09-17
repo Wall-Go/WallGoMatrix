@@ -1160,6 +1160,8 @@ degreeOfFreedom[particle_]:=Block[{dof},
 	
 	If[particle[[2]]=="S",dof];
 	
+	If[normalizeDOF==False,dof=1];
+	
 	Return[dof];
 ]
 
@@ -1927,6 +1929,8 @@ Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
 	OutOfEqParticles,RepMasses,RepCouplings,
 	},
 
+
+	normalizeDOF = OptionValue[NormalizeWithDOF]; 
 (*
 Extracting the out-of-eq particles
 *)
