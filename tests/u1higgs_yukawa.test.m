@@ -62,19 +62,20 @@ Phi4=CreateInvariant[Group,RepScalar,InputInv][[1]];
 (* 1/4 b4 \[Chi]^4 *)
 InputInv={{2,2,2,2},{True,True,True,True}};
 Chi4=CreateInvariant[Group,RepScalar,InputInv][[1]];
-(* a2/2 \[Chi]^2 \[Phi]^2 *)
+(* a2/2 \[Phi]^2 \[Chi]^2 *)
 InputInv={{1,1,2,2},{True,False,True,True}};
 Phi2Chi2=CreateInvariant[Group,RepScalar,InputInv][[1]];
 (* quartic terms together *)
-VQuartic=b4/4 Chi4 + lam Phi4 + a2/2 Phi2Chi2;
+VQuartic= lam Phi4 + b4/4 Chi4 + a2/2 Phi2Chi2;
 \[Lambda]4=GradQuartic[VQuartic];
 
 
-(* y \[Phi]^*(Subscript[\[Psi], L]Subscript[\[Xi], R]^++Subscript[\[Psi], R]Subscript[\[Xi], L]^+)*)
+(* y (\[Phi]^*)(\[Psi]L (\[Xi]R^*)+ \[Psi]R (\[Xi]L^*)) *)
 InputInv={{1,3,2},{False,True,False}};
 Yukawa1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 InputInv={{1,4,1},{False,True,False}}; 
 Yukawa2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
+(* Hermitian conjugates *)
 InputInv={{1,3,2},{True,False,True}};
 Yukawa1HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 InputInv={{1,4,1},{True,False,True}}; 
@@ -101,19 +102,15 @@ one right-handed fermion
 *)
 
 
-(*Below
-rep 1-2 are fermions,
-(*rep 3 is a scalar*)
-*)
-(* scalar *)
+(* scalars *)
 RepPhi=CreateOutOfEq[{1},"S"];
 RepChi=CreateOutOfEq[{2},"S"];
 
-(* left-handed fermion *)
+(* fermions *)
 RepPsi=CreateOutOfEq[{1,2},"F"];
 RepXi=CreateOutOfEq[{3,4},"F"];
 
-(*Vector bosons*)
+(* vector bosons *)
 RepA=CreateOutOfEq[{1},"V"];
 
 
@@ -266,8 +263,6 @@ TestCreate[Sum[M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElements//fixC
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
 
 
