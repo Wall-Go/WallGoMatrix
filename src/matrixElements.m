@@ -653,7 +653,7 @@ If[
 (*Lorentz structures for vector exchanges*)
 	AS=(t-u); (* s-channel diagram*)
 	AT=(s-u); (* t-channel diagram*)
-	AU=(t-s); (* u-channel diagram*)
+	AU=(s-t); (* u-channel diagram*)
 	
 
 (*Group invariants from vector diagrams*)
@@ -1017,7 +1017,7 @@ If[
 	totRes+= A/t Total[CTU CT,-1];
 	totRes+=4 Total[CTU^2,-1];
 
-	Return[FullSimplify[totRes,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
+	Return[FullSimplify[totRes/2,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
 ]	
 ];
 
@@ -1951,15 +1951,13 @@ Extracting the out-of-eq particles
 	If[Length[LightScalars[[1]]]>0,AppendTo[particleListFull,LightScalars]];
 
 	LightParticles=Table[i,{i,Length[particleList]+1,Length[particleListFull]}];
-	
 	particleListFull=particleListFull;
-	LightParticles=LightParticles;
+
 	
 (*
 Replacement rules for converting to the format used by the c++ code
 *)	
-	RepMasses=Table[UserMasses[[i]]->msq[i-1],{i,1,Length[UserMasses]}];
-	RepCouplings=Table[UserCouplings[[i]]->Symbol["c"][i-1],{i,1,Length[UserCouplings]}];
+
 	
 	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,ParticleMasses,s,t,u}; (*All variables are assumed to be real*)
 	
@@ -1971,8 +1969,9 @@ Replacement rules for converting to the format used by the c++ code
 (*
 Loop over all out-of-eq particles and extracting the matrix elements
 *)	
+
 	MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles,ParticleMassesI];
-	
+
 (*
 Extract various C^{ij} components
 *)	
@@ -1986,6 +1985,7 @@ Extract various C^{ij} components
 		{i,OutOfEqParticles}
 	];
 
+
 (*Metadata*)
 	ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
 	AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
@@ -1995,10 +1995,11 @@ Extract various C^{ij} components
 (*
 Rewrite the matrix element to an export format
 *)
-	MatrixElements=Table[MatrixElemToC@i/.RepCouplings/.RepMasses/.RepOptional,{i,MatrixElements}];
+
+	MatrixElements=Table[MatrixElemToC@i//.RepOptional,{i,MatrixElements}];
 	
 	Table[
-		Cij[[i,j]]=Table[MatrixElemToC@k/.RepCouplings/.RepMasses,{k,Cij[[i,j]]}];,
+		Cij[[i,j]]=Table[MatrixElemToC@k,{k,Cij[[i,j]]}];,
 		{i,OutOfEqParticles},{j,OutOfEqParticles}];
 	
 	ExportTXT=MatrixElements;
