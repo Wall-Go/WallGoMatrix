@@ -109,36 +109,36 @@ testList={};
 
 (*5 light quarks*)
 AppendTo[testList,
-TestCreate[M[0,2,0,2]/.MatrixElements/.{c[0]->1},
-	1/6 ((80 (s^2+u^2))/(t-msq[1])^2+(80 (s^2+t^2))/(u-msq[1])^2)
+TestCreate[1/2*(M[0,2,0,2]+M[0,2,2,0])/.MatrixElements/.{c[0]->1}//Simplify,
+	1/6 ((80 (s^2+u^2))/(t-msq[1])^2+(80 (s^2+t^2))/(u-msq[1])^2)//Simplify
 ]];
 
 
 (*q1q1->gg*)
 AppendTo[testList,
-TestCreate[M[0,0,1,1]/.MatrixElements/.{c[0]->1}//Simplify,
+TestCreate[1/2*(M[0,0,1,1])/.MatrixElements/.{c[0]->1}//Simplify,
 	1/12 (+(128/3) ((t u)/(-t+msq[0])^2+(t u)/(-u+msq[0])^2))//Simplify
 ]];
 
 
 (*q1 g->q1 g*)
 AppendTo[testList,
-TestCreate[M[0,1,0,1]/.MatrixElements/.{c[0]->1}//Simplify,
-	-(64/9) ((s u)/(u-msq[0])^2)+(16 (s^2+u^2))/(t-msq[1])^2//Simplify
+TestCreate[1/2*(M[0,1,0,1]+M[0,1,1,0])/.MatrixElements/.{c[0]->1}//Simplify,
+	(-(64/9) ((s u)/(u-msq[0])^2)+(16 (s^2+u^2))/(t-msq[1])^2)//Simplify
 ]];
 
 
 (*tt->tt*)
 AppendTo[testList,
-TestCreate[M[0,0,0,0]/.MatrixElements/.{c[0]->1}//Simplify,
-	8/3 ((s^2+u^2)/(t-msq[1])^2+(s^2+t^2)/(u-msq[1])^2)//Simplify
+TestCreate[1/2*(M[0,0,0,0])/.MatrixElements/.{c[0]->1}//Simplify,
+	8/3*((s^2+u^2)/(t-msq[1])^2+(s^2+t^2)/(u-msq[1])^2)//Simplify
 ]];
 
 
 (*g g->g g*)
 AppendTo[testList,
-TestCreate[M[1,1,1,1]/.MatrixElements/.{c[0]->1}//Simplify,
-	9 (+((s-u)^2/(t-msq[1])^2)+(s-t)^2/(u-msq[1])^2)//Simplify
+TestCreate[1/2*(M[1,1,1,1])/.MatrixElements/.{c[0]->1}//Simplify,
+	9*(+((s-u)^2/(t-msq[1])^2)+(s-t)^2/(u-msq[1])^2)//Simplify
 ]];
 
 
