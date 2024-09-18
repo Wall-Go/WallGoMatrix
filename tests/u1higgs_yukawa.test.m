@@ -70,7 +70,7 @@ VQuartic= lam Phi4 + b4/4 Chi4 + a2/2 Phi2Chi2;
 \[Lambda]4=GradQuartic[VQuartic];
 
 
-(* y (\[Phi]^*)(\[Psi]L (\[Xi]R^*)+ \[Psi]R (\[Xi]L^*)) *)
+(* y (\[Phi]^+)(\[Psi]L (\[Xi]R^+)+ \[Psi]R (\[Xi]L^+)) *)
 InputInv={{1,3,2},{False,True,False}};
 Yukawa1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 InputInv={{1,4,1},{False,True,False}}; 
@@ -80,8 +80,6 @@ InputInv={{1,3,2},{True,False,True}};
 Yukawa1HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 InputInv={{1,4,1},{True,False,True}}; 
 Yukawa2HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-
-
 Ysff=y*GradYukawa[Yukawa1+Yukawa2];
 YsffC=y*GradYukawa[Yukawa1HC+Yukawa2HC];
 
@@ -287,18 +285,25 @@ totalDRalgo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements//rem
 totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.FeynMatrixElements//removeMissing//fixConvention
 
 
+Collect[totalFeyn,{g,y,a1,a2,b3,b4,lam}]
+
+
+Collect[totalDRalgo-totalFeyn,{g,y,a1}]
+
+
 testList={};
 
 
 (* everything *)
 AppendTo[testList,
-TestCreate[Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.FeynMatrixElements//fixConvention//removeMissing
+TestCreate[totalDRalgo,
+	totalFeyn
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
