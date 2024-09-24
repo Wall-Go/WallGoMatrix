@@ -2111,7 +2111,10 @@ ImportFromJSON[filename_]:=Block[{importedRaw, particleNames,parameters,results}
 	importedRaw=importJSONMatrixElements[filename];
 (* Testing form as expected *)
 	{testBool, returnString}=testJsonMatrixElements[importedRaw];
-	If[Not[testBool],Print[returnString]];
+	If[Not[testBool],
+		Print[returnString];
+		Return[{},{},{}]
+	];
 (* Converted to JSON object imported form *)
 	{particleNames,parameters,results} = splitJsonMatrixElements[importedRaw];
 (* Returning results *)
@@ -2177,7 +2180,7 @@ ExportToTxt[MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{Part
 ]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Exporting the results*)
 
 
