@@ -368,9 +368,13 @@ If[
 
 
 CreateMatrixElementF1F2toF3F4[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_]:=
-Block[{s,t,u,gTensor, YTensor,YTensorC,scalarPropT,scalarPropU,vectorPropU,vectorPropT,
-		C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,
-		CSy,CTy,CUy,CS,CT,CU,CTrS,CTrT,CTrU,A3,A4,A5,A6},
+Block[{s,t,u,gTensor,
+		CSy,CTy,CUy,CSyC,CTyC,CUyC,CSyCC,CTyCC,CUyCC
+		,CS,CT,CU,CSC,CTC,CUC,CSCC,CTCC,CUCC
+		,CTrS,CTrT,CTrU,A3,A4,A5,A6,
+		Tensor,YTensorC,scalarPropT,scalarPropU,vectorPropU,vectorPropT,
+		C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor},
+	
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
 	If the incoming particles arn't of the form FF->FF the routine returns 0.
@@ -404,11 +408,21 @@ If[
 	YTensorC=Table[YsffC[[;;,Particle1[[1]],Particle2[[1]]]],
 		{Particle1,{particle1,particle2,particle3,particle4}},
 		{Particle2,{particle1,particle2,particle3,particle4}}];	
-
+	
+	
 (*Group invariants from scalar diagrams*)
 	CSy=Contract[YTensor[[1,2]],scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
 	CTy=Contract[YTensor[[1,3]],scalarPropT . YTensor[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
 	CUy=Contract[YTensor[[1,4]],scalarPropU . YTensor[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
+	
+	CSyC=Contract[YTensor[[1,2]],scalarPropS . YTensorC[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CTyC=Contract[YTensor[[1,3]],scalarPropT . YTensorC[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
+	CUyC=Contract[YTensor[[1,4]],scalarPropU . YTensorC[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
+
+	CSyCC=Contract[YTensorC[[1,2]],scalarPropS . YTensorC[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CTyCC=Contract[YTensorC[[1,3]],scalarPropT . YTensorC[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
+	CUyCC=Contract[YTensorC[[1,4]],scalarPropU . YTensorC[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
+	
 	
 (*Group invariants from vector diagrams*)
 	CS=Contract[gTensor[[1,2]],vectorPropS . gTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
@@ -419,13 +433,23 @@ If[
 	CTrT=Contract[gTensor[[3,1]],vectorPropT . gTensor[[4,2]],{{1,4}}]//OrderArray[#,2,4,1,3]&;
 	CTrU=Contract[gTensor[[4,1]],vectorPropU . gTensor[[3,2]],{{1,4}}]//OrderArray[#,2,4,3,1]&;
 
+	CSC=Contract[gTensor[[1,2]],vectorPropS . gTensor[[4,3]],{{1,4}}]//OrderArray[#,1,2,4,3]&;
+	CTC=Contract[gTensor[[1,3]],vectorPropT . gTensor[[4,2]],{{1,4}}]//OrderArray[#,1,4,2,3]&;
+	CUC=Contract[gTensor[[1,4]],vectorPropU . gTensor[[3,2]],{{1,4}}]//OrderArray[#,1,4,3,2]&;
+	
+	CSCC=Contract[gTensor[[2,1]],vectorPropS . gTensor[[3,4]],{{1,4}}]//OrderArray[#,2,1,3,4]&;
+	CTCC=Contract[gTensor[[3,1]],vectorPropT . gTensor[[2,4]],{{1,4}}]//OrderArray[#,2,3,1,4]&;
+	CUCC=Contract[gTensor[[4,1]],vectorPropU . gTensor[[2,3]],{{1,4}}]//OrderArray[#,2,3,4,1]&;
+	
+	
 	C5=Table[
 		Tr[gTensor[[1,3]][[a]] . gTensor[[3,4]][[b]] . gTensor[[4,2]][[a]] . gTensor[[2,1]][[b]]],
 		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
 	C5+=Table[
 		Tr[gTensor[[3,1]][[a]] . gTensor[[1,2]][[b]] . gTensor[[2,4]][[a]] . gTensor[[4,3]][[b]]],
 		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];		
-		
+			
+				
 (*Lorentz structures that appear in squared vector-exchange diagrams*)
 	A1=2(s^2+u^2); (*squared t-channel diagram*)
 	A2=2(s^2+t^2); (*squared u-channel diagram*)
@@ -435,7 +459,6 @@ If[
 	A6=4*t^2; (*Interference between s and u channel diagrams*)		
 	
 		
-
 (*Result for squared vector-exchange diagrams*)
 	totRes=A1*Total[CT CTrT,-1]; 
 	totRes+=A2*Total[CU CTrU,-1]; 
@@ -445,13 +468,44 @@ If[
 	totRes+=1/2*A6 Total[(vectorPropS . C5 . vectorPropU),-1];
 
 (*Result for squared scalar-exchange diagrams*)	
-	totRes+= t^2*Total[CTy Conjugate[CTy],-1];
-	totRes+= u^2*Total[CUy Conjugate[CUy],-1];
-	totRes+= s^2*Total[CSy Conjugate[CSy],-1];
+	totRes+=  t^2/4*Total[CTy Conjugate[CTy],-1];
+	totRes+=  u^2/4*Total[CUy Conjugate[CUy],-1];
+	totRes+=  s^2/4*Total[CSy Conjugate[CSy],-1];
+
+	totRes+=  t^2/2*Total[CTyC Conjugate[CTyC],-1];
+	totRes+=  u^2/2*Total[CUyC Conjugate[CUyC],-1];
+	totRes+=  s^2/2*Total[CSyC Conjugate[CSyC],-1];	
 	
-	totRes+=- 1/4(t^2-s^2+u^2)*Total[CUy Conjugate[CTy]  +CTy Conjugate[CUy],-1];
-	totRes+=- 1/4(s^2-t^2+u^2)*Total[CUy Conjugate[CSy]  +CSy Conjugate[CUy],-1];
-	totRes+=- 1/4(t^2-u^2+s^2)*Total[CSy Conjugate[CTy]  +CTy Conjugate[CSy],-1];
+	totRes+=  t^2/4*Total[CTyCC Conjugate[CTyCC],-1];
+	totRes+=  u^2/4*Total[CUyCC Conjugate[CUyCC],-1];
+	totRes+=  s^2/4*Total[CSyCC Conjugate[CSyCC],-1];
+	
+	
+	totRes+=-  1/8(t^2-s^2+u^2)*Total[CUy Conjugate[CTy]  +CTy Conjugate[CUy],-1];
+	totRes+=-  1/8(s^2-t^2+u^2)*Total[CUy Conjugate[CSy]  +CSy Conjugate[CUy],-1];
+	totRes+=-  1/8(t^2-u^2+s^2)*Total[CSy Conjugate[CTy]  +CTy Conjugate[CSy],-1];
+
+(*
+	totRes+=-  1/8(t^2-s^2+u^2)*Total[CUyC Conjugate[CTyC]  +CTyC Conjugate[CUyC],-1];
+	totRes+=-  1/8(s^2-t^2+u^2)*Total[CUyC Conjugate[CSyC]  +CSyC Conjugate[CUyC],-1];
+	totRes+=-  1/8(t^2-u^2+s^2)*Total[CSyC Conjugate[CTyC]  +CTyC Conjugate[CSyC],-1];
+*)
+	totRes+=-  1/8(t^2-s^2+u^2)*Total[CUyCC Conjugate[CTyCC]  +CTyCC Conjugate[CUyCC],-1];
+	totRes+=-  1/8(s^2-t^2+u^2)*Total[CUyCC Conjugate[CSyCC]  +CSyCC Conjugate[CUyCC],-1];
+	totRes+=-  1/8(t^2-u^2+s^2)*Total[CSyCC Conjugate[CTyCC]  +CTyCC Conjugate[CSyCC],-1];	
+	
+	
+(*Result for interfaces between vector and scalar diagrams---Only cross terms between diagrams can contribute*)
+	
+	totRes+=1/2*s t Total[CS Conjugate[CTyC]  +CTyC Conjugate[CS],-1];
+	totRes+=1/2*u t Total[CU Conjugate[CTyC]  +CTyC Conjugate[CU],-1];
+
+	totRes+=1/2*s u Total[CS Conjugate[CUyC]  +CUyC Conjugate[CS],-1];
+	totRes+=1/2*u t Total[CT Conjugate[CUyC]  +CUyC Conjugate[CT],-1];	
+
+	totRes+=1/2*s t Total[CT Conjugate[CSyC]  +CSyC Conjugate[CT],-1];
+	totRes+=1/2*u s Total[CU Conjugate[CSyC]  +CSyC Conjugate[CU],-1];		
+		
 	Return[Simplify[4*totRes,Assumptions->VarAsum]]
 ]
 ];
@@ -491,8 +545,8 @@ If[ (
 	];
 	
 	(*The result for FV->FV is the same as  FF->VV if we do some renaming of the mandelstam variables*)
-	resTot=CreateMatrixElementF1F2toV1V2[p1,p3,p2,p4,fermionMass,vectorMass]/.{s->s1,t->t1,u->u1};
-	resTot=-resTot/.{s1->t,t1->s,u1->u};
+	resTot=-CreateMatrixElementF1F2toV1V2[p1,p3,p2,p4,fermionMass,vectorMass]/.{s->s1,t->t1,u->u1};
+	resTot=resTot/.{s1->t,t1->s,u1->u};
 	
 	Return[resTot]	
 ,
@@ -772,20 +826,21 @@ If[
 	ASSY=s; (*Squared SS->S->FF diagram*)
 	A=t*u; (*All other squared diagrams are proportional to u*t *)
 	
+
 (*The result*)
 	(*SS->S->FF squared*)
-	TotRes=ASSY *Total[CYS Conjugate[CYS],-1];
+	TotRes=  ASSY *Total[CYS Conjugate[CYS],-1];
 	
 	(*Squared Yukawa diagrams with fermion exchanges*)
-	TotRes+=A Total[CYT Conjugate[CYT],-1]; (*squared t-channel diagram*)
-	TotRes+=A Total[CYU Conjugate[CYU],-1]; (*squared u-channel diagram*)
-	TotRes+=-A Total[CYU Conjugate[CYT]+CYT Conjugate[CYU],-1]; (*mixed u & t-channel diagrams*)
+	TotRes+=A   Total[CYT Conjugate[CYT],-1]; (*squared t-channel diagram*)
+	TotRes+=A   Total[CYU Conjugate[CYU],-1]; (*squared u-channel diagram*)
+	TotRes+=-A  Total[CYU CYT+CYT CYU,-1]; (*mixed u & t-channel diagrams*)
 	
 	(*Squared s-channel diagram with a vector boson*)
-	TotRes+=4*A*Total[CVS Conjugate[CVS],-1]; (*Not yet independently checked*)
+	TotRes+=4*A*Total[CVS Conjugate[CVS],-1]; 
 	
 	(*Mix between vector- and fermion-exchange diagrams*)
-	TotRes+=2*A*Total[(CYT-CYU) Conjugate[CVS]+CVS Conjugate[(CYT-CYU)],-1]; (*Not yet independently checked*)
+	TotRes+=-2*A*Total[(CYT+CYU) Conjugate[I*CVS]+I*CVS Conjugate[(CYT+CYU)],-1]; 
 	
 (*The full result*)
 	Return[2*FullSimplify[TotRes,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
@@ -827,7 +882,7 @@ If[ (
 	];
 	
 	(*The result for SF->SF is the same as  SS->FF if we do some renaming of the mandelstam variables*)
-	resTot=CreateMatrixElementS1S2toF1F2[p1,p3,p2,p4,vectorMass,scalarMass,fermionMass]/.{s->s1,t->t1,u->u1};
+	resTot=-CreateMatrixElementS1S2toF1F2[p1,p3,p2,p4,vectorMass,scalarMass,fermionMass]/.{s->s1,t->t1,u->u1};
 	resTot=resTot/.{s1->t,t1->s,u1->u};
 	
 	Return[resTot]
@@ -897,14 +952,14 @@ If[ (
 	CU=Contract[YTensor2 . fermionPropU ,gTensorF2,{{3,6}}]//OrderArray[#,4,1,2,3]&;
 
 (*Collecting the final result*)		
-	resTot=-2*s*u*Total[CS Conjugate[CS],-1]; (*Squared s-channel*)
-	resTot+=-2*s*u*Total[CU Conjugate[CU],-1]; (*Squared u-channel*)
-	resTot+=2*s*u*Total[CS Conjugate[CU]+CU Conjugate[CS],-1]; (*Mixed s & u channel*)
+	resTot=2*s*u* Total[CS Conjugate[CS],-1]; (*Squared s-channel*)
+	resTot+=2*s*u* Total[CU Conjugate[CU],-1]; (*Squared u-channel*)
+	resTot+=- 2*s*u* Total[CS Conjugate[CU]+CU Conjugate[CS],-1]; (*Mixed s & u channel*)
 	
 	(*Note that the t-channel with an exchanged scalar does not contribute as we can always eliminate said 
 		diagram with a gauge choice.*)
 	
-	Return[2*FullSimplify[resTot,Assumptions->VarAsum]]
+	Return[-2*FullSimplify[resTot,Assumptions->VarAsum]]
 ,
 	Return[0]
 ]	
@@ -928,7 +983,7 @@ If[
 	,
 	
 	(*The result for FF->SV is the same as  FS->VS if we do some renaming of the mandelstam variables*)
-	resTot=CreateMatrixElementF1S1toF1V1[particle1,particle3,particle2,particle4,fermionMass]/.{s->s1,t->t1,u->u1};
+	resTot=-CreateMatrixElementF1S1toF1V1[particle1,particle3,particle2,particle4,fermionMass]/.{s->s1,t->t1,u->u1};
 	resTot=resTot/.{t1->s,s1->t,u1->u}//Simplify;	
 	Return[resTot]
 ,
@@ -1917,20 +1972,11 @@ Return[CollEllTotal]
 
 
 (* ::Section::Closed:: *)
-(*Exporting to ASCII*)
+(*Generating matrix elements*)
 
 
-Options[ExportMatrixElements] = {NormalizeWithDOF-> True};
-
-
-ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,RepOptional_:{},OptionsPattern[]]:=
-Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
-	Cij,ParticleInfo,LightParticles,particleListFull,CouplingInfo,MatrixElements,
-	OutOfEqParticles,RepMasses,RepCouplings,
-	},
-
-
-	normalizeDOF = OptionValue[NormalizeWithDOF]; 
+ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_,LightParticles_]:=Block[{posFermions,NonEqFermions,LightFermions,
+											,posVectors,NonEqVectors,LightVectors,posScalars,NonEqScalars,LightScalars},
 (*
 Extracting the out-of-eq particles
 *)
@@ -1955,32 +2001,18 @@ Extracting the out-of-eq particles
 	If[Length[LightScalars[[1]]]>0,AppendTo[particleListFull,LightScalars]];
 
 	LightParticles=Table[i,{i,Length[particleList]+1,Length[particleListFull]}];
-	particleListFull=particleListFull;
-
 	
-(*
-Replacement rules for converting to the format used by the c++ code
-*)	
+]
 
-	
-	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,ParticleMasses,s,t,u}; (*All variables are assumed to be real*)
-	
-	
-	If[ParticleMasses[[1]]=={},ParticleMassesI[[1]]={msq}];
-	If[ParticleMasses[[2]]=={},ParticleMassesI[[2]]={msq}];
-	If[ParticleMasses[[3]]=={},ParticleMassesI[[3]]={msq}];
 
-(*
-Loop over all out-of-eq particles and extracting the matrix elements
-*)	
+GenerateMatrixElements[MatrixElements_,Cij_,particleListFull_,LightParticles_,ParticleMasses_,OutOfEqParticles_]:=
+Block[{Elem},
 
-	MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles,ParticleMassesI];
 
-(*
-Extract various C^{ij} components
-*)	
+		MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles,ParticleMasses];
+		
+(*Extract various C^{ij} components*)	
 	Cij=ConstantArray[0,{Length[OutOfEqParticles],Length[OutOfEqParticles]}];
-
 	Do[
 		Elem=Extract[MatrixElements,Position[MatrixElements[[;;,2]],{i,___}]];
 			Do[
@@ -1989,40 +2021,115 @@ Extract various C^{ij} components
 		{i,OutOfEqParticles}
 	];
 
+];
 
+
+(* ::Section::Closed:: *)
+(*Export functions for different formats*)
+
+
+(* ::Subsubsection:: *)
+(*json matrix elements functions*)
+
+
+(* ::Input:: *)
+(*makeJsonMatrixElements::usage="makeJsonMatrixElements[particles,parameters,results] converts a list of particle names {'Phi',...}, a list of particle parameters {g,...}, and a list of matrix elements results in the form {M[0,0,0,0]->g^4 s/t,...} to a JSON object in a standard format.";*)
+(*makeJsonMatrixElements[particles_,parameters_,results_]:=Module[{particlesJson,matrixElementsJson,toString,getRelevantParameters,replaceSpecials},*)
+(*toString[arg_]:=If[StringQ[arg],arg,ToString[arg,InputForm]];*)
+(*replaceSpecials[arg_]:=StringReplace[arg,{"Pi"->"_pi","s"->"_s","t"->"_t","u"->"_u"}];*)
+(*getRelevantParameters[arg_]:=Select[parameters,Not[FreeQ[arg,#]]&];*)
+(*particlesJson=Table[<|"index"->i-1,"name"->toString[particles[[i]]]|>,{i,1,Length[particles]}];*)
+(*matrixElementsJson=Map[<|"externalParticles"->#[[1]]/.M[a__]->List[a],"parameters"->Map[toString,getRelevantParameters[#[[2]]]],"expression"->replaceSpecials[toString[#[[2]]]]|>&,results];*)
+(*Return[<|"particles"->particlesJson,"matrixElements"->matrixElementsJson|>]];*)
+
+
+(* ::Input:: *)
+(*testJsonMatrixElements::usage="testJsonMatrixElements[json] tests if a JSON object is of the expected form for exporting matrix elements.";*)
+(*testJsonMatrixElements[json_]:=Module[{testBool,returnString,nParticles,expectedForm},*)
+(*testBool=True;*)
+(*returnString="Json object matches expected schema";*)
+(*(* checking head *)*)
+(*If[Head[json]!=Association,*)
+(*returnString="Not Association";testBool=False];*)
+(*(* checking dimensions *)*)
+(*If[Dimensions[json]!={2},*)
+(*returnString="Dimensions not {2}";testBool=False];*)
+(*(* checking top level keys *)*)
+(*If[Keys[json]!={"particles","matrixElements"},*)
+(*returnString="Top level keys not {'particles','matrixElements'}";testBool=False];*)
+(*(* checking lower level keys *)*)
+(*If[Keys[json["particles"][[1]]]!={"index","name"},*)
+(*returnString="'particles' keys not {'index','name'}";testBool=False];*)
+(*If[Keys[json["matrixElements"][[1]]]!={"externalParticles","parameters","expression"},*)
+(*returnString="'matrixElements' keys not {'externalParticles','parameters','expressions'}";testBool=False];*)
+(*(* returning results *)*)
+(*{testBool, returnString}*)
+(*]*)
+
+
+(* ::Input:: *)
+(*splitJsonMatrixElements::usage="splitJsonMatrixElements[json] splits a JSON object containing matrix elements into a list {particleNames,parameters,results}.";*)
+(*splitJsonMatrixElements[json_]:=Module[{particles,matrixElements,particleIndices,particleNames,matrixElementIndices,matrixElementParameters,matrixElementExpressions,parameters,expressions,results},*)
+(*particles=json["particles"];*)
+(*particleIndices=Map[#["index"]&,json["particles"]];*)
+(*particleNames=Map[#["name"]&,json["particles"]];*)
+(*matrixElements=json["matrixElements"];*)
+(*matrixElementIndices=Map[#["externalParticles"]&,json["matrixElements"]];*)
+(*matrixElementParameters=Map[#["parameters"]&,json["matrixElements"]];*)
+(*matrixElementExpressions=Map[#["expression"]&,json["matrixElements"]];*)
+(*parameters=Map[ToExpression,DeleteDuplicates[Flatten[matrixElementParameters]]];*)
+(*expressions=Map[ToExpression,StringReplace[matrixElementExpressions,{RegularExpression["(\\W)_s"]->"$1s",RegularExpression["(\\W)_t"]->"$1t",RegularExpression["(\\W)_u"]->"$1u"}]];*)
+(*results=Thread[matrixElementIndices->expressions];*)
+(*results=Map[M[#[[1]]/.List->Sequence]->#[[2]]&,results];*)
+(*{particleNames,parameters,results}*)
+(*];*)
+
+
+ExportToJSON[MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[{toExportJson},
+	
+(*Formatting the matrix elements*)
+	toExportJson=makeJsonMatrixElements[ParticleName,UserCouplings,MatrixElement];
+(*Exporting the result*)
+	exportJsonMatrixElements[StringJoin[file,".json"],toExportJson];		
+]
+
+
+(* ::Input:: *)
+(*(* reading JSON matrix elements *)*)
+(*importJSONMatrixElements::usage="importJSONMatrixElements[file] imports a JSON file of matrix elements into a JSON object.";*)
+(*importJSONMatrixElements[file_]:=Import[fileImport,"RawJSON"];*)
+
+
+(* ::Input:: *)
+(*(* export JSONMatrixElements *)*)
+(*exportJsonMatrixElements::usage="exportJsonMatrixElements[file,jsonMatrixElements] exports a JSON object of matrix elements into a JSON file.";*)
+(*exportJsonMatrixElements[file_,jsonMatrixElements_]:=Module[{test},*)
+(*If[Not[StringQ[file]],Print["File must be a string"];Return[]];*)
+(*If[StringTake[fileExport,-5]!=".json",Print["File must end in .json"];Return[]];*)
+(*Export[file,jsonMatrixElements]*)
+(*];*)
+
+
+(* ::Subsubsection::Closed:: *)
+(*hdf5 matrix elements functions*)
+
+
+ExportToHDF5[Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[{ExportH5,writeData,CijName,CijExport,ParticleInfo,CouplingInfo},
+	
 (*Metadata*)
 	ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
 	AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
-	
 	CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 	
-(*
-Rewrite the matrix element to an export format
-*)
-
-	MatrixElements=Table[MatrixElemToC@i//.RepOptional,{i,MatrixElements}];
-	
-	Table[
-		Cij[[i,j]]=Table[MatrixElemToC@k,{k,Cij[[i,j]]}];,
+	CijExport=Cij;
+	Do[CijExport[[i,j]]=Table[MatrixElemToC@k,{k,Cij[[i,j]]}];,
 		{i,OutOfEqParticles},{j,OutOfEqParticles}];
-	
-	ExportTXT=MatrixElements;
-	
-(*Adding metadata*)
-	PrependTo[ExportTXT,ParticleInfo];
-	PrependTo[ExportTXT,CouplingInfo];	
-	
-(*
-In the text-file all matrix elements are directly listed
-*)
-	Export[StringJoin[file,".txt"],ExportTXT];
-	
 (*In the hdf5 file we separate them into Cij components*)
 	ExportH5=Reap[Do[
 		CijName=StringJoin["MatrixElements",ParticleName[[i]],ParticleName[[j]]];
 		Sow[
-			writeData=Table[{ToString[FortranForm[a[[1]]]],ToString[FortranForm[a[[2]]]]},{a,Cij[[i,j]]}];
-			If[Length[Cij[[i,j]]]==0,writeData=""];
+			writeData=Table[{ToString[FortranForm[a[[1]]]],ToString[FortranForm[a[[2]]]]},{a,CijExport[[i,j]]}];
+			If[Length[CijExport[[i,j]]]==0,writeData=""];
 			CijName -> {"Data" -> writeData}
 			];
 		,{i,OutOfEqParticles},{j,OutOfEqParticles}]];
@@ -2033,10 +2140,97 @@ In the text-file all matrix elements are directly listed
 	AppendTo[ExportH5,"ParticleInfo"->{"Data"->ParticleInfo}];
 	AppendTo[ExportH5,"CouplingInfo"->{"Data"->CouplingInfo}];
 	
-(*Writing the final result to file*)
+(*Exporting the reult*)
 	Export[StringJoin[file,".hdf5"],ExportH5];
+			
+]
 
-	Return[MatrixElements]
+
+(* ::Subsubsection::Closed:: *)
+(*txt matrix elements functions*)
+
+
+ExportToTxt[MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{ParticleInfo,CouplingInfo,ExportTXT},
+
+	(*Creating some metadata*)
+		ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
+		AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
+		CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
+		
+		ExportTXT=MatrixElements;
+(*Adding metadata to the matrix elements*)
+		PrependTo[ExportTXT,ParticleInfo];
+		PrependTo[ExportTXT,CouplingInfo];	
+	
+(*Exporting*)
+	Export[StringJoin[file,".txt"],ExportTXT];
+			
+]
+
+
+(* ::Section::Closed:: *)
+(*Exporting the results*)
+
+
+Options[ExportMatrixElements] = {NormalizeWithDOF-> True,Format->"none"};
+
+
+ExportMatrixElements::usage="ExportMatrixElements[file,particleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,OptionsPattern[]] generates all possible matrix elements
+with the external particles specified in particleList.The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none , the last
+two options exports the result in all possible formats, and in none, respectively. A list of matrix elements is returned by the function regardless of the choosen format.";
+
+
+ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,RepOptional_:{},OptionsPattern[]]:=
+Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
+	Cij,ParticleInfo,LightParticles,particleListFull,CouplingInfo,MatrixElements,
+	OutOfEqParticles,RepMasses,RepCouplings,FormatOptions,userFormat,MatrixElementsList
+	},
+
+(*Specifies whether the first particle should be normalized by the number of degrees of freedom*)
+	normalizeDOF = OptionValue[NormalizeWithDOF]; 
+	
+(*Splits ParticleList into out-of-eq and light particles*)
+	ExtractLightParticles[ParticleList,OutOfEqParticles,particleListFull,LightParticles];
+
+(*Creates an assumption rule for simplifying Conjugate[....] terms*)
+	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,ParticleMasses,s,t,u}; (*All variables are assumed to be real*)
+	
+(*Allocates one element for each species mass to avoid errors*)	
+	If[ParticleMasses[[1]]=={},ParticleMassesI[[1]]={msq}];
+	If[ParticleMasses[[2]]=={},ParticleMassesI[[2]]={msq}];
+	If[ParticleMasses[[3]]=={},ParticleMassesI[[3]]={msq}];
+
+(*Extracting all matrix elements*)	
+	GenerateMatrixElements[MatrixElements,Cij,particleListFull,LightParticles,ParticleMassesI,OutOfEqParticles];
+	MatrixElementsList=Table[MatrixElemToC@i//.RepOptional,{i,MatrixElements}]; (*Creates a replacement list and shifts the indices to start at 0.*)
+
+
+(*Exporting the matrix elements to the choosen format*)
+	FormatOptions={"txt","json","hdf5","all","none"};
+	userFormat=OptionValue[Format];
+	
+	If[MemberQ[FormatOptions,userFormat],
+			
+		If[userFormat=="txt"||userFormat=="all", (*exporting to a txt file*)
+			ExportToTxt[MatrixElementsList,OutOfEqParticles,UserCouplings,file];
+			Print["Results have been exported to: ", StringJoin[file,".txt"]];
+		];
+		
+		If[userFormat=="hdf5"||userFormat=="all",(*exporting to a hdf5 file*)
+			ExportToHDF5[Cij,OutOfEqParticles,ParticleName,UserCouplings,file];
+			Print["Results have been exported to: ", StringJoin[file,".hdf5"]];
+		];	
+
+		If[userFormat=="json"||userFormat=="all",(*exporting to a hdf5 file*)
+			ExportToJSON[MatrixElementsList,ParticleName,UserCouplings,file];
+			Print["Results have been exported to: ", StringJoin[file,".json"]];
+		];	
+	,
+		Print["The currently allowed formats are: txt, hdf5, and json"];
+		Print["Please choose a valid format"];
+	];
+	
+	Return[MatrixElementsList]
 ];
 
 
@@ -2047,5 +2241,8 @@ MatrixElemToC[MatrixElem_]:=Block[{Ind},
 ]
 
 
-(* ::Section:: *)
-(*Exporting to JSON*)
+MatrixElemFromC[MatrixElem_]:=Block[{Ind},
+	Ind=MatrixElem[[2]];
+	
+	Return[M[Ind[[1]]+1,Ind[[2]]+1,Ind[[3]]+1,Ind[[4]]+1]->MatrixElem[[1]]]
+]
