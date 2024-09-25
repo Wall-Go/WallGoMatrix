@@ -61,7 +61,7 @@ VMass=m2*MassTerm1;
 QuarticTerm1=MassTerm1^2;
 
 
-VQuartic=\[Lambda]1H*QuarticTerm1;
+VQuartic=lam1H*QuarticTerm1;
 
 
 \[Lambda]4=GradQuartic[VQuartic];
@@ -140,13 +140,25 @@ ParticleList={ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,RepCharmStrangeL,RepCharmR
 VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
 	Table[mw2,{i,1,RepW[[1]]//Length}],{mb2}]; (*mb2 is the mass of the U(1) gauge field*)
+
+
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
+
+
+LeptonIndices=Union[ParticleList[[5]][[1]],ParticleList[[6]][[1]],ParticleList[[10]][[1]],ParticleList[[11]][[1]],ParticleList[[15]][[1]],ParticleList[[16]][[1]]];
+
+
+FermionMass[[LeptonIndices]]=ConstantArray[ml2,Length[LeptonIndices]];
+
+
+ScalarMass={mG2,mH2,mG2,mG2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
+
+
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mq2,mq2,mg2,mw2,mb2,ms2}; 
+UserMasses={mq2,ml2,mg2,mw2,mb2,mG2,mH2}; 
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -167,3 +179,98 @@ MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCoupl
 
 
 MatrixElements
+
+
+(*Formatting the matrix elements*)
+	toExportJson=makeJsonMatrixElements[ParticleName,UserCouplings,MatrixElements]
+
+
+
+(*Exporting the result*)
+	exportJsonMatrixElements[StringJoin[OutputFile,".json"],toExportJson]	
+
+
+NotebookDirectory[]
+
+
+(* ::Subsubsection::Closed:: *)
+(*json matrix elements functions*)
+
+
+(* ::Input:: *)
+(*makeJsonMatrixElements::usage="makeJsonMatrixElements[particles,parameters,results] converts a list of particle names {'Phi',...}, a list of particle parameters {g,...}, and a list of matrix elements results in the form {M[0,0,0,0]->g^4 s/t,...} to a JSON object in a standard format.";*)
+(*makeJsonMatrixElements[particles_,parameters_,resultsI_]:=Module[{particlesJson,matrixElementsJson,toString,getRelevantParameters,replaceSpecials,results=resultsI},*)
+(*toString[arg_]:=If[StringQ[arg],arg,ToString[arg,InputForm]];*)
+(*replaceSpecials[arg_]:=StringReplace[arg,{"Pi"->"_pi","sReplace"->"_s","tReplace"->"_t","uReplace"->"_u"}];*)
+(*getRelevantParameters[arg_]:=Select[parameters,Not[FreeQ[arg,#]]&];*)
+(*particlesJson=Table[<|"index"->i-1,"name"->toString[particles[[i]]]|>,{i,1,Length[particles]}];*)
+(*results=results/.{s->sReplace, t->tReplace,u->uReplace};*)
+(*matrixElementsJson=Map[<|"externalParticles"->#[[1]]/.M[a__]->List[a],"parameters"->Map[toString,getRelevantParameters[#[[2]]]],"expression"->replaceSpecials[toString[#[[2]]]]|>&,results];*)
+(*Return[<|"particles"->particlesJson,"matrixElements"->matrixElementsJson|>]];*)
+
+
+(* ::Input:: *)
+(*testJsonMatrixElements::usage="testJsonMatrixElements[json] tests if a JSON object is of the expected form for exporting matrix elements.";*)
+(*testJsonMatrixElements[json_]:=Module[{testBool,returnString,nParticles,expectedForm},*)
+(*testBool=True;*)
+(*returnString="Json object matches expected schema";*)
+(*(* checking head *)*)
+(*If[Head[json]!=Association,*)
+(*returnString="Not Association";testBool=False];*)
+(*(* checking dimensions *)*)
+(*If[Dimensions[json]!={2},*)
+(*returnString="Dimensions not {2}";testBool=False];*)
+(*(* checking top level keys *)*)
+(*If[Keys[json]!={"particles","matrixElements"},*)
+(*returnString="Top level keys not {'particles','matrixElements'}";testBool=False];*)
+(*(* checking lower level keys *)*)
+(*If[Keys[json["particles"][[1]]]!={"index","name"},*)
+(*returnString="'particles' keys not {'index','name'}";testBool=False];*)
+(*If[Keys[json["matrixElements"][[1]]]!={"externalParticles","parameters","expression"},*)
+(*returnString="'matrixElements' keys not {'externalParticles','parameters','expressions'}";testBool=False];*)
+(*(* returning results *)*)
+(*{testBool, returnString}*)
+(*]*)
+
+
+(* ::Input:: *)
+(*splitJsonMatrixElements::usage="splitJsonMatrixElements[json] splits a JSON object containing matrix elements into a list {particleNames,parameters,results}.";*)
+(*splitJsonMatrixElements[json_]:=Module[{particles,matrixElements,particleIndices,particleNames,matrixElementIndices,matrixElementParameters,matrixElementExpressions,parameters,expressions,results},*)
+(*particles=json["particles"];*)
+(*particleIndices=Map[#["index"]&,json["particles"]];*)
+(*particleNames=Map[#["name"]&,json["particles"]];*)
+(*matrixElements=json["matrixElements"];*)
+(*matrixElementIndices=Map[#["externalParticles"]&,json["matrixElements"]];*)
+(*matrixElementParameters=Map[#["parameters"]&,json["matrixElements"]];*)
+(*matrixElementExpressions=Map[#["expression"]&,json["matrixElements"]];*)
+(*parameters=Map[ToExpression,DeleteDuplicates[Flatten[matrixElementParameters]]];*)
+(*expressions=Map[ToExpression,StringReplace[matrixElementExpressions,{RegularExpression["(\\W)_s"]->"$1s",RegularExpression["(\\W)_t"]->"$1t",RegularExpression["(\\W)_u"]->"$1u"}]];*)
+(*results=Thread[matrixElementIndices->expressions];*)
+(*results=Map[M[#[[1]]/.List->Sequence]->#[[2]]&,results];*)
+(*{particleNames,parameters,results}*)
+(*];*)
+
+
+ExportToJSON[MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[{toExportJson},
+	
+(*Formatting the matrix elements*)
+	toExportJson=makeJsonMatrixElements[ParticleName,UserCouplings,MatrixElement];
+(*Exporting the result*)
+	exportJsonMatrixElements[StringJoin[file,".json"],toExportJson];		
+]
+
+
+(* ::Input:: *)
+(*(* reading JSON matrix elements *)*)
+(*importJSONMatrixElements::usage="importJSONMatrixElements[file] imports a JSON file of matrix elements into a JSON object.";*)
+(*importJSONMatrixElements[file_]:=Import[fileImport,"RawJSON"];*)
+
+
+(* ::Input:: *)
+(*(* export JSONMatrixElements *)*)
+(*exportJsonMatrixElements::usage="exportJsonMatrixElements[file,jsonMatrixElements] exports a JSON object of matrix elements into a JSON file.";*)
+(*exportJsonMatrixElements[file_,jsonMatrixElements_]:=Module[{test},*)
+(*If[Not[StringQ[file]],Print["File must be a string"];Return[]];*)
+(*If[StringTake[fileExport,-5]!=".json",Print["File must end in .json"];Return[]];*)
+(*Export[file,jsonMatrixElements]*)
+(*];*)
