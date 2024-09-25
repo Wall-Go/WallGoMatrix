@@ -8,6 +8,7 @@ SetDirectory[NotebookDirectory[]];
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 <<../DRalgo/DRalgo.m
+<<../src/matrixElements.m
 
 
 (* ::Chapter:: *)
