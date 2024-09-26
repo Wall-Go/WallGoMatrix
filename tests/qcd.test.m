@@ -154,7 +154,7 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	1/2*(M[1,1,1,1])/.MatrixElements/.{gs->1}/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	9*(+((s-u)^2/(t-mg2)^2)+(s-t)^2/(u-mg2)^2)/.Thread[UserMasses->0]//fixConvention//removeMissing
+	9 (10-(4 t u)/s^2+(s-u)^2/(t-mg2)^2+(s-t)^2/(u-mg2)^2)/.Thread[UserMasses->0]//fixConvention//removeMissing
 ]];
 
 
