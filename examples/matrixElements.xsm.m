@@ -66,7 +66,7 @@ MassTerm2=CreateInvariant[Group,RepScalar,InputInv]//Simplify//FullSimplify;
 
 VMass=(
 	+m1*MassTerm1
-	+\[Mu]\[Sigma]/2*MassTerm2
+	+ms/2*MassTerm2
 	);
 
 
@@ -79,9 +79,9 @@ QuarticTerm3=MassTerm1[[1]]*MassTerm2[[1]];
 
 
 VQuartic=(
-	+\[Lambda]1H*QuarticTerm1
-	+\[Lambda]\[Sigma]/4*QuarticTerm2
-	+\[Lambda]m/2*QuarticTerm3
+	+lam1H*QuarticTerm1
+	+lams/4*QuarticTerm2
+	+lamm/2*QuarticTerm3
 	);
 
 
@@ -95,8 +95,8 @@ CubicTerm2=CreateInvariant[Group,RepScalar,InputInv][[1]]//Simplify;
 
 
 VCubic=(
-	+\[Mu]m/2*CubicTerm1
-	+\[Mu]3/3*CubicTerm2
+	+mum/2*CubicTerm1
+	+mu3/3*CubicTerm2
 	);
 
 
@@ -177,8 +177,8 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mq2,mg2,mw2,mz2}; 
-UserCouplings={CouplingName,yt1}//Flatten;
+UserMasses={mq2,mg2,mw2,mz2,ms2}; 
+UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 (*
@@ -245,8 +245,8 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mg2,mw2,mz2};
-UserCouplings={CouplingName,yt1}//Flatten;
+UserMasses={mq2,mg2,mw2,mz2,ms2}; 
+UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 (*
