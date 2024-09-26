@@ -12,7 +12,7 @@ $LoadGroupMath=True;
 (*Yukawa Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -112,16 +112,16 @@ rep 1-2 are fermions,
 (*rep 3 is a scalar*)
 *)
 (* scalar *)
-RepScalar=CreateOutOfEq[{1},"S"];
+RepScalar=CreateParticle[{1},"S"];
 
 (* left-handed fermion *)
-RepFermionL=CreateOutOfEq[{1},"F"];
+RepFermionL=CreateParticle[{1},"F"];
 
 (* right-handed fermion *)
-RepFermionR=CreateOutOfEq[{2},"F"];
+RepFermionR=CreateParticle[{2},"F"];
 
 (*Vector bosons*)
-RepZ=CreateOutOfEq[{1},"V"];
+RepZ=CreateParticle[{1},"V"];
 
 
 (*
@@ -152,7 +152,15 @@ OutputFile="matrixElements.yukawa";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","PsiL","PsiR"};
 RepOptional={};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	RepOptional,
+	Format->{"json","txt"}];
 
 
 MatrixElements

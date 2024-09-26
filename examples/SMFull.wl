@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 SetDirectory[NotebookDirectory[]];
@@ -175,7 +175,15 @@ OutputFile="matrixElementsFull";
 SetDirectory[NotebookDirectory[]];
 
 RepOptional={};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional,Format->"json"];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	RepOptional,
+	Format->{"json","txt"}];
 
 
 MatrixElements

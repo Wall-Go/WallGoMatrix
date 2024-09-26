@@ -15,7 +15,7 @@ $LoadGroupMath=True;
 (*See 2211.13142 for implementation details*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -76,11 +76,11 @@ QuarticTerm5=(MassTerm3[[1]]^2+MassTerm4[[1]]^2)//Simplify;
 
 
 VQuartic=(
-	+\[Lambda]1H/2*QuarticTerm1
-	+\[Lambda]2H/2*QuarticTerm2
-	+\[Lambda]3H*QuarticTerm3
-	+\[Lambda]4H*QuarticTerm4
-	+\[Lambda]5H/2*QuarticTerm5
+	+lam1H/2*QuarticTerm1
+	+lam2H/2*QuarticTerm2
+	+lam3H*QuarticTerm3
+	+lam4H*QuarticTerm4
+	+lam5H/2*QuarticTerm5
 	);
 
 
@@ -118,23 +118,23 @@ SymmetryBreaking[vev]
 
 
 (*left+right top-quark*)
-Rept = CreateOutOfEq[{{1,1},{2,1}},"F"];
+Rept=CreateParticle[{{1,1},{2,1}},"F"];
 
 (*left-handed bottom-quark*)
-Repb = CreateOutOfEq[{{1,2}},"F"];
+Repb=CreateParticle[{{1,2}},"F"];
 
 (*scalar reps*)
-Reph = CreateOutOfEq[{{1,2}},"S"];
-RepG = CreateOutOfEq[{{1,1}},"S"];
+Reph=CreateParticle[{{1,2}},"S"];
+RepG=CreateParticle[{{1,1}},"S"];
 
-RepH = CreateOutOfEq[{{2,2}},"S"];
-RepA = CreateOutOfEq[{{2,3}},"S"];
-RepHpm = CreateOutOfEq[{{2,1}},"S"];
+RepH=CreateParticle[{{2,2}},"S"];
+RepA=CreateParticle[{{2,3}},"S"];
+RepHpm=CreateParticle[{{2,1}},"S"];
 
 (*Vector bosons*)
-RepGluon=CreateOutOfEq[{1},"V"];
-RepW=CreateOutOfEq[{{2,1}},"V"];
-RepZ=CreateOutOfEq[{{3,1}},"V"];
+RepGluon=CreateParticle[{1},"V"];
+RepW=CreateParticle[{{2,1}},"V"];
+RepZ=CreateParticle[{{3,1}},"V"];
 
 
 ParticleList={Rept,Repb,Reph,RepA,RepGluon,RepW,RepZ};
@@ -153,9 +153,9 @@ ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mq2,mg2,mw2,mz2,ms2}; 
+UserMasses={mq2,mg2,mw2,mz2,ms2}; 
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
-UserCouplings={CouplingName,yt1}//Flatten;
+UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates
 
 
 (*
@@ -167,5 +167,15 @@ SetDirectory[NotebookDirectory[]];
 RepOptional={};
 (*ParticleName={"Top","Bottom","h","A","Gluon","W","Z"};*)
 ParticleName={"h","A"};
-MatrixElements=ExportMatrixElements["MatrixElem",ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	RepOptional,
+	Format->{"json","txt"}];
+
+
 

@@ -78,20 +78,20 @@ one right-handed fermoon
 	reps 5,6 are vector bosons
 *)
 (*left-handed top-quark*)
-ReptL=CreateOutOfEq[{1},"F"];
+ReptL=CreateParticle[{1},"F"];
 
 (*right-handed top-quark*)
-ReptR=CreateOutOfEq[{2},"F"];
+ReptR=CreateParticle[{2},"F"];
 
 (*right-handed bottom-quark*)
-RepbR=CreateOutOfEq[{3},"F"];
+RepbR=CreateParticle[{3},"F"];
 
 (*light quarks*)
-RepLight=CreateOutOfEq[{4,5,6,7,8,9},"F"];
+RepLight=CreateParticle[{4,5,6,7,8,9},"F"];
 
 (*Vector bosons*)
-RepGluon=CreateOutOfEq[{1},"V"];
-RepW=CreateOutOfEq[{{2,1}},"V"];
+RepGluon=CreateParticle[{1},"V"];
+RepW=CreateParticle[{{2,1}},"V"];
 
 
 ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW};
@@ -107,12 +107,12 @@ VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
 	Table[mw2,{i,1,RepW[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass={};
+ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mq2,mq2,mg2,mw2}; 
+UserMasses={mq2,mg2,mw2,ms2}; 
 UserCouplings=CouplingName;
 
 
@@ -123,7 +123,15 @@ OutputFile="matrixElements.ew";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W"};
 RepOptional={};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	RepOptional,
+	Format->{"json","txt","hdf5"}];
 
 
 MatrixElements//Expand

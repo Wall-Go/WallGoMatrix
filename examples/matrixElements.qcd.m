@@ -1,5 +1,8 @@
 (* ::Package:: *)
 
+(*Quit[];*)
+
+
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
@@ -57,8 +60,8 @@ one right-handed fermoon
 rep 1-6 are quarks,
 rep 7 is a gluon
 *)
-Rep1=CreateOutOfEq[{1,2},"F"];
-RepGluon=CreateOutOfEq[{1},"V"];
+Rep1=CreateParticle[{1,2},"F"];
+RepGluon=CreateParticle[{1},"V"];
 
 
 ParticleList={Rep1,RepGluon};
@@ -85,13 +88,21 @@ OutputFile="matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
 RepOptional={};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	RepOptional,
+	Format->{"json","txt"}];
 
 
 MatrixElements
 
 
-(* ::Subsection:: *)
+(* ::Section:: *)
 (*Crosschecks*)
 
 
@@ -143,3 +154,6 @@ Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
 Import[OutputFile<>".hdf5","ParticleInfo"]
+
+
+

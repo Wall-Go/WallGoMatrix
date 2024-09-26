@@ -5,7 +5,7 @@ BeginPackage["matrixElements`"]
 
 (*List of public functions*)
 
-CreateOutOfEq::usage=
+CreateParticle::usage=
 "CreateOutOfEq[{{\!\(\*SubscriptBox[\(r\), \(1\)]\),\!\(\*SubscriptBox[\(m\), \(1\)]\)},...,{\!\(\*SubscriptBox[\(r\), \(n\)]\),\!\(\*SubscriptBox[\(m\), \(n\)]\)}},\"R\"] is a function that groups n particles into one representation for
 Fermions (R=F),
 Vector Bosons (R=V), and
@@ -2075,7 +2075,7 @@ Block[{Elem},
 (*Export functions for different formats*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*json matrix elements functions*)
 
 
@@ -2131,12 +2131,13 @@ results=Map[M[#[[1]]/.List->Sequence]->#[[2]]&,results];
 
 
 
-ExportToJSON[MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[{toExportJson},
+ExportTo["json"][MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[{toExportJson},
 	
 (*Formatting the matrix elements*)
 	toExportJson=makeJsonMatrixElements[ParticleName,UserCouplings,MatrixElement];
 (*Exporting the result*)
-	exportJsonMatrixElements[StringJoin[file,".json"],toExportJson];		
+	exportJsonMatrixElements[StringJoin[file,".json"],toExportJson];	
+	Print["Results have been exported to: ", StringJoin[file,".json"]];	
 ]
 
 
@@ -2152,11 +2153,11 @@ Export[file,jsonMatrixElements]
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*hdf5 matrix elements functions*)
 
 
-ExportToHDF5[Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[{ExportH5,writeData,CijName,CijExport,ParticleInfo,CouplingInfo},
+ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[{ExportH5,writeData,CijName,CijExport,ParticleInfo,CouplingInfo},
 	
 (*Metadata*)
 	ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
@@ -2184,15 +2185,15 @@ ExportToHDF5[Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[{
 	
 (*Exporting the reult*)
 	Export[StringJoin[file,".hdf5"],ExportH5];
-			
+	Print["Results have been exported to: ", StringJoin[file,".hdf5"]];	
 ]
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*txt matrix elements functions*)
 
 
-ExportToTxt[MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{ParticleInfo,CouplingInfo,ExportTXT},
+ExportTo["txt"][MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{ParticleInfo,CouplingInfo,ExportTXT},
 
 	(*Creating some metadata*)
 		ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
@@ -2206,11 +2207,11 @@ ExportToTxt[MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{Part
 	
 (*Exporting*)
 	Export[StringJoin[file,".txt"],ExportTXT];
-			
+	Print["Results have been exported to: ", StringJoin[file,".txt"]];		
 ]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Exporting the results*)
 
 
@@ -2246,30 +2247,31 @@ Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
 	GenerateMatrixElements[MatrixElements,Cij,particleListFull,LightParticles,ParticleMassesI,OutOfEqParticles];
 	MatrixElementsList=Table[MatrixElemToC@i//.RepOptional,{i,MatrixElements}]; (*Creates a replacement list and shifts the indices to start at 0.*)
 
-
 (*Exporting the matrix elements to the choosen format*)
-	FormatOptions={"txt","json","hdf5","all","none"};
-	userFormat=OptionValue[Format];
+	FormatOptions = {"txt", "json", "hdf5", "all", "none"};
+	userFormat = OptionValue[Format];
 	
-	If[MemberQ[FormatOptions,userFormat],
-			
-		If[userFormat=="txt"||userFormat=="all", (*exporting to a txt file*)
-			ExportToTxt[MatrixElementsList,OutOfEqParticles,UserCouplings,file];
-			Print["Results have been exported to: ", StringJoin[file,".txt"]];
-		];
-		
-		If[userFormat=="hdf5"||userFormat=="all",(*exporting to a hdf5 file*)
-			ExportToHDF5[Cij,OutOfEqParticles,ParticleName,UserCouplings,file];
-			Print["Results have been exported to: ", StringJoin[file,".hdf5"]];
-		];	
-		userParameters=Flatten[Join[UserCouplings,ParticleMasses]]//DeleteDuplicates;
-		If[userFormat=="json"||userFormat=="all",(*exporting to a hdf5 file*)
-			ExportToJSON[MatrixElementsList,ParticleName,userParameters,file];
-			Print["Results have been exported to: ", StringJoin[file,".json"]];
-		];	
-	,
-		Print["The currently allowed formats are: txt, hdf5, and json"];
-		Print["Please choose a valid format"];
+	(* Convert userFormat to a list if it's a single value *)
+	userFormatsList = If[ListQ[userFormat], userFormat, {userFormat}];
+	
+	(* Replace "all" with all formats if it is present *)
+	If[MemberQ[userFormatsList, "all"], userFormatsList = {"txt", "json", "hdf5"}];
+	
+	(* Check if all formats in the list are valid *)
+	If[AllTrue[userFormatsList, MemberQ[FormatOptions, #] &],
+	   (* Iterate over each format and perform the export *)
+	   Do[
+	     Switch[fmt,
+	       "txt", ExportTo["txt"][MatrixElementsList, OutOfEqParticles, UserCouplings, file],
+	       "hdf5", ExportTo["hdf5"][Cij, OutOfEqParticles, ParticleName, UserCouplings, file],
+	       "json",
+	       userParameters = Flatten[Join[UserCouplings, ParticleMasses]] // DeleteDuplicates;
+	       ExportTo["json"][MatrixElementsList, ParticleName, userParameters, file]
+	     ],
+	     {fmt, userFormatsList}
+	   ],
+	   Print["The currently allowed formats are: txt, hdf5, and json"];
+	   Print["Please choose a valid format"];
 	];
 	
 	Return[MatrixElementsList]

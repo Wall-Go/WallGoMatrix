@@ -144,21 +144,21 @@ SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=CreateOutOfEq[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F"];
 
 (*right-handed top-quark*)
-ReptR=CreateOutOfEq[{2},"F"];
+ReptR=CreateParticle[{2},"F"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateOutOfEq[{{1,2}},"F"];
+RepbL=CreateParticle[{{1,2}},"F"];
 
 (*light quarks*)
-RepLight=CreateOutOfEq[Range[3,2*4+3],"F"];
+RepLight=CreateParticle[Range[3,2*4+3],"F"];
 
 (*Vector bosons*)
-RepGluon=CreateOutOfEq[{1},"V"];
-RepW=CreateOutOfEq[{{2,1}},"V"];
-RepZ=CreateOutOfEq[{{3,1}},"V"];
+RepGluon=CreateParticle[{1},"V"];
+RepW=CreateParticle[{{2,1}},"V"];
+RepZ=CreateParticle[{{3,1}},"V"];
 
 
 ParticleList={ReptL,ReptR,RepGluon,RepW,RepZ};
@@ -186,10 +186,18 @@ UserCouplings={CouplingName,yt1}//Flatten;
 *)
 OutputFile="matrixElements.xsm";
 SetDirectory[NotebookDirectory[]];
-RepOptional={c[1]->0,c[2]->0};
+RepOptional={gw->0,g1->0};
 (*RepOptional={};*)
 ParticleName={"TopL","TopR","Gluon","W","Z"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	RepOptional,
+	Format->{"json","txt"}];
 
 
 (* ::Subsection:: *)
@@ -201,24 +209,24 @@ SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=CreateOutOfEq[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F"];
 
 (*right-handed top-quark*)
-ReptR=CreateOutOfEq[{2},"F"];
+ReptR=CreateParticle[{2},"F"];
 
 (*join topL and topR into one rep*)
 Rept={Join[ReptL[[1]],ReptR[[1]]],"F"};
 
 (*left-handed bottom-quark*)
-RepbL=CreateOutOfEq[{{1,2}},"F"];
+RepbL=CreateParticle[{{1,2}},"F"];
 
 (*light quarks*)
-RepLight=CreateOutOfEq[Range[3,2*4+3],"F"];
+RepLight=CreateParticle[Range[3,2*4+3],"F"];
 
 (*Vector bosons*)
-RepGluon=CreateOutOfEq[{1},"V"];
-RepW=CreateOutOfEq[{2},"V"];
-RepZ=CreateOutOfEq[{3},"V"];
+RepGluon=CreateParticle[{1},"V"];
+RepW=CreateParticle[{2},"V"];
+RepZ=CreateParticle[{3},"V"];
 
 
 ParticleList={Rept,RepGluon};
@@ -246,9 +254,17 @@ UserCouplings={CouplingName,yt1}//Flatten;
 *)
 OutputFile="matrixElements.xsm.qcd";
 SetDirectory[NotebookDirectory[]];
-RepOptional={c[1]->0,c[2]->0};
+RepOptional={gw->0,g1->0};
 ParticleName={"Top","Gluon"};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	RepOptional,
+	Format->{"json","txt"}];
 
 
 MatrixElements//Expand
