@@ -120,16 +120,16 @@ rep 1-2 are fermions,
 (*rep 3 is a scalar*)
 *)
 (* scalar *)
-RepScalar=CreateOutOfEq[{1},"S"];
+RepScalar=CreateParticle[{1},"S"];
 
 (* left-handed fermion *)
-RepFermionL=CreateOutOfEq[{1},"F"];
+RepFermionL=CreateParticle[{1},"F"];
 
 (* right-handed fermion *)
-RepFermionR=CreateOutOfEq[{2},"F"];
+RepFermionR=CreateParticle[{2},"F"];
 
 (*Vector bosons*)
-RepZ=CreateOutOfEq[{1},"V"];
+RepZ=CreateParticle[{1},"V"];
 
 
 (*
@@ -287,6 +287,7 @@ TestCreate[Sum[M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElements//fixC
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

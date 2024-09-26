@@ -100,16 +100,20 @@ one right-handed fermion
 *)
 
 
+vev={v,0,0};
+SymmetryBreaking[vev]
+
+
 (* scalars *)
-RepPhi=CreateOutOfEq[{1,2},"S"];
-RepChi=CreateOutOfEq[{3},"S"];
+RepPhi=CreateParticle[{1,2},"S"];
+RepChi=CreateParticle[{3},"S"];
 
 (* fermions *)
-RepPsi=CreateOutOfEq[{1,2},"F"];
-RepXi=CreateOutOfEq[{3,4},"F"];
+RepPsi=CreateParticle[{1,2},"F"];
+RepXi=CreateParticle[{3,4},"F"];
 
 (* vector bosons *)
-RepA=CreateOutOfEq[{1},"V"];
+RepA=CreateParticle[{1},"V"];
 
 
 (*
@@ -310,8 +314,6 @@ TestCreate[totalDRalgo,
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
 
 
