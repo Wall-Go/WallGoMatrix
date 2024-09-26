@@ -116,8 +116,14 @@ UserCouplings={CouplingName,\[Lambda]}//Flatten;
 OutputFile="matrixElements.ah";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","Vector"};
-RepOptional={};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	Format->{"json","txt"}];
 
 
 MatrixElements
@@ -148,7 +154,7 @@ M[2,2,0,1]->e^4 ((4 s^2)/(t u)+(4 s)/t+(4 s)/u+8),
 M[2,2,1,0]->e^4 ((4 s^2)/(t u)+(4 s)/t+(4 s)/u+8)};
 
 
-insertCouplings={c[0]->e,c[1]->lam};
+insertCouplings={g1->e,\[Lambda]->lam};
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
@@ -211,12 +217,6 @@ TestCreate[M[1,1,1,1]/.MatrixElements//fixConvention//removeMissing,
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
-
-
-
-
 
 
 

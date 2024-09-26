@@ -22,7 +22,7 @@ Needs["matrixElements`","../src/matrixElements.m"]
 (*Abelian-Higgs-Yukawa Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -140,7 +140,14 @@ OutputFile="matrixElements.u1_higgs_yukawa";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","Chi","Psi","Xi","A"};
 RepOptional={};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional,NormalizeWithDOF->False];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	{NormalizeWithDOF->False,Format->{"json","txt"}}];
 
 
 MatrixElements
@@ -303,6 +310,7 @@ TestCreate[totalDRalgo,
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

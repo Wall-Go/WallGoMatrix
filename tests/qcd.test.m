@@ -46,7 +46,7 @@ RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepF
 {gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*User Input*)
 
 
@@ -62,8 +62,8 @@ one right-handed fermion
 rep 1-6 are quarks,
 rep 7 is a gluon
 *)
-Rep1=CreateOutOfEq[{1,2},"F"];
-RepGluon=CreateOutOfEq[{1},"V"];
+Rep1=CreateParticle[{1,2},"F"];
+RepGluon=CreateParticle[{1},"V"];
 
 
 ParticleList={Rep1,RepGluon};
@@ -89,8 +89,14 @@ UserCouplings={gs};
 OutputFile="matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-RepOptional={};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	Format->{"json","txt"}];
 
 
 MatrixElements
@@ -98,6 +104,11 @@ MatrixElements
 
 (* ::Section:: *)
 (*Tests*)
+
+
+symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
+fixConvention[arg_]:=symmetriseTU[arg/.msq[i_]->0/.{s->(-t-u)}]//Expand//Simplify//Expand
+removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
 (* ::Subsection:: *)
@@ -109,36 +120,41 @@ testList={};
 
 (*5 light quarks*)
 AppendTo[testList,
-TestCreate[1/2*(M[0,2,0,2]+M[0,2,2,0])/.MatrixElements/.{c[0]->1}//Simplify,
-	1/6 ((80 (s^2+u^2))/(t-msq[1])^2+(80 (s^2+t^2))/(u-msq[1])^2)//Simplify
+TestCreate[
+	1/2*(M[0,2,0,2]+M[0,2,2,0])/.MatrixElements/.{gs->1}//fixConvention//removeMissing,
+	1/6 ((80 (s^2+u^2))/(t-mg2)^2+(80 (s^2+t^2))/(u-mg2)^2)//fixConvention//removeMissing
 ]];
 
 
 (*q1q1->gg*)
 AppendTo[testList,
-TestCreate[1/2*(M[0,0,1,1])/.MatrixElements/.{c[0]->1}//Simplify,
-	1/12 (+(128/3) ((t u)/(-t+msq[0])^2+(t u)/(-u+msq[0])^2))//Simplify
+TestCreate[
+	1/2*(M[0,0,1,1])/.MatrixElements/.{gs->1}//fixConvention//removeMissing,
+	1/12 (+(128/3) ((t u)/(-t+msq[0])^2+(t u)/(-u+msq[0])^2))//fixConvention//removeMissing
 ]];
 
 
 (*q1 g->q1 g*)
 AppendTo[testList,
-TestCreate[1/2*(M[0,1,0,1]+M[0,1,1,0])/.MatrixElements/.{c[0]->1}//Simplify,
-	(-(64/9) ((s u)/(u-msq[0])^2)+(16 (s^2+u^2))/(t-msq[1])^2)//Simplify
+TestCreate[
+	1/2*(M[0,1,0,1]+M[0,1,1,0])/.MatrixElements/.{gs->1}//fixConvention//removeMissing,
+	(-(64/9) ((s u)/(u-mq2)^2)+(16 (s^2+u^2))/(t-mg2)^2)//fixConvention//removeMissing
 ]];
 
 
 (*tt->tt*)
 AppendTo[testList,
-TestCreate[1/2*(M[0,0,0,0])/.MatrixElements/.{c[0]->1}//Simplify,
-	8/3*((s^2+u^2)/(t-msq[1])^2+(s^2+t^2)/(u-msq[1])^2)//Simplify
+TestCreate[
+	1/2*(M[0,0,0,0])/.MatrixElements/.{gs->1}//fixConvention//removeMissing,
+	8/3*((s^2+u^2)/(t-mg2)^2+(s^2+t^2)/(u-mg2)^2)//fixConvention//removeMissing
 ]];
 
 
 (*g g->g g*)
 AppendTo[testList,
-TestCreate[1/2*(M[1,1,1,1])/.MatrixElements/.{c[0]->1}//Simplify,
-	9*(+((s-u)^2/(t-msq[1])^2)+(s-t)^2/(u-msq[1])^2)//Simplify
+TestCreate[
+	1/2*(M[1,1,1,1])/.MatrixElements/.{gs->1}//fixConvention//removeMissing,
+	9*(+((s-u)^2/(t-mg2)^2)+(s-t)^2/(u-mg2)^2)//fixConvention//removeMissing
 ]];
 
 

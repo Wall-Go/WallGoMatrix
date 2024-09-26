@@ -21,7 +21,7 @@ $LoadGroupMath=True;
 (*Yukawa Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -159,8 +159,14 @@ UserCouplings={CouplingName,\[Lambda],\[Gamma],y}//Flatten;
 OutputFile="matrixElements.yukawa";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","PsiL","PsiR"};
-RepOptional={};
-MatrixElements=ExportMatrixElements[OutputFile,ParticleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,RepOptional];
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	Format->{"json","txt"}];
 
 
 MatrixElements
@@ -218,7 +224,7 @@ FeynMatrixElements={M[0, 0, 0, 0] -> g^4/s^2 + g^4/t^2 + (2*g^4)/(s*t) + g^4/u^2
 feynAssociation=Association[feynResults];
 
 
-insertCouplings={c[1]->lam,c[2]->(g+lam v),c[3]->y};
+insertCouplings={\[Lambda]->lam,\[Gamma]->(g+lam v),y->y};
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
@@ -281,10 +287,6 @@ TestCreate[Sum[M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElements//fixC
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
-
-
 
 
 
