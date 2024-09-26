@@ -21,7 +21,7 @@ $LoadGroupMath=True;
 (*Yukawa Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -81,7 +81,7 @@ MassTerm2=CreateInvariantFermion[Group,RepFermion,InputInv][[1]]
 
 
 (* y \[Phi](Subscript[\[Psi], R]Subscript[\[Psi], L]+Subscript[\[Psi]^+, L]Subscript[\[Psi], R]^+)*)
- InputInv={{1,2,1},{True,True,True}};
+InputInv={{1,2,1},{True,True,True}};
 YukawaDoublet1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 InputInv={{1,1,2},{True,False,False}}; 
 YukawaDoublet2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
@@ -230,7 +230,7 @@ insertCouplings={\[Lambda]->lam,\[Gamma]->(g+lam v),y->y};
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 
 
-fixConvention[arg_]:=symmetriseTU[arg/.msq[i_]->0/.{s->(-t-u)}/.insertCouplings]//Expand//Simplify//Expand
+fixConvention[arg_]:=symmetriseTU[arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings]//Expand//Simplify//Expand
 
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
@@ -245,49 +245,54 @@ testList={};
 
 (* scalar-scalar scattering*)
 AppendTo[testList,
-TestCreate[M[0,0,0,0]/.MatrixElements//fixConvention//removeMissing,
+TestCreate[
+	M[0,0,0,0]/.MatrixElements//fixConvention//removeMissing,
 	M[0,0,0,0]/.FeynMatrixElements//fixConvention//removeMissing
 ]];
 
 
 (* scalar to fermions *)
 AppendTo[testList,
-TestCreate[Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+TestCreate[
+	Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
 	Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing
 ]];
 
 
 (* fermions to scalar *)
 AppendTo[testList,
-TestCreate[Sum[M[c,d,0,0],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+TestCreate[
+	Sum[M[c,d,0,0],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
 	Sum[1/2 M[c,d,0,0],{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 (* scalar-fermion scattering *)
 AppendTo[testList,
-TestCreate[Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+TestCreate[
+	Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
 	Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing
 ]];
 
 
 (* fermion-scalar scattering *)
 AppendTo[testList,
-TestCreate[Sum[M[c,0,d,0]+M[c,0,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+TestCreate[
+	Sum[M[c,0,d,0]+M[c,0,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
 	Sum[1/2 (M[c,0,d,0]+M[c,0,0,d]),{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 (* fermion-fermion scattering*)
 AppendTo[testList,
-TestCreate[Sum[M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
+TestCreate[
+	Sum[M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
 	Sum[1/2 M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 

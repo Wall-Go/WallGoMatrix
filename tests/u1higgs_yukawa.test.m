@@ -11,18 +11,17 @@ If[$VersionNumber < 13.3,
 
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
-Global`$GroupMathMultipleModels=True;
-Global`$LoadGroupMath=True;
-(*Needs["DRalgo`","../DRalgo/DRalgo.m"]*)
-(*<<DRalgo`*)
-Needs["matrixElements`","../src/matrixElements.m"]
+$GroupMathMultipleModels=True;
+$LoadGroupMath=True;
+<<../DRalgo/DRalgo.m
+<<../src/matrixElements.m
 
 
 (* ::Chapter:: *)
 (*Abelian-Higgs-Yukawa Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -85,7 +84,7 @@ Ysff=y*GradYukawa[Yukawa1+Yukawa2];
 YsffC=y*GradYukawa[Yukawa1HC+Yukawa2HC];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*User Input*)
 
 
@@ -138,7 +137,7 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass}
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={0};
+UserMasses={mv,mf,ms};
 UserCouplings={g1,b3,b4,a1,a2,lam,y}//Flatten;
 
 
@@ -294,7 +293,7 @@ removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 (*Test hard*)
 
 
-totalDRalgo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements/.{mf->0,ms->0,mv->0}//removeMissing//fixConvention;
+totalDRalgo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements/.Thread[UserMasses->0]//removeMissing//fixConvention;
 totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.FeynMatrixElements//removeMissing//fixConvention;
 
 
@@ -317,6 +316,4 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 

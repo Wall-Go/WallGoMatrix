@@ -46,7 +46,7 @@ RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepF
 {gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*User Input*)
 
 
@@ -107,7 +107,7 @@ MatrixElements
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
-fixConvention[arg_]:=symmetriseTU[arg/.msq[i_]->0/.{s->(-t-u)}]//Expand//Simplify//Expand
+fixConvention[arg_]:=symmetriseTU[arg/.{s->(-t-u)}]//Expand//Simplify//Expand
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
@@ -126,11 +126,11 @@ TestCreate[
 ]];
 
 
-(*q1q1->gg*)
+(*tt->gg*)
 AppendTo[testList,
 TestCreate[
 	1/2*(M[0,0,1,1])/.MatrixElements/.{gs->1}//fixConvention//removeMissing,
-	1/12 (+(128/3) ((t u)/(-t+msq[0])^2+(t u)/(-u+msq[0])^2))//fixConvention//removeMissing
+	1/12 (+(128/3) ((t u)/(-t+mq2)^2+(t u)/(-u+mq2)^2))-(8 t^2)/(-s+mg2)^2-(8 u^2)/(-s+mg2)^2//fixConvention//removeMissing
 ]];
 
 
@@ -138,29 +138,28 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	1/2*(M[0,1,0,1]+M[0,1,1,0])/.MatrixElements/.{gs->1}//fixConvention//removeMissing,
-	(-(64/9) ((s u)/(u-mq2)^2)+(16 (s^2+u^2))/(t-mg2)^2)//fixConvention//removeMissing
+	(-(64/9) ((s u)/(u-mq2)^2)+(16 (s^2+u^2))/(t-mg2)^2)-64/9 (s*u)/(-s+mq2)^2//fixConvention//removeMissing
 ]];
 
 
 (*tt->tt*)
 AppendTo[testList,
 TestCreate[
-	1/2*(M[0,0,0,0])/.MatrixElements/.{gs->1}//fixConvention//removeMissing,
-	8/3*((s^2+u^2)/(t-mg2)^2+(s^2+t^2)/(u-mg2)^2)//fixConvention//removeMissing
+	1/2*(M[0,0,0,0])/.MatrixElements/.{gs->1}/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	8/3*((s^2+u^2)/(t-mg2)^2+(s^2+t^2)/(u-mg2)^2)/.Thread[UserMasses->0]//fixConvention//removeMissing
 ]];
 
 
 (*g g->g g*)
 AppendTo[testList,
 TestCreate[
-	1/2*(M[1,1,1,1])/.MatrixElements/.{gs->1}//fixConvention//removeMissing,
-	9*(+((s-u)^2/(t-mg2)^2)+(s-t)^2/(u-mg2)^2)//fixConvention//removeMissing
+	1/2*(M[1,1,1,1])/.MatrixElements/.{gs->1}/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	9*(+((s-u)^2/(t-mg2)^2)+(s-t)^2/(u-mg2)^2)/.Thread[UserMasses->0]//fixConvention//removeMissing
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 
