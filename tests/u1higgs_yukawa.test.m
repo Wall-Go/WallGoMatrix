@@ -62,29 +62,30 @@ Phi4=CreateInvariant[Group,RepScalar,InputInv][[1]];
 (* 1/4 b4 \[Chi]^4 *)
 InputInv={{2,2,2,2},{True,True,True,True}};
 Chi4=CreateInvariant[Group,RepScalar,InputInv][[1]];
-(* a2/2 \[Phi]^2 \[Chi]^2 *)
+(* a2/2 \[Chi]^2 \[Phi]^2 *)
 InputInv={{1,1,2,2},{True,False,True,True}};
 Phi2Chi2=CreateInvariant[Group,RepScalar,InputInv][[1]];
 (* quartic terms together *)
-VQuartic= lam Phi4 + b4/4 Chi4 + a2/2 Phi2Chi2;
+VQuartic=b4/4 Chi4 + lam Phi4 + a2/2 Phi2Chi2;
 \[Lambda]4=GradQuartic[VQuartic];
 
 
-(* y (\[Phi]^+)(\[Psi]L (\[Xi]R^+)+ \[Psi]R (\[Xi]L^+)) *)
-InputInv={{1,3,2},{False,True,False}};
+(* y \[Phi]^*(Subscript[\[Psi], L]Subscript[\[Xi], R]^++Subscript[\[Psi], R]Subscript[\[Xi], L]^+)*)
+InputInv={{1,1,4},{True,True,False}};
 Yukawa1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-InputInv={{1,4,1},{False,True,False}}; 
+InputInv={{1,2,3},{False,False,True}};
 Yukawa2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-(* Hermitian conjugates *)
-InputInv={{1,3,2},{True,False,True}};
+InputInv={{1,1,4},{False,True,False}};
 Yukawa1HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-InputInv={{1,4,1},{True,False,True}}; 
+InputInv={{1,2,3},{True,False,True}};
 Yukawa2HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
+
+
 Ysff=y*GradYukawa[Yukawa1+Yukawa2];
 YsffC=y*GradYukawa[Yukawa1HC+Yukawa2HC];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*User Input*)
 
 
@@ -104,15 +105,19 @@ vev={v,0,0};
 SymmetryBreaking[vev]
 
 
-(* scalars *)
-RepPhi=CreateParticle[{1,2},"S"];
-RepChi=CreateParticle[{3},"S"];
+(*Below
+rep 1-2 are fermions,
+(*rep 3 is a scalar*)
+*)
+(* scalar *)
+RepPhi=CreateParticle[{1},"S"];
+RepChi=CreateParticle[{2},"S"];
 
-(* fermions *)
+(* left-handed fermion *)
 RepPsi=CreateParticle[{1,2},"F"];
 RepXi=CreateParticle[{3,4},"F"];
 
-(* vector bosons *)
+(*Vector bosons*)
 RepA=CreateParticle[{1},"V"];
 
 
@@ -126,9 +131,9 @@ ParticleList={RepPhi,RepChi,RepPsi,RepXi,RepA};
 (*Defining various masses and couplings*)
 
 
-VectorMass=Table[0,{i,1,RepA[[1]]//Length}];
-FermionMass=Table[0,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[0,{i,1,Length[gvss[[1]]]}];
+VectorMass=Table[mv,{i,1,RepA[[1]]//Length}];
+FermionMass=Table[mf,{i,1,Length[gvff[[1]]]}];
+ScalarMass=Table[ms,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass}
 (*
 up to the user to make sure that the same order is given in the python code
@@ -143,7 +148,6 @@ UserCouplings={g1,b3,b4,a1,a2,lam,y}//Flatten;
 OutputFile="matrixElements.u1_higgs_yukawa";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","Chi","Psi","Xi","A"};
-RepOptional={};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -290,13 +294,11 @@ removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 (*Test hard*)
 
 
-totalDRalgo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements//removeMissing//fixConvention
+totalDRalgo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements/.{mf->0,ms->0,mv->0}//removeMissing//fixConvention;
+totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.FeynMatrixElements//removeMissing//fixConvention;
 
 
-totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.FeynMatrixElements//removeMissing//fixConvention
-
-
-Collect[totalFeyn,{g,y,a1,a2,b3,b4,lam}]
+Collect[totalFeyn,{g,y,a1,a2,b3,b4,lam}];
 
 
 Collect[totalDRalgo-totalFeyn,{g,y,a1}]
@@ -307,14 +309,14 @@ testList={};
 
 (* everything *)
 AppendTo[testList,
-TestCreate[totalDRalgo,
+TestCreate[
+	totalDRalgo,
 	totalFeyn
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 
