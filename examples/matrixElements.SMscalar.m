@@ -15,7 +15,7 @@ $LoadGroupMath=True;
 (*QCD+W boson*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -49,7 +49,7 @@ MassTerm1=CreateInvariant[Group,RepScalar,InputInv][[1]]//Simplify//FullSimplify
 VMass=m2*MassTerm1;
 \[Mu]ij=GradMass[VMass]//Simplify//SparseArray;
 QuarticTerm1=MassTerm1^2;
-VQuartic=\[Lambda]1H*QuarticTerm1;
+VQuartic=lam1H*QuarticTerm1;
 \[Lambda]4=GradQuartic[VQuartic];
 
 InputInv={{1,1,2},{False,False,True}}; 
@@ -121,13 +121,12 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 up to the user to make sure that the same order is given in the python code
 *)
 UserMasses={mq2,mg2,mw2,ms2};
-UserCouplings={CouplingName,\[Lambda]1H,yt1}//Flatten;
+UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 OutputFile="matrixElements.scalar";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W","Higgs"};
-RepOptional={};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -135,7 +134,6 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	RepOptional,
 	Format->{"json","txt"}];
 
 

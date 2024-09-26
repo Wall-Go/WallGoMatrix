@@ -122,7 +122,6 @@ UserCouplings=CouplingName;
 OutputFile="matrixElements.ew";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"TopL","TopR","BotR","Gluon","W"};
-RepOptional={};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -130,7 +129,6 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	RepOptional,
 	Format->{"json","txt","hdf5"}];
 
 

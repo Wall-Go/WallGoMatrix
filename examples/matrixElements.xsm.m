@@ -186,8 +186,6 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 *)
 OutputFile="matrixElements.xsm";
 SetDirectory[NotebookDirectory[]];
-RepOptional={gw->0,g1->0};
-(*RepOptional={};*)
 ParticleName={"TopL","TopR","Gluon","W","Z"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -196,8 +194,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	RepOptional,
-	Format->{"json","txt"}];
+	{Replacements->{gw->0,g1->0},Format->{"json","txt"}}];
 
 
 (* ::Subsection:: *)
@@ -254,7 +251,6 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 *)
 OutputFile="matrixElements.xsm.qcd";
 SetDirectory[NotebookDirectory[]];
-RepOptional={gw->0,g1->0};
 ParticleName={"Top","Gluon"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -263,8 +259,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	RepOptional,
-	Format->{"json","txt"}];
+	{Replacements->{gw->0,g1->0},Format->{"json","txt"}}];
 
 
 MatrixElements//Expand

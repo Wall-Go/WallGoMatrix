@@ -35,7 +35,7 @@ Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Pri
 (*Matrix elements*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Help functions*)
 
 
@@ -2215,7 +2215,10 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{
 (*Exporting the results*)
 
 
-Options[ExportMatrixElements] = {NormalizeWithDOF-> True,Format->"none"};
+Options[ExportMatrixElements]={
+	Replacements->{},
+	NormalizeWithDOF-> True,
+	Format->"none"};
 
 
 ExportMatrixElements::usage="ExportMatrixElements[file,particleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,OptionsPattern[]] generates all possible matrix elements
@@ -2223,14 +2226,14 @@ with the external particles specified in particleList.The format can be specifie
 two options exports the result in all possible formats, and in none, respectively. A list of matrix elements is returned by the function regardless of the choosen format.";
 
 
-ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,RepOptional_:{},OptionsPattern[]]:=
+ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,OptionsPattern[]]:=
 Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
 	Cij,ParticleInfo,LightParticles,particleListFull,CouplingInfo,MatrixElements,
 	OutOfEqParticles,RepMasses,RepCouplings,FormatOptions,userFormat,MatrixElementsList,userParameters
 	},
 
 (*Specifies whether the first particle should be normalized by the number of degrees of freedom*)
-	normalizeDOF = OptionValue[NormalizeWithDOF]; 
+	normalizeDOF = OptionValue[NormalizeWithDOF];
 	
 (*Splits ParticleList into out-of-eq and light particles*)
 	ExtractLightParticles[ParticleList,OutOfEqParticles,particleListFull,LightParticles];
@@ -2245,7 +2248,7 @@ Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
 
 (*Extracting all matrix elements*)	
 	GenerateMatrixElements[MatrixElements,Cij,particleListFull,LightParticles,ParticleMassesI,OutOfEqParticles];
-	MatrixElementsList=Table[MatrixElemToC@i//.RepOptional,{i,MatrixElements}]; (*Creates a replacement list and shifts the indices to start at 0.*)
+	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}]; (*Creates a replacement list and shifts the indices to start at 0.*)
 
 (*Exporting the matrix elements to the choosen format*)
 	FormatOptions = {"txt", "json", "hdf5", "all", "none"};

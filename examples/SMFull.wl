@@ -174,7 +174,6 @@ ParticleName={"TopL","BotL","TopR","BotR","tauL","tauR","CharmStrangeL","CharmR"
 OutputFile="matrixElementsFull";
 SetDirectory[NotebookDirectory[]];
 
-RepOptional={};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -182,7 +181,6 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	RepOptional,
 	Format->{"json","txt"}];
 
 

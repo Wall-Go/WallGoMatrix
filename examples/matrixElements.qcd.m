@@ -87,7 +87,6 @@ UserCouplings={gs};
 OutputFile="matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
-RepOptional={};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -95,7 +94,6 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	RepOptional,
 	Format->{"json","txt"}];
 
 

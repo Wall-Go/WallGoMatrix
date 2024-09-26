@@ -49,14 +49,14 @@ VMass=msq/2 MassTerm
 (* 1/6\[Gamma]\[Phi]^3 *)
 InputInv={{1,1,1},{True,True,True}};
 CubicTerm=CreateInvariant[Group,RepScalar,InputInv][[1]];
-VCubic=\[Gamma]/6 CubicTerm
+VCubic=gamma/6 CubicTerm
 \[Lambda]3=GradCubic[VCubic];
 
 
 (* 1/24\[Lambda]\[Phi]^4 *)
 InputInv={{1,1,1,1},{True,True,True,True}};
 QuarticTerm=CreateInvariant[Group,RepScalar,InputInv][[1]];
-VQuartic=\[Lambda]/24 MassTerm^2
+VQuartic=lam/24 MassTerm^2
 \[Lambda]4=GradQuartic[VQuartic];
 
 
@@ -67,8 +67,8 @@ InputInv={{1,2},{False,False}};  (*Subscript[\[Psi]^+, L]Subscript[\[Psi], R]*)
 MassTerm2=CreateInvariantFermion[Group,RepFermion,InputInv][[1]]
 
 
-\[Mu]IJ=m\[Psi]*GradMassFermion[MassTerm1];
-\[Mu]IJC=m\[Psi]*GradMassFermion[MassTerm2];
+\[Mu]IJ=mpsi*GradMassFermion[MassTerm1];
+\[Mu]IJC=mpsi*GradMassFermion[MassTerm2];
 
 
 (* y \[Phi](Subscript[\[Psi], R]Subscript[\[Psi], L]+Subscript[\[Psi]^+, L]Subscript[\[Psi], R]^+)*)
@@ -142,7 +142,7 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 up to the user to make sure that the same order is given in the python code
 *)
 UserMasses={ms,mf,mf};
-UserCouplings={CouplingName,\[Lambda],y,\[Gamma]}//Flatten;
+UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 (*
@@ -151,7 +151,6 @@ UserCouplings={CouplingName,\[Lambda],y,\[Gamma]}//Flatten;
 OutputFile="matrixElements.yukawa";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","PsiL","PsiR"};
-RepOptional={};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -159,7 +158,6 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	RepOptional,
 	Format->{"json","txt"}];
 
 

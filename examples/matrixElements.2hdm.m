@@ -155,7 +155,7 @@ up to the user to make sure that the same order is given in the python code
 *)
 UserMasses={mq2,mg2,mw2,mz2,ms2}; 
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates
+UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 (*
@@ -163,8 +163,6 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 *)
 OutputFile="matrixElements.2hdm";
 SetDirectory[NotebookDirectory[]];
-(*RepOptional={c[1]->0,c[2]->0};*)
-RepOptional={};
 (*ParticleName={"Top","Bottom","h","A","Gluon","W","Z"};*)
 ParticleName={"h","A"};
 MatrixElements=ExportMatrixElements[
@@ -174,7 +172,6 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	RepOptional,
 	Format->{"json","txt"}];
 
 
