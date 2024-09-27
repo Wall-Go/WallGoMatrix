@@ -2174,7 +2174,7 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{
 ]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Exporting the results*)
 
 
@@ -2256,6 +2256,21 @@ MatrixElemFromC[MatrixElem_]:=Block[{Ind},
 	
 	Return[M[Ind[[1]]+1,Ind[[2]]+1,Ind[[3]]+1,Ind[[4]]+1]->MatrixElem[[1]]]
 ]
+
+
+ImportMatrixElements[file_]:=Module[{jsonObject,particleNames,parameters,results},
+(* Only implemented for JSON *)
+If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
+
+(* Importing into JSON object *)
+jsonObject=importJSONMatrixElements[file];
+
+(* Splitting JSON object *)
+{particleNames,parameters,results}=splitJsonMatrixElements[jsonObject];
+
+(* Returning results *)
+Return[{particleNames,parameters,results}]
+];
 
 
 EndPackage[]
