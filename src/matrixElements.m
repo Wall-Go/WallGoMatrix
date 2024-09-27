@@ -145,10 +145,8 @@ SymmetryBreaking[vev_,OptionsPattern[]] :=Block[{PosVector,PosFermion,PosScalar,
 		]
 	,{i,1,Length[PosVector]}];
 
-
 	PosFermion=PrintFermionRepPositions[];
 	FermionMassiveReps=Table[SymmetryBreakingFermion[i,vev],{i,1,Length[PosFermion]}];
-	
 	Do[
 		If[!NumericQ[Total[FermionMassiveReps[[i]][[;;,2]],-1]],
 			Print[Style[StringJoin["Fermion rep ",ToString[i]," splits into particles with mass:"],Bold]];
@@ -160,7 +158,6 @@ SymmetryBreaking[vev_,OptionsPattern[]] :=Block[{PosVector,PosFermion,PosScalar,
 		]
 	,{i,1,Length[PosFermion]}];
 	
-
 	PosScalar=PrintScalarRepPositions[];
 	ScalarMassiveReps=Table[SymmetryBreakingScalar[i,vev],{i,1,Length[PosScalar]}];
 	
@@ -207,7 +204,7 @@ SymmetryBreakingGauge[Indices_,vev_] :=Block[{PosVector,Habij,massV,gaugeInd,pos
 			rep={};
 	
 			Do[
-				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[val2,a]}];
+				pos2=Table[posHeavy[[pos[[b]][[1]]]],{b,Position[val2,a]}];
 				AppendTo[rep,{pos2,a}];
 			,{a,val}];
 
@@ -227,7 +224,7 @@ SymmetryBreakingScalar[Indices_,vev_] :=Block[{PosScalar,scalarInd,massS,posHeav
 (*Scalars*)
 	massS=\[Mu]ij + (vev . \[Lambda]4 . vev/2)+ (vev . \[Lambda]3)//Normal//SparseArray;
 	scalarInd=Delete[massS//ArrayRules,-1]/.(({i1_,i2_}->x_)->i1);
-
+	
 	posHeavy=Intersection[RangeToIndices[PosScalar[[Indices]]],scalarInd];
 	posLight=Complement[RangeToIndices[PosScalar[[Indices]]],scalarInd];
 	
@@ -238,9 +235,11 @@ SymmetryBreakingScalar[Indices_,vev_] :=Block[{PosScalar,scalarInd,massS,posHeav
 			pos=Table[i,{i,Length[posHeavy]}];
 	
 			rep={};
-	
+
 			Do[
-				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[massS[[posHeavy,;;]]["NonzeroValues"],a]}];
+				
+				pos2=Table[posHeavy[[pos[[b]][[1]]]],{b,Position[massS[[posHeavy,posHeavy]]["NonzeroValues"],a]}];
+				
 				AppendTo[rep,{pos2,a}];
 			,{a,val}];
 
@@ -273,7 +272,7 @@ SymmetryBreakingFermion[Indices_,vev_] :=Block[{PosFermion,fermionInd,massF,posH
 			rep={};
 	
 			Do[
-				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[massF[[posHeavy,;;]]["NonzeroValues"],a]}];
+				pos2=Table[posHeavy[[pos[[b]][[1]]]],{b,Position[massF[[posHeavy,posHeavy]]["NonzeroValues"],a]}];
 				AppendTo[rep,{pos2,a}];
 			,{a,val}];
 
@@ -2034,11 +2033,11 @@ Block[{Elem},
 ];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Export functions for different formats*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*json matrix elements functions*)
 
 
@@ -2174,7 +2173,7 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{
 ]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Exporting the results*)
 
 
@@ -2274,4 +2273,7 @@ Return[{particleNames,parameters,results}]
 
 
 EndPackage[]
+
+
+
 
