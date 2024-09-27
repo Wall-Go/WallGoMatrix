@@ -1,6 +1,14 @@
 (* ::Package:: *)
 
-BeginPackage["matrixElements`"]
+BeginPackage["WallGoMatrix`"]
+
+
+Unprotect@Definition;
+Definition[x_Symbol] /; StringMatchQ[Context[x], "Package`" ~~ ___] :=
+    StringReplace[ToString@FullDefinition[x],
+        (WordCharacter .. ~~ DigitCharacter ... ~~ "`") .. ~~ s_ :> s
+    ];
+Protect@Definition;
 
 
 (*List of public functions*)
@@ -15,20 +23,458 @@ SymmetryBreaking::usage=
 As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(m\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(m\), \(i\)]\) is the label of the particle mass in that representation"
 
 
+$DRalgoDirectory=DirectoryName[$InputFileName];
+
+
 (*
-	Functions from GroupMath are used to create the model.
+	Functions from groupmath are used to create the model.
 *)
-Get["DRalgo`"];
+If[Global`$LoadGroupMath,
+	Get["GroupMath`"];
+	Print["GroupMath is an independent package, and is not part of DRalgo"];
+	Print["Please Cite GroupMath: Comput.Phys.Commun. 267 (2021) 108085 \[Bullet] e-Print: 2011.01764 [hep-th]"];
+];
 Print["DRalgo is an independent package"];
-Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Print: 2205.08815 [hep-th]
-"];
-(*If[FreeQ[Union[$ContextPath, $Packages],"DRalgo`"],
-	If[Not[ValueQ[Global`$GroupMathMultipleModels]],Global`$GroupMathMultipleModels=True];
-	If[Not[ValueQ[Global`$LoadGroupMath]],Global`$LoadGroupMath=True];
-	Get["DRalgo`"];
-	Print["DRalgo is an independent package"];
-	Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Print: 2205.08815 [hep-th]"];
-];*)
+
+
+Begin["`Private`"]
+
+
+(*
+	Loads all functions.
+*)
+Get[FileNameJoin[{$DRalgoDirectory,"ModelCreation.m"}]];(*Loads Effective Potential Functions*)
+
+
+(* ::Section:: *)
+(*Initialization*)
+
+
+(*
+	Defines internal tensors from the loaded model. Also creates help-tensors used for
+	intermediate calculations.
+*)
+ImportModelDRalgo[GroupI_,gvvvI_,gvffI_,gvssI_,\[Lambda]1I_,\[Lambda]3I_,\[Lambda]4I_,\[Mu]ijI_,\[Mu]IJFI_,\[Mu]IJFCI_,YsffI_,YsffCI_, OptionsPattern[]]:=Module[{GroupP=GroupI,gvvvP=gvvvI,gvffP=gvffI,gvssP=gvssI,\[Lambda]1IP=\[Lambda]1I,\[Lambda]3P=\[Lambda]3I,\[Lambda]4P=\[Lambda]4I,\[Mu]ijP=\[Mu]ijI,\[Mu]IJFP=\[Mu]IJFI,\[Mu]IJFCP=\[Mu]IJFCI,YsffP=YsffI,YsffCP=YsffCI},
+
+
+If[ Global`$LoadGroupMath,
+	If[!GroupMathCleared && !ValueQ[Global`$GroupMathMultipleModels],
+		Remove["GroupMath`*"];
+		GroupMathCleared=True;
+	];
+];
+
+	\[Mu]ij=\[Mu]ijP//SparseArray//SimplifySparse;
+	gvvv=gvvvP//SparseArray//SimplifySparse;
+	gvss=gvssP//SparseArray//SimplifySparse;
+	\[Lambda]4=\[Lambda]4P//SparseArray//SimplifySparse;
+	\[Lambda]3=\[Lambda]3P//SparseArray//SimplifySparse;
+	Ysff=YsffP//SparseArray//SimplifySparse;
+	YsffC=YsffCP//SparseArray//SimplifySparse;
+	gvff=gvffP//SparseArray//SimplifySparse;
+	\[Mu]IJF=\[Mu]IJFP//SparseArray//SimplifySparse;
+	\[Mu]IJFC=\[Mu]IJFCP//SparseArray//SimplifySparse;
+	\[Lambda]1=\[Lambda]1IP//SparseArray//SimplifySparse;
+	ns=Length[gvss[[1]]];
+	nv=Length[gvvv];
+	nf=Length[gvff[[1]]];
+	\[Lambda]6=EmptyArray[{ns,ns,ns,ns,ns,ns}];
+
+(*Options*)
+	verbose = OptionValue[Verbose];
+	mode = OptionValue[Mode]; (*If 2 everthing is calculated. And if 2 only 1-loop contributions are calculated*)
+	NFMat=IdentityMatrix[nf]//SparseArray; (*This matrix is only relevant if the user wants an arbitrary number of fermion families*)
+	normalization4D=OptionValue[Normalization4D];
+	If[OptionValue[AutoRG],rgFac=1,rgFac=0]; (*Determines whether the RG-running is automatically incorporated in the soft masses and tadpoles*)
+(*End of Options*)
+
+	CT=False; (*Checks if counter-terms have already been calculated*)
+	DefineGroup[GroupP]; (*Names Debye masses*)
+	GroupDR=GroupP; (*For saving purposes*)
+	CreateHelpTensors[] (*Creates recurring tensors*)
+];
+
+
+(*
+	Defines a \[Phi]^6 operator
+*)
+DefineDim6[\[Lambda]6I_]:=Module[{\[Lambda]6P=\[Lambda]6I},
+	If[mode>=3,
+		\[Lambda]6=\[Lambda]6P//SparseArray;
+	,
+		Message[DRalgo::ImplementationFail, "Please set mode=3 to use this feature"];
+		Abort[]
+	];
+];
+
+
+(*
+	Takes the user-defined group and names debye masses.
+*)
+DefineGroup[GroupI_]:=Module[{GroupP=GroupI},
+(*The Debye mass matrix is \[Mu]abDef*)
+(*At tree-level this matrix is 0. But after DR, thermal masses are named accoording to \[Mu]abDef.*)
+	\[Mu]abDef=CreateDebyeMasses[GroupP];
+	VecMassDefined=True;
+];
+
+
+(*
+	Enables the user to add an arbitrary number of fermions.
+	This works by creating a diagonal matrix. Each element NFMatP[[i,i]] corresponds to how many times the
+	fermion labled by ii appears.
+*)
+DefineNF[NFMatP_]:=Module[{NFMatI=NFMatP},
+	Do[NFMat[[i[[2]],i[[2]]]]*=i[[1]],{i,NFMatI}];(*Each element is multiplied with nF_i*)
+];
+
+
+(* ::Section:: *)
+(*Help functions*)
+
+
+OutputFormatDR[x_]:=ToExpression[StringReplace[ToString[StandardForm[x]],"DRalgo`Private`"->""]];
+
+
+(*
+	Prints constants that appear in the effective theory.
+*)
+PrintConstants[]:=Module[{},
+ToExpression[StringReplace[ToString[StandardForm[{Lb->(Log[\[Mu]^2/T^2]-2 Log[4 \[Pi]]+2EulerGamma),Lf->(Log[\[Mu]^2/T^2]-2 Log[4 \[Pi]]+2EulerGamma+4 Log[2])}]],"DRalgo`Private`"->""]]
+];
+
+
+(*
+	Replaces the Glaisher constant by c, which is sometimes used in the litterature. See for example hep-ph: 9508379
+*)
+PrintGenericBasis[]:=Module[{},
+ToExpression[StringReplace[ToString[StandardForm[{Log[Glaisher]->-1/12 (Lb+2cplus-EulerGamma)}]],"DRalgo`Private`"->""]]
+];
+
+
+(*
+	Checks if two variables are identical up to a numerical factor
+	For example if a=x^2 y and b=y, then there's no relation, and the function returns nothing.
+	While if a=x^2 and b=5 x^2 the function returns 5
+*)
+	CompExp2[a0_,b0_]:=Module[{a=a0,b=b0},
+	Comps=Solve[a v[1]- b ==0,v[1]]//Simplify//DeleteDuplicates//Select[#,UnsameQ[#,{}]&]&;
+	Comps/. {v[x_]->a_}:>a
+]
+
+
+(*
+	Old function: Should maybe be removed.
+	This function finds linear dependencies between the variables in list.
+	Only numerical factors are included.
+	The result is given in Mat. Where Mat[[i,j]]=0 if list[[i]]!=N list[[j]] where N is a number.
+	Otherwise Mat[[i,j]]=N if list[[i]]=Nlist[[j]]
+*)
+OverallFac[list_,varMat_]:=Module[{L=list,Mat=varMat},
+
+	For[i=1,i<Length[list],i++,
+		For[j=i+1,j<Length[list]+1,j++,
+			help=CompExp2[list[[i]],list[[j]]];
+			TempIf=If[Length[help]>0,{NumericQ/@help}[[1,1]]&&Equal@@NumericQ/@help,False];
+			If[TempIf,a=help[[1]],a=0];
+				Mat[[i,j]]=a;
+			];
+		];
+	Mat
+]
+
+
+(*
+	Old function:Should maybe be removed.
+	This function finds linear dependences between the variables in listvar
+	Only relations between two variables are considered.
+	This function is only used for the soft->supersoft step where the faster, and more general,
+	RelationsBVariables3 has problems due to inverse powers of masses.
+*)
+RelationsBVariables[list_,listVar_]:=Module[{L=list,LV=listVar},
+	LVTemp=LV;
+	If[L[[1]]==0,
+		L=Delete[L,1];
+	];
+
+	Mat=ConstantArray[0,{Length[L],Length[L]}];(*Linear-dependency matrix*)
+	Mat1=OverallFac[L,Mat];
+	TempVar=ConstantArray[0,{Length[LV]}];
+	For[i=1,i<Length[LV],i++,
+		For[j=i+1,j<Length[LV]+1,j++,
+			IfTemp=Mat1[[1;;i,j]]//DeleteDuplicates//DeleteCases[#,0,Infinity]&; (*Removes cases when the numerical factor is 0 or infinity*)
+			If[Length[IfTemp]==1&&Mat1[[i,j]]!=0,
+				LVTemp[[j]]=Mat1[[i,j]]LV[[i]];(*Creates a list with all linear relations*)
+			];
+		];
+	];
+	LVTemp
+]
+
+
+(*
+	Creates a list of all possible couplings that can appear in
+	1-loop matching relations
+	Note that this does not include couplings in debye/scalar masses
+	at 1-loop level
+*)
+CreateBasisVanDeVis[]:=Module[{},
+(* This module received founding from the fish *)
+
+	FermionFamVar=Normal[NFMat]//Variables;
+	ScalVar=\[Lambda]4//Normal//Variables;
+
+	GaugeVarPre=Join[Normal[gvvv]//Variables,Normal[gvff]//Variables,Normal[gvss]//Variables]//DeleteDuplicates; (*Includes possible non-numeric charges*)
+	GaugeCharge=Complement[GaugeVarPre,GaugeCouplingNames];(*Possible non-numeric gauge charges*)
+
+	GaugeVarHelp=Table[i*j,{i,GaugeCouplingNames},{j,GaugeCharge}];
+	GaugeVar=Join[GaugeCouplingNames,GaugeVarHelp];
+
+	YukVar=Normal[Ysff]//Variables;
+	AuxVar={1,Lb,Lf};
+	AuxVar=Join[AuxVar,FermionFamVar]//DeleteDuplicates;
+	varHelp=Join[ScalVar,GaugeVar,YukVar];
+	t2=Table[i*j,{i,varHelp},{j,varHelp}]//Flatten[#]&//DeleteDuplicates;
+	t3G=Table[i*j*k,{i,ScalVar},{j,GaugeVar},{k,GaugeVar}]//Flatten[#]&//DeleteDuplicates;
+	t3F=Table[i*j*k,{i,ScalVar},{j,YukVar},{k,YukVar}]//Flatten[#]&//DeleteDuplicates;
+	t4=Table[i*j*k*l,{i,GaugeVar},{j,GaugeVar},{k,GaugeVar},{l,GaugeVar}]//Flatten[#]&//DeleteDuplicates;
+	t4F=Table[i*j*k*l,{i,YukVar},{j,YukVar},{k,YukVar},{l,YukVar}]//Flatten[#]&//DeleteDuplicates;
+	t4FG=Table[i*j*k*l,{i,YukVar},{j,YukVar},{k,GaugeVar},{l,GaugeVar}]//Flatten[#]&//DeleteDuplicates;
+	basPre=Join[varHelp,t2,t3G,t3F,t4,t4F,t4FG];
+
+	basDR=Table[i*j*k,{i,basPre},{j,AuxVar},{k,{1,T,T^2}}]//Flatten[#]&//DeleteDuplicates;
+]
+
+
+{basDR};
+
+
+(*
+	This function finds linear dependences between the variables in list.
+	This works by treating each element in list as a vector in the space spanned by basDR.
+	All vectors are then rowreduced, and a minimal set of basis vectors (in list) are found.
+*)
+RelationsBVariables3[list_]:=Module[{L=list},
+(*Creates a vector-basis*)
+
+(*One could say that v3 and v2 are identical. With v3 being almost twice as identical as v2*)
+	If[L[[1]]==0&&Length[L]>1,
+		Lp=Delete[L,1];
+	,
+		Lp=L;
+	];
+
+	varHelp=Lp//Variables;
+	varFix=#->0&/@varHelp; (*Trick to ensure that vectors are expanded properly*)
+
+(*
+Expands all elements in Lp in terms of basDR.
+*)
+	setVecs=Table[Coefficient[i,basDR],{i,Lp}]/.varFix;  
+(*Delete columns with only 0s*)
+	setVecs=Transpose[DeleteCases[Transpose[setVecs], {0 ..}, Infinity]];
+
+(*Finds independent basis*)
+	rr = setVecs // Transpose // RowReduce;
+	rr=DeleteCases[rr, {0 ..}, Infinity];
+(*Basis elements*)
+	basisElements = Flatten[FirstPosition[#, 1, Nothing] & /@ rr];
+	varBasis=Table[ \[Lambda]VL[a],{a,1,Length[basisElements]}];
+
+(*Puts everything together*)
+	LVTemp=LVTemp=ConstantArray[0,Length[Lp]];
+	Do[LVTemp[[i]]=rr[[;;,i]] . varBasis,{i,1,Length[LVTemp]}];
+
+	Return[LVTemp];
+]
+
+
+myPrint[args__,{style__}]:=Print[Row[{args},BaseStyle->{style}]]
+
+
+(*
+	Old function: Should maybe be removed.
+	This function finds linear dependencies between the variables in list.
+	Only numerical factors are included.
+	The result is given in Mat. Where Mat[[i,j]]=0 if list[[i]]!=N list[[j]] where N is a number.
+	Otherwise Mat[[i,j]]=N if list[[i]]=Nlist[[j]]
+*)
+OverallFac2[list_,varMat_]:=Module[{L=list,Mat=varMat},
+
+	TotVar=L//Variables;
+	DoneList=ConstantArray[0,1];
+
+	For[i=1,i<Length[list],i++,
+		Var=list[[i]]//Variables;
+		varCompliment=Complement[TotVar,Var];
+		For[j=i+1,j<Length[list]+1,j++,
+			If[!MemberQ[DoneList, j],
+				If[!CheckVariables[list[[j]],varCompliment],
+					h=CompExp3[list[[i]],list[[j]]];
+					Mat[[i,j]]=h;
+					If[h!=0,AppendTo[DoneList,j]];
+				];
+
+			];
+		];
+	];
+	Mat
+]
+
+
+(*
+	This function finds linear dependencies between the variables in list.
+	Only numerical factors are included.
+	The result is given in Mat. Where Mat[[i,j]]=0 if list[[i]]!=N list[[j]] where N is a number.
+	Otherwise Mat[[i,j]]=N if list[[i]]=Nlist[[j]]
+*)
+	RelationsBVariables2[list_,listVar_]:=Module[{L=list,LV=listVar},
+	LVTemp=LV//FullSimplify;
+	Mat=ConstantArray[0,{Length[Delete[L,1]],Length[Delete[L,1]]}];(*Linear-dependency matrix*)
+	Mat1=OverallFac2[Delete[L,1],Mat];
+	TempVar=ConstantArray[0,{Length[LV]}];
+	For[i=1,i<Length[LV],i++,
+		For[j=i+1,j<Length[LV]+1,j++,
+			IfTemp=Mat1[[1;;i,j]]//DeleteDuplicates//DeleteCases[#,0,Infinity]&; (*Removes cases when the numerical factor is 0 or infinity*)
+			If[Length[IfTemp]==1&&Mat1[[i,j]]!=0,
+				LVTemp[[j]]=Mat1[[i,j]]LV[[i]](*Creates a list with all linear relations*)
+			];
+		];
+	];
+	LVTemp
+]
+
+
+CheckVariables[a_,Vars_]:=MemberQ[Boole@(MemberQ[a, #, {0, -1}, Heads -> True]&/@Vars),1, {0, -1}, Heads -> True];
+
+
+(*
+	Checks if two variables are identical up to a numerical factor
+	For example if a=x^2 y and b=y, then there's no relation, and the function returns nothing.
+	 While if a=x^2 and b=5 x^2 the function returns 5.
+*)
+CompExp3[a0_,b0_]:=Module[{a=a0,b=b0},
+	Temp=Simplify[b/a];
+	If[NumericQ[Temp],Return[Temp],Return[0]];
+]
+
+
+(* ::Section:: *)
+(*Functions for loading and printing*)
+
+
+(*
+	Converts an array to a saveable form
+*)
+ConvertToSaveFormat[tens_SparseArray]:=Module[{},
+	Return[{tens["NonzeroPositions"],tens["NonzeroValues"],Dimensions[tens]}]
+];
+
+
+(*
+	Converts imported data, as defined by ConvertToSaveFormat, to a sparse array
+*)
+ConvertToSparse[arr_]:=Module[{},
+	Return[SparseArray[arr[[1]]->arr[[2]],arr[[3]]]]
+];
+
+
+(*
+	Loads the position of all scalar,gauge, and fermion representations.
+*)
+LoadRepPositions[repPos_]:=Module[{repPosP=repPos},
+	ScalarVariablesIndices=repPosP[[1]];
+	GaugeIndices=repPosP[[2]];
+	FermionVariablesIndices=repPosP[[3]];
+];
+
+
+(*
+	Loads the names of gauge couplings.
+*)
+LoadCouplingNames[couplingNamesI_]:=Module[{couplingNamesP=couplingNamesI},
+	GaugeCouplingNames=couplingNamesP;
+];
+
+
+(*
+	Saves a model by converting all coupling-tensors to a list.
+*)
+SaveModelDRalgo[modelInfo_,fileName_]:=Module[{modelInfoP=modelInfo},
+
+	PosScalar=PrintScalarRepPositions[];
+	PosVector=PrintGaugeRepPositions[];
+	PosFermion=PrintFermionRepPositions[];
+	PosReps={PosScalar,PosVector,PosFermion};
+	tensP={modelInfoP,PosReps,GaugeCouplingNames,GroupDR,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJFC,\[Mu]IJF,Ysff,YsffC};
+	SaveFile={tensP[[1]],tensP[[2]],tensP[[3]],tensP[[4]]}; (*The fourth element is the group*)
+	tensP=Delete[Delete[Delete[Delete[tensP,1],1],1],1];
+
+	Do[
+		AppendTo[SaveFile,ConvertToSaveFormat[i]];
+	,{i,tensP}];
+	
+	Export[fileName,SaveFile];
+];
+
+
+(*
+	Loads tensors that are saved by SaveModelDRalgo
+*)
+LoadModelDRalgo[fileName_]:=Module[{},
+	arrImp=ReadList[fileName];
+	InfoText=arrImp[[1]];(*The first element is the info*)
+	arrImp=Delete[arrImp,1];
+
+	LoadRepPositions[arrImp[[1]]];(*The Second element is the repPositions*)
+	arrImp=Delete[arrImp,1];
+
+	LoadCouplingNames[arrImp[[1]]];(*The Third element is the gauge-coupling names*)
+	arrImp=Delete[arrImp,1];
+
+	ImportFile={arrImp[[1]]};(*The fourth element is the group*)
+	arrImp=Delete[arrImp,1];
+
+	Do[
+		AppendTo[ImportFile,ConvertToSparse[i]];
+	,{i,arrImp}];
+(*Prints the info text*)
+	Print[Grid[{{Row[InfoText,"\n",BaseStyle->(FontFamily->"Consolas")]}},Alignment->{Left,Center}]];
+(**)
+	Return[ImportFile]
+];
+
+
+(*
+	All private constants.
+*)
+
+
+{ZLij,GvvssTSS,\[Lambda]3DSS,\[Mu]ijSSLO,\[Mu]ijSSNLO,\[Mu]ijSNLOSS,\[Lambda]3DSS,\[Lambda]KVecTSS,\[Lambda]3CTot,\[Lambda]3CSSS,ZSij,\[Mu]ijSSNLO2,Ggvvv};
+
+
+{TadPoleS,ContriTadPoleSoftToHard,GgvvvSS,\[Lambda]4SMod,\[Lambda]4Tot,IdentMatPre};
+
+
+{\[Beta]gvff,Zgvff,\[Mu]ijEP,gvvvEP,gvssEP,\[Lambda]4EP,\[Lambda]3EP,nsEP,nvEP,CT,HelpSolveEffectiveHardM};
+
+
+{aS3D,ZijS,aV3D,ZabT,ZabL,\[Lambda]3D,GvvssL,GvvssT,\[Lambda]AA,\[Lambda]3CS,\[Mu]SijNLO,GvvsL};(*DimRed Results*)
+
+
+{\[CapitalLambda]\[Lambda],\[CapitalLambda]g,Hg,Habij,HabIJF,HabIJFC,Ysij,YsijC,YTemp,YTempC,Yhelp,YhelpC};(*Private Variables*)
+
+
+{\[Gamma]ij,\[Beta]mij,\[Beta]\[Lambda]ijkl,Z\[Lambda]ijkl,\[Gamma]ab,\[Beta]vvss,Zgvvss,\[Beta]gvvv,Zgvvv,\[Gamma]IJF,\[Beta]Ysij,ZYsij,\[Beta]YsijC,ZYsijC};(*CounterTerms*)
+
+
+{\[Lambda]3DS,\[Lambda]KVecT,\[Lambda]KVec,\[Lambda]AAS,IdentMat,\[Mu]ijVNLO,\[Mu]ijSNLO,\[Lambda]3CSRed,\[Lambda]1IP,NFMat,NSMat};(*Private Variables*)
+
+
+{nsH,nSl,\[Lambda]K,\[Lambda]4S,\[Lambda]4K,\[Lambda]x,\[Lambda]y,gAvss,gvssL,\[Mu]ijL,\[Mu]ijLight};
+
+
+{HabijL,HabijVL,HabijA,HabijVA,\[Lambda]3Cx,\[Lambda]3Cy,\[Lambda]3CLight,\[Lambda]3CHeavy,\[Mu]IJF,\[Mu]IJFC,\[Mu]VabNLO,\[Mu]abDef,GroupMathCleared}
 
 
 (* ::Title:: *)
@@ -1980,12 +2426,13 @@ Return[CollEllTotal]
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Generating matrix elements*)
 
 
-ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_,LightParticles_]:=Block[{posFermions,NonEqFermions,LightFermions,
-											,posVectors,NonEqVectors,LightVectors,posScalars,NonEqScalars,LightScalars},
+ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_,LightParticles_]:=
+Block[{posFermions,NonEqFermions,LightFermions,
+	posVectors,NonEqVectors,LightVectors,posScalars,NonEqScalars,LightScalars},
 (*
 Extracting the out-of-eq particles
 *)
@@ -2033,7 +2480,7 @@ Block[{Elem},
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Export functions for different formats*)
 
 
@@ -2151,7 +2598,7 @@ ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Blo
 ]
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*txt matrix elements functions*)
 
 
@@ -2275,6 +2722,7 @@ Return[{particleNames,parameters,results}]
 ];
 
 
+End[]
+
+
 EndPackage[]
-
-
