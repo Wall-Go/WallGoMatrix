@@ -204,7 +204,7 @@ SymmetryBreakingGauge[Indices_,vev_] :=Block[{PosVector,Habij,massV,gaugeInd,pos
 			rep={};
 	
 			Do[
-				pos2=Table[posHeavy[[pos[[b]][[1]]]],{b,Position[val2,a]}];
+				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[val2,a]}];
 				AppendTo[rep,{pos2,a}];
 			,{a,val}];
 
@@ -272,7 +272,7 @@ SymmetryBreakingFermion[Indices_,vev_] :=Block[{PosFermion,fermionInd,massF,posH
 			rep={};
 	
 			Do[
-				pos2=Table[posHeavy[[pos[[b]][[1]]]],{b,Position[massF[[posHeavy,posHeavy]]["NonzeroValues"],a]}];
+				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[massF[[posHeavy,;;]]["NonzeroValues"],a]}];
 				AppendTo[rep,{pos2,a}];
 			,{a,val}];
 
