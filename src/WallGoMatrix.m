@@ -23,6 +23,25 @@ SymmetryBreaking::usage=
 As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(m\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(m\), \(i\)]\) is the label of the particle mass in that representation"
 
 
+AllocateTensors::usage="\
+Creates gauge generators";
+GradQuartic::usage="Creates Quartic tensors";
+GradCubic::usage="Creates Cubic tensors";
+GradTadpole::usage="Creates Tadpole tensors";
+GradSextic::usage="Creates dim 6 tensors";
+GradMass::usage="Creates Mass tensors";
+CreateInvariant::usage="Creates an invariant";
+CreateInvariantYukawa::usage="Creates Yukawa Tensor";
+GradYukawa::usage="Creates Yukawa tensor";
+GradMassFermion::usage="Creates Fermion Invariants";
+CreateInvariantFermion::usage="Creates Fermion Invariants";
+
+
+DefineDim6::usage="Defines a dimension 6 operator";
+CompareInvariants::usage="\
+Finds relations between couplings by calculating basis-invariant tensors";
+
+
 $DRalgoDirectory=DirectoryName[$InputFileName];
 
 
@@ -34,7 +53,20 @@ If[Global`$LoadGroupMath,
 	Print["GroupMath is an independent package, and is not part of DRalgo"];
 	Print["Please Cite GroupMath: Comput.Phys.Commun. 267 (2021) 108085 \[Bullet] e-Print: 2011.01764 [hep-th]"];
 ];
-Print["DRalgo is an independent package"];
+Print["WallGoMatrix is powered by the DRalgo ModelCreation."]
+Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Print: 2205.08815 [hep-ph]"];
+
+
+(*
+	Verbose=True removes progress messages.
+	Mode=2 calculates everything, Mode=1 only calculates LO masses and couplings
+	Mode=0 only calculates LO masses
+*)
+Options[ImportModelDRalgo]={
+	Verbose -> False,Mode->2,
+	Dim6->False,
+	Normalization4D->False,
+	AutoRG->True}
 
 
 Begin["`Private`"]
@@ -129,18 +161,104 @@ DefineNF[NFMatP_]:=Module[{NFMatI=NFMatP},
 ];
 
 
+(*
+	Performs the dimensional reduction for all couplings and masses.
+*)
+
+PerformDRhard[]:=Module[{},
+
+	If[mode>=0,
+		CreateBasisVanDeVis[]; (*Creates a basis of "couplings" to identify all linearly-independent dimensionally reduced paramters*)
+		ScalarMass[];
+		VectorMass[];
+		TadPole[];
+	];
+
+	If[mode>=1,
+		ScalarSelfEnergy[];
+		VectorSelfEnergy[];
+		ScalarCubic[];
+		ScalarQuartic[];
+		TransverseSSVV[];
+		LongitudionalSSVV[];
+		LongitudionalVVVV[];
+		LongitudionalVVS[];
+	];
+
+
+	If[mode>=2,
+		CounterTerm[];
+		VectorMass2Loop[];
+		ScalarMass2Loop[];
+		TadPole2Loop[];
+		SymmetricPhaseEnergy[];
+	];
+
+	If[mode>=3,
+(*Calculates effective dim 6 operators*)
+		ScalarSextic[];
+	];
+
+
+(*
+	This step takes all calculations and removes redundancies. For example, if one element is (g^4 Lb)
+	and another 3(g^4 Lb), the function replaces element 2 by three times the first element. This also
+	works for linear combinations of elements.
+*)
+
+	IdentifyTensorsDRalgo[];
+
+];
+
+
+(*
+	Performs the reduction from soft to supersoft.
+	ListHardP is a list which tells the code which scalars should be integrated out.
+	By default all Debye-vectors (temporal-vectors) are integrated out.
+*)
+
+PerformDRsoft[ListHardP_]:=Module[{ListHardI=ListHardP},
+	PrepareSoftToSuperSoft[ListHardI];
+	CreateHelpTensorsSS[];
+
+	ScalarSelfEnergySS[];
+	TadPoleSS[];(*Calculates tadpoles*)
+	HeavyScalarMassSS[];(*Includes self-energies for heavy-lines with soft momenta*)
+	VectorSelfEnergySS[];
+	ScalarMassSS[];
+	
+	If[mode>=1,
+		ScalarVectorCouplingSS[];
+		ScalarQuarticSS[];
+		ScalarCubicsSS[];
+	];
+	
+	If[mode>=2,
+		ScalarMass2LoopSS[];
+		SymmetricPhaseEnergyUS[];
+	];
+
+(*
+	This step takes all calculations and removes redundancies. For example, if one element is (g^4 Lb)
+	and another 3(g^4 Lb), the function replaces element 2 by three times the first element. This also
+	works for linear combinations of elements.
+*)
+	IdentifyTensorsSSDRalgo[]
+];
+
+
 (* ::Section:: *)
 (*Help functions*)
 
 
-OutputFormatDR[x_]:=ToExpression[StringReplace[ToString[StandardForm[x]],"DRalgo`Private`"->""]];
+OutputFormatDR[x_]:=ToExpression[StringReplace[ToString[StandardForm[x]],"WallGoMatrix`Private`"->""]];
 
 
 (*
 	Prints constants that appear in the effective theory.
 *)
 PrintConstants[]:=Module[{},
-ToExpression[StringReplace[ToString[StandardForm[{Lb->(Log[\[Mu]^2/T^2]-2 Log[4 \[Pi]]+2EulerGamma),Lf->(Log[\[Mu]^2/T^2]-2 Log[4 \[Pi]]+2EulerGamma+4 Log[2])}]],"DRalgo`Private`"->""]]
+ToExpression[StringReplace[ToString[StandardForm[{Lb->(Log[\[Mu]^2/T^2]-2 Log[4 \[Pi]]+2EulerGamma),Lf->(Log[\[Mu]^2/T^2]-2 Log[4 \[Pi]]+2EulerGamma+4 Log[2])}]],"WallGoMatrix`Private`"->""]]
 ];
 
 
@@ -148,7 +266,7 @@ ToExpression[StringReplace[ToString[StandardForm[{Lb->(Log[\[Mu]^2/T^2]-2 Log[4 
 	Replaces the Glaisher constant by c, which is sometimes used in the litterature. See for example hep-ph: 9508379
 *)
 PrintGenericBasis[]:=Module[{},
-ToExpression[StringReplace[ToString[StandardForm[{Log[Glaisher]->-1/12 (Lb+2cplus-EulerGamma)}]],"DRalgo`Private`"->""]]
+ToExpression[StringReplace[ToString[StandardForm[{Log[Glaisher]->-1/12 (Lb+2cplus-EulerGamma)}]],"WallGoMatrix`Private`"->""]]
 ];
 
 
@@ -445,43 +563,11 @@ LoadModelDRalgo[fileName_]:=Module[{},
 ];
 
 
-(*
-	All private constants.
-*)
-
-
-{ZLij,GvvssTSS,\[Lambda]3DSS,\[Mu]ijSSLO,\[Mu]ijSSNLO,\[Mu]ijSNLOSS,\[Lambda]3DSS,\[Lambda]KVecTSS,\[Lambda]3CTot,\[Lambda]3CSSS,ZSij,\[Mu]ijSSNLO2,Ggvvv};
-
-
-{TadPoleS,ContriTadPoleSoftToHard,GgvvvSS,\[Lambda]4SMod,\[Lambda]4Tot,IdentMatPre};
-
-
-{\[Beta]gvff,Zgvff,\[Mu]ijEP,gvvvEP,gvssEP,\[Lambda]4EP,\[Lambda]3EP,nsEP,nvEP,CT,HelpSolveEffectiveHardM};
-
-
-{aS3D,ZijS,aV3D,ZabT,ZabL,\[Lambda]3D,GvvssL,GvvssT,\[Lambda]AA,\[Lambda]3CS,\[Mu]SijNLO,GvvsL};(*DimRed Results*)
-
-
-{\[CapitalLambda]\[Lambda],\[CapitalLambda]g,Hg,Habij,HabIJF,HabIJFC,Ysij,YsijC,YTemp,YTempC,Yhelp,YhelpC};(*Private Variables*)
-
-
-{\[Gamma]ij,\[Beta]mij,\[Beta]\[Lambda]ijkl,Z\[Lambda]ijkl,\[Gamma]ab,\[Beta]vvss,Zgvvss,\[Beta]gvvv,Zgvvv,\[Gamma]IJF,\[Beta]Ysij,ZYsij,\[Beta]YsijC,ZYsijC};(*CounterTerms*)
-
-
-{\[Lambda]3DS,\[Lambda]KVecT,\[Lambda]KVec,\[Lambda]AAS,IdentMat,\[Mu]ijVNLO,\[Mu]ijSNLO,\[Lambda]3CSRed,\[Lambda]1IP,NFMat,NSMat};(*Private Variables*)
-
-
-{nsH,nSl,\[Lambda]K,\[Lambda]4S,\[Lambda]4K,\[Lambda]x,\[Lambda]y,gAvss,gvssL,\[Mu]ijL,\[Mu]ijLight};
-
-
-{HabijL,HabijVL,HabijA,HabijVA,\[Lambda]3Cx,\[Lambda]3Cy,\[Lambda]3CLight,\[Lambda]3CHeavy,\[Mu]IJF,\[Mu]IJFC,\[Mu]VabNLO,\[Mu]abDef,GroupMathCleared}
-
-
 (* ::Title:: *)
 (*Matrix elements*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Help functions*)
 
 
@@ -729,11 +815,11 @@ SymmetryBreakingFermion[Indices_,vev_] :=Block[{PosFermion,fermionInd,massF,posH
 ]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Matrix elements*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*V1V2toV3V4-D*)
 
 
@@ -794,7 +880,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4-D*)
 
 
@@ -936,7 +1022,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1V1toF1V1-D*)
 
 
@@ -984,7 +1070,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toV1V2-D*)
 
 
@@ -1089,7 +1175,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3S4-D*)
 
 
@@ -1162,7 +1248,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2-D*)
 
 
@@ -1279,7 +1365,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1S1-D*)
 
 
@@ -1327,7 +1413,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1V1-D*)
 
 
@@ -1407,7 +1493,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F1toS1V1-D*)
 
 
@@ -1433,7 +1519,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toV1V2-D*)
 
 
@@ -1522,7 +1608,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1V1toS1V1-D*)
 
 
@@ -1570,7 +1656,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3V1-D*)
 
 
@@ -1654,7 +1740,7 @@ If[ (
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Getting the matrix elements for out-of-Equilibrium particles*)
 
 
@@ -1676,7 +1762,7 @@ degreeOfFreedom[particle_]:=Block[{dof},
 ]
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
@@ -1732,7 +1818,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1V1toF1V1*)
 
 
@@ -1789,7 +1875,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toV1V2*)
 
 
@@ -1845,7 +1931,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*V1V2toV3V4*)
 
 
@@ -1900,7 +1986,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3S4*)
 
 
@@ -1955,7 +2041,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -2010,7 +2096,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1S1*)
 
 
@@ -2068,7 +2154,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1V1*)
 
 
@@ -2127,7 +2213,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toS1V1*)
 
 
@@ -2186,7 +2272,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toV1V2*)
 
 
@@ -2245,7 +2331,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1V1toS1V1*)
 
 
@@ -2304,7 +2390,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3V1*)
 
 
@@ -2363,7 +2449,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Extract elements*)
 
 
@@ -2484,7 +2570,7 @@ Block[{Elem},
 (*Export functions for different formats*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*json matrix elements functions*)
 
 
@@ -2562,7 +2648,7 @@ Export[file,jsonMatrixElements]
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*hdf5 matrix elements functions*)
 
 
@@ -2722,7 +2808,36 @@ Return[{particleNames,parameters,results}]
 ];
 
 
+(* ::Section:: *)
+(*Private constants*)
+
+
+{ZLij,GvvssTSS,\[Lambda]3DSS,\[Mu]ijSSLO,\[Mu]ijSSNLO,\[Mu]ijSNLOSS,\[Lambda]3DSS,\[Lambda]KVecTSS,\[Lambda]3CTot,\[Lambda]3CSSS,ZSij,\[Mu]ijSSNLO2,Ggvvv};
+
+
+{TadPoleS,ContriTadPoleSoftToHard,GgvvvSS,\[Lambda]4SMod,\[Lambda]4Tot,IdentMatPre};
+
+
+{\[Beta]gvff,Zgvff,\[Mu]ijEP,gvvvEP,gvssEP,\[Lambda]4EP,\[Lambda]3EP,nsEP,nvEP,CT,HelpSolveEffectiveHardM};
+
+
+{aS3D,ZijS,aV3D,ZabT,ZabL,\[Lambda]3D,GvvssL,GvvssT,\[Lambda]AA,\[Lambda]3CS,\[Mu]SijNLO,GvvsL};(*DimRed Results*)
+
+
+{\[CapitalLambda]\[Lambda],\[CapitalLambda]g,Hg,Habij,HabIJF,HabIJFC,Ysij,YsijC,YTemp,YTempC,Yhelp,YhelpC};(*Private Variables*)
+
+
+{\[Gamma]ij,\[Beta]mij,\[Beta]\[Lambda]ijkl,Z\[Lambda]ijkl,\[Gamma]ab,\[Beta]vvss,Zgvvss,\[Beta]gvvv,Zgvvv,\[Gamma]IJF,\[Beta]Ysij,ZYsij,\[Beta]YsijC,ZYsijC};(*CounterTerms*)
+
+
+{\[Lambda]3DS,\[Lambda]KVecT,\[Lambda]KVec,\[Lambda]AAS,IdentMat,\[Mu]ijVNLO,\[Mu]ijSNLO,\[Lambda]3CSRed,\[Lambda]1IP,NFMat,NSMat};(*Private Variables*)
+
+
+{nsH,nSl,\[Lambda]K,\[Lambda]4S,\[Lambda]4K,\[Lambda]x,\[Lambda]y,gAvss,gvssL,\[Mu]ijL,\[Mu]ijLight};
+
+
+{HabijL,HabijVL,HabijA,HabijVA,\[Lambda]3Cx,\[Lambda]3Cy,\[Lambda]3CLight,\[Lambda]3CHeavy,\[Mu]IJF,\[Mu]IJFC,\[Mu]VabNLO,\[Mu]abDef,GroupMathCleared}
+
+
 End[]
-
-
 EndPackage[]

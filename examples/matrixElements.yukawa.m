@@ -1,18 +1,21 @@
 (* ::Package:: *)
 
+Quit[];
+
+
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../DRalgo/DRalgo.m
-<<../src/matrixElements.m
+(*<<../DRalgo/DRalgo.m*)
+<<../src/WallGoMatrix.m
 
 
 (* ::Chapter:: *)
 (*Yukawa Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
