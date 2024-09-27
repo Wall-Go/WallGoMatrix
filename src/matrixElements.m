@@ -2034,11 +2034,11 @@ Block[{Elem},
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Export functions for different formats*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*json matrix elements functions*)
 
 
@@ -2106,12 +2106,12 @@ ExportTo["json"][MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[{toEx
 
 (* reading JSON matrix elements *)
 importJSONMatrixElements::usage="importJSONMatrixElements[file] imports a JSON file of matrix elements into a JSON object.";
-importJSONMatrixElements[file_]:=Import[fileImport,"RawJSON"];
+importJSONMatrixElements[file_]:=Import[file,"RawJSON"];
 (* export JSONMatrixElements *)
 exportJsonMatrixElements::usage="exportJsonMatrixElements[file,jsonMatrixElements] exports a JSON object of matrix elements into a JSON file.";
 exportJsonMatrixElements[file_,jsonMatrixElements_]:=Module[{test},
 If[Not[StringQ[file]],Print["File must be a string"];Return[]];
-If[StringTake[fileExport,-5]!=".json",Print["File must end in .json"];Return[]];
+If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
 Export[file,jsonMatrixElements]
 ];
 
@@ -2259,6 +2259,4 @@ MatrixElemFromC[MatrixElem_]:=Block[{Ind},
 
 
 EndPackage[]
-
-
 
