@@ -176,7 +176,7 @@ MatrixElements
 (*Tests*)
 
 
-file=FileNameJoin[{NotebookDirectory[],"yukawa.json"}];
+file=FileNameJoin[{NotebookDirectory[],"yukawa.test.json"}];
 {particleNames,parameters,FeynMatrixElements}=ImportMatrixElements[file];
 
 
