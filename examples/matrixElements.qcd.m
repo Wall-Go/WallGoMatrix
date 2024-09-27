@@ -100,48 +100,6 @@ MatrixElements=ExportMatrixElements[
 MatrixElements
 
 
-(* ::Section:: *)
-(*Crosschecks*)
-
-
-(*comparison with https://arxiv.org/pdf/hep-ph/0302165.pdf*)
-(*q1q2->q1q2*)
-(*5 light quarks*)
-M[0,2,0,2]/.MatrixElements/.{c[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
-5*2/(2*CA)*(8*dF^2*CF^2/dA((s^2+u^2)/ttsq))/.{ttsq->(-t+msq[1])^2}/.{Nf->3,CA->3,CF->4/3,dF->3,dA->8}
-%-%%//Simplify
-(*q1q1->gg*)
-M[0,0,1,1]/.MatrixElements/.{c[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
-1/(2*2*CA)*(8*dF*CF^2(u/tt+t/uu)-8*dF*CF*CA((t^2+u^2)/s^2))/.{tt->(-t+msq[0])^2/t,uu->(-u+msq[0])^2/u}/.{Nf->3,CA->3,CF->4/3,dF->3}
-%-%%//Simplify
-(*q1 g->q1 g*)
-M[0,1,0,1]/.MatrixElements/.{c[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)//Simplify
-1/(2*CA)*(-8*dF*CF^2(u/s +s/uu)+8*dF*CF*CA((s^2+u^2)/ttsq))/.{ttsq->(-t+msq[1])^2,tt->(-t+msq[1])^2/t,uu->(-u+msq[0])^2/u}/.{Nf->3,CA->3,CF->4/3,dF->3}//Simplify
-%-%%//Simplify
-
-
-(*crosscheck*)
-(*tt->tt*)
-M[0,0,0,0]/.MatrixElements/.{c[0]->1}(*/.{-u->-t}/.{t*u->-s*t}*)
-(*result from AMY paper*)
-(*initial sates and finial states are either particle or anti-particle*)
-+8*dF^2*CF^2/dA((s^2+u^2)/ttsq+(s^2+t^2)/uusq)+16*dF*CF(CF-CA/2)(s^2/(t*u));
-(*mixed initial and finial states*)
-+8*dF^2*CF^2/dA((s^2+u^2)/ttsq+(u^2+t^2)/s^2)+16*dF*CF(CF-CA/2)(u^2/(t*s));
-1/(2*CA)*(xx*%%+%)/.{ttsq->(-t+msq[1])^2,uusq->(-u+msq[1])^2}/.{Nf->3,CA->3,CF->4/3,dF->3,dA->8}
-bb %-%%%%//FullSimplify
-(*result only agrees by assuming factor 1/2 for same particles in final state*)
-%/.{xx->xx,bb->xx}/.{xx->1}
-
-
-(*g g->g g*)
-M[1,1,1,1]/.MatrixElements/.{c[0]->1}//Simplify
-(*Final states are the same -> divide out 1/2 symmetry factor*)
-1/(2*2(CA^2-1))(16*dA*CA^2(3-s*u/ttsq-s*t/uusq-t*u/s^2));
-%/.{s*t/uusq->1/4-1/4(s-t)^2/(-u+msq[1])^2,s*u/ttsq->1/4-1/4(s-u)^2/(-t+msq[1])^2}/.{Nf->3,dA->8,CA->3,CF->4/3,dF->3}//Simplify
-%%%-%//Simplify
-
-
 Import[OutputFile<>".hdf5"]
 
 
@@ -152,6 +110,3 @@ Import[OutputFile<>".hdf5","CouplingInfo"]
 
 
 Import[OutputFile<>".hdf5","ParticleInfo"]
-
-
-
