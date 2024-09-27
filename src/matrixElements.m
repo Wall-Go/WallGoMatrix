@@ -35,25 +35,11 @@ Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Pri
 (*Matrix elements*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Help functions*)
 
 
-SimplifyConj[s_] := Simplify[s,Assumptions->VarAsum]
-
-
-TotalConj[s_] := Simplify[Total[s,-1],Assumptions->VarAsum]
-
-
-SimplifySparseConj[s_SparseArray] := With[
-    {
-    elem =Simplify[s["NonzeroValues"],Assumptions->VarAsum],
-    pos=s["NonzeroPositions"],
-    dim = Dimensions[s]
-    },
-SparseArray[pos->elem,dim,0]
-    ]
-
+TotalConj[s_] := Simplify[Total[s,-1],Assumptions->VarAsum] (*Sums all the elements of a tensors and simplifies with the assumption that all variables are real*)
 
 
 DiagonalTensor2[s_SparseArray,a_Integer,b_Integer] := With[
@@ -64,22 +50,22 @@ DiagonalTensor2[s_SparseArray,a_Integer,b_Integer] := With[
     ]
 
 
-OrderArray[s_SparseArray,a_Integer,b_Integer,c_Integer,d_Integer] := Flatten[s,{{a},{b},{c},{d}}]
+OrderArray[s_SparseArray,a_Integer,b_Integer,c_Integer,d_Integer] := Flatten[s,{{a},{b},{c},{d}}] (*Permutes a rank 4 tensor via: Subscript[T, i1 i2 i3 i4]->Subscript[T, a b c d]*)
 
 
 Contract[tensor1_,tensor2_,indices_]:=Activate @ TensorContract[
-        Inactive[TensorProduct][tensor1,tensor2], indices]
+        Inactive[TensorProduct][tensor1,tensor2], indices] (*Performs tensor contractions on two tensors*)
 
 
 Contract[tensor1_,tensor2_,tensor3_,indices_]:=Activate @ TensorContract[
-        Inactive[TensorProduct][tensor1,tensor2,tensor3], indices]
+        Inactive[TensorProduct][tensor1,tensor2,tensor3], indices](*Performs tensor contractions on three tensors*)
 
 
 Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContract[
-        Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
+        Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices] (*Performs tensor contractions on four tensors*)
 
 
-ListToMat[list1_] := DiagonalMatrix[list1]//SparseArray
+ListToMat[list1_] := DiagonalMatrix[list1]//SparseArray (*Takes a 1-d list and turns it into a rank 2 sparse array*)
 
 
 RangeToIndices[ListI_]:=Block[{},
@@ -96,11 +82,12 @@ RepToIndices[ListI_]:=Block[{},
 
 CreateParticle[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion,temp,Particle},
 (*Combines selected representations and obtain their indices*)
+	Particle={};
+
 	If[Type=="F",
-		Particle={};
 		PosFermion=PrintFermionRepPositions[];
 		Do[
-			If[Length[i]>=2,
+			If[Length[i]>=2, (*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
 					AppendTo[Particle,{FermionMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
 				,
 					AppendTo[Particle,{RepToIndices[{PosFermion[[i]]}]}]
@@ -111,10 +98,9 @@ CreateParticle[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion,temp,Parti
 
 
 	If[Type=="V",
-		Particle={};
 		PosVector=PrintGaugeRepPositions[];
 		Do[
-			If[Length[i]>=2,
+			If[Length[i]>=2,(*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
 					AppendTo[Particle,{GaugeMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
 				,
 					AppendTo[Particle,{RepToIndices[{PosVector[[i]]}]}]
@@ -124,10 +110,9 @@ CreateParticle[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion,temp,Parti
 	];
 	
 	If[Type=="S",
-		Particle={};
 		PosScalar=PrintScalarRepPositions[];
 		Do[
-			If[Length[i]>=2,
+			If[Length[i]>=2,(*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
 					AppendTo[Particle,{ScalarMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
 				,
 					AppendTo[Particle,{RepToIndices[{PosScalar[[i]]}]}]
@@ -147,7 +132,6 @@ SymmetryBreaking[vev_,OptionsPattern[]] :=Block[{PosVector,PosFermion,PosScalar,
 	
 *)
 	PosVector=PrintGaugeRepPositions[];
-	
 	GaugeMassiveReps=Table[SymmetryBreakingGauge[i,vev],{i,1,Length[PosVector]}];
 	
 	Do[
@@ -163,7 +147,6 @@ SymmetryBreaking[vev_,OptionsPattern[]] :=Block[{PosVector,PosFermion,PosScalar,
 
 
 	PosFermion=PrintFermionRepPositions[];
-	
 	FermionMassiveReps=Table[SymmetryBreakingFermion[i,vev],{i,1,Length[PosFermion]}];
 	
 	Do[
@@ -179,7 +162,6 @@ SymmetryBreaking[vev_,OptionsPattern[]] :=Block[{PosVector,PosFermion,PosScalar,
 	
 
 	PosScalar=PrintScalarRepPositions[];
-	
 	ScalarMassiveReps=Table[SymmetryBreakingScalar[i,vev],{i,1,Length[PosScalar]}];
 	
 	Do[
@@ -243,7 +225,7 @@ SymmetryBreakingScalar[Indices_,vev_] :=Block[{PosScalar,scalarInd,massS,posHeav
 	PosScalar=PrintScalarRepPositions[];
 	
 (*Scalars*)
-	massS=\[Mu]ij + (vev . \[Lambda]4 . vev/2)//Normal//SparseArray;
+	massS=\[Mu]ij + (vev . \[Lambda]4 . vev/2)+ (vev . \[Lambda]3)//Normal//SparseArray;
 	scalarInd=Delete[massS//ArrayRules,-1]/.(({i1_,i2_}->x_)->i1);
 
 	posHeavy=Intersection[RangeToIndices[PosScalar[[Indices]]],scalarInd];
@@ -302,18 +284,6 @@ SymmetryBreakingFermion[Indices_,vev_] :=Block[{PosFermion,fermionInd,massF,posH
 ]
 
 
-Contract[tensor1_,tensor2_,indices_]:=Activate @ TensorContract[
-        Inactive[TensorProduct][tensor1,tensor2], indices]
-
-
-Contract[tensor1_,tensor2_,tensor3_,indices_]:=Activate @ TensorContract[
-        Inactive[TensorProduct][tensor1,tensor2,tensor3], indices]
-
-
-Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContract[
-        Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices]
-
-
 (* ::Section::Closed:: *)
 (*Matrix elements*)
 
@@ -326,9 +296,8 @@ CreateMatrixElementV1V2toV3V4[particle1_,particle2_,particle3_,particle4_,vector
 Block[{s,t,u,gTensor,C1,C2,C3,vectorPropT,vectorPropS,vectorPropU,A1,A2,A3,
 		Res1,Res2,Res3,Res4},
 (*
-In QCD this process depends on up to
-two Lorentz structures if the particles are all the same; and
-one Lorentz structure if they are all different.
+	This module returns the squared matrix element of VV->VV summed over all quantum numbers of the incoming particles.
+	If the incoming particles are not of the form FV->FV the routine returns 0.
 *)
 If[
 	particle1[[2]]!="V"||
@@ -394,7 +363,7 @@ Block[{s,t,u,gTensor,
 	
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form FF->FF the routine returns 0.
+	If the incoming particles are not of the form FF->FF the routine returns 0.
 *)
 If[
 	particle1[[2]]!="F"||
@@ -501,11 +470,6 @@ If[
 	totRes+=-  1/8(s^2-t^2+u^2)*TotalConj[CUy Conjugate[CSy]  +CSy Conjugate[CUy]];
 	totRes+=-  1/8(t^2-u^2+s^2)*TotalConj[CSy Conjugate[CTy]  +CTy Conjugate[CSy]];
 
-(*
-	totRes+=-  1/8(t^2-s^2+u^2)*Total[CUyC Conjugate[CTyC]  +CTyC Conjugate[CUyC],-1];
-	totRes+=-  1/8(s^2-t^2+u^2)*Total[CUyC Conjugate[CSyC]  +CSyC Conjugate[CUyC],-1];
-	totRes+=-  1/8(t^2-u^2+s^2)*Total[CSyC Conjugate[CTyC]  +CTyC Conjugate[CSyC],-1];
-*)
 	totRes+=-  1/8(t^2-s^2+u^2)*TotalConj[CUyCC Conjugate[CTyCC]  +CTyCC Conjugate[CUyCC]];
 	totRes+=-  1/8(s^2-t^2+u^2)*TotalConj[CUyCC Conjugate[CSyCC]  +CSyCC Conjugate[CUyCC]];
 	totRes+=-  1/8(t^2-u^2+s^2)*TotalConj[CSyCC Conjugate[CTyCC]  +CTyCC Conjugate[CSyCC]];	
@@ -535,7 +499,7 @@ CreateMatrixElementF1V1toF1V1[particle1_,particle2_,particle3_,particle4_,vector
 Block[{s,t,u,gTensor,resTot,t1,s1,u1,p1,p2,p3,p4,temp,kinFlip},
 (*
 	This module returns the squared matrix element of FV->FV summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form FV->FV the routine returns 0.
+	If the incoming particles are not of the form FV->FV the routine returns 0.
 *)
 	kinFlip=0; (*records if the external or incoming legs were swapped, and does a t<->u transformation for each swap*)
 If[ (
@@ -564,7 +528,7 @@ If[ (
 	];
 	
 	(*The result for FV->FV is the same as  FF->VV if we do some renaming of the mandelstam variables*)
-	resTot=-CreateMatrixElementF1F2toV1V2[p1,p3,p2,p4,fermionMass,vectorMass]/.{s->s1,t->t1,u->u1};
+	resTot=-CreateMatrixElementF1F2toV1V2[p1,p3,p2,p4,fermionMass,vectorMass]/.{s->s1,t->t1,u->u1}; (*Minus sign as we reversed the momentum of a fermion*)
 	resTot=resTot/.{s1->t,t1->s,u1->u};
 	
 	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t1,u->u1}/.{t1->u,u1->t};];
@@ -586,7 +550,7 @@ Block[{s,t,u,gTensor,gTensorT,vectorPropS,gVTensor,fermionPropU,fermionPropT,CS,
 		temp,A1,A2,A3,Res1,Res2,Res3,Res4},
 (*
 	This module returns the squared matrix element of FF->VV summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form FF->VV the routine returns 0.
+	If the incoming particles are not of the form FF->VV the routine returns 0.
 *)
 
 If[
@@ -690,7 +654,7 @@ Block[{s,t,u,gTensor,leadingLog,\[Lambda]3Tensor,\[Lambda]4Tensor,vectorPropT,sc
 		TotRes,CS,CT,CU,CS\[Lambda],CT\[Lambda],CU\[Lambda],C\[Lambda]},
 (*
 	This module returns the squared matrix element of SS->SS summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form SS->SS the routine returns 0.
+	If the incoming particles are not of the form SS->SS the routine returns 0.
 *)
 If[
 	particle1[[2]]!="S"||
@@ -764,7 +728,7 @@ Block[{s,t,u,gTensor,gTensorT,gTensorC,gTensorCT,gTensorVF,gTensorVFC,gTensorVS,
 		CYS,CYT,CYU,ASSY,A,TotRes,temp},
 (*
 	This module returns the squared matrix element of SS->FF summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form SS->FF the routine returns 0.
+	If the incoming particles are not of the form SS->FF the routine returns 0.
 *)
 If[
 	(particle1[[2]]!="S"||particle2[[2]]!="S"||particle3[[2]]!="F"||particle4[[2]]!="F")&&
@@ -878,7 +842,7 @@ CreateMatrixElementF1S1toF1S1[particle1_,particle2_,particle3_,particle4_,vector
 Block[{s,t,u,p1,p2,p3,p4,temp,resTot,u1,s1,t1,kinFlip},
 (*
 	This module returns the squared matrix element of FV->FV summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form FV->FV the routine returns 0.
+	If the incoming particles are not of the form FV->FV the routine returns 0.
 *)
 	kinFlip=0; (*records if the external or incoming legs were swapped, and does a t<->u transformation for each swap*)
 If[ (
@@ -907,8 +871,8 @@ If[ (
 	];
 	
 	(*The result for SF->SF is the same as  SS->FF if we do some renaming of the mandelstam variables*)
-	resTot=-CreateMatrixElementS1S2toF1F2[p1,p3,p2,p4,vectorMass,scalarMass,fermionMass]/.{s->s1,t->t1,u->u1};
-	resTot=resTot/.{s1->t,t1->s,u1->u};
+	resTot=-CreateMatrixElementS1S2toF1F2[p1,p3,p2,p4,vectorMass,scalarMass,fermionMass]/.{s->s1,t->t1,u->u1}; (*Minus sign as we reveresed the momentum of a fermion*)
+	resTot=resTot/.{s1->t,t1->s,u1->u}; 
 	
 	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t1,u->u1}/.{t1->u,u1->t};];
 	Return[resTot]
@@ -922,24 +886,31 @@ If[ (
 (*F1S1toF1V1-D*)
 
 
-SortF1S1toF1V1[L_]:=Block[{helpList,ordering},
+SortF1S1toF1V1[L_]:=Block[{helpList,ordering,kinFlip},
 	helpList=L[[;;,2]];
 	ordering={1,2,3,4};
+	kinFlip=0;
 	If[helpList[[1]]=="V"||helpList[[2]]=="V",ordering={3,4,1,2};];
-	If[helpList[[ordering[[1]]]]=="S",ordering[[{1,2}]]=ordering[[{2,1}]]];
-	If[helpList[[ordering[[3]]]]=="V",ordering[[{3,4}]]=ordering[[{4,3}]]];
+	If[helpList[[ordering[[1]]]]=="S",
+		ordering[[{1,2}]]=ordering[[{2,1}]];
+		kinFlip+=1;
+		];
+	If[helpList[[ordering[[3]]]]=="V",
+		ordering[[{3,4}]]=ordering[[{4,3}]];
+		kinFlip+=1;
+		];
 	
-	Return[L[[ordering]]]
+	Return[{L[[ordering]],kinFlip}]
 ]
 
 
 CreateMatrixElementF1S1toF1V1[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
 Block[{s,t,u,gTensor,gTensorC,gTensorVFC,gTensorVF,gTensorVS,SortHelp,
 		fermionPropS,particleNull,gTensorF,YTensor,CS,resTot,
-		YTensor2,gTensorF2,fermionPropU,CU},
+		YTensor2,gTensorF2,fermionPropU,CU,kinFlip,t2,u2},
 (*
 	This module returns the squared matrix element of FS->FV summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form FSFVFF the routine returns 0.
+	If the incoming particles are not of the form FSFVFF the routine returns 0.
 *)
 If[ (
 	(particle1[[2]]=="F"&&particle2[[2]]=="S")||
@@ -954,7 +925,7 @@ If[ (
 	(particle3[[2]]=="S"&&particle4[[2]]=="F")),
 	
 (*Changing the order of the particles so that it is always FS->FV*)	
-	SortHelp=Join[{particle1},{particle2},{particle3},{particle4}]//SortF1S1toF1V1[#]&;
+	{SortHelp,kinFlip}=Join[{particle1},{particle2},{particle3},{particle4}]//SortF1S1toF1V1[#]&;
 	p1=SortHelp[[1]][[1]];
 	p2=SortHelp[[2]][[1]];
 	p3=SortHelp[[3]][[1]];
@@ -982,8 +953,7 @@ If[ (
 	resTot+=2*s*u* TotalConj[CU Conjugate[CU]]; (*Squared u-channel*)
 	resTot+=- 2*s*u* TotalConj[CS Conjugate[CU]+CU Conjugate[CS]]; (*Mixed s & u channel*)
 	
-	(*Note that the t-channel with an exchanged scalar does not contribute as we can always eliminate said 
-		diagram with a gauge choice.*)
+	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t2,u->u2}/.{t2->u,u2->t};];
 	
 	Return[-2*Refine[resTot,Assumptions->VarAsum]]
 ,
@@ -1000,7 +970,7 @@ CreateMatrixElementF1F2toS1V1[particle1_,particle2_,particle3_,particle4_,fermio
 Block[{s,t,u,s1,t1,u1,resTot},
 (*
 	This module returns the squared matrix element of FF->SV summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form FF->SV the routine returns 0.
+	If the incoming particles are not of the form FF->SV the routine returns 0.
 *)
 If[ 
 	(particle3[[2]]=="F"&&particle4[[2]]=="F")&&((particle1[[2]]=="S"&&particle2[[2]]=="V")||(particle1[[2]]=="V"&&particle2[[2]]=="S"))
@@ -1009,7 +979,7 @@ If[
 	,
 	
 	(*The result for FF->SV is the same as  FS->VS if we do some renaming of the mandelstam variables*)
-	resTot=-CreateMatrixElementF1S1toF1V1[particle1,particle3,particle2,particle4,fermionMass]/.{s->s1,t->t1,u->u1};
+	resTot=-CreateMatrixElementF1S1toF1V1[particle1,particle3,particle2,particle4,fermionMass]/.{s->s1,t->t1,u->u1}; (*Minus sign as we reversed the momentum of a fermion*)
 	resTot=resTot/.{t1->s,s1->t,u1->u}//Refine;	
 	Return[resTot]
 ,
@@ -1031,7 +1001,7 @@ Block[{s,t,u,
 		ATU,scalarPropT,scalarPropU},
 (*
 	This module returns the squared matrix element of SS->VV summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form SS->VV the routine returns 0.
+	If the incoming particles are not of the form SS->VV the routine returns 0.
 *)
 If[
 	(particle1[[2]]!="S"||particle2[[2]]!="S"||particle3[[2]]!="V"||particle4[[2]]!="V")&&
@@ -1102,7 +1072,7 @@ If[
 	totRes+= A Total[(t*CT+u*CU) CT,-1];
 	totRes+=4 Total[(t*CT+u*CU)^2,-1];
 
-	Return[Refine[totRes/2,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
+	Return[Refine[totRes/2,Assumptions->VarAsum]] 
 ]	
 ];
 
@@ -1115,7 +1085,7 @@ CreateMatrixElementS1V1toS1V1[particle1_,particle2_,particle3_,particle4_,vector
 Block[{s,t,u,p1,p2,p3,p4,temp,resTot,u1,s1,t1,kinFlip},
 (*
 	This module returns the squared matrix element of SV->SV summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form SV->SV the routine returns 0.
+	If the incoming particles are not of the form SV->SV the routine returns 0.
 *)
 	kinFlip=0; (*records if the external or incoming legs were swapped, and does a t<->u transformation for each swap*)
 If[ (
@@ -1143,7 +1113,7 @@ If[ (
 		kinFlip+=1;
 	];
 	
-	(*The result for SV->SV is the same as  SS->VV if we do some renaming of the mandelstam variables*)
+	(*The result for SV->SV is identical to SS->VV (some would say twice as identical) if we do some renaming of the mandelstam variables*)
 	resTot=CreateMatrixElementS1S2toV1V2[p1,p3,p2,p4,vectorMass,scalarMass]/.{s->s1,t->t1,u->u1};
 	resTot=resTot/.{s1->t,t1->s,u1->u};
 	
@@ -1162,13 +1132,13 @@ If[ (
 CreateMatrixElementS1S2toS3V1[particle1_,particle2_,particle3_,particle4_,scalarMass_]:=
 Block[{s,t,u,p1,p2,p3,p4,temp,resTot,u1,s1,t1,temp1,temp2
 		,particleNull,gTensor,\[Lambda]3Tensor,\[Lambda]4Tensor,
-		scalarPropT,scalarPropU,A,CT,CU,kinFlip,scalarPropS},
+		scalarPropT,scalarPropU,A,CT,CU,CS,kinFlip,scalarPropS},
 (*
 	This module returns the squared matrix element of SS->SV summed over all quantum numbers of the incoming particles.
-	If the incoming particles arn't of the form SS->SV the routine returns 0.
+	If the incoming particles are not of the form SS->SV the routine returns 0.
 	
 	I maintain that only a lunatic will actually have this matrix element appearing in their model, and if you are actually 
-	reading this you habe but proved my point.
+	reading this you have but proved my point.
 *)
 	kinFlip=0; (*records if the external or incoming legs were swapped, and does a t<->u transformation for each swap*)
 If[ (
@@ -1227,14 +1197,7 @@ If[ (
 	CT=Contract[scalarPropT . \[Lambda]3Tensor[[1,3]], gTensor[[2]],{{1,6}}]//OrderArray[#,1,4,2,3]&;
 	CU=Contract[scalarPropU . \[Lambda]3Tensor[[2,3]], gTensor[[1]],{{1,6}}]//OrderArray[#,4,1,2,3]&;
 	
-	(*	
-	CT=Contract[scalarPropT . \[Lambda]3Tensor[[1,3]], gTensor[[2]],{{1,6}}]//OrderArray[#,1,4,2,3]&;
-	CU=-Contract[scalarPropU . \[Lambda]3Tensor[[2,3]], gTensor[[1]],{{1,6}}]//OrderArray[#,4,1,2,3]&;
-	
-(*The result is beautiful in much the same way that kos isn't. *)
-	resTot=A*Total[(CT+CU)^2,-1];
-	*)
-	
+(*This result is beautiful in much the same way that a carrot isn't. *)
 	resTot=-4*Total[CS (u*CT+t*CU),-1];
 	resTot+=-4 s*Total[CT CU,-1];
 	
@@ -2143,17 +2106,17 @@ ExportTo["json"][MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[{toEx
 
 (* reading JSON matrix elements *)
 importJSONMatrixElements::usage="importJSONMatrixElements[file] imports a JSON file of matrix elements into a JSON object.";
-importJSONMatrixElements[file_]:=Import[fileImport,"RawJSON"];
+importJSONMatrixElements[file_]:=Import[file,"RawJSON"];
 (* export JSONMatrixElements *)
 exportJsonMatrixElements::usage="exportJsonMatrixElements[file,jsonMatrixElements] exports a JSON object of matrix elements into a JSON file.";
 exportJsonMatrixElements[file_,jsonMatrixElements_]:=Module[{test},
 If[Not[StringQ[file]],Print["File must be a string"];Return[]];
-If[StringTake[fileExport,-5]!=".json",Print["File must end in .json"];Return[]];
+If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
 Export[file,jsonMatrixElements]
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*hdf5 matrix elements functions*)
 
 
@@ -2189,7 +2152,7 @@ ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Blo
 ]
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*txt matrix elements functions*)
 
 
@@ -2295,4 +2258,20 @@ MatrixElemFromC[MatrixElem_]:=Block[{Ind},
 ]
 
 
+ImportMatrixElements[file_]:=Module[{jsonObject,particleNames,parameters,results},
+(* Only implemented for JSON *)
+If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
+
+(* Importing into JSON object *)
+jsonObject=importJSONMatrixElements[file];
+
+(* Splitting JSON object *)
+{particleNames,parameters,results}=splitJsonMatrixElements[jsonObject];
+
+(* Returning results *)
+Return[{particleNames,parameters,results}]
+];
+
+
 EndPackage[]
+

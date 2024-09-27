@@ -132,26 +132,8 @@ MatrixElements
 (*Tests*)
 
 
-FeynMatrixElements={
-	M[0,0,0,0]->((2 s^2)/(t u)+s^2/t^2+s^2/u^2-(2 u s)/t^2-(2 s)/t-(2 s)/u-(2 t s)/u^2+u^2/t^2+t^2/u^2+2) e^4+lam (-((8 s)/t)-(8 s)/u+(8 u)/t+(8 t)/u) e^2+16 lam^2,
-	M[0,1,0,1]->(s^2/t^2-(2 u s)/t^2+u^2/t^2-(2 u)/t+2+(2 u^2)/(t s)-(2 u)/s+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/t-(8 u)/t+(8 t)/s-(8 u)/s) e^2+16 lam^2,
-	M[0,1,1,0]->(s^2/u^2-(2 t s)/u^2-(2 t)/u+t^2/u^2+2-(2 t)/s+(2 t^2)/(u s)+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/u-(8 t)/u-(8 t)/s+(8 u)/s) e^2+16 lam^2,
-	M[0,1,2,2]->e^4 (s^2/(2 t u)+s/t+s/u+u/(2 t)+t/(2 u)+9),
-	M[0,2,0,2]->e^4 (t^2/(2 s u)+t/s+t/u+u/(2 s)+s/(2 u)+9),
-	M[0,2,2,0]->e^4 (u^2/(2 s t)+u/s+u/t+t/(2 s)+s/(2 t)+9),
-	M[1,0,0,1]->(s^2/u^2-(2 t s)/u^2-(2 t)/u+t^2/u^2+2-(2 t)/s+(2 t^2)/(u s)+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/u-(8 t)/u-(8 t)/s+(8 u)/s) e^2+16 lam^2,
-	M[1,0,1,0]->(s^2/t^2-(2 u s)/t^2+u^2/t^2-(2 u)/t+2+(2 u^2)/(t s)-(2 u)/s+t^2/s^2+u^2/s^2-(2 t u)/s^2) e^4+lam ((8 s)/t-(8 u)/t+(8 t)/s-(8 u)/s) e^2+16 lam^2,
-	M[1,0,2,2]->e^4 (s^2/(2 t u)+s/t+s/u+u/(2 t)+t/(2 u)+9),
-	M[1,1,1,1]->((2 s^2)/(t u)+s^2/t^2+s^2/u^2-(2 u s)/t^2-(2 s)/t-(2 s)/u-(2 t s)/u^2+u^2/t^2+t^2/u^2+2) e^4+lam (-((8 s)/t)-(8 s)/u+(8 u)/t+(8 t)/u) e^2+16 lam^2,
-	M[1,2,1,2]->e^4 (t^2/(2 s u)+t/s+t/u+u/(2 s)+s/(2 u)+9),
-	M[1,2,2,1]->e^4 (u^2/(2 s t)+u/s+u/t+t/(2 s)+s/(2 t)+9),
-	M[2,0,0,2]->e^4 ((4 u^2)/(s t)+(4 u)/s+(4 u)/t+8),
-	M[2,0,2,0]->e^4 ((4 t^2)/(s u)+(4 t)/s+(4 t)/u+8),
-	M[2,1,1,2]->e^4 ((4 u^2)/(s t)+(4 u)/s+(4 u)/t+8),
-	M[2,1,2,1]->e^4 ((4 t^2)/(s u)+(4 t)/s+(4 t)/u+8),
-	M[2,2,0,1]->e^4 ((4 s^2)/(t u)+(4 s)/t+(4 s)/u+8),
-	M[2,2,1,0]->e^4 ((4 s^2)/(t u)+(4 s)/t+(4 s)/u+8)
-};
+file=FileNameJoin[{NotebookDirectory[],"u1higgs.test.json"}];
+{particleNames,parameters,FeynMatrixElements}=ImportMatrixElements[file];
 
 
 insertCouplings={g1->e,\[Lambda]->lam};
