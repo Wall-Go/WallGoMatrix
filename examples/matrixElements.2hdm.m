@@ -1,5 +1,8 @@
 (* ::Package:: *)
 
+Quit[];
+
+
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
@@ -114,7 +117,28 @@ one right-handed fermoon
 
 
 vev={0,v,0,0,0,0,0,0};
-SymmetryBreaking[vev]
+SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-dependent couplings*)
+(*SymmetryBreaking[vev]*)
+
+
+(*Third generation of fermions*)
+ReptL=CreateParticle[{{1,1}},"F"];
+RepbL=CreateParticle[{{1,2}},"F"];
+ReptR=CreateParticle[{{2,1}},"F"];
+
+
+(*Vector bosons*)
+RepGluon=CreateParticle[{1},"V"]; (*Gluons*)
+RepW=CreateParticle[{{2,1}},"V"]; (*SU2 gauge bosons*)
+RepB=CreateParticle[{3},"V"]; (*U1 gauge boson*)
+
+
+(*Scalars bosons*)
+RepHiggs1=CreateParticle[{{1,2}},"S"]; (*Higgs*)
+RepGoldstone1=CreateParticle[{{1,1}},"S"]; (*Goldstone*)
+RepHiggs2=CreateParticle[{{2,1}},"S"]; (*CP-even inert scalar*)
+RepGoldstone21=CreateParticle[{{2,2}},"S"]; (*CP-odd inert scalar*)
+RepGoldstone22=CreateParticle[{{2,3}},"S"]; (*charged inert scalar*)
 
 
 (*left+right top-quark*)
@@ -137,25 +161,28 @@ RepW=CreateParticle[{{2,1}},"V"];
 RepZ=CreateParticle[{{3,1}},"V"];
 
 
-ParticleList={Rept,Repb,Reph,RepA,RepGluon,RepW,RepZ};
-ParticleList={Reph,RepA};
-(*
-These particles do not have out-of-eq contributions
-*)
-
-
+(*Defining various masses and couplings*)
 VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mw2,{i,1,RepW[[1]]//Length}],
-	Table[mz2,{i,1,RepZ[[1]]//Length}]];
+	Table[mw2,{i,1,RepW[[1]]//Length}],{mb2}]; (*mb2 is the mass of the U(1) gauge field*)
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mg2,mw2,mz2,ms2}; 
+ScalarMass={mG2,mh2,mG2,mG2,mH2,mA2,mHp,mHp};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
+
+UserMasses={mq2,mg2,mw2,mb2,mG2,mh2,mH2,mA2,mHp};
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
+
+
+ParticleList={
+	ReptL,RepbL,ReptR,
+	RepGluon,RepW,RepB,
+	RepHiggs1,RepGoldstone1,
+	RepHiggs2,RepGoldstone21,RepGoldstone22};
+ParticleName={
+	"TopL","BotL","TopR",
+	"Gluon","W","B",
+	"Higgs","Goldstone",
+	"Higgs2","Goldstone21","Goldstone22"};
 
 
 (*
@@ -163,8 +190,7 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 *)
 OutputFile="matrixElements.2hdm";
 SetDirectory[NotebookDirectory[]];
-(*ParticleName={"Top","Bottom","h","A","Gluon","W","Z"};*)
-ParticleName={"h","A"};
+
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -172,7 +198,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	Format->{"json","txt"}];
+	{Replacements->{lam4H->0,lam5H->0},Format->{"json","txt"},NormalizeWithDOF->False}];
 
 
 

@@ -130,8 +130,11 @@ RepHiggs=CreateParticle[{{1,2}},"S"];
 RepGoldstone=CreateParticle[{{1,1}},"S"];
 
 
-ParticleList={ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,RepCharmStrangeL,RepCharmR,RepStrangeR,RepMuonL,RepMuonR
-			,RepUpDownL,ReUpR,RepDownR,RepElectronL,RepElectronR,RepGluon,RepW,RepB,RepHiggs,RepGoldstone};
+ParticleList={
+	ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,
+	RepCharmStrangeL,RepCharmR,RepStrangeR,RepMuonL,RepMuonR,
+	RepUpDownL,ReUpR,RepDownR,RepElectronL,RepElectronR,
+	RepGluon,RepW,RepB,RepHiggs,RepGoldstone};
 
 
 (*Defining various masses and couplings*)

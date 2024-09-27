@@ -2173,19 +2173,22 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{
 ]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Exporting the results*)
 
 
 Options[ExportMatrixElements]={
 	Replacements->{},
-	NormalizeWithDOF-> True,
+	NormalizeWithDOF->True,
 	Format->"none"};
 
 
-ExportMatrixElements::usage="ExportMatrixElements[file,particleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,OptionsPattern[]] generates all possible matrix elements
-with the external particles specified in particleList.The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none , the last
-two options exports the result in all possible formats, and in none, respectively. A list of matrix elements is returned by the function regardless of the choosen format.";
+ExportMatrixElements::usage=
+"ExportMatrixElements[file,particleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,OptionsPattern[]]
+
+generates all possible matrix elements with the external particles specified in particleList.
+The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none ,
+the last two options exports the result in all possible formats, and in none, respectively. A list of matrix elements is returned by the function regardless of the choosen format.";
 
 
 ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,OptionsPattern[]]:=
@@ -2273,7 +2276,5 @@ Return[{particleNames,parameters,results}]
 
 
 EndPackage[]
-
-
 
 
