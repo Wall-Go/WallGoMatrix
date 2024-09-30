@@ -109,11 +109,7 @@ PrintScalarRepPositions::usage="Prints the indices of Scalar reps";
 PrintFermionRepPositions::usage="Prints the indices of Fermion reps";
 
 
-(*Contract::usage="";
-SimplifySparse::usage="";
-RepToIndices::usage="";
-RangeToIndices::usage="";
-DiagonalTensor2::usage="";*)
+ImportMatrixElements::usage="";
 
 
 SymmetryBreakingGauge::usage="";
