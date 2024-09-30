@@ -707,7 +707,8 @@ ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Blo
 
 ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[
 {
-	ParticleInfo,CouplingInfo,ExportTXT
+	ParticleInfo,CouplingInfo,ExportTXT,matrixElementsTXT,replaceSpecials,toString,
+	sReplace,tReplace,uReplace
 },
 
 	(*Creating some metadata*)
@@ -715,14 +716,22 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,f
 		AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
 		CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 		
-		ExportTXT=MatrixElements;
+		ExportTXT=MatrixElements/.{s->sReplace,t->tReplace,u->uReplace};
+		
+		toString[arg_]:=If[StringQ[arg],arg,ToString[arg,InputForm]];
+		replaceSpecials[arg_]:=StringReplace[arg,{"Pi"->"_pi","sReplace"->"_s","tReplace"->"_t","uReplace"->"_u"}];
+	
+		matrixElementsTXT=Map[
+		toString[PrintNonPrivate[#[[1]]]]<>" -> "<>replaceSpecials[toString[PrintNonPrivate[#[[2]]]]]&,
+		ExportTXT];
+		Print[matrixElementsTXT];
 		
 	(*Adding metadata to the matrix elements*)
-		PrependTo[ExportTXT,ParticleInfo];
-		PrependTo[ExportTXT,CouplingInfo];	
+		PrependTo[matrixElementsTXT,ParticleInfo];
+		PrependTo[matrixElementsTXT,CouplingInfo];	
 	
 (*Exporting*)
-	Export[StringJoin[file,".txt"],PrintNonPrivate[ExportTXT]];
+	Export[StringJoin[file,".txt"],matrixElementsTXT];
 	Print["Results have been exported to: ", StringJoin[file,".txt"]];		
 ]
 
@@ -732,6 +741,7 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,f
 
 
 PrintNonPrivate[PrivateExpression_]:=ToExpression[StringReplace[ToString[StandardForm[PrivateExpression]],"WallGoMatrix`Private`"->""]];
+ReplaceMandelStam[Expression_]:=StringReplace[ToString[Expression],{"s"->"_s","t"->"_t","u"->"_u"}];
 
 
 Options[ExportMatrixElements]={

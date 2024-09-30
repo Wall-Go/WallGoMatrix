@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 (* Check Mathematica version *)
@@ -101,6 +101,9 @@ MatrixElements=ExportMatrixElements[
 	ParticleName,
 	ParticleMasses,
 	Format->{"json","txt"}];
+
+
+WallGoMatrix`Privat`ReplaceMandelStam[t]
 
 
 MatrixElements
