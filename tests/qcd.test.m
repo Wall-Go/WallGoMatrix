@@ -96,7 +96,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	Format->{"json","txt"}];
+	{NormalizeWithDOF->True,Format->{"json","txt"}}];
 
 
 MatrixElements
@@ -219,6 +219,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
