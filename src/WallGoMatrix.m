@@ -1,5 +1,26 @@
 (* ::Package:: *)
 
+(* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *)
+
+(* :Title: WallGoMatrix                                                          	*)
+
+(*
+      	This software is covered by the GNU General Public License 3.
+       	Copyright (C) 2024-2024 Andreas Ekstedt
+       	Copyright (C) 2024-2024 Oliver Gould
+       	Copyright (C) 2024-2024 Joonas Hirvonen
+       	Copyright (C) 2024-2024 Benoit Laurent
+       	Copyright (C) 2024-2024 Lauri Niemi
+       	Copyright (C) 2024-2024 Philipp Schicho
+       	Copyright (C) 2024-2024 Jorinde van de Vis
+*)
+
+(* :Summary:	WallgoMatirx is an algorithm that constructs
+				the Matrix Elements at Leading Log and partially NLL for generic models.	*)	
+
+(* ------------------------------------------------------------------------ *)
+
+
 BeginPackage["WallGoMatrix`"]
 
 
@@ -9,6 +30,42 @@ Definition[x_Symbol] /; StringMatchQ[Context[x], "Package`" ~~ ___] :=
         (WordCharacter .. ~~ DigitCharacter ... ~~ "`") .. ~~ s_ :> s
     ];
 Protect@Definition;
+
+
+(*
+	Welcome banner: All credit for this part to GroupMath
+*)
+TexFor[text_]:=Style[text,{GrayLevel[0.3]}]
+result={};
+AppendTo[result,Row[{
+	TexFor["GOGOGOGOGOGOGOGOGOGOGGOGOGOGO "],
+	TexFor["WallGoMatrix"],
+	TexFor[" GOGOGOGOGOGOGOGOGOGOGGOGOGOGO"]}]];
+AppendTo[result,Row[{"Version: "//TexFor,"0.02 (30-09-2024)"//TexFor}]];
+AppendTo[result,Row[{"Authors: "//TexFor,
+    Hyperlink["Andreas Ekstedt","https://inspirehep.net/authors/1799400"],", "//TexFor,
+    Hyperlink["Oliver Gould","https://inspirehep.net/authors/1606373"],", "//TexFor,
+    Hyperlink["Joonas Hirvonen","https://inspirehep.net/authors/1866901"],", "//TexFor,
+    Hyperlink["Benoit Laurent","https://inspirehep.net/authors/1808372"],", "//TexFor,
+    Hyperlink["Lauri Niemi","https://inspirehep.net/authors/1764675"],", "//TexFor,
+    Hyperlink["Philipp Schicho","https://inspirehep.net/authors/1639147"],", "//TexFor,
+    Hyperlink["Jorinde van de Vis","https://inspirehep.net/authors/1589979"]//TexFor
+    }
+  ]];
+AppendTo[result,Row[{"Reference: "//TexFor,
+        Hyperlink["2410.xxxxx [hep-ph]","https://arxiv.org/abs/2410.xxxxx"]//TexFor}]];
+AppendTo[result,Row[{"Repository link: "//TexFor,
+	Hyperlink[Mouseover[TexFor["github.com/Wall-Go/WallGoMatrix"],Style["github.com/Wall-Go/WallGoMatrix",Bold]],
+	"https://github.com/DR-algo/DRalgo"]}]];
+AppendTo[result,Row[{"Existing model files: "//TexFor,
+	Hyperlink[Mouseover[TexFor["WallGoMatrix/examples"],Style["WallGoMatrix/examples",Bold]],
+	"https://github.com/Wall-Go/WallGoMatrix/tree/main/examples"]}]];
+WallGoMatrixLoad=Image[CompressedData["1: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"],"Byte",ColorSpace->"RGB",Interleaving->True];
+
+AppendTo[result,Style["GOGOGOGOGOGOGOGOGOGOGGOGOGOGOGOGOGOGOGOGOGOGOGOGOGGOGOGOGO",{GrayLevel[0.3]}]];
+Print[Grid[{{Image[WallGoMatrixLoad,ImageSize->140],Row[result,"\n",BaseStyle->(FontFamily->"Consolas")]}},Alignment->{Left,Center}]]
+(**)
+
 
 
 (*List of public functions*)
@@ -21,6 +78,12 @@ Scalars (R=S)."
 SymmetryBreaking::usage=
 "Classify different scalar, fermion, and vector representations into respective particles using VEV-induced masses.
 As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(m\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(m\), \(i\)]\) is the label of the particle mass in that representation"
+ExportMatrixElements::usage=
+"ExportMatrixElements[file,particleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,OptionsPattern[]]
+
+generates all possible matrix elements with the external particles specified in particleList.
+The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none ,
+the last two options exports the result in all possible formats, and in none, respectively. A list of matrix elements is returned by the function regardless of the choosen format.";
 
 
 AllocateTensors::usage="\
@@ -35,6 +98,27 @@ CreateInvariantYukawa::usage="Creates Yukawa Tensor";
 GradYukawa::usage="Creates Yukawa tensor";
 GradMassFermion::usage="Creates Fermion Invariants";
 CreateInvariantFermion::usage="Creates Fermion Invariants";
+
+
+PerformDRhard::usage="\
+Performs the dimensional reduction from hard to soft";
+
+
+PrintGaugeRepPositions::usage="Prints the indices of Gauge reps";
+PrintScalarRepPositions::usage="Prints the indices of Scalar reps";
+PrintFermionRepPositions::usage="Prints the indices of Fermion reps";
+
+
+(*Contract::usage="";
+SimplifySparse::usage="";
+RepToIndices::usage="";
+RangeToIndices::usage="";
+DiagonalTensor2::usage="";*)
+
+
+SymmetryBreakingGauge::usage="";
+SymmetryBreakingFermion::usage="";
+SymmetryBreakingScalar::usage="";
 
 
 DefineDim6::usage="Defines a dimension 6 operator";
@@ -75,7 +159,9 @@ Begin["`Private`"]
 (*
 	Loads all functions.
 *)
-Get[FileNameJoin[{$DRalgoDirectory,"ModelCreation.m"}]];(*Loads Effective Potential Functions*)
+Get[FileNameJoin[{$DRalgoDirectory,"modelCreation.m"}]];(*Loads DRalgo model creation*)
+(*Get[FileNameJoin[{$DRalgoDirectory,"HardToSoft.m"}]];(*Loads Hard -> Soft functions*)*)
+Get[FileNameJoin[{$DRalgoDirectory,"matrixelements.m"}]];(*Loads matrix element creation*)
 
 
 (* ::Section:: *)
@@ -86,7 +172,10 @@ Get[FileNameJoin[{$DRalgoDirectory,"ModelCreation.m"}]];(*Loads Effective Potent
 	Defines internal tensors from the loaded model. Also creates help-tensors used for
 	intermediate calculations.
 *)
-ImportModelDRalgo[GroupI_,gvvvI_,gvffI_,gvssI_,\[Lambda]1I_,\[Lambda]3I_,\[Lambda]4I_,\[Mu]ijI_,\[Mu]IJFI_,\[Mu]IJFCI_,YsffI_,YsffCI_, OptionsPattern[]]:=Module[{GroupP=GroupI,gvvvP=gvvvI,gvffP=gvffI,gvssP=gvssI,\[Lambda]1IP=\[Lambda]1I,\[Lambda]3P=\[Lambda]3I,\[Lambda]4P=\[Lambda]4I,\[Mu]ijP=\[Mu]ijI,\[Mu]IJFP=\[Mu]IJFI,\[Mu]IJFCP=\[Mu]IJFCI,YsffP=YsffI,YsffCP=YsffCI},
+ImportModelDRalgo[GroupI_,gvvvI_,gvffI_,gvssI_,\[Lambda]1I_,\[Lambda]3I_,\[Lambda]4I_,\[Mu]ijI_,\[Mu]IJFI_,\[Mu]IJFCI_,YsffI_,YsffCI_, OptionsPattern[]]:=Module[
+{
+	GroupP=GroupI,gvvvP=gvvvI,gvffP=gvffI,gvssP=gvssI,\[Lambda]1IP=\[Lambda]1I,\[Lambda]3P=\[Lambda]3I,\[Lambda]4P=\[Lambda]4I,
+	\[Mu]ijP=\[Mu]ijI,\[Mu]IJFP=\[Mu]IJFI,\[Mu]IJFCP=\[Mu]IJFCI,YsffP=YsffI,YsffCP=YsffCI},
 
 
 If[ Global`$LoadGroupMath,
@@ -95,7 +184,6 @@ If[ Global`$LoadGroupMath,
 		GroupMathCleared=True;
 	];
 ];
-
 	\[Mu]ij=\[Mu]ijP//SparseArray//SimplifySparse;
 	gvvv=gvvvP//SparseArray//SimplifySparse;
 	gvss=gvssP//SparseArray//SimplifySparse;
@@ -113,8 +201,8 @@ If[ Global`$LoadGroupMath,
 	\[Lambda]6=EmptyArray[{ns,ns,ns,ns,ns,ns}];
 
 (*Options*)
-	verbose = OptionValue[Verbose];
-	mode = OptionValue[Mode]; (*If 2 everthing is calculated. And if 2 only 1-loop contributions are calculated*)
+	verbose=OptionValue[Verbose];
+	mode=OptionValue[Mode]; (*If 2 everthing is calculated. And if 2 only 1-loop contributions are calculated*)
 	NFMat=IdentityMatrix[nf]//SparseArray; (*This matrix is only relevant if the user wants an arbitrary number of fermion families*)
 	normalization4D=OptionValue[Normalization4D];
 	If[OptionValue[AutoRG],rgFac=1,rgFac=0]; (*Determines whether the RG-running is automatically incorporated in the soft masses and tadpoles*)
@@ -161,92 +249,6 @@ DefineNF[NFMatP_]:=Module[{NFMatI=NFMatP},
 ];
 
 
-(*
-	Performs the dimensional reduction for all couplings and masses.
-*)
-
-PerformDRhard[]:=Module[{},
-
-	If[mode>=0,
-		CreateBasisVanDeVis[]; (*Creates a basis of "couplings" to identify all linearly-independent dimensionally reduced paramters*)
-		ScalarMass[];
-		VectorMass[];
-		TadPole[];
-	];
-
-	If[mode>=1,
-		ScalarSelfEnergy[];
-		VectorSelfEnergy[];
-		ScalarCubic[];
-		ScalarQuartic[];
-		TransverseSSVV[];
-		LongitudionalSSVV[];
-		LongitudionalVVVV[];
-		LongitudionalVVS[];
-	];
-
-
-	If[mode>=2,
-		CounterTerm[];
-		VectorMass2Loop[];
-		ScalarMass2Loop[];
-		TadPole2Loop[];
-		SymmetricPhaseEnergy[];
-	];
-
-	If[mode>=3,
-(*Calculates effective dim 6 operators*)
-		ScalarSextic[];
-	];
-
-
-(*
-	This step takes all calculations and removes redundancies. For example, if one element is (g^4 Lb)
-	and another 3(g^4 Lb), the function replaces element 2 by three times the first element. This also
-	works for linear combinations of elements.
-*)
-
-	IdentifyTensorsDRalgo[];
-
-];
-
-
-(*
-	Performs the reduction from soft to supersoft.
-	ListHardP is a list which tells the code which scalars should be integrated out.
-	By default all Debye-vectors (temporal-vectors) are integrated out.
-*)
-
-PerformDRsoft[ListHardP_]:=Module[{ListHardI=ListHardP},
-	PrepareSoftToSuperSoft[ListHardI];
-	CreateHelpTensorsSS[];
-
-	ScalarSelfEnergySS[];
-	TadPoleSS[];(*Calculates tadpoles*)
-	HeavyScalarMassSS[];(*Includes self-energies for heavy-lines with soft momenta*)
-	VectorSelfEnergySS[];
-	ScalarMassSS[];
-	
-	If[mode>=1,
-		ScalarVectorCouplingSS[];
-		ScalarQuarticSS[];
-		ScalarCubicsSS[];
-	];
-	
-	If[mode>=2,
-		ScalarMass2LoopSS[];
-		SymmetricPhaseEnergyUS[];
-	];
-
-(*
-	This step takes all calculations and removes redundancies. For example, if one element is (g^4 Lb)
-	and another 3(g^4 Lb), the function replaces element 2 by three times the first element. This also
-	works for linear combinations of elements.
-*)
-	IdentifyTensorsSSDRalgo[]
-];
-
-
 (* ::Section:: *)
 (*Help functions*)
 
@@ -275,9 +277,9 @@ ToExpression[StringReplace[ToString[StandardForm[{Log[Glaisher]->-1/12 (Lb+2cplu
 	For example if a=x^2 y and b=y, then there's no relation, and the function returns nothing.
 	While if a=x^2 and b=5 x^2 the function returns 5
 *)
-	CompExp2[a0_,b0_]:=Module[{a=a0,b=b0},
-	Comps=Solve[a v[1]- b ==0,v[1]]//Simplify//DeleteDuplicates//Select[#,UnsameQ[#,{}]&]&;
-	Comps/. {v[x_]->a_}:>a
+CompExp2[a0_,b0_]:=Module[{a=a0,b=b0},
+Comps=Solve[a v[1]- b ==0,v[1]]//Simplify//DeleteDuplicates//Select[#,UnsameQ[#,{}]&]&;
+Comps/. {v[x_]->a_}:>a
 ]
 
 
@@ -568,2005 +570,6 @@ LoadModelDRalgo[fileName_]:=Module[{},
 
 
 (* ::Section:: *)
-(*Help functions*)
-
-
-TotalConj[s_] := Simplify[Total[s,-1],Assumptions->VarAsum] (*Sums all the elements of a tensors and simplifies with the assumption that all variables are real*)
-
-
-DiagonalTensor2[s_SparseArray,a_Integer,b_Integer] := With[
-    {
-    s1=Flatten[s,{{a},{b}}]
-    },
-     Table[i,{i,s1}]//Table[#[[i,i]],{i,1,Length[#]}]&//SparseArray
-    ]
-
-
-OrderArray[s_SparseArray,a_Integer,b_Integer,c_Integer,d_Integer] := Flatten[s,{{a},{b},{c},{d}}] (*Permutes a rank 4 tensor via: Subscript[T, i1 i2 i3 i4]->Subscript[T, a b c d]*)
-
-
-Contract[tensor1_,tensor2_,indices_]:=Activate @ TensorContract[
-        Inactive[TensorProduct][tensor1,tensor2], indices] (*Performs tensor contractions on two tensors*)
-
-
-Contract[tensor1_,tensor2_,tensor3_,indices_]:=Activate @ TensorContract[
-        Inactive[TensorProduct][tensor1,tensor2,tensor3], indices](*Performs tensor contractions on three tensors*)
-
-
-Contract[tensor1_,tensor2_,tensor3_,tensor4_,indices_]:=Activate @ TensorContract[
-        Inactive[TensorProduct][tensor1,tensor2,tensor3,tensor4], indices] (*Performs tensor contractions on four tensors*)
-
-
-ListToMat[list1_] := DiagonalMatrix[list1]//SparseArray (*Takes a 1-d list and turns it into a rank 2 sparse array*)
-
-
-RangeToIndices[ListI_]:=Block[{},
-(*Creates a list of numbers between i and j when ListI=i;;j*)
-	Table[i,{i,ListI[[1]],ListI[[2]]}]
-];
-
-
-RepToIndices[ListI_]:=Block[{},
-(*Converts a list of range of numbers to a flat array*)
-	Table[RangeToIndices[x],{x,ListI}]//Flatten//Sort
-];
-
-
-CreateParticle[Indices_,Type_]:=Block[{PosScalar,PosVector,PosFermion,temp,Particle},
-(*Combines selected representations and obtain their indices*)
-	Particle={};
-
-	If[Type=="F",
-		PosFermion=PrintFermionRepPositions[];
-		Do[
-			If[Length[i]>=2, (*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
-					AppendTo[Particle,{FermionMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
-				,
-					AppendTo[Particle,{RepToIndices[{PosFermion[[i]]}]}]
-			];
-		,{i,Indices}];
-		Return[{Flatten[Particle],Type}]
-	];
-
-
-	If[Type=="V",
-		PosVector=PrintGaugeRepPositions[];
-		Do[
-			If[Length[i]>=2,(*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
-					AppendTo[Particle,{GaugeMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
-				,
-					AppendTo[Particle,{RepToIndices[{PosVector[[i]]}]}]
-			];
-		,{i,Indices}];
-		Return[{Flatten[Particle],Type}]
-	];
-	
-	If[Type=="S",
-		PosScalar=PrintScalarRepPositions[];
-		Do[
-			If[Length[i]>=2,(*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
-					AppendTo[Particle,{ScalarMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
-				,
-					AppendTo[Particle,{RepToIndices[{PosScalar[[i]]}]}]
-			];
-		,{i,Indices}];
-		Return[{Flatten[Particle],Type}]
-	];
-
-];
-
-
-Options[SymmetryBreaking] = { VevDependentCouplings-> False};
-
-
-SymmetryBreaking[vev_,OptionsPattern[]] :=Block[{PosVector,PosFermion,PosScalar,count},
-(*
-	
-*)
-	PosVector=PrintGaugeRepPositions[];
-	GaugeMassiveReps=Table[SymmetryBreakingGauge[i,vev],{i,1,Length[PosVector]}];
-	
-	Do[
-		If[!NumericQ[Total[GaugeMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Gauge rep ",ToString[i]," splits into particles with mass squared:"],Bold]];
-			count=0;
-			Do[
-				count++;
-				Print[{i,count},":   ",particle[[2]] ];
-				,{particle,GaugeMassiveReps[[i]]}]
-		]
-	,{i,1,Length[PosVector]}];
-
-	PosFermion=PrintFermionRepPositions[];
-	FermionMassiveReps=Table[SymmetryBreakingFermion[i,vev],{i,1,Length[PosFermion]}];
-	Do[
-		If[!NumericQ[Total[FermionMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Fermion rep ",ToString[i]," splits into particles with mass:"],Bold]];
-			count=0;
-			Do[
-				count++;
-				Print[{i,count},":   ",particle[[2]] ];
-				,{particle,FermionMassiveReps[[i]]}]
-		]
-	,{i,1,Length[PosFermion]}];
-	
-	PosScalar=PrintScalarRepPositions[];
-	ScalarMassiveReps=Table[SymmetryBreakingScalar[i,vev],{i,1,Length[PosScalar]}];
-	
-	Do[
-		If[!NumericQ[Total[ScalarMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Scalar rep ",ToString[i]," splits into particles with mass squared:"],Bold]];
-			count=0;
-			Do[
-				count++;
-				Print[{i,count},":   ",particle[[2]] ];
-				,{particle,ScalarMassiveReps[[i]]}]
-		]
-	,{i,1,Length[PosScalar]}];
-	
-	
-	If[OptionValue[VevDependentCouplings]==True, (*Additional terms are added to scalar trillinear coupligs if the VevDependentCouplings option is used*)
-		\[Lambda]3=\[Lambda]3+\[Lambda]4 . vev;
-	]
-]
-
-
-SymmetryBreakingGauge[Indices_,vev_] :=Block[{PosVector,Habij,massV,gaugeInd,posHeavy,posLight,rep,val,val2,pos,pos2},
-(*
-	Finds the masses for the gauge-representation Indices.
-*)
-	PosVector=PrintGaugeRepPositions[];
-	
-(*Gauge bosons*)
-	Habij=Contract[gvss,gvss,{{3,5}}]//Transpose[#,{1,3,2,4}]&//SparseArray;
-	massV=-Activate@TensorContract[Inactive@TensorProduct[Habij,vev,vev],{{3,5},{4,6}}]//SparseArray;
-	gaugeInd=Delete[DiagonalTensor2[massV,1,2]//Normal//ArrayRules,-1]/.(({i1_}->x_)->i1);
-	
-	posHeavy=Intersection[RangeToIndices[PosVector[[Indices]]],gaugeInd];
-	posLight=Complement[RangeToIndices[PosVector[[Indices]]],gaugeInd];
-		
-	If[Length[DiagonalTensor2[massV,1,2][[posHeavy]]]==0,
-			rep={{posLight,0}};
-		,
-			rep={};
-			val=DiagonalTensor2[massV,1,2][[posHeavy]]["NonzeroValues"]//DeleteDuplicates;
-			val2=DiagonalTensor2[massV,1,2][[posHeavy]]["NonzeroValues"];
-			pos=Table[i,{i,Length[posHeavy]}];
-	
-			rep={};
-	
-			Do[
-				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[val2,a]}];
-				AppendTo[rep,{pos2,a}];
-			,{a,val}];
-
-			AppendTo[rep,{posLight,0}];
-			If[posLight=={},rep=Drop[rep,-1]];
-	];
-	rep
-]
-
-
-SymmetryBreakingScalar[Indices_,vev_] :=Block[{PosScalar,scalarInd,massS,posHeavy,posLight,rep,val,val2,pos,pos2},
-(*
-	Finds the masses for the fermion-representation Indices.
-*)
-	PosScalar=PrintScalarRepPositions[];
-	
-(*Scalars*)
-	massS=\[Mu]ij + (vev . \[Lambda]4 . vev/2)+ (vev . \[Lambda]3)//Normal//SparseArray;
-	scalarInd=Delete[massS//ArrayRules,-1]/.(({i1_,i2_}->x_)->i1);
-	
-	posHeavy=Intersection[RangeToIndices[PosScalar[[Indices]]],scalarInd];
-	posLight=Complement[RangeToIndices[PosScalar[[Indices]]],scalarInd];
-	
-	If[Length[massS[[posHeavy,;;]]]==0,
-			rep={{posLight,0}};
-		,	
-			val=massS[[posHeavy,;;]]["NonzeroValues"]//DeleteDuplicates;
-			pos=Table[i,{i,Length[posHeavy]}];
-	
-			rep={};
-
-			Do[
-				
-				pos2=Table[posHeavy[[pos[[b]][[1]]]],{b,Position[massS[[posHeavy,posHeavy]]["NonzeroValues"],a]}];
-				
-				AppendTo[rep,{pos2,a}];
-			,{a,val}];
-
-			AppendTo[rep,{posLight,0}];
-			If[posLight=={},rep=Drop[rep,-1]];
-	];
-	rep
-]
-
-
-SymmetryBreakingFermion[Indices_,vev_] :=Block[{PosFermion,fermionInd,massF,posHeavy,posLight,rep,val,val2,pos,pos2},
-(*
-	Finds the masses for the fermion-representation Indices.
-*)
-	PosFermion=PrintFermionRepPositions[];
-	
-(*Fermions*)
-	massF=\[Mu]IJ + (vev . Ysff);
-	fermionInd=Delete[massF//ArrayRules,-1]/.(({i1_,i2_}->x_)->i1);
-	
-	posHeavy=Intersection[RangeToIndices[PosFermion[[Indices]]],fermionInd];
-	posLight=Complement[RangeToIndices[PosFermion[[Indices]]],fermionInd];
-	
-	If[Length[massF[[posHeavy,;;]]]==0,
-			rep={{posLight,0}};
-		,	
-			val=massF[[posHeavy,;;]]["NonzeroValues"]//DeleteDuplicates;
-			pos=Table[i,{i,Length[posHeavy]}];
-	
-			rep={};
-	
-			Do[
-				pos2=Table[posHeavy[[pos[[a]][[1]]]],{a,Position[massF[[posHeavy,;;]]["NonzeroValues"],a]}];
-				AppendTo[rep,{pos2,a}];
-			,{a,val}];
-
-			AppendTo[rep,{posLight,0}];
-			If[posLight=={},rep=Drop[rep,-1]];
-	];
-	rep
-]
-
-
-(* ::Section:: *)
-(*Matrix elements*)
-
-
-(* ::Subsubsection:: *)
-(*V1V2toV3V4-D*)
-
-
-CreateMatrixElementV1V2toV3V4[particle1_,particle2_,particle3_,particle4_,vectorMass_]:=
-Block[{s,t,u,gTensor,C1,C2,C3,vectorPropT,vectorPropS,vectorPropU,A1,A2,A3,
-		Res1,Res2,Res3,Res4},
-(*
-	This module returns the squared matrix element of VV->VV summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form FV->FV the routine returns 0.
-*)
-If[
-	particle1[[2]]!="V"||
-	particle2[[2]]!="V"||
-	particle3[[2]]!="V"||
-	particle4[[2]]!="V",
-	Return[0];
-,
-(*Coupling constants that we will need*)
-	gTensor=Table[gvvv[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}}];
-
-(*Group invariants that multiply various Lorentz Structures*)
-	C1=Table[
-		Tr[gTensor[[1,3]][[a]] . Transpose[gTensor[[1,3]][[b]]]]
-		Tr[gTensor[[2,4]][[a]] . Transpose[gTensor[[2,4]][[b]]]],
-		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
-	C2=Table[
-		Tr[gTensor[[1,4]][[a]] . Transpose[gTensor[[1,4]][[b]]]]
-		Tr[gTensor[[2,3]][[a]] . Transpose[gTensor[[2,3]][[b]]]],
-		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
-	C3=Table[
-		Tr[gTensor[[1,2]][[a]] . Transpose[gTensor[[1,2]][[b]]]]
-		Tr[gTensor[[3,4]][[a]] . Transpose[gTensor[[3,4]][[b]]]],
-		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
-		
-(*Vector propagators*)
-	vectorPropT=Table[1/(t-i),{i,vectorMass}];
-	vectorPropU=Table[1/(u-i),{i,vectorMass}];
-	vectorPropS=Table[1/(s-i),{i,vectorMass}];
-
-(*Lorentz structures that appear*)
-(*
-	Here we use the convention that a term like su/t^2->1/4-1/4 (s-u)^2/(t-msq)^2. See hep-ph/0302165.
-*)
-	A1=16(-1/4)(s-u)^2; (*squared t-channel diagram*)
-	A2=16(-1/4)(s-t)^2; (*squared u-channel diagram*)
-	A3=16(-1/4)(u-t)^2; (*squared s-channel diagram*)
-
-	Res1=A1*DiagonalMatrix[vectorPropT] . C1 . DiagonalMatrix[vectorPropT];
-	Res2=A2*DiagonalMatrix[vectorPropU] . C2 . DiagonalMatrix[vectorPropU];
-	Res3=A3*DiagonalMatrix[vectorPropS] . C3 . DiagonalMatrix[vectorPropS];
-(*add terms independent on the mandelstam variables*)
-	Res4=-16*((C1+C2+C3)*(1-1/4));
-	
-	Return[-Total[Res1+Res2+Res3+Res4,-1]]
-]
-];
-
-
-(* ::Subsubsection:: *)
-(*F1F2toF3F4-D*)
-
-
-CreateMatrixElementF1F2toF3F4[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_]:=
-Block[{s,t,u,gTensor,
-		CSy,CTy,CUy,CSyC,CTyC,CUyC,CSyCC,CTyCC,CUyCC
-		,CS,CT,CU,CSC,CTC,CUC,CSCC,CTCC,CUCC
-		,CTrS,CTrT,CTrU,A3,A4,A5,A6,
-		Tensor,YTensorC,scalarPropT,scalarPropU,vectorPropU,vectorPropT,
-		C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor},
-	
-(*
-	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form FF->FF the routine returns 0.
-*)
-If[
-	particle1[[2]]!="F"||
-	particle2[[2]]!="F"||
-	particle3[[2]]!="F"||
-	particle4[[2]]!="F",
-	Return[0];
-,
-
-(*Vector propagators*)
-	vectorPropT=Table[1/(t-i),{i,vectorMass}]//ListToMat;
-	vectorPropU=Table[1/(u-i),{i,vectorMass}]//ListToMat;
-	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
-
-	scalarPropT=Table[1/(t-i),{i,scalarMass}]//ListToMat;
-	scalarPropU=Table[1/(u-i),{i,scalarMass}]//ListToMat;
-	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
-	
-(*Coupling constants that we will need*)
-	gTensor=Table[gvff[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}}];
-		
-	YTensor=Table[Ysff[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}}];
-		
-	YTensorC=Table[YsffC[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}}];	
-	
-	
-(*Group invariants from scalar diagrams*)
-	CSy=Contract[YTensor[[1,2]],scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
-	CTy=Contract[YTensor[[1,3]],scalarPropT . YTensor[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
-	CUy=Contract[YTensor[[1,4]],scalarPropU . YTensor[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
-	
-	CSyC=Contract[YTensor[[1,2]],scalarPropS . YTensorC[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
-	CTyC=Contract[YTensor[[1,3]],scalarPropT . YTensorC[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
-	CUyC=Contract[YTensor[[1,4]],scalarPropU . YTensorC[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
-
-	CSyCC=Contract[YTensorC[[1,2]],scalarPropS . YTensorC[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
-	CTyCC=Contract[YTensorC[[1,3]],scalarPropT . YTensorC[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
-	CUyCC=Contract[YTensorC[[1,4]],scalarPropU . YTensorC[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
-	
-(*Group invariants from vector diagrams*)
-	CS=Contract[gTensor[[1,2]],vectorPropS . gTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
-	CT=Contract[gTensor[[1,3]],vectorPropT . gTensor[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
-	CU=Contract[gTensor[[1,4]],vectorPropU . gTensor[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
-	
-	CTrS=Contract[gTensor[[2,1]],vectorPropS . gTensor[[4,3]],{{1,4}}]//OrderArray[#,2,1,4,3]&;
-	CTrT=Contract[gTensor[[3,1]],vectorPropT . gTensor[[4,2]],{{1,4}}]//OrderArray[#,2,4,1,3]&;
-	CTrU=Contract[gTensor[[4,1]],vectorPropU . gTensor[[3,2]],{{1,4}}]//OrderArray[#,2,4,3,1]&;
-
-	CSC=Contract[gTensor[[1,2]],vectorPropS . gTensor[[4,3]],{{1,4}}]//OrderArray[#,1,2,4,3]&;
-	CTC=Contract[gTensor[[1,3]],vectorPropT . gTensor[[4,2]],{{1,4}}]//OrderArray[#,1,4,2,3]&;
-	CUC=Contract[gTensor[[1,4]],vectorPropU . gTensor[[3,2]],{{1,4}}]//OrderArray[#,1,4,3,2]&;
-	
-	CSCC=Contract[gTensor[[2,1]],vectorPropS . gTensor[[3,4]],{{1,4}}]//OrderArray[#,2,1,3,4]&;
-	CTCC=Contract[gTensor[[3,1]],vectorPropT . gTensor[[2,4]],{{1,4}}]//OrderArray[#,2,3,1,4]&;
-	CUCC=Contract[gTensor[[4,1]],vectorPropU . gTensor[[2,3]],{{1,4}}]//OrderArray[#,2,3,4,1]&;
-	
-	
-	C5=Table[
-		Tr[gTensor[[1,3]][[a]] . gTensor[[3,4]][[b]] . gTensor[[4,2]][[a]] . gTensor[[2,1]][[b]]],
-		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];
-	C5+=Table[
-		Tr[gTensor[[3,1]][[a]] . gTensor[[1,2]][[b]] . gTensor[[2,4]][[a]] . gTensor[[4,3]][[b]]],
-		{a,1,Length[gTensor[[1,3]]]},{b,1,Length[gTensor[[1,3]]]}];		
-			
-				
-(*Lorentz structures that appear in squared vector-exchange diagrams*)
-	A1=2(s^2+u^2); (*squared t-channel diagram*)
-	A2=2(s^2+t^2); (*squared u-channel diagram*)
-	A3=4*s^2; (*Interference between u and t channel diagrams*)
-	A4=2(t^2+u^2); (*Squared s-channel*)
-	A5=4*u^2; (*Interference between s and t channel diagrams*)
-	A6=4*t^2; (*Interference between s and u channel diagrams*)		
-	
-		
-(*Result for squared vector-exchange diagrams*)
-	totRes=A1*Total[CT CTrT,-1]; 
-	totRes+=A2*Total[CU CTrU,-1]; 
-	totRes+=1/2A3*Total[CT CTrU+CU CTrT,-1];
-	totRes+=A4*Total[CS CTrS,-1]; 
-	totRes+=1/2*A5 Total[(vectorPropS . C5 . vectorPropT),-1];
-	totRes+=1/2*A6 Total[(vectorPropS . C5 . vectorPropU),-1];
-
-(*Result for squared scalar-exchange diagrams*)	
-	totRes+=  t^2/4*TotalConj[CTy Conjugate[CTy]];
-	totRes+=  u^2/4*TotalConj[CUy Conjugate[CUy]];
-	totRes+=  s^2/4*TotalConj[CSy Conjugate[CSy]];
-
-	totRes+=  t^2/2*TotalConj[CTyC Conjugate[CTyC]];
-	totRes+=  u^2/2*TotalConj[CUyC Conjugate[CUyC]];
-	totRes+=  s^2/2*TotalConj[CSyC Conjugate[CSyC]];	
-	
-	totRes+=  t^2/4*TotalConj[CTyCC Conjugate[CTyCC]];
-	totRes+=  u^2/4*TotalConj[CUyCC Conjugate[CUyCC]];
-	totRes+=  s^2/4*TotalConj[CSyCC Conjugate[CSyCC]];
-	
-	
-	totRes+=-  1/8(t^2-s^2+u^2)*TotalConj[CUy Conjugate[CTy]  +CTy Conjugate[CUy]];
-	totRes+=-  1/8(s^2-t^2+u^2)*TotalConj[CUy Conjugate[CSy]  +CSy Conjugate[CUy]];
-	totRes+=-  1/8(t^2-u^2+s^2)*TotalConj[CSy Conjugate[CTy]  +CTy Conjugate[CSy]];
-
-	totRes+=-  1/8(t^2-s^2+u^2)*TotalConj[CUyCC Conjugate[CTyCC]  +CTyCC Conjugate[CUyCC]];
-	totRes+=-  1/8(s^2-t^2+u^2)*TotalConj[CUyCC Conjugate[CSyCC]  +CSyCC Conjugate[CUyCC]];
-	totRes+=-  1/8(t^2-u^2+s^2)*TotalConj[CSyCC Conjugate[CTyCC]  +CTyCC Conjugate[CSyCC]];	
-	
-	
-(*Result for interfaces between vector and scalar diagrams---Only cross terms between diagrams can contribute*)
-	
-	totRes+=1/2*s t TotalConj[CS Conjugate[CTyC]  +CTyC Conjugate[CS]];
-	totRes+=1/2*u t TotalConj[CU Conjugate[CTyC]  +CTyC Conjugate[CU]];
-
-	totRes+=1/2*s u TotalConj[CS Conjugate[CUyC]  +CUyC Conjugate[CS]];
-	totRes+=1/2*u t TotalConj[CT Conjugate[CUyC]  +CUyC Conjugate[CT]];	
-
-	totRes+=1/2*s t TotalConj[CT Conjugate[CSyC]  +CSyC Conjugate[CT]];
-	totRes+=1/2*u s TotalConj[CU Conjugate[CSyC]  +CSyC Conjugate[CU]];		
-	
-	Return[Refine[4*totRes,Assumptions->VarAsum]]
-]
-];
-
-
-(* ::Subsubsection:: *)
-(*F1V1toF1V1-D*)
-
-
-CreateMatrixElementF1V1toF1V1[particle1_,particle2_,particle3_,particle4_,vectorMass_,fermionMass_]:=
-Block[{s,t,u,gTensor,resTot,t1,s1,u1,p1,p2,p3,p4,temp,kinFlip},
-(*
-	This module returns the squared matrix element of FV->FV summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form FV->FV the routine returns 0.
-*)
-	kinFlip=0; (*records if the external or incoming legs were swapped, and does a t<->u transformation for each swap*)
-If[ (
-	(particle1[[2]]=="F"&&particle2[[2]]=="V")||
-	(particle1[[2]]=="V"&&particle2[[2]]=="F")
-	)&&(
-	(particle3[[2]]=="F"&&particle4[[2]]=="V")||
-	(particle3[[2]]=="V"&&particle4[[2]]=="F")),
-
-	p1=particle1;
-	p2=particle2;
-	p3=particle3;
-	p4=particle4;
-(*Changing the order of the particles so that it is always FV->FV*)	
-	If[particle1[[2]]=="V"&&particle2[[2]]=="F",
-		temp=p1;
-		p1=p2;
-		p2=temp;
-		kinFlip+=1;
-	];
-	If[particle3[[2]]=="V"&&particle4[[2]]=="F",
-		temp=p3;
-		p3=p4;
-		p4=temp;
-		kinFlip+=1;
-	];
-	
-	(*The result for FV->FV is the same as  FF->VV if we do some renaming of the mandelstam variables*)
-	resTot=-CreateMatrixElementF1F2toV1V2[p1,p3,p2,p4,fermionMass,vectorMass]/.{s->s1,t->t1,u->u1}; (*Minus sign as we reversed the momentum of a fermion*)
-	resTot=resTot/.{s1->t,t1->s,u1->u};
-	
-	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t1,u->u1}/.{t1->u,u1->t};];
-	Return[resTot]	
-,
-	Return[0]
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*F1F2toV1V2-D*)
-
-
-CreateMatrixElementF1F2toV1V2[particle1_,particle2_,particle3_,particle4_,fermionMass_,vectorMass_]:=
-Block[{s,t,u,gTensor,gTensorT,vectorPropS,gVTensor,fermionPropU,fermionPropT,CS,CTrS,
-		fermionIdentity,
-		C1,C2,C3,C4,C5,C6,p1,p2,p3,p4,
-		temp,A1,A2,A3,Res1,Res2,Res3,Res4},
-(*
-	This module returns the squared matrix element of FF->VV summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form FF->VV the routine returns 0.
-*)
-
-If[
-	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="V"||particle4[[2]]!="V")&&
-	(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="F"||particle4[[2]]!="F"),
-	Return[0];
-,
-	p1=particle1[[1]];
-	p2=particle2[[1]];
-	p3=particle3[[1]];
-	p4=particle4[[1]];
-If[
-	particle1[[2]]=="V"&&
-	particle2[[2]]=="V"&&
-	particle3[[2]]=="F"&&
-	particle4[[2]]=="F",
-(*Just changing the order of the particles so that it is always FF->VV*)	
-		temp=p1;
-		p1=p3;
-		p3=temp;
-		
-		temp=p2;
-		p2=p4;
-		p4=temp;
-	];
-
-(*Coupling constants that we will need*)
-	gTensor[1,3]=gvff[[p3,p1,;;]];
-	gTensor[3,1]=gvff[[p3,;;,p1]];
-	
-	gTensor[2,4]=gvff[[p4,p2,;;]];
-	gTensor[4,2]=gvff[[p4,;;,p2]];
-
-	gTensor[1,4]=gvff[[p4,p1,;;]];
-	gTensor[4,1]=gvff[[p4,;;,p1]];
-	
-	gTensor[2,3]=gvff[[p3,p2,;;]];
-	gTensor[3,2]=gvff[[p3,;;,p2]];
-	
-(*Fermion propagators*)
-	fermionPropU=Table[1/(u-i),{i,fermionMass}];
-	fermionPropT=Table[1/(t-i),{i,fermionMass}];
-	vectorPropS=Table[1/(s-i),{i,vectorMass}];
-	
-	fermionIdentity=Table[1,{i,fermionMass}]; 
-
-(*Group invariants that multiply various Lorentz Structures*)
-	C1=Tr[
-		DiagonalMatrix[fermionPropT] . Sum[gTensor[3,1][[a]] . gTensor[1,3][[a]],{a,Length[gTensor[1,3]]}] .
-		DiagonalMatrix[fermionPropT] . Sum[gTensor[4,2][[b]] . gTensor[2,4][[b]],{b,Length[gTensor[2,4]]}]];
-	C2=Tr[
-		DiagonalMatrix[fermionPropU] . Sum[gTensor[4,1][[a]] . gTensor[1,4][[a]],{a,Length[gTensor[1,4]]}] .
-		DiagonalMatrix[fermionPropU] . Sum[gTensor[3,2][[b]] . gTensor[2,3][[b]],{b,Length[gTensor[2,3]]}]];
-	C3=Sum[
-		Tr[gTensor[4,1][[b]] . gTensor[1,3][[a]] . gTensor[4,2][[b]] . gTensor[2,3][[a]]],
-		{a,Length[gTensor[1,3]]},{b,Length[gTensor[4,2]]}];
-	C3+=Sum[
-		Tr[gTensor[3,1][[b]] . gTensor[1,4][[a]] . gTensor[3,2][[b]] . gTensor[2,4][[a]]],
-		{a,Length[gTensor[1,4]]},{b,Length[gTensor[3,2]]}];
-
-	C4=Tr[
-		DiagonalMatrix[fermionIdentity] . Sum[vectorPropS[[a]]gTensor[3,1][[a]] . gTensor[1,3][[a]],{a,Length[gTensor[1,3]]}] .
-		DiagonalMatrix[fermionIdentity] . Sum[vectorPropS[[b]]gTensor[4,2][[b]] . gTensor[2,4][[b]],{b,Length[gTensor[2,4]]}]];
-	C5=Tr[
-		DiagonalMatrix[fermionIdentity] . Sum[vectorPropS[[a]] gTensor[4,1][[a]] . gTensor[1,4][[a]],{a,Length[gTensor[1,4]]}] .
-		DiagonalMatrix[fermionIdentity] . Sum[vectorPropS[[b]]gTensor[3,2][[b]] . gTensor[2,3][[b]],{b,Length[gTensor[2,3]]}]];
-		
-	C6=Sum[
-		Tr[vectorPropS[[a]]vectorPropS[[b]]gTensor[4,1][[b]] . gTensor[1,3][[a]] . gTensor[4,2][[b]] . gTensor[2,3][[a]]],
-		{a,Length[gTensor[1,3]]},{b,Length[gTensor[4,2]]}];
-	C6+=Sum[
-		Tr[vectorPropS[[a]]vectorPropS[[b]]gTensor[3,1][[b]] . gTensor[1,4][[a]] . gTensor[3,2][[b]] . gTensor[2,4][[a]]],
-		{a,Length[gTensor[1,4]]},{b,Length[gTensor[3,2]]}];
-
-(*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins,
-	so naturally the final result contains 4 Lorentz structures for consistency.*)
-	A1=4*t*u; (*squared t-channel diagram*)
-	A2=4*t*u; (*squared u-channel diagram*)
-	A3=4*(t^2+u^2); (*squared s-channel diagram*)
-
-(*Collecting everything into the final result*)
-	Res1=A1*C1;
-	Res2=A2*C2;
-	Res3=A3*C6;
-	Res3+=-8*t^2 C4;
-	Res3+=-8*u^2 C5;
-	
-
-	Return[2*(Res1+Res2+Res3)](*Factor of 2 from anti-particles*)
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*S1S2toS3S4-D*)
-
-
-CreateMatrixElementS1S2toS3S4[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_]:=
-Block[{s,t,u,gTensor,leadingLog,\[Lambda]3Tensor,\[Lambda]4Tensor,vectorPropT,scalarPropT,vectorPropU,scalarPropU,Particle3,Particle4,
-		AS,AU,AT,scalarPropS,vectorPropS,
-		TotRes,CS,CT,CU,CS\[Lambda],CT\[Lambda],CU\[Lambda],C\[Lambda]},
-(*
-	This module returns the squared matrix element of SS->SS summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form SS->SS the routine returns 0.
-*)
-If[
-	particle1[[2]]!="S"||
-	particle2[[2]]!="S"||
-	particle3[[2]]!="S"||
-	particle4[[2]]!="S",
-	Return[0];
-,
-(*Coupling constants that we will need*)
-	gTensor=Table[gvss[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}}];
-
-	\[Lambda]3Tensor=Table[\[Lambda]3[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}}];
-	
-	\[Lambda]4Tensor=Table[\[Lambda]4[[Particle1[[1]],Particle2[[1]],Particle3[[1]],Particle4[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}},
-		{Particle3,{particle1,particle2,particle3,particle4}},
-		{Particle4,{particle1,particle2,particle3,particle4}}];
-		
-(*Vector propagators*)
-	vectorPropT=Table[1/(t-i),{i,vectorMass}]//ListToMat;
-	vectorPropU=Table[1/(u-i),{i,vectorMass}]//ListToMat;
-	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
-
-(*Scalar propagators*)
-	scalarPropT=Table[1/(t-i),{i,scalarMass}]//ListToMat;
-	scalarPropU=Table[1/(u-i),{i,scalarMass}]//ListToMat;
-	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
-
-(*Lorentz structures for vector exchanges*)
-	AS=(t-u); (* s-channel diagram*)
-	AT=(s-u); (* t-channel diagram*)
-	AU=(s-t); (* u-channel diagram*)
-	
-
-(*Group invariants from vector diagrams*)
-	CS=AS*Contract[gTensor[[1,2]],vectorPropS . gTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
-	CT=AT*Contract[gTensor[[1,3]],vectorPropT . gTensor[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
-	CU=AU*Contract[gTensor[[1,4]],vectorPropU . gTensor[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
-	
-(*Group invariants from scalar diagrams. Kos, some say Kosm...*)	
-
-	CS\[Lambda]= Contract[\[Lambda]3Tensor[[1,2]] , scalarPropS . \[Lambda]3Tensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
-	CT\[Lambda]= Contract[\[Lambda]3Tensor[[1,3]] , scalarPropT . \[Lambda]3Tensor[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
-	CU\[Lambda]= Contract[\[Lambda]3Tensor[[1,4]] , scalarPropU . \[Lambda]3Tensor[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
-	C\[Lambda]=\[Lambda]4[[particle1[[1]],particle2[[1]],particle3[[1]],particle4[[1]]]];
-
-	
-	
-(*Total contribution; as the external legs have no helicities we can just sum and square the amplitudes*)		
-	TotRes=Total[(CS\[Lambda]+CT\[Lambda]+CU\[Lambda]+C\[Lambda]+CS+CT+CU) Conjugate[(CS\[Lambda]+CT\[Lambda]+CU\[Lambda]+C\[Lambda]+CS+CT+CU)],-1]; (*total amplitude-squared contribution from all diagrams*)
-	
-
-	Return[Refine[TotRes,Assumptions->VarAsum]]
-]
-];
-
-
-(* ::Subsubsection:: *)
-(*S1S2toF1F2-D*)
-
-
-CreateMatrixElementS1S2toF1F2[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_,fermionMass_]:=
-Block[{s,t,u,gTensor,gTensorT,gTensorC,gTensorCT,gTensorVF,gTensorVFC,gTensorVS,
-		Res,CTT,CUU,ATT,AUU,p1,p2,p3,p4,gTensorS,gTensorF,YTensor,YTensorC,particleNull,
-		\[Lambda]3Tensor,YTensor2,YTensor2C,vectorPropS,scalarPropS,fermionPropT,fermionPropU,CVS,
-		CYS,CYT,CYU,ASSY,A,TotRes,temp},
-(*
-	This module returns the squared matrix element of SS->FF summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form SS->FF the routine returns 0.
-*)
-If[
-	(particle1[[2]]!="S"||particle2[[2]]!="S"||particle3[[2]]!="F"||particle4[[2]]!="F")&&
-	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="S"||particle4[[2]]!="S"),
-	Return[0];
-,
-	p1=particle1[[1]];
-	p2=particle2[[1]];
-	p3=particle3[[1]];
-	p4=particle4[[1]];
-If[
-	particle1[[2]]=="F"&&
-	particle2[[2]]=="F"&&
-	particle3[[2]]=="S"&&
-	particle4[[2]]=="S",
-(*Just changing the order of the particles so that it is always SS->FF. Undoubtably this choice of ordering has a deep origin.*)	
-		temp=p1;
-		p1=p3;
-		p3=temp;
-		
-		temp=p2;
-		p2=p4;
-		p4=temp;
-	];
-	
-	particleNull={}; (*Just a trick to make the ordering of particles simpler for the benefit of my brain*)
-(*Coupling constants that we will need*)
-	gTensorS=Table[gvss[[;;,Particle1,Particle2]],
-		{Particle1,{p1,p2,particleNull,particleNull}},
-		{Particle2,{p1,p2,particleNull,particleNull}}];
-	
-	gTensorF=Table[gvff[[;;,Particle1,Particle2]],
-		{Particle1,{particleNull,particleNull,p3,p4}},
-		{Particle2,{particleNull,particleNull,p3,p4}}];
-		
-	YTensor=Table[Ysff[[;;,Particle1,Particle2]],
-		{Particle1,{particleNull,particleNull,p3,p4}},
-		{Particle2,{particleNull,particleNull,p3,p4}}];
-		
-	YTensorC=Table[YsffC[[;;,Particle1,Particle2]],
-		{Particle1,{particleNull,particleNull,p3,p4}},
-		{Particle2,{particleNull,particleNull,p3,p4}}];
-		
-	\[Lambda]3Tensor=Table[\[Lambda]3[[;;,Particle1,Particle2]],
-		{Particle1,{p1,p2,particleNull,particleNull}},
-		{Particle2,{p1,p2,particleNull,particleNull}}];
-		
-	YTensor2=Table[Ysff[[Particle1,Particle2,;;]],
-		{Particle1,{p1,p2,particleNull,particleNull}},
-		{Particle2,{particleNull,particleNull,p3,p4}}];
-
-	YTensor2C=Table[YsffC[[Particle1,Particle2,;;]],
-		{Particle1,{p1,p2,particleNull,particleNull}},
-		{Particle2,{particleNull,particleNull,p3,p4}}];
-
-(*Vector propagators*)
-	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
-
-(*Scalar propagators*)
-	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
-
-(*Fermion propagators*)
-	fermionPropT=Table[1/(t-i),{i,fermionMass}]//ListToMat;
-	fermionPropU=Table[1/(u-i),{i,fermionMass}]//ListToMat;
-	
-
-(*Group invariants from vector diagrams*)
-	CVS=Contract[gTensorS[[1,2]],vectorPropS . gTensorF[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
-	
-(*Group invariants from Yukawa diagrams*)	
-	CYS=Contract[\[Lambda]3Tensor[[1,2]],scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; 
-	CYT=Contract[YTensor2[[1,3]] . fermionPropT,YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
-	CYU=Contract[YTensor2[[1,4]] . fermionPropU,YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
-
-(*Lorentz structures for vector exchanges*)
-(*
-	Due to angular momentum conservation the SS->S->FF diagram does not mix with the other channels.
-*)
-	ASSY=s; (*Squared SS->S->FF diagram*)
-	A=t*u; (*All other squared diagrams are proportional to u*t *)
-	
-
-(*The result*)
-	(*SS->S->FF squared*)
-	TotRes=  ASSY *TotalConj[CYS Conjugate[CYS]];
-	
-	(*Squared Yukawa diagrams with fermion exchanges*)
-	TotRes+=A   TotalConj[CYT Conjugate[CYT]]; (*squared t-channel diagram*)
-	TotRes+=A   TotalConj[CYU Conjugate[CYU]]; (*squared u-channel diagram*)
-	TotRes+=-A  TotalConj[CYU CYT+CYT CYU]; (*mixed u & t-channel diagrams*)
-	
-	(*Squared s-channel diagram with a vector boson*)
-	TotRes+=4*A*TotalConj[CVS Conjugate[CVS]]; 
-	
-	(*Mix between vector- and fermion-exchange diagrams*)
-	TotRes+=-2*A*TotalConj[-I(CYT+CYU) Conjugate[CVS]+I*CVS Conjugate[(CYT+CYU)]]; 
-
-
-
-(*The full result*)
-	Return[2*Refine[TotRes,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*F1S1toF1S1-D*)
-
-
-CreateMatrixElementF1S1toF1S1[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_,fermionMass_]:=
-Block[{s,t,u,p1,p2,p3,p4,temp,resTot,u1,s1,t1,kinFlip},
-(*
-	This module returns the squared matrix element of FV->FV summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form FV->FV the routine returns 0.
-*)
-	kinFlip=0; (*records if the external or incoming legs were swapped, and does a t<->u transformation for each swap*)
-If[ (
-	(particle1[[2]]=="F"&&particle2[[2]]=="S")||
-	(particle1[[2]]=="S"&&particle2[[2]]=="F")
-	)&&(
-	(particle3[[2]]=="F"&&particle4[[2]]=="S")||
-	(particle3[[2]]=="S"&&particle4[[2]]=="F")),
-
-	p1=particle1;
-	p2=particle2;
-	p3=particle3;
-	p4=particle4;
-(*Changing the order of the particles so that it is always SF->SF. Incidentally the opposite ordering as given in the name of the routine.*)	
-	If[particle1[[2]]=="S"&&particle2[[2]]=="F",
-		temp=p1;
-		p1=p2;
-		p2=temp;
-		kinFlip+=1;
-	];
-	If[particle3[[2]]=="S"&&particle4[[2]]=="F",
-		temp=p3;
-		p3=p4;
-		p4=temp;
-		kinFlip+=1;
-	];
-	
-	(*The result for SF->SF is the same as  SS->FF if we do some renaming of the mandelstam variables*)
-	resTot=-CreateMatrixElementS1S2toF1F2[p1,p3,p2,p4,vectorMass,scalarMass,fermionMass]/.{s->s1,t->t1,u->u1}; (*Minus sign as we reveresed the momentum of a fermion*)
-	resTot=resTot/.{s1->t,t1->s,u1->u}; 
-	
-	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t1,u->u1}/.{t1->u,u1->t};];
-	Return[resTot]
-,
-	Return[0]
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*F1S1toF1V1-D*)
-
-
-SortF1S1toF1V1[L_]:=Block[{helpList,ordering,kinFlip},
-	helpList=L[[;;,2]];
-	ordering={1,2,3,4};
-	kinFlip=0;
-	If[helpList[[1]]=="V"||helpList[[2]]=="V",ordering={3,4,1,2};];
-	If[helpList[[ordering[[1]]]]=="S",
-		ordering[[{1,2}]]=ordering[[{2,1}]];
-		kinFlip+=1;
-		];
-	If[helpList[[ordering[[3]]]]=="V",
-		ordering[[{3,4}]]=ordering[[{4,3}]];
-		kinFlip+=1;
-		];
-	
-	Return[{L[[ordering]],kinFlip}]
-]
-
-
-CreateMatrixElementF1S1toF1V1[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
-Block[{s,t,u,gTensor,gTensorC,gTensorVFC,gTensorVF,gTensorVS,SortHelp,
-		fermionPropS,particleNull,gTensorF,YTensor,CS,resTot,
-		YTensor2,gTensorF2,fermionPropU,CU,kinFlip,t2,u2},
-(*
-	This module returns the squared matrix element of FS->FV summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form FSFVFF the routine returns 0.
-*)
-If[ (
-	(particle1[[2]]=="F"&&particle2[[2]]=="S")||
-	(particle1[[2]]=="S"&&particle2[[2]]=="F")
-	)&&(
-	(particle3[[2]]=="F"&&particle4[[2]]=="V")||
-	(particle3[[2]]=="V"&&particle4[[2]]=="F"))||(
-	(particle1[[2]]=="F"&&particle2[[2]]=="V")||
-	(particle1[[2]]=="V"&&particle2[[2]]=="F")
-	)&&(
-	(particle3[[2]]=="F"&&particle4[[2]]=="S")||
-	(particle3[[2]]=="S"&&particle4[[2]]=="F")),
-	
-(*Changing the order of the particles so that it is always FS->FV*)	
-	{SortHelp,kinFlip}=Join[{particle1},{particle2},{particle3},{particle4}]//SortF1S1toF1V1[#]&;
-	p1=SortHelp[[1]][[1]];
-	p2=SortHelp[[2]][[1]];
-	p3=SortHelp[[3]][[1]];
-	p4=SortHelp[[4]][[1]];
-
-(*Coupling constants that we will need*)
-	particleNull={}; (*Just a trick to not confuse the ordering of particles. Although it should be mentioned that I am still confused..*)
-(*Coupling constants that we will need*)
-	YTensor=Ysff[[p2,p1,;;]];
-	YTensor2=Ysff[[p2,p3,;;]];
-	
-	gTensorF=gvff[[p4,p3,;;]];
-	gTensorF2=gvff[[p4,p1,;;]];
-	
-(*Fermion propagators*)
-	fermionPropS=Table[1/(s-i),{i,fermionMass}]//ListToMat;
-	fermionPropU=Table[1/(u-i),{i,fermionMass}]//ListToMat;
-
-(*Group structures*)
-	CS=Contract[YTensor . fermionPropS ,gTensorF,{{3,6}}]//OrderArray[#,2,1,4,3]&;
-	CU=Contract[YTensor2 . fermionPropU ,gTensorF2,{{3,6}}]//OrderArray[#,4,1,2,3]&;
-
-(*Collecting the final result*)		
-	resTot=2*s*u* TotalConj[CS Conjugate[CS]]; (*Squared s-channel*)
-	resTot+=2*s*u* TotalConj[CU Conjugate[CU]]; (*Squared u-channel*)
-	resTot+=- 2*s*u* TotalConj[CS Conjugate[CU]+CU Conjugate[CS]]; (*Mixed s & u channel*)
-	
-	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t2,u->u2}/.{t2->u,u2->t};];
-	
-	Return[-2*Refine[resTot,Assumptions->VarAsum]]
-,
-	Return[0]
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*F1F1toS1V1-D*)
-
-
-CreateMatrixElementF1F2toS1V1[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
-Block[{s,t,u,s1,t1,u1,resTot},
-(*
-	This module returns the squared matrix element of FF->SV summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form FF->SV the routine returns 0.
-*)
-If[ 
-	(particle3[[2]]=="F"&&particle4[[2]]=="F")&&((particle1[[2]]=="S"&&particle2[[2]]=="V")||(particle1[[2]]=="V"&&particle2[[2]]=="S"))
-	||
-	(particle1[[2]]=="F"&&particle2[[2]]=="F")&&((particle3[[2]]=="S"&&particle4[[2]]=="V")||(particle3[[2]]=="V"&&particle4[[2]]=="S"))
-	,
-	
-	(*The result for FF->SV is the same as  FS->VS if we do some renaming of the mandelstam variables*)
-	resTot=-CreateMatrixElementF1S1toF1V1[particle1,particle3,particle2,particle4,fermionMass]/.{s->s1,t->t1,u->u1}; (*Minus sign as we reversed the momentum of a fermion*)
-	resTot=resTot/.{t1->s,s1->t,u1->u}//Refine;	
-	Return[resTot]
-,
-	Return[0]
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*S1S2toV1V2-D*)
-
-
-CreateMatrixElementS1S2toV1V2[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_]:=
-Block[{s,t,u,
-		p1,p2,p3,p4,temp,
-		particleNull,gTensorS,gTensorV,
-		vectorPropS,gTensorS2,
-		ASS,A,ASU,AST,CT,CU,CTU,CV,totRes,
-		ATU,scalarPropT,scalarPropU},
-(*
-	This module returns the squared matrix element of SS->VV summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form SS->VV the routine returns 0.
-*)
-If[
-	(particle1[[2]]!="S"||particle2[[2]]!="S"||particle3[[2]]!="V"||particle4[[2]]!="V")&&
-	(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="S"||particle4[[2]]!="S"),
-	Return[0];
-,
-	p1=particle1[[1]];
-	p2=particle2[[1]];
-	p3=particle3[[1]];
-	p4=particle4[[1]];
-If[
-	particle1[[2]]=="V"&&
-	particle2[[2]]=="V"&&
-	particle3[[2]]=="S"&&
-	particle4[[2]]=="S",
-(*Just changing the order of the particles so that it is always SS->VV*)	
-		temp=p1;
-		p1=p3;
-		p3=temp;
-		
-		temp=p2;
-		p2=p4;
-		p4=temp;
-	];
-	
-	particleNull={}; (*Just a trick to make the ordering of particles simpler for the benefit of my brain*)
-	
-(*Coupling constants that we will need; and some some that we will not.*)
-	gTensorS=Table[gvss[[;;,Particle1,Particle2]],
-		{Particle1,{p1,p2,particleNull,particleNull}},
-		{Particle2,{p1,p2,particleNull,particleNull}}];
-		
-	gTensorS2=Table[gvss[[Particle2,Particle1,;;]],
-		{Particle1,{p1,p2,particleNull,particleNull}},
-		{Particle2,{particleNull,particleNull,p3,p4}}];	
-		
-	gTensorV=Table[gvvv[[Particle1,Particle2,;;]],
-		{Particle1,{particleNull,particleNull,p3,p4}},
-		{Particle2,{particleNull,particleNull,p3,p4}}];	
-		
-(*Vector propagators*)
-	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
-
-(*Scalar propagators*)
-	scalarPropT=Table[1/(t-i),{i,scalarMass}]//ListToMat;
-	scalarPropU=Table[1/(u-i),{i,scalarMass}]//ListToMat;
-	
-
-(*Group invariants from vector diagrams*)
-	CT=-Contract[gTensorS2[[1,3]] . scalarPropT,gTensorS2[[2,4]],{{3,6}}]//OrderArray[#,2,4,1,3]&;
-	CU=-Contract[gTensorS2[[1,4]] . scalarPropU,gTensorS2[[2,3]],{{3,6}}]//OrderArray[#,2,4,3,1]&;
-	CV=gTensorV[[3,4]] . vectorPropS . gTensorS[[1,2]]//OrderArray[#,3,4,1,2]&;
-
-(*Lorentz structures that appear*)
-	ASS=-1/2(t^2+30 t u+u^2);
-	A=4 s;
-	ASU=4 s( t+2 u);
-	AST=-4 s (u+2 *t);
-	ATU=8 s^2;
-	
-
-(*The full result, just don't think about it.*)
-	totRes=ASS Total[CV^2,-1];
-	totRes+= ASU Total[ CV CU,-1];
-	totRes+= AST Total[ CV CT,-1];
-	totRes+=ATU Total[CT CU,-1];
-	totRes+= A Total[(t*CT+u*CU) CU,-1];
-	totRes+= A Total[(t*CT+u*CU) CT,-1];
-	totRes+=4 Total[(t*CT+u*CU)^2,-1];
-
-	Return[Refine[totRes/2,Assumptions->VarAsum]] 
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*S1V1toS1V1-D*)
-
-
-CreateMatrixElementS1V1toS1V1[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_]:=
-Block[{s,t,u,p1,p2,p3,p4,temp,resTot,u1,s1,t1,kinFlip},
-(*
-	This module returns the squared matrix element of SV->SV summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form SV->SV the routine returns 0.
-*)
-	kinFlip=0; (*records if the external or incoming legs were swapped, and does a t<->u transformation for each swap*)
-If[ (
-	(particle1[[2]]=="V"&&particle2[[2]]=="S")||
-	(particle1[[2]]=="S"&&particle2[[2]]=="V")
-	)&&(
-	(particle3[[2]]=="V"&&particle4[[2]]=="S")||
-	(particle3[[2]]=="S"&&particle4[[2]]=="V")),
-
-	p1=particle1;
-	p2=particle2;
-	p3=particle3;
-	p4=particle4;
-(*Changing the order of the particles so that it is always SV->SV*)	
-	If[particle1[[2]]=="S"&&particle2[[2]]=="V",
-		temp=p1;
-		p1=p2;
-		p2=temp;
-		kinFlip+=1;
-	];
-	If[particle3[[2]]=="S"&&particle4[[2]]=="V",
-		temp=p3;
-		p3=p4;
-		p4=temp;
-		kinFlip+=1;
-	];
-	
-	(*The result for SV->SV is identical to SS->VV (some would say twice as identical) if we do some renaming of the mandelstam variables*)
-	resTot=CreateMatrixElementS1S2toV1V2[p1,p3,p2,p4,vectorMass,scalarMass]/.{s->s1,t->t1,u->u1};
-	resTot=resTot/.{s1->t,t1->s,u1->u};
-	
-	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t1,u->u1}/.{t1->u,u1->t};];
-	Return[resTot]
-,
-	Return[0]
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*S1S2toS3V1-D*)
-
-
-CreateMatrixElementS1S2toS3V1[particle1_,particle2_,particle3_,particle4_,scalarMass_]:=
-Block[{s,t,u,p1,p2,p3,p4,temp,resTot,u1,s1,t1,temp1,temp2
-		,particleNull,gTensor,\[Lambda]3Tensor,\[Lambda]4Tensor,
-		scalarPropT,scalarPropU,A,CT,CU,CS,kinFlip,scalarPropS},
-(*
-	This module returns the squared matrix element of SS->SV summed over all quantum numbers of the incoming particles.
-	If the incoming particles are not of the form SS->SV the routine returns 0.
-	
-	I maintain that only a lunatic will actually have this matrix element appearing in their model, and if you are actually 
-	reading this you have but proved my point.
-*)
-	kinFlip=0; (*records if the external or incoming legs were swapped, and does a t<->u transformation for each swap*)
-If[ (
-	(particle1[[2]]=="V"&&particle2[[2]]=="S")||
-	(particle1[[2]]=="S"&&particle2[[2]]=="V")
-	)&&(
-	(particle3[[2]]=="S"&&particle4[[2]]=="S"))||
-	(
-	(particle3[[2]]=="V"&&particle4[[2]]=="S")||
-	(particle3[[2]]=="S"&&particle4[[2]]=="V")
-	)&&(
-	(particle1[[2]]=="S"&&particle2[[2]]=="S")),
-
-	p1=particle1;
-	p2=particle2;
-	p3=particle3;
-	p4=particle4;
-(*Changing the order of the particles so that it is always SS->SV*)	
-	If[particle1[[2]]=="V"||particle2[[2]]=="V",
-		temp1=p1;
-		temp2=p2;
-		p1=p3;
-		p2=p4;
-		p3=temp1;
-		p4=temp2;
-	];
-	If[p3[[2]]=="V",
-		temp=p3;
-		p3=p4;
-		p4=temp;
-		kinFlip+=1;
-	];
-	
-
-	
-	particleNull={{}}; (*Just a trick to not confuse the ordering of particles*)
-(*Coupling constants that we will need*)
-	
-	gTensor=Table[gvss[[p4[[1]],Particle1[[1]],;;]],
-		{Particle1,{p1,p2,p3,particleNull}}];
-	
-	\[Lambda]3Tensor=Table[\[Lambda]3[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{p1,p2,p3}},
-		{Particle2,{p1,p2,p3}}];
-
-(*Scalar propagators*)
-	scalarPropT=Table[1/(t-i),{i,scalarMass}]//ListToMat;
-	scalarPropU=Table[1/(u-i),{i,scalarMass}]//ListToMat;
-	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
-
-(*Lorentz structures that appear.*)
-	A=4 t u /s;
-	
-(*Group structures that are used*)
-	CS=Contract[scalarPropS . \[Lambda]3Tensor[[1,2]], gTensor[[3]],{{1,6}}]//OrderArray[#,1,2,4,3]&;
-	CT=Contract[scalarPropT . \[Lambda]3Tensor[[1,3]], gTensor[[2]],{{1,6}}]//OrderArray[#,1,4,2,3]&;
-	CU=Contract[scalarPropU . \[Lambda]3Tensor[[2,3]], gTensor[[1]],{{1,6}}]//OrderArray[#,4,1,2,3]&;
-	
-(*This result is beautiful in much the same way that a carrot isn't. *)
-	resTot=-4*Total[CS (u*CT+t*CU),-1];
-	resTot+=-4 s*Total[CT CU,-1];
-	
-	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t1,u->u1}/.{t1->u,u1->t};];
-	Return[resTot]
-,
-	Return[0]
-]	
-];
-
-
-(* ::Section:: *)
-(*Getting the matrix elements for out-of-Equilibrium particles*)
-
-
-degreeOfFreedom[particle_]:=Block[{dof},
-
-	dof=Length[particle[[1]]];
-	
-	(*factor of 2 from anti-particles*)
-	If[particle[[2]]=="F",dof*=2];
-	
-	(*Factor of 2 from spins*)
-	If[particle[[2]]=="V",dof*=2]; 
-	
-	If[particle[[2]]=="S",dof];
-	
-	If[normalizeDOF==False,dof=1];
-	
-	Return[dof];
-]
-
-
-(* ::Subsubsection:: *)
-(*F1F2toF3F4*)
-
-
-ExtractOutOfEqElementF1F2toF3F4[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-
-(*Generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-	
-	
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementF1F2toF3F4[particleList[[a]],b,c,d,VectorMass,ScalarMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-		
-(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];  
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}]; 
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]
-]
-];
-
-
-(* ::Subsubsection:: *)
-(*F1V1toF1V1*)
-
-
-ExtractOutOfEqElementF1V1toF1V1[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-(*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementF1V1toF1V1[particleList[[a]],b,c,d,VectorMass,FermionMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]
-	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*F1F2toV1V2*)
-
-
-ExtractOutOfEqElementF1F2toV1V2[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-(*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementF1F2toV1V2[particleList[[a]],b,c,d,FermionMass,VectorMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*V1V2toV3V4*)
-
-
-ExtractOutOfEqElementV1V2toV3V4[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into Sum_deltaFparticle
-	\[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-(*Generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-	
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementV1V2toV3V4[particleList[[a]],b,c,d,VectorMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*S1S2toS3S4*)
-
-
-ExtractOutOfEqElementS1S2toS3S4[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into Sum_deltaFparticle
-	\[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-(*Generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-	
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementS1S2toS3S4[particleList[[a]],b,c,d,VectorMass,ScalarMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*S1S2toF1F2*)
-
-
-ExtractOutOfEqElementS1S2toF1F2[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-(*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementS1S2toF1F2[particleList[[a]],b,c,d,VectorMass,ScalarMass,FermionMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*F1S1toF1S1*)
-
-
-ExtractOutOfEqElementF1S1toF1S1[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-	
-(*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementF1S1toF1S1[particleList[[a]],b,c,d,VectorMass,ScalarMass,FermionMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]
-	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*F1S1toF1V1*)
-
-
-ExtractOutOfEqElementF1S1toF1V1[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-	
-(*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementF1S1toF1V1[particleList[[a]],b,c,d,FermionMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[ Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]
-	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*F1F2toS1V1*)
-
-
-ExtractOutOfEqElementF1F2toS1V1[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-	
-(*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementF1F2toS1V1[particleList[[a]],b,c,d,FermionMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[ Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]
-	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*S1S2toV1V2*)
-
-
-ExtractOutOfEqElementS1S2toV1V2[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-	
-(*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementS1S2toV1V2[particleList[[a]],b,c,d,VectorMass,ScalarMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[ Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]
-	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*S1V1toS1V1*)
-
-
-ExtractOutOfEqElementS1V1toS1V1[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-	
-(*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementS1V1toS1V1[particleList[[a]],b,c,d,VectorMass,ScalarMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[ Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]
-	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*S1S2toS3V1*)
-
-
-ExtractOutOfEqElementS1S2toS3V1[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*
-	Essentially this is generates the elements going into
-	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
-*)
-
-(*particleList is the complete list of particles*)
-	VectorMass=ParticleMasses[[1]];
-	FermionMass=ParticleMasses[[2]];
-	ScalarMass=ParticleMasses[[3]];
-	
-(*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-
-(*Divide the incoming particle by its degree's of freedom*)
-	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElementS1S2toS3V1[particleList[[a]],b,c,d,ScalarMass],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
-	(*This is a list of all non-zero matrix elements*)
-	Elements=MatrixElements["NonzeroPositions"];
-
-
-(*If there are no matching matrix elements we return 0*)
-If[Length[Elements]==0,
-	Return[{}]; 
-,
-
-	MatrixElements=Table[ Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
-
-(*We now select all elements where deltaFparticle is amongst the scattered particles*)
-(*deltaF is here a list of 1 and 0s*)
-(*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
-		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
-	,
-		deltaF=Elements;
-	];
-	
-(*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
-
-(*We now add all elements with the same deltaF list*)
-	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
-	
-	Return[CollElements]
-	
-]	
-];
-
-
-(* ::Subsubsection:: *)
-(*Extract elements*)
-
-
-ExtractOutOfEqElement[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{	CollEllF1F2toF3F4,
-	CollEllF1V1toF1V1,
-	CollEllF1F2toV1V2,
-	CollEllV1V2toV3V4,
-	CollEllS1S2toS3S4,
-	CollEllS1S2toF1F2,
-	CollEllF1S1toF1S1,
-	CollEllF1F2toS1S1,
-	CollEllF1S1toF1V1,
-	CollEllF1F2toS1V1,
-	CollEllS1S2toV1V2,
-	CollEllS1V1toS1V1,
-	CollEllS1S2toS3V1,
-	CollEllTotal},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
-
-(*particleList is the complete list of particles*)
-
-
-(*First we extract the result for all subprocesses*)
-CollEllF1F2toF3F4=ExtractOutOfEqElementF1F2toF3F4[particleList,LightParticles,ParticleMasses];
-CollEllF1V1toF1V1=ExtractOutOfEqElementF1V1toF1V1[particleList,LightParticles,ParticleMasses];
-CollEllF1F2toV1V2=ExtractOutOfEqElementF1F2toV1V2[particleList,LightParticles,ParticleMasses];
-CollEllV1V2toV3V4=ExtractOutOfEqElementV1V2toV3V4[particleList,LightParticles,ParticleMasses];
-CollEllS1S2toS3S4=ExtractOutOfEqElementS1S2toS3S4[particleList,LightParticles,ParticleMasses];
-CollEllS1S2toF1F2=ExtractOutOfEqElementS1S2toF1F2[particleList,LightParticles,ParticleMasses];
-CollEllF1S1toF1S1=ExtractOutOfEqElementF1S1toF1S1[particleList,LightParticles,ParticleMasses];
-CollEllF1F2toS1S1=ExtractOutOfEqElementF1F2toS1V1[particleList,LightParticles,ParticleMasses];
-CollEllF1S1toF1V1=ExtractOutOfEqElementF1S1toF1V1[particleList,LightParticles,ParticleMasses];
-CollEllF1F2toS1V1=ExtractOutOfEqElementF1F2toS1V1[particleList,LightParticles,ParticleMasses];
-CollEllS1S2toV1V2=ExtractOutOfEqElementS1S2toV1V2[particleList,LightParticles,ParticleMasses];
-CollEllS1V1toS1V1=ExtractOutOfEqElementS1V1toS1V1[particleList,LightParticles,ParticleMasses];
-CollEllS1S2toS3V1=ExtractOutOfEqElementS1S2toS3V1[particleList,LightParticles,ParticleMasses];
-
-CollEllTotal=Join[
-	CollEllF1F2toF3F4,
-	CollEllF1V1toF1V1,
-	CollEllF1F2toV1V2,
-	CollEllV1V2toV3V4,
-	CollEllS1S2toS3S4,
-	CollEllS1S2toF1F2,
-	CollEllF1S1toF1S1,
-	CollEllF1F2toS1S1,
-	CollEllF1S1toF1V1,
-	CollEllF1F2toS1V1,
-	CollEllS1S2toV1V2,
-	CollEllS1V1toS1V1,
-	CollEllS1S2toS3V1
-	];
-
-
-Return[CollEllTotal]
-
-];
-
-
-(* ::Section:: *)
-(*Generating matrix elements*)
-
-
-ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_,LightParticles_]:=
-Block[{posFermions,NonEqFermions,LightFermions,
-	posVectors,NonEqVectors,LightVectors,posScalars,NonEqScalars,LightScalars},
-(*
-Extracting the out-of-eq particles
-*)
-		OutOfEqParticles=Table[i,{i,1,Length[particleList]}];
-		particleListFull=particleList; (*This list includes the light particles which are added below*)
-		
-(*Adding all remaining particles as light*)
-	posFermions=Position[particleList, _?(# =="F" &)][[;;,1]];
-	NonEqFermions=Table[particleList[[i]][[1]],{i,posFermions}]//Flatten[#]&;
-	LightFermions={Complement[RepToIndices[PrintFermionRepPositions[]],NonEqFermions],"F"};
-	
-	posVectors=Position[particleList, _?(# =="V" &)][[;;,1]];
-	NonEqVectors=Table[particleList[[i]][[1]],{i,posVectors}]//Flatten[#]&;
-	LightVectors={Complement[RepToIndices[PrintGaugeRepPositions[]],NonEqVectors],"V"};
-	
-	posScalars=Position[particleList, _?(# =="S" &)][[;;,1]];
-	NonEqScalars=Table[particleList[[i]][[1]],{i,posScalars}]//Flatten[#]&;
-	LightScalars={Complement[RepToIndices[PrintScalarRepPositions[]],NonEqScalars],"S"};
-	
-	If[Length[LightVectors[[1]]]>0,AppendTo[particleListFull,LightVectors]];
-	If[Length[LightFermions[[1]]]>0,AppendTo[particleListFull,LightFermions]];
-	If[Length[LightScalars[[1]]]>0,AppendTo[particleListFull,LightScalars]];
-
-	LightParticles=Table[i,{i,Length[particleList]+1,Length[particleListFull]}];
-	
-]
-
-
-GenerateMatrixElements[MatrixElements_,Cij_,particleListFull_,LightParticles_,ParticleMasses_,OutOfEqParticles_]:=
-Block[{Elem},
-
-
-		MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles,ParticleMasses];
-		
-(*Extract various C^{ij} components*)	
-	Cij=ConstantArray[0,{Length[OutOfEqParticles],Length[OutOfEqParticles]}];
-	Do[
-		Elem=Extract[MatrixElements,Position[MatrixElements[[;;,2]],{i,___}]];
-			Do[
-				Cij[[i,j]]=Extract[Elem,#]&/@Union[Position[Elem[[;;,2]],{_,j,__}],Position[Elem[[;;,2]],{_,_,j,_}],Position[Elem[[;;,2]],{_,__,j}]];
-				,{j,OutOfEqParticles}],
-		{i,OutOfEqParticles}
-	];
-
-];
-
-
-(* ::Section:: *)
 (*Export functions for different formats*)
 
 
@@ -2575,14 +578,26 @@ Block[{Elem},
 
 
 makeJsonMatrixElements::usage="makeJsonMatrixElements[particles,parameters,results] converts a list of particle names {'Phi',...}, a list of particle parameters {g,...}, and a list of matrix elements results in the form {M[0,0,0,0]->g^4 s/t,...} to a JSON object in a standard format.";
-makeJsonMatrixElements[particles_,parameters_,resultsI_]:=Module[{particlesJson,matrixElementsJson,toString,getRelevantParameters,replaceSpecials,results=resultsI},
-toString[arg_]:=If[StringQ[arg],arg,ToString[arg,InputForm]];
-replaceSpecials[arg_]:=StringReplace[arg,{"Pi"->"_pi","sReplace"->"_s","tReplace"->"_t","uReplace"->"_u"}];
-getRelevantParameters[arg_]:=Select[parameters,Not[FreeQ[arg,#]]&];
-particlesJson=Table[<|"index"->i-1,"name"->toString[particles[[i]]]|>,{i,1,Length[particles]}];
-results=results/.{s->sReplace, t->tReplace,u->uReplace};
-matrixElementsJson=Map[<|"externalParticles"->#[[1]]/.M[a__]->List[a],"parameters"->Map[toString,getRelevantParameters[#[[2]]]],"expression"->replaceSpecials[toString[#[[2]]]]|>&,results];
-Return[<|"particles"->particlesJson,"matrixElements"->matrixElementsJson|>]];
+makeJsonMatrixElements[particles_,parameters_,resultsI_]:=Module[
+{
+	particlesJson,matrixElementsJson,toString,getRelevantParameters,
+	replaceSpecials,results=resultsI
+},
+
+	toString[arg_]:=If[StringQ[arg],arg,ToString[arg,InputForm]];
+	replaceSpecials[arg_]:=StringReplace[arg,{"Pi"->"_pi","sReplace"->"_s","tReplace"->"_t","uReplace"->"_u"}];
+	getRelevantParameters[arg_]:=Select[parameters,Not[FreeQ[arg,#]]&];
+	particlesJson=Table[<|"index"->i-1,"name"->toString[particles[[i]]]|>,{i,1,Length[particles]}];
+	results=results/.{s->sReplace,t->tReplace,u->uReplace};
+	
+	matrixElementsJson=Map[<|
+		"externalParticles"->#[[1]]/.M[a__]->List[a],
+		"parameters"->Map[toString,getRelevantParameters[#[[2]]]],
+		"expression"->replaceSpecials[toString[PrintNonPrivate[#[[2]]]]]|>&,
+		results];
+		
+	Return[<|"particles"->particlesJson,"matrixElements"->matrixElementsJson|>]
+];
 
 
 testJsonMatrixElements::usage="testJsonMatrixElements[json] tests if a JSON object is of the expected form for exporting matrix elements.";
@@ -2642,9 +657,9 @@ importJSONMatrixElements[file_]:=Import[file,"RawJSON"];
 (* export JSONMatrixElements *)
 exportJsonMatrixElements::usage="exportJsonMatrixElements[file,jsonMatrixElements] exports a JSON object of matrix elements into a JSON file.";
 exportJsonMatrixElements[file_,jsonMatrixElements_]:=Module[{test},
-If[Not[StringQ[file]],Print["File must be a string"];Return[]];
-If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
-Export[file,jsonMatrixElements]
+	If[Not[StringQ[file]],Print["File must be a string"];Return[]];
+	If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
+	Export[file,jsonMatrixElements]
 ];
 
 
@@ -2666,7 +681,7 @@ ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Blo
 	ExportH5=Reap[Do[
 		CijName=StringJoin["MatrixElements",ParticleName[[i]],ParticleName[[j]]];
 		Sow[
-			writeData=Table[{ToString[FortranForm[a[[1]]]],ToString[FortranForm[a[[2]]]]},{a,CijExport[[i,j]]}];
+			writeData=Table[{ToString[FortranForm[PrintNonPrivate[a[[1]]]]],ToString[FortranForm[PrintNonPrivate[a[[2]]]]]},{a,CijExport[[i,j]]}];
 			If[Length[CijExport[[i,j]]]==0,writeData=""];
 			CijName -> {"Data" -> writeData}
 			];
@@ -2688,7 +703,10 @@ ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Blo
 (*txt matrix elements functions*)
 
 
-ExportTo["txt"][MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{ParticleInfo,CouplingInfo,ExportTXT},
+ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[
+{
+	ParticleInfo,CouplingInfo,ExportTXT
+},
 
 	(*Creating some metadata*)
 		ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
@@ -2696,12 +714,13 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{
 		CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 		
 		ExportTXT=MatrixElements;
-(*Adding metadata to the matrix elements*)
+		
+	(*Adding metadata to the matrix elements*)
 		PrependTo[ExportTXT,ParticleInfo];
 		PrependTo[ExportTXT,CouplingInfo];	
 	
 (*Exporting*)
-	Export[StringJoin[file,".txt"],ExportTXT];
+	Export[StringJoin[file,".txt"],PrintNonPrivate[ExportTXT]];
 	Print["Results have been exported to: ", StringJoin[file,".txt"]];		
 ]
 
@@ -2710,31 +729,29 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,UserCouplings_,file_]:=Block[{
 (*Exporting the results*)
 
 
+PrintNonPrivate[PrivateExpression_]:=ToExpression[StringReplace[ToString[StandardForm[PrivateExpression]],"WallGoMatrix`Private`"->""]];
+
+
 Options[ExportMatrixElements]={
 	Replacements->{},
 	NormalizeWithDOF->True,
 	Format->"none"};
 
 
-ExportMatrixElements::usage=
-"ExportMatrixElements[file,particleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,OptionsPattern[]]
-
-generates all possible matrix elements with the external particles specified in particleList.
-The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none ,
-the last two options exports the result in all possible formats, and in none, respectively. A list of matrix elements is returned by the function regardless of the choosen format.";
-
-
 ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,OptionsPattern[]]:=
-Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
-	Cij,ParticleInfo,LightParticles,particleListFull,CouplingInfo,MatrixElements,
-	OutOfEqParticles,RepMasses,RepCouplings,FormatOptions,userFormat,MatrixElementsList,userParameters
-	},
+Block[
+{
+	ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
+	Cij,ParticleInfo,LightParticles,particleListFull,
+	CouplingInfo,MatrixElements,OutOfEqParticles,RepMasses,RepCouplings,
+	FormatOptions,userFormat,MatrixElementsList,userParameters
+},
 
 (*Specifies whether the first particle should be normalized by the number of degrees of freedom*)
 	normalizeDOF = OptionValue[NormalizeWithDOF];
-	
+
 (*Splits ParticleList into out-of-eq and light particles*)
-	ExtractLightParticles[ParticleList,OutOfEqParticles,particleListFull,LightParticles];
+	ExtractLightParticles[particleList,OutOfEqParticles,particleListFull,LightParticles];
 
 (*Creates an assumption rule for simplifying Conjugate[....] terms*)
 	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,ParticleMasses,s,t,u}; (*All variables are assumed to be real*)
@@ -2763,7 +780,7 @@ Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
 	   (* Iterate over each format and perform the export *)
 	   Do[
 	     Switch[fmt,
-	       "txt", ExportTo["txt"][MatrixElementsList, OutOfEqParticles, UserCouplings, file],
+	       "txt", ExportTo["txt"][MatrixElementsList, OutOfEqParticles, ParticleName, UserCouplings, file],
 	       "hdf5", ExportTo["hdf5"][Cij, OutOfEqParticles, ParticleName, UserCouplings, file],
 	       "json",
 	       userParameters = Flatten[Join[UserCouplings, ParticleMasses]] // DeleteDuplicates;
@@ -2775,7 +792,7 @@ Block[{ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
 	   Print["Please choose a valid format"];
 	];
 	
-	Return[MatrixElementsList]
+	Return[PrintNonPrivate[MatrixElementsList]]
 ];
 
 
@@ -2793,7 +810,10 @@ MatrixElemFromC[MatrixElem_]:=Block[{Ind},
 ]
 
 
-ImportMatrixElements[file_]:=Module[{jsonObject,particleNames,parameters,results},
+ImportMatrixElements[file_]:=Module[
+{
+	jsonObject,particleNames,parameters,results
+},
 (* Only implemented for JSON *)
 If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
 

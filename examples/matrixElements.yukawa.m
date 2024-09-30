@@ -3,11 +3,19 @@
 Quit[];
 
 
-SetDirectory[NotebookDirectory[]];
+(*SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 (*<<../DRalgo/DRalgo.m*)
+<<DRalgo`
+<<../src/matrixElements.old.m*)
+
+
+SetDirectory[NotebookDirectory[]];
+(*Put this if you want to create multiple model-files with the same kernel*)
+$GroupMathMultipleModels=True;
+$LoadGroupMath=True;
 <<../src/WallGoMatrix.m
 
 
@@ -15,7 +23,7 @@ $LoadGroupMath=True;
 (*Yukawa Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -75,7 +83,7 @@ MassTerm2=CreateInvariantFermion[Group,RepFermion,InputInv][[1]]
 
 
 (* y \[Phi](Subscript[\[Psi], R]Subscript[\[Psi], L]+Subscript[\[Psi]^+, L]Subscript[\[Psi], R]^+)*)
- InputInv={{1,2,1},{True,True,True}};
+InputInv={{1,2,1},{True,True,True}};
 YukawaDoublet1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 InputInv={{1,1,2},{True,False,False}}; 
 YukawaDoublet2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
@@ -85,12 +93,21 @@ Ysff= y*GradYukawa[YukawaDoublet1];
 YsffC=y*GradYukawa[YukawaDoublet2];
 
 
+ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
+
+
 (* ::Section:: *)
 (*A model with 1 Dirac fermions and 1 scalar bosons*)
 
 
 (* ::Subsection:: *)
 (*SymmetryBreaking*)
+
+
+gvss//MatrixForm
+
+
+WallGoMatrix`SimplifySparse
 
 
 vev={v};
@@ -125,6 +142,9 @@ RepFermionR=CreateParticle[{2},"F"];
 
 (*Vector bosons*)
 RepZ=CreateParticle[{1},"V"];
+
+
+CreateParticle[{1,2},"F"]
 
 
 (*
