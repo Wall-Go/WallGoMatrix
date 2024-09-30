@@ -13,9 +13,9 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../DRalgo/DRalgo.m
-<<../src/matrixElements.old.m
-(*<<../src/WallgoMatrix.m*)
+(*<<../DRalgo/DRalgo.m
+<<../src/matrixElements.old.m*)
+<<../src/WallgoMatrix.m
 
 
 (* ::Chapter:: *)
@@ -181,10 +181,6 @@ file=FileNameJoin[{NotebookDirectory[],"qcd.test.json"}];
 testList={};
 
 
-	1/2*(M[0,2,0,2]+M[0,2,2,0])/.MatrixElements//fixConvention//removeMissing
-	1/2*(M[0,2,0,2]+M[0,2,2,0])/.FeynMatrixElements//fixConvention//removeMissing
-
-
 (*5 light quarks*)
 AppendTo[testList,
 TestCreate[
@@ -205,7 +201,7 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	1/2*(M[0,1,0,1]+M[0,1,1,0])/.MatrixElements//fixConvention//removeMissing,
-	1/2*(M[0,1,0,1]+M[0,1,1,0])/.MatrixElements//fixConvention//removeMissing
+	1/2*(M[0,1,0,1]+M[0,1,1,0])/.FeynMatrixElements//fixConvention//removeMissing
 ]];
 
 
@@ -213,7 +209,7 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	1/2*(M[0,0,0,0])/.MatrixElements//fixConvention//removeMissing,
-	1/2*(M[0,0,0,0])/.MatrixElements//fixConvention//removeMissing
+	1/2*(M[0,0,0,0])/.FeynMatrixElements//fixConvention//removeMissing
 ]];
 
 
@@ -221,13 +217,12 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	1/2*(M[1,1,1,1])/.MatrixElements//fixConvention//removeMissing,
-	1/2*(M[1,1,1,1])/.MatrixElements//fixConvention//removeMissing
+	1/2*(M[1,1,1,1])/.FeynMatrixElements//fixConvention//removeMissing
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 

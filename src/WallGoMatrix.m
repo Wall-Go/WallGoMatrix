@@ -620,7 +620,13 @@ returnString="'matrixElements' keys not {'externalParticles','parameters','expre
 
 
 splitJsonMatrixElements::usage="splitJsonMatrixElements[json] splits a JSON object containing matrix elements into a list {particleNames,parameters,results}.";
-splitJsonMatrixElements[json_]:=Module[{particles,matrixElements,particleIndices,particleNames,matrixElementIndices,matrixElementParameters,matrixElementExpressions,parameters,expressions,results},
+splitJsonMatrixElements[json_]:=Module[
+{
+	particles,matrixElements,particleIndices,particleNames,
+	matrixElementIndices,matrixElementParameters,matrixElementExpressions,
+	parameters,expressions,results
+}
+,
 particles=json["particles"];
 particleIndices=Map[#["index"]&,json["particles"]];
 particleNames=Map[#["name"]&,json["particles"]];
@@ -632,7 +638,7 @@ parameters=Map[ToExpression,DeleteDuplicates[Flatten[matrixElementParameters]]];
 expressions=Map[ToExpression,StringReplace[matrixElementExpressions,{RegularExpression["(\\W)_s"]->"$1s",RegularExpression["(\\W)_t"]->"$1t",RegularExpression["(\\W)_u"]->"$1u"}]];
 results=Thread[matrixElementIndices->expressions];
 results=Map[M[#[[1]]/.List->Sequence]->#[[2]]&,results];
-{particleNames,parameters,results}
+{particleNames,parameters,PrintNonPrivate[results]}
 ];
 
 
@@ -810,17 +816,17 @@ ImportMatrixElements[file_]:=Module[
 {
 	jsonObject,particleNames,parameters,results
 },
-(* Only implemented for JSON *)
-If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
+	(* Only implemented for JSON *)
+	If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
 
-(* Importing into JSON object *)
-jsonObject=importJSONMatrixElements[file];
+	(* Importing into JSON object *)
+	jsonObject=importJSONMatrixElements[file];
 
-(* Splitting JSON object *)
-{particleNames,parameters,results}=splitJsonMatrixElements[jsonObject];
+	(* Splitting JSON object *)
+	{particleNames,parameters,results}=splitJsonMatrixElements[jsonObject];
 
-(* Returning results *)
-Return[{particleNames,parameters,results}]
+	(* Returning results *)
+	Return[{particleNames,parameters,results}]
 ];
 
 
