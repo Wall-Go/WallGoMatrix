@@ -14,14 +14,15 @@ SetDirectory[NotebookDirectory[]];
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 <<../DRalgo/DRalgo.m
-<<../src/matrixElements.m
+<<../src/matrixElements.old.m
+(*<<../src/WallgoMatrix.m*)
 
 
 (* ::Chapter:: *)
 (*QCD*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -46,7 +47,10 @@ RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepF
 {gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
 
 
-(* ::Section::Closed:: *)
+ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
+
+
+(* ::Section:: *)
 (*User Input*)
 
 
@@ -177,6 +181,10 @@ file=FileNameJoin[{NotebookDirectory[],"qcd.test.json"}];
 testList={};
 
 
+	1/2*(M[0,2,0,2]+M[0,2,2,0])/.MatrixElements//fixConvention//removeMissing
+	1/2*(M[0,2,0,2]+M[0,2,2,0])/.FeynMatrixElements//fixConvention//removeMissing
+
+
 (*5 light quarks*)
 AppendTo[testList,
 TestCreate[
@@ -219,6 +227,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
