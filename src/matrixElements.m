@@ -335,7 +335,7 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 ]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Matrix elements*)
 
 
@@ -405,13 +405,14 @@ If[
 
 
 CreateMatrixElementF1F2toF3F4[particle1_,particle2_,particle3_,particle4_,vectorMass_,scalarMass_]:=
-Block[{s,t,u,gTensor,
-		CSy,CTy,CUy,CSyC,CTyC,CUyC,CSyCC,CTyCC,CUyCC
-		,CS,CT,CU,CSC,CTC,CUC,CSCC,CTCC,CUCC
-		,CTrS,CTrT,CTrU,A3,A4,A5,A6,
-		Tensor,YTensorC,scalarPropT,scalarPropU,vectorPropU,vectorPropT,
-		C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor},
-	
+Block[{
+	s,t,u,gTensor,
+	CSy,CTy,CUy,CSyC,CTyC,CUyC,CSyCC,CTyCC,CUyCC,
+	CS,CT,CU,CSC,CTC,CUC,CSCC,CTCC,CUCC,
+	CTrS,CTrT,CTrU,A3,A4,A5,A6,
+	Tensor,YTensorC,scalarPropT,scalarPropU,vectorPropU,vectorPropT,
+	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor
+},
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
 	If the incoming particles are not of the form FF->FF the routine returns 0.
@@ -525,24 +526,28 @@ If[
 	totRes+=-  1/8(s^2-t^2+u^2)*TotalConj[CUyCC Conjugate[CSyCC]  +CSyCC Conjugate[CUyCC]];
 	totRes+=-  1/8(t^2-u^2+s^2)*TotalConj[CSyCC Conjugate[CTyCC]  +CTyCC Conjugate[CSyCC]];	
 	
+(*
+	Result for interfaces between vector and scalar diagrams---
+	Only cross terms between diagrams can contribute
+*)
 	
-(*Result for interfaces between vector and scalar diagrams---Only cross terms between diagrams can contribute*)
+	totRes+=1/2*s*t*TotalConj[CS*Conjugate[CTyC] +CTyC*Conjugate[CS]];
+	totRes+=1/2*u*t*TotalConj[CU*Conjugate[CTyC] +CTyC*Conjugate[CU]];
+
+	totRes+=1/2*s*u*TotalConj[CS*Conjugate[CUyC] +CUyC*Conjugate[CS]];
+	totRes+=1/2*u*t*TotalConj[CT*Conjugate[CUyC] +CUyC*Conjugate[CT]];
+
+	totRes+=1/2*s*t*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
+	totRes+=1/2*u*s*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];	
 	
-	totRes+=1/2*s t TotalConj[CS Conjugate[CTyC]  +CTyC Conjugate[CS]];
-	totRes+=1/2*u t TotalConj[CU Conjugate[CTyC]  +CTyC Conjugate[CU]];
-
-	totRes+=1/2*s u TotalConj[CS Conjugate[CUyC]  +CUyC Conjugate[CS]];
-	totRes+=1/2*u t TotalConj[CT Conjugate[CUyC]  +CUyC Conjugate[CT]];	
-
-	totRes+=1/2*s t TotalConj[CT Conjugate[CSyC]  +CSyC Conjugate[CT]];
-	totRes+=1/2*u s TotalConj[CU Conjugate[CSyC]  +CSyC Conjugate[CU]];		
+	Print[totRes];
 	
 	Return[Refine[4*totRes,Assumptions->VarAsum]]
 ]
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1V1toF1V1-D*)
 
 
@@ -1260,7 +1265,7 @@ If[ (
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Getting the matrix elements for out-of-Equilibrium particles*)
 
 
@@ -1286,8 +1291,12 @@ degreeOfFreedom[particle_]:=Block[{dof},
 (*F1F2toF3F4*)
 
 
-ExtractOutOfEqElementF1F2toF3F4[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
+ExtractOutOfEqElement["F1F2toF3F4"][particleList_,LightParticles_,ParticleMasses_]:=
+Block[{
+	OutOfEqParticles,MatrixElements,Elements,CollElements,
+	symmetries,deltaF,
+	VectorMass,FermionMass,ScalarMass
+},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*
@@ -1333,16 +1342,17 @@ If[Length[Elements]==0,
 	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
 	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
 	
+	Print[CollElements];
 	Return[CollElements]
 ]
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1V1toF1V1*)
 
 
-ExtractOutOfEqElementF1V1toF1V1[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["F1V1toF1V1"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1358,6 +1368,8 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 	ScalarMass=ParticleMasses[[3]];
 (*First we generate all matrix elements*)
 	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
+	Print["debug OutOfEqParticles:"];
+	Print[OutOfEqParticles];
 
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
@@ -1366,6 +1378,8 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
+	Print["debug Elements:"];
+	Print[Elements];
 
 
 (*If there are no matching matrix elements we return 0*)
@@ -1399,7 +1413,7 @@ If[Length[Elements]==0,
 (*F1F2toV1V2*)
 
 
-ExtractOutOfEqElementF1F2toV1V2[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["F1F2toV1V2"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1455,7 +1469,7 @@ If[Length[Elements]==0,
 (*V1V2toV3V4*)
 
 
-ExtractOutOfEqElementV1V2toV3V4[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["V1V2toV3V4"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1510,7 +1524,7 @@ If[Length[Elements]==0,
 (*S1S2toS3S4*)
 
 
-ExtractOutOfEqElementS1S2toS3S4[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["S1S2toS3S4"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1565,7 +1579,7 @@ If[Length[Elements]==0,
 (*S1S2toF1F2*)
 
 
-ExtractOutOfEqElementS1S2toF1F2[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["S1S2toF1F2"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1620,7 +1634,7 @@ If[Length[Elements]==0,
 (*F1S1toF1S1*)
 
 
-ExtractOutOfEqElementF1S1toF1S1[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["F1S1toF1S1"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1678,7 +1692,7 @@ If[Length[Elements]==0,
 (*F1S1toF1V1*)
 
 
-ExtractOutOfEqElementF1S1toF1V1[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["F1S1toF1V1"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1737,7 +1751,7 @@ If[Length[Elements]==0,
 (*F1F2toS1V1*)
 
 
-ExtractOutOfEqElementF1F2toS1V1[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["F1F2toS1V1"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1796,7 +1810,7 @@ If[Length[Elements]==0,
 (*S1S2toV1V2*)
 
 
-ExtractOutOfEqElementS1S2toV1V2[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["S1S2toV1V2"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1855,7 +1869,7 @@ If[Length[Elements]==0,
 (*S1V1toS1V1*)
 
 
-ExtractOutOfEqElementS1V1toS1V1[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["S1V1toS1V1"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1914,7 +1928,7 @@ If[Length[Elements]==0,
 (*S1S2toS3V1*)
 
 
-ExtractOutOfEqElementS1S2toS3V1[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement["S1S2toS3V1"][particleList_,LightParticles_,ParticleMasses_]:=
 Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionMass,ScalarMass},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1969,63 +1983,36 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Extract elements*)
 
 
 ExtractOutOfEqElement[particleList_,LightParticles_,ParticleMasses_]:=
-Block[{	CollEllF1F2toF3F4,
-	CollEllF1V1toF1V1,
-	CollEllF1F2toV1V2,
-	CollEllV1V2toV3V4,
-	CollEllS1S2toS3S4,
-	CollEllS1S2toF1F2,
-	CollEllF1S1toF1S1,
-	CollEllF1F2toS1S1,
-	CollEllF1S1toF1V1,
-	CollEllF1F2toS1V1,
-	CollEllS1S2toV1V2,
-	CollEllS1V1toS1V1,
-	CollEllS1S2toS3V1,
-	CollEllTotal},
+Block[{
+	CollEll,collisions,CollEllTotal
+},
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
 (*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
 
 (*particleList is the complete list of particles*)
-
-
 (*First we extract the result for all subprocesses*)
-CollEllF1F2toF3F4=ExtractOutOfEqElementF1F2toF3F4[particleList,LightParticles,ParticleMasses];
-CollEllF1V1toF1V1=ExtractOutOfEqElementF1V1toF1V1[particleList,LightParticles,ParticleMasses];
-CollEllF1F2toV1V2=ExtractOutOfEqElementF1F2toV1V2[particleList,LightParticles,ParticleMasses];
-CollEllV1V2toV3V4=ExtractOutOfEqElementV1V2toV3V4[particleList,LightParticles,ParticleMasses];
-CollEllS1S2toS3S4=ExtractOutOfEqElementS1S2toS3S4[particleList,LightParticles,ParticleMasses];
-CollEllS1S2toF1F2=ExtractOutOfEqElementS1S2toF1F2[particleList,LightParticles,ParticleMasses];
-CollEllF1S1toF1S1=ExtractOutOfEqElementF1S1toF1S1[particleList,LightParticles,ParticleMasses];
-CollEllF1F2toS1S1=ExtractOutOfEqElementF1F2toS1V1[particleList,LightParticles,ParticleMasses];
-CollEllF1S1toF1V1=ExtractOutOfEqElementF1S1toF1V1[particleList,LightParticles,ParticleMasses];
-CollEllF1F2toS1V1=ExtractOutOfEqElementF1F2toS1V1[particleList,LightParticles,ParticleMasses];
-CollEllS1S2toV1V2=ExtractOutOfEqElementS1S2toV1V2[particleList,LightParticles,ParticleMasses];
-CollEllS1V1toS1V1=ExtractOutOfEqElementS1V1toS1V1[particleList,LightParticles,ParticleMasses];
-CollEllS1S2toS3V1=ExtractOutOfEqElementS1S2toS3V1[particleList,LightParticles,ParticleMasses];
+collisions = {
+	"F1F2toF3F4",
+	"F1V1toF1V1", "F1F2toV1V2", "V1V2toV3V4", "S1S2toS3S4", 
+	"S1S2toF1F2", "F1S1toF1S1", (*"F1F2toS1S1",*) "F1S1toF1V1",
+	"F1F2toS1V1", "S1S2toV1V2", "S1V1toS1V1", "S1S2toS3V1"
+};
 
-CollEllTotal=Join[
-	CollEllF1F2toF3F4,
-	CollEllF1V1toF1V1,
-	CollEllF1F2toV1V2,
-	CollEllV1V2toV3V4,
-	CollEllS1S2toS3S4,
-	CollEllS1S2toF1F2,
-	CollEllF1S1toF1S1,
-	CollEllF1F2toS1S1,
-	CollEllF1S1toF1V1,
-	CollEllF1F2toS1V1,
-	CollEllS1S2toV1V2,
-	CollEllS1V1toS1V1,
-	CollEllS1S2toS3V1
-	];
-
+CollEllTotal = 
+  Map[
+  {#,
+   ExtractOutOfEqElement[#][particleList, LightParticles, ParticleMasses]} &, 
+   collisions
+  ]//Flatten[#,1]&;
+  
+Print["debug CollEllTotal:"];
+Print[CollEllTotal];
 
 Return[CollEllTotal]
 
@@ -2039,7 +2026,8 @@ Return[CollEllTotal]
 ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_,LightParticles_]:=Block[
 {
 	posFermions,NonEqFermions,LightFermions,
-	posVectors,NonEqVectors,LightVectors,posScalars,NonEqScalars,LightScalars
+	posVectors,NonEqVectors,LightVectors,
+	posScalars,NonEqScalars,LightScalars
 },
 (*
 Extracting the out-of-eq particles
@@ -2072,8 +2060,9 @@ Extracting the out-of-eq particles
 GenerateMatrixElements[MatrixElements_,Cij_,particleListFull_,LightParticles_,ParticleMasses_,OutOfEqParticles_]:=
 Block[{Elem},
 
-
-		MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles,ParticleMasses];
+	MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles,ParticleMasses];
+	Print["Debug extract:"];
+	Print[MatrixElements];
 		
 (*Extract various C^{ij} components*)	
 	Cij=ConstantArray[0,{Length[OutOfEqParticles],Length[OutOfEqParticles]}];

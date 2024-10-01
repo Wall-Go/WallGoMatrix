@@ -763,6 +763,10 @@ Block[
 
 (*Splits ParticleList into out-of-eq and light particles*)
 	ExtractLightParticles[particleList,OutOfEqParticles,particleListFull,LightParticles];
+	Print[particleList];
+	Print[OutOfEqParticles];
+	Print[particleListFull];
+	Print[LightParticles];
 
 (*Creates an assumption rule for simplifying Conjugate[....] terms*)
 	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,ParticleMasses,s,t,u}; (*All variables are assumed to be real*)
@@ -774,7 +778,8 @@ Block[
 
 (*Extracting all matrix elements*)	
 	GenerateMatrixElements[MatrixElements,Cij,particleListFull,LightParticles,ParticleMassesI,OutOfEqParticles];
-	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}]; (*Creates a replacement list and shifts the indices to start at 0.*)
+(*Creates a replacement list and shifts the indices to start at 0.*)
+	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}];
 
 (*Exporting the matrix elements to the choosen format*)
 	FormatOptions = {"txt", "json", "hdf5", "all", "none"};
