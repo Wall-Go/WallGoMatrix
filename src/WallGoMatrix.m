@@ -117,6 +117,14 @@ SymmetryBreakingFermion::usage="";
 SymmetryBreakingScalar::usage="";
 
 
+WallGoMatrix::failmsg =
+"Error! WallGoMatrix has encountered a fatal problem and must abort the computation. \
+The problem reads: `1`";
+WallGoMatrix::failWarning =
+"Error! WallGoMatrix has encountered a problem. \
+The problem reads: `1`";
+
+
 DefineDim6::usage="Defines a dimension 6 operator";
 CompareInvariants::usage="\
 Finds relations between couplings by calculating basis-invariant tensors";
@@ -763,10 +771,6 @@ Block[
 
 (*Splits ParticleList into out-of-eq and light particles*)
 	ExtractLightParticles[particleList,OutOfEqParticles,particleListFull,LightParticles];
-	Print[particleList];
-	Print[OutOfEqParticles];
-	Print[particleListFull];
-	Print[LightParticles];
 
 (*Creates an assumption rule for simplifying Conjugate[....] terms*)
 	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,ParticleMasses,s,t,u}; (*All variables are assumed to be real*)
@@ -804,8 +808,7 @@ Block[
 	     ],
 	     {fmt, userFormatsList}
 	   ],
-	   Print["The currently allowed formats are: txt, hdf5, and json"];
-	   Print["Please choose a valid format"];
+	   Message[WallGoMatrix::failWarning, "The currently allowed formats are: txt, hdf5, and json. Please choose a valid format."];
 	];
 	
 	Return[PrintNonPrivate[MatrixElementsList]]

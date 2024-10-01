@@ -173,9 +173,7 @@ SymmetryBreakingGauge[Indices_,vev_] :=Module[
 	PosVector=PrintGaugeRepPositions[];
 	
 (*Gauge bosons*)
-	Print[gvss];
 	Habij=Contract[gvss,gvss,{{3,5}}]//Transpose[#,{1,3,2,4}]&//SparseArray;
-	Print[Habij];
 	massV=-Activate@TensorContract[Inactive@TensorProduct[Habij,vev,vev],{{3,5},{4,6}}]//SparseArray;
 	gaugeInd=Delete[DiagonalTensor2[massV,1,2]//Normal//ArrayRules,-1]/.(({i1_}->x_)->i1);
 	
@@ -400,7 +398,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4-D*)
 
 
@@ -539,8 +537,6 @@ If[
 
 	totRes+=1/2*s*t*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
 	totRes+=1/2*u*s*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];	
-	
-	Print[totRes];
 	
 	Return[Refine[4*totRes,Assumptions->VarAsum]]
 ]
@@ -1287,7 +1283,7 @@ degreeOfFreedom[particle_]:=Block[{dof},
 ]
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
@@ -1342,7 +1338,6 @@ If[Length[Elements]==0,
 	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
 	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
 	
-	Print[CollElements];
 	Return[CollElements]
 ]
 ];
@@ -1368,8 +1363,6 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 	ScalarMass=ParticleMasses[[3]];
 (*First we generate all matrix elements*)
 	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
-	Print["debug OutOfEqParticles:"];
-	Print[OutOfEqParticles];
 
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
@@ -1378,9 +1371,6 @@ Block[{OutOfEqParticles,MatrixElements,Elements,CollElements,VectorMass,FermionM
 		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
-	Print["debug Elements:"];
-	Print[Elements];
-
 
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
@@ -1409,7 +1399,7 @@ If[Length[Elements]==0,
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toV1V2*)
 
 
@@ -2006,13 +1996,9 @@ collisions = {
 
 CollEllTotal = 
   Map[
-  {#,
-   ExtractOutOfEqElement[#][particleList, LightParticles, ParticleMasses]} &, 
+   ExtractOutOfEqElement[#][particleList, LightParticles, ParticleMasses] &, 
    collisions
   ]//Flatten[#,1]&;
-  
-Print["debug CollEllTotal:"];
-Print[CollEllTotal];
 
 Return[CollEllTotal]
 
@@ -2032,8 +2018,8 @@ ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_,LightPar
 (*
 Extracting the out-of-eq particles
 *)
-		OutOfEqParticles=Table[i,{i,1,Length[particleList]}];
-		particleListFull=particleList; (*This list includes the light particles which are added below*)
+	OutOfEqParticles=Table[i,{i,1,Length[particleList]}];
+	particleListFull=particleList; (*This list includes the light particles which are added below*)
 		
 (*Adding all remaining particles as light*)
 	posFermions=Position[particleList, _?(# =="F" &)][[;;,1]];
@@ -2053,7 +2039,11 @@ Extracting the out-of-eq particles
 	If[Length[LightScalars[[1]]]>0,AppendTo[particleListFull,LightScalars]];
 
 	LightParticles=Table[i,{i,Length[particleList]+1,Length[particleListFull]}];
-	
+	If[
+		Length[LightParticles]>1,
+		Message[WallGoMatrix::failmsg, "Multiple species declared as light. Only one species allowed. Solution: make additional species explicit in particleList."];
+		Abort[];
+		]
 ]
 
 
@@ -2061,8 +2051,6 @@ GenerateMatrixElements[MatrixElements_,Cij_,particleListFull_,LightParticles_,Pa
 Block[{Elem},
 
 	MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles,ParticleMasses];
-	Print["Debug extract:"];
-	Print[MatrixElements];
 		
 (*Extract various C^{ij} components*)	
 	Cij=ConstantArray[0,{Length[OutOfEqParticles],Length[OutOfEqParticles]}];
