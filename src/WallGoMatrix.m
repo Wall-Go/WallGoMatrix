@@ -724,7 +724,6 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,f
 		matrixElementsTXT=Map[
 		toString[PrintNonPrivate[#[[1]]]]<>" -> "<>replaceSpecials[toString[PrintNonPrivate[#[[2]]]]]&,
 		ExportTXT];
-		Print[matrixElementsTXT];
 		
 	(*Adding metadata to the matrix elements*)
 		PrependTo[matrixElementsTXT,ParticleInfo];

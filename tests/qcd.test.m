@@ -103,9 +103,6 @@ MatrixElements=ExportMatrixElements[
 	Format->{"json","txt"}];
 
 
-WallGoMatrix`Privat`ReplaceMandelStam[t]
-
-
 MatrixElements
 
 
