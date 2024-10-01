@@ -1,15 +1,15 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../DRalgo/DRalgo.m
-<<../src/matrixElements.old.m
-(*<<../src/WallGoMatrix.m*)
+(*<<../DRalgo/DRalgo.m
+<<../src/matrixElements.old.m*)
+<<../src/WallGoMatrix.m
 
 
 (* ::Chapter:: *)
@@ -65,11 +65,10 @@ rep 1-6 are quarks,
 rep 7 is a gluon
 *)
 Rep1=CreateParticle[{1,2},"F"];
-(*RepGluon=CreateParticle[{1},"V"];*)
+RepGluon=CreateParticle[{1},"V"];
 
 
-(*ParticleList={Rep1,RepGluon};*)
-ParticleList={Rep1};
+
 
 
 (*Defining various masses and couplings*)
@@ -89,9 +88,9 @@ UserCouplings={gs};
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.qcd";
-SetDirectory[NotebookDirectory[]];
-(*ParticleName={"Top","Gluon"};*)
+
+OutputFile="matrixElements.qcd.top";
+ParticleList={Rep1};
 ParticleName={"Top"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -101,8 +100,21 @@ MatrixElements=ExportMatrixElements[
 	ParticleName,
 	ParticleMasses,
 	Format->{"json","txt"}];
+MatrixElements
 
 
+SetDirectory[NotebookDirectory[]];
+OutputFile="matrixElements.qcd";
+ParticleName={"Top","Gluon"};
+ParticleList={Rep1,RepGluon};
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	UserMasses,
+	UserCouplings,
+	ParticleName,
+	ParticleMasses,
+	Format->{"json","txt"}];
 MatrixElements
 
 
