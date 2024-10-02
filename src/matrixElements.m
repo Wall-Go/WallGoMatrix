@@ -2071,10 +2071,10 @@ Block[{Elem},
 
 TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 
-	MatrixElementsF=MatrixElements/.Map[
-		Power[#[[1]] + msq_, n_?(Negative)]->
-		#[[2]]^(-n)*Power[#[[1]] + msq, n]&,
-		{{s,S},{t,T},{u,U}}];
+	MatrixElementsF=MatrixElements/.Flatten[Map[{
+			Power[+#[[1]] + msq_, n_?Negative]->#[[2]]^(-n)*Power[+#[[1]] + msq, n],
+			Power[-#[[1]] + msq_, n_?Negative]->#[[2]]^(-n)*Power[-#[[1]] + msq, n]
+		}&,{{s,S},{t,T},{u,U}}]];
 	
 	MatrixElementsF=Map[{
 		Plus@@Table[

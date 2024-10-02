@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 (* Check Mathematica version *)
@@ -100,7 +100,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	Format->{"json","txt"}];
+	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
 
 
 MatrixElements
