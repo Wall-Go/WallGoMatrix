@@ -23,7 +23,7 @@ $LoadGroupMath=True;
 (*Yukawa Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 

@@ -13,15 +13,14 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../DRalgo/DRalgo.m
-<<../src/matrixElements.m
+<<../src/WallGoMatrix.m
 
 
 (* ::Chapter:: *)
 (*Abelian Higgs*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -61,7 +60,10 @@ VQuartic=\[Lambda]*QuarticTerm1;
 \[Lambda]4=GradQuartic[VQuartic];
 
 
-(* ::Section::Closed:: *)
+ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
+
+
+(* ::Section:: *)
 (*User Input*)
 
 
@@ -112,8 +114,8 @@ UserCouplings={CouplingName,\[Lambda]}//Flatten;
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.ah";
 SetDirectory[NotebookDirectory[]];
+OutputFile="matrixElements.ah";
 ParticleName={"Phi","Vector"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -122,7 +124,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	Format->{"json","txt"}];
+	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
 
 
 MatrixElements
@@ -205,6 +207,4 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 

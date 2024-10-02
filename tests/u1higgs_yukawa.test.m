@@ -13,15 +13,14 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../DRalgo/DRalgo.m
-<<../src/matrixElements.m
+<<../src/WallGoMatrix.m
 
 
 (* ::Chapter:: *)
 (*Abelian-Higgs-Yukawa Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -82,6 +81,9 @@ Yukawa2HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simpl
 
 Ysff=y*GradYukawa[Yukawa1+Yukawa2];
 YsffC=y*GradYukawa[Yukawa1HC+Yukawa2HC];
+
+
+ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
 
 
 (* ::Section:: *)
@@ -154,7 +156,8 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{NormalizeWithDOF->False,Format->{"json","txt"}}];
+	{TruncateAtLeadingLog->False,
+	NormalizeWithDOF->False,Format->{"json","txt"}}];
 
 
 MatrixElements
@@ -316,4 +319,3 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-

@@ -7,8 +7,7 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../DRalgo/DRalgo.m
-<<../src/matrixElements.m
+<<../src/WallGoMatrix.m
 
 
 (* ::Chapter:: *)
@@ -56,6 +55,9 @@ InputInv={{1,1,2},{False,False,True}};
 YukawaDoublet=CreateInvariantYukawa[Group,RepScalar,RepFermion3Gen,InputInv]//Simplify;
 Ysff=-GradYukawa[yt1*YukawaDoublet[[1]]];
 YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt1>0}]];
+
+
+ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
 
 
 (* ::Title:: *)

@@ -13,8 +13,7 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../DRalgo/DRalgo.m
-<<../src/matrixElements.m
+<<../src/WallGoMatrix.m
 
 
 (* ::Chapter:: *)
@@ -89,6 +88,9 @@ YukawaDoublet2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//
 
 Ysff= y*GradYukawa[YukawaDoublet1];
 YsffC=y*GradYukawa[YukawaDoublet2];
+
+
+ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
 
 
 (* ::Section:: *)
@@ -166,7 +168,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	Format->{"json","txt"}];
+	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
 
 
 MatrixElements
