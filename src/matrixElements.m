@@ -398,7 +398,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toF3F4-D*)
 
 
@@ -543,7 +543,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1V1toF1V1-D*)
 
 
@@ -1277,7 +1277,7 @@ degreeOfFreedom[particle_]:=Block[{dof},
 	
 	If[particle[[2]]=="S",dof];
 	
-	If[normalizeDOF==False,dof=1];
+	If[bNormalizeWithDOF==False,dof=1];
 	
 	Return[dof];
 ]
@@ -1999,6 +1999,10 @@ CollEllTotal =
    ExtractOutOfEqElement[#][particleList, LightParticles, ParticleMasses] &, 
    collisions
   ]//Flatten[#,1]&;
+ 
+If[bTruncateAtLeadingLog,
+	CollEllTotal=TruncateAtLeadingLogarithm[CollEllTotal];
+	];
 
 Return[CollEllTotal]
 
@@ -2063,3 +2067,25 @@ Block[{Elem},
 	];
 
 ];
+
+
+TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
+
+	MatrixElementsF=MatrixElements/.Map[
+		Power[#[[1]] + msq_, n_?(Negative)]->
+		#[[2]]^(-n)*Power[#[[1]] + msq, n]&,
+		{{s,S},{t,T},{u,U}}];
+	
+	MatrixElementsF=Map[{
+		Plus@@Table[
+		+SeriesCoefficient[#[[1]]/.{T->xSmall*T,U->xSmall*U},{xSmall,0,i}]
+		,
+		{i,If[#[[2]][[3]]==#[[2]][[4]],2,1],2}],
+		#[[2]]}&,
+		MatrixElementsF];
+
+	MatrixElementsF=Collect[MatrixElementsF,{T,U},Simplify]/.{T*U->0}/.Thread[{T,U,S}->1];
+	MatrixElementsF=DeleteCases[MatrixElementsF, {0,{a__}}];
+	
+	Return[MatrixElementsF];
+]

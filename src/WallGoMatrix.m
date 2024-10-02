@@ -754,6 +754,7 @@ ReplaceMandelStam[Expression_]:=StringReplace[ToString[Expression],{"s"->"_s","t
 Options[ExportMatrixElements]={
 	Replacements->{},
 	NormalizeWithDOF->True,
+	TruncateAtLeadingLog->True,
 	Format->"none"};
 
 
@@ -766,8 +767,11 @@ Block[
 	FormatOptions,userFormat,MatrixElementsList,userParameters
 },
 
-(*Specifies whether the first particle should be normalized by the number of degrees of freedom*)
-	normalizeDOF = OptionValue[NormalizeWithDOF];
+(*Specifies if the first particle should be normalized by the number of degrees of freedom*)
+	bNormalizeWithDOF = OptionValue[NormalizeWithDOF];
+	
+(*Specifies if only leading log terms are taken into account or not*)
+	bTruncateAtLeadingLog = OptionValue[TruncateAtLeadingLog];
 
 (*Splits ParticleList into out-of-eq and light particles*)
 	ExtractLightParticles[particleList,OutOfEqParticles,particleListFull,LightParticles];

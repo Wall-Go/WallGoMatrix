@@ -7,7 +7,7 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-(*<<../DRalgo/DRalgo.m"
+(*<<../DRalgo/DRalgo.m
 <<../src/matrixElements.old.m*)
 <<../src/WallGoMatrix.m
 
@@ -113,7 +113,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	Format->{"json","txt"}];
+	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
 MatrixElements
 
 
