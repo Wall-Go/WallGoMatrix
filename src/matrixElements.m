@@ -2084,7 +2084,7 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 		#[[2]]}&,
 		MatrixElementsF];
 
-	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.{T*U->0}/.Thread[{T,U,S}->1];
+	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.{S*T->0,S*U->0,T*U->0}/.Thread[{T,U,S}->1];
 	MatrixElementsF=DeleteCases[MatrixElementsF, {0,{a__}}];
 	
 	Return[MatrixElementsF];
