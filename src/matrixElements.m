@@ -108,48 +108,24 @@ RepToIndices[ListI_]:=Block[{},
 
 CreateParticle[Indices_,Type_]:=Block[
 {
-	PosScalar,PosVector,PosFermion,temp,Particle
+	Field,FieldPosition,temp,Particle
 },
 (*Combines selected representations and obtain their indices*)
 	Particle={};
+	Field=Switch[Type,
+		"V","Vector",
+		"F","Fermion",
+		"S","Scalar"];
 
-	If[Type=="F",
-		PosFermion=PrintFermionRepPositions[];
-		Do[
-			If[Length[i]>=2, (*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
-					AppendTo[Particle,{FermionMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
-				,
-					AppendTo[Particle,{RepToIndices[{PosFermion[[i]]}]}]
-			];
-		,{i,Indices}];
-		Return[{Flatten[Particle],Type}]
-	];
-
-
-	If[Type=="V",
-		PosVector=PrintGaugeRepPositions[];
-		Do[
-			If[Length[i]>=2,(*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
-					AppendTo[Particle,{GaugeMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
-				,
-					AppendTo[Particle,{RepToIndices[{PosVector[[i]]}]}]
-			];
-		,{i,Indices}];
-		Return[{Flatten[Particle],Type}]
-	];
-	
-	If[Type=="S",
-		PosScalar=PrintScalarRepPositions[];
-		Do[
-			If[Length[i]>=2,(*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
-					AppendTo[Particle,{ScalarMassiveReps[[i[[1]]]][[i[[2]]]][[1]]}]
-				,
-					AppendTo[Particle,{RepToIndices[{PosScalar[[i]]}]}]
-			];
-		,{i,Indices}];
-		Return[{Flatten[Particle],Type}]
-	];
-
+	FieldPosition=PrintFieldRepPositions[Field];
+	Do[
+		If[Length[i]>=2, (*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
+				AppendTo[Particle,{MassiveReps[Field][[i[[1]]]][[i[[2]]]][[1]]}]
+			,
+				AppendTo[Particle,{RepToIndices[{FieldPosition[[i]]}]}]
+		];
+	,{i,Indices}];
+	Return[{Flatten[Particle],Type}]
 ];
 
 
@@ -162,7 +138,7 @@ Options[SymmetryBreaking]={
 	};
 
 
-SymmetryBreakingGauge[Indices_,vev_] :=Module[
+SymmetryBreakingField["Vector"][Indices_,vev_] :=Module[
 {
 	PosVector,Habij,massV,gaugeInd,posHeavy,posLight,
 	rep,val,val2,pos,pos2
@@ -170,7 +146,7 @@ SymmetryBreakingGauge[Indices_,vev_] :=Module[
 (*
 	Finds the masses for the gauge-representation Indices.
 *)
-	PosVector=PrintGaugeRepPositions[];
+	PosVector=PrintFieldRepPositions["Vector"];
 	
 (*Gauge bosons*)
 	Habij=Contract[gvss,gvss,{{3,5}}]//Transpose[#,{1,3,2,4}]&//SparseArray;
@@ -202,34 +178,42 @@ SymmetryBreakingGauge[Indices_,vev_] :=Module[
 ]
 
 
-SymmetryBreakingScalar[Indices_,vev_] :=Module[
+SymmetryBreakingField["Scalar"][Indices_,vev_] :=Module[
 {
 	PosScalar,scalarInd,massS,posHeavy,posLight,rep,val,val2,pos,pos2
 },
 (*
 	Finds the masses for the fermion-representation Indices.
 *)
-	PosScalar=PrintScalarRepPositions[];
+	PosScalar=PrintFieldRepPositions["Scalar"];
+	Print[PosScalar];
 	
 (*Scalars*)
-	massS=\[Mu]ij + (vev . \[Lambda]4 . vev/2)+ (vev . \[Lambda]3)//Normal//SparseArray;
+	massS=(
+		+ \[Mu]ij
+		+ (vev . \[Lambda]4 . vev/2)
+		+ (vev . \[Lambda]3)
+		)//Normal//SparseArray;
 	scalarInd=Delete[massS//ArrayRules,-1]/.(({i1_,i2_}->x_)->i1);
+	Print[massS//MatrixForm];
+	Print[scalarInd];
 	
 	posHeavy=Intersection[RangeToIndices[PosScalar[[Indices]]],scalarInd];
 	posLight=Complement[RangeToIndices[PosScalar[[Indices]]],scalarInd];
+	Print[posHeavy];
+	Print[posLight];
 	
 	If[Length[massS[[posHeavy,;;]]]==0,
 			rep={{posLight,0}};
 		,	
 			val=massS[[posHeavy,;;]]["NonzeroValues"]//DeleteDuplicates;
+			Print[val];
 			pos=Table[i,{i,Length[posHeavy]}];
 	
 			rep={};
 
 			Do[
-				
 				pos2=Table[posHeavy[[pos[[b]][[1]]]],{b,Position[massS[[posHeavy,posHeavy]]["NonzeroValues"],a]}];
-				
 				AppendTo[rep,{pos2,a}];
 			,{a,val}];
 
@@ -240,17 +224,19 @@ SymmetryBreakingScalar[Indices_,vev_] :=Module[
 ]
 
 
-SymmetryBreakingFermion[Indices_,vev_] :=Module[
+SymmetryBreakingField["Fermion"][Indices_,vev_] :=Module[
 {
 	PosFermion,fermionInd,massF,posHeavy,posLight,rep,val,val2,pos,pos2
 },
 (*
 	Finds the masses for the fermion-representation Indices.
 *)
-	PosFermion=PrintFermionRepPositions[];
+	PosFermion=PrintFieldRepPositions["Fermion"];
 	
 (*Fermions*)
-	massF=\[Mu]IJF + (vev . Ysff);
+	massF=(
+		+ \[Mu]IJF
+		+ (vev . Ysff));
 	fermionInd=Delete[massF//ArrayRules,-1]/.(({i1_,i2_}->x_)->i1);
 	
 	posHeavy=Intersection[RangeToIndices[PosFermion[[Indices]]],fermionInd];
@@ -272,60 +258,32 @@ SymmetryBreakingFermion[Indices_,vev_] :=Module[
 			AppendTo[rep,{posLight,0}];
 			If[posLight=={},rep=Drop[rep,-1]];
 	];
-	rep
+	Print[rep];
+	Return[rep]
 ]
 
 
 SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 {
-	PosVector,PosFermion,PosScalar,count(*,
+	FieldPosition,PosVector,PosFermion,PosScalar,count(*,
 	GaugeMassiveReps,FermionMassiveReps,ScalarMassiveReps*)
-},
-(*
-	
-*)
-	PosVector=PrintGaugeRepPositions[];
-	(* TODO fix massive reps as internal variables*)
-	GaugeMassiveReps=Table[SymmetryBreakingGauge[i,vev],{i,1,Length[PosVector]}];
-	
+},	
 	Do[
-		If[!NumericQ[Total[GaugeMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Gauge rep ",ToString[i]," splits into particles with mass squared:"],Bold]];
-			count=0;
-			Do[
-				count++;
-				Print[{i,count},":   ",particle[[2]] ];
-				,{particle,GaugeMassiveReps[[i]]}]
-		]
-	,{i,1,Length[PosVector]}];
-
-	PosFermion=PrintFermionRepPositions[];
-	FermionMassiveReps=Table[SymmetryBreakingFermion[i,vev],{i,1,Length[PosFermion]}];
-	Do[
-		If[!NumericQ[Total[FermionMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Fermion rep ",ToString[i]," splits into particles with mass:"],Bold]];
-			count=0;
-			Do[
-				count++;
-				Print[{i,count},":   ",particle[[2]] ];
-				,{particle,FermionMassiveReps[[i]]}]
-		]
-	,{i,1,Length[PosFermion]}];
-	
-	PosScalar=PrintScalarRepPositions[];
-	ScalarMassiveReps=Table[SymmetryBreakingScalar[i,vev],{i,1,Length[PosScalar]}];
-	
-	Do[
-		If[!NumericQ[Total[ScalarMassiveReps[[i]][[;;,2]],-1]],
-			Print[Style[StringJoin["Scalar rep ",ToString[i]," splits into particles with mass squared:"],Bold]];
-			count=0;
-			Do[
-				count++;
-				Print[{i,count},":   ",particle[[2]] ];
-				,{particle,ScalarMassiveReps[[i]]}]
-		]
-	,{i,1,Length[PosScalar]}];
-	
+		FieldPosition[Field]=PrintFieldRepPositions[Field];
+		(* TODO Gauge fix massive reps as internal variables*)
+		MassiveReps[Field]=Table[SymmetryBreakingField[Field][i,vev],{i,1,Length[FieldPosition[Field]]}];
+		Do[
+			If[!NumericQ[Total[MassiveReps[Field][[i]][[;;,2]],-1]],
+				Print[Style[StringJoin[Field<>" rep ",ToString[i]," splits into particles with mass squared:"],Bold]];
+				count=0;
+				Do[
+					count++;
+					Print[{i,count},":   ",particle[[2]] ];
+					,{particle,MassiveReps[Field][[i]]}]
+			]
+		,{i,1,Length[FieldPosition[Field]]}];
+	,{Field,{"Vector","Fermion","Scalar"}}
+	];
 	
 	If[OptionValue[VevDependentCouplings]==True, (*Additional terms are added to scalar trillinear coupligs if the VevDependentCouplings option is used*)
 		\[Lambda]3=\[Lambda]3+\[Lambda]4 . vev;
@@ -2028,15 +1986,15 @@ Extracting the out-of-eq particles
 (*Adding all remaining particles as light*)
 	posFermions=Position[particleList, _?(# =="F" &)][[;;,1]];
 	NonEqFermions=Table[particleList[[i]][[1]],{i,posFermions}]//Flatten[#]&;
-	LightFermions={Complement[RepToIndices[PrintFermionRepPositions[]],NonEqFermions],"F"};
+	LightFermions={Complement[RepToIndices[PrintFieldRepPositions["Fermion"]],NonEqFermions],"F"};
 	
 	posVectors=Position[particleList, _?(# =="V" &)][[;;,1]];
 	NonEqVectors=Table[particleList[[i]][[1]],{i,posVectors}]//Flatten[#]&;
-	LightVectors={Complement[RepToIndices[PrintGaugeRepPositions[]],NonEqVectors],"V"};
+	LightVectors={Complement[RepToIndices[PrintFieldRepPositions["Vector"]],NonEqVectors],"V"};
 	
 	posScalars=Position[particleList, _?(# =="S" &)][[;;,1]];
 	NonEqScalars=Table[particleList[[i]][[1]],{i,posScalars}]//Flatten[#]&;
-	LightScalars={Complement[RepToIndices[PrintScalarRepPositions[]],NonEqScalars],"S"};
+	LightScalars={Complement[RepToIndices[PrintFieldRepPositions["Scalar"]],NonEqScalars],"S"};
 	
 	If[Length[LightVectors[[1]]]>0,AppendTo[particleListFull,LightVectors]];
 	If[Length[LightFermions[[1]]]>0,AppendTo[particleListFull,LightFermions]];

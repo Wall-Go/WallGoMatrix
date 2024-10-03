@@ -104,17 +104,15 @@ PerformDRhard::usage="\
 Performs the dimensional reduction from hard to soft";
 
 
-PrintGaugeRepPositions::usage="Prints the indices of Gauge reps";
-PrintScalarRepPositions::usage="Prints the indices of Scalar reps";
-PrintFermionRepPositions::usage="Prints the indices of Fermion reps";
+PrintFieldRepPositions::usage="Prints the indices of X={Gauge,Fermion,Scalar} reps";
 
 
 ImportMatrixElements::usage="";
 
 
-SymmetryBreakingGauge::usage="";
+(*SymmetryBreakingGauge::usage="";
 SymmetryBreakingFermion::usage="";
-SymmetryBreakingScalar::usage="";
+SymmetryBreakingScalar::usage="";*)
 
 
 WallGoMatrix::failmsg =

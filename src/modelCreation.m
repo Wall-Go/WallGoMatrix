@@ -298,17 +298,17 @@ RotateToAdjBasis[GroupI_,ScalarRepI_]:=Module[{GroupP=GroupI,ScalarRepP=ScalarRe
 {ScalarVariablesIndices,GaugeIndices};
 
 
-PrintGaugeRepPositions[]:=Module[{},
+PrintFieldRepPositions["Vector"]:=Module[{},
 	Return[GaugeIndices]
 ];
 
 
-PrintFermionRepPositions[]:=Module[{},
+PrintFieldRepPositions["Fermion"]:=Module[{},
 	Return[FermionVariablesIndices]
 ];
 
 
-PrintScalarRepPositions[]:=Module[{},
+PrintFieldRepPositions["Scalar"]:=Module[{},
 	Return[ScalarVariablesIndices]
 ];
 

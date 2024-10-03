@@ -203,8 +203,5 @@ MatrixElements=ExportMatrixElements[
 	{
 		TruncateAtLeadingLog->True,
 		Replacements->{lam4H->0,lam5H->0},
-		Format->{"json","txt"},NormalizeWithDOF->False}];
-
-
-
-
+		Format->{"json","txt"},
+		NormalizeWithDOF->False}];
