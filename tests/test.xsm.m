@@ -129,57 +129,12 @@ one right-handed fermion
 *)
 
 
-Do[Print[s],{s,{"a","b"}}]
-
-
-\!\(\*
-TagBox[
-RowBox[{"(", "", GridBox[{
-{
-RowBox[{"m1", "+", 
-RowBox[{"lam", " ", 
-SuperscriptBox["v", "2"]}]}], "0", "0", "0", "0"},
-{"0", 
-RowBox[{"m1", "+", 
-RowBox[{"3", " ", "lam", " ", 
-SuperscriptBox["v", "2"]}]}], "0", "0", 
-FractionBox[
-RowBox[{"a1", " ", "v"}], "2"]},
-{"0", "0", 
-RowBox[{"m1", "+", 
-RowBox[{"lam", " ", 
-SuperscriptBox["v", "2"]}]}], "0", "0"},
-{"0", "0", "0", 
-RowBox[{"m1", "+", 
-RowBox[{"lam", " ", 
-SuperscriptBox["v", "2"]}]}], "0"},
-{"0", 
-FractionBox[
-RowBox[{"a1", " ", "v"}], "2"], "0", "0", 
-RowBox[{"b2", "+", 
-FractionBox[
-RowBox[{"a2", " ", 
-SuperscriptBox["v", "2"]}], "2"]}]}
-},
-GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
-GridBoxSpacings->{"Columns" -> {Offset[0.27999999999999997`], {Offset[0.7]}, Offset[0.27999999999999997`]}, "Rows" -> {Offset[0.2], {Offset[0.4]}, Offset[0.2]}}], "", ")"}],
-Function[BoxForm`e$, MatrixForm[SparseArray[Automatic, {5, 5}, 0, {1, {{0, 1, 3, 4, 5, 7}, {{1}, {2}, {5}, {3}, {4}, {2}, {5}}}, {$CellContext`m1 + $CellContext`lam $CellContext`v^2, $CellContext`m1 + 3 $CellContext`lam $CellContext`v^2, Rational[1, 2] $CellContext`a1 $CellContext`v, $CellContext`m1 + $CellContext`lam $CellContext`v^2, $CellContext`m1 + $CellContext`lam $CellContext`v^2, Rational[1, 2] $CellContext`a1 $CellContext`v, $CellContext`b2 + Rational[1, 2] $CellContext`a2 $CellContext`v^2}}]]]]\)
-Eigenvalues[%]//MatrixForm
-%[[{1,2}]]["NonzeroValues"]
-
-
 (* ::Subsection:: *)
 (*TopL, TopR*)
 
 
-{{0, 0, 0, 0, 0, 0, 2^Rational[-1, 2] v yt1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 2^Rational[-1, 2] v yt1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 2^Rational[-1, 2] v yt1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {2^Rational[-1, 2] v yt1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 2^Rational[-1, 2] v yt1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 2^Rational[-1, 2] v yt1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}//MatrixForm
-
-
-?SymmetryBreaking
-
-
 vev={0,v,0,0,0};
-SymmetryBreaking[vev]
+SymmetryBreaking[vev];
 
 
 (*left-handed top-quark*)
@@ -204,6 +159,9 @@ Repb={Join[RepbL[[1]],RepbR[[1]]],"F"};
 Reph=CreateParticle[{{1,2}},"S"];
 Rep\[Phi]0=CreateParticle[{{1,1}},"S"];
 Rep\[Phi]pm=CreateParticle[{{1,3}},"S"];
+Rep\[Phi]0={{1},"S"};
+Rep\[Phi]p={{4},"S"};
+Rep\[Phi]m={{3},"S"};
 
 Reps=CreateParticle[{2},"S"];
 
@@ -213,33 +171,24 @@ RepW=CreateParticle[{{2,1}},"V"];
 RepB=CreateParticle[{{3,1}},"V"];
 
 
-ReptL
-ReptR
-
-
-Reph
-Rep\[Phi]pm
-Rep\[Phi]0
-
-
 VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
 	Table[mw2,{i,1,RepW[[1]]//Length}],
 	Table[mb2,{i,1,RepB[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass={mG2,mh2,mGp2,mGp2,ms2};
+ScalarMass={mG2,mh2,mGm2,mGp2,ms2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mg2,mw2,mb2,mG2,mh2,mGp2,ms2}; 
+UserMasses={mg2,mw2,mb2,mG2,mh2,mGm2,mGp2,ms2}; 
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 ParticleList={
 	Rept,Repb,
 	RepGluon,RepW,RepB,
-	Reph,Rep\[Phi]0,Rep\[Phi]pm,
+	Reph,Rep\[Phi]0,Rep\[Phi]p,Rep\[Phi]m,
 	Reps
 	};
 (*ParticleList={
@@ -251,7 +200,7 @@ ParticleList={
 ParticleName={
 	"Top","Bottom",
 	"Gluon","W","B",
-	"Higgs","Goldstone0","GoldstonePlus",
+	"Higgs","Goldstone0","GoldStoneMinus","GoldstonePlus",
 	"Singlet"};
 (*ParticleName={
 	"TopL","BotL","TopR",
@@ -273,10 +222,15 @@ MatrixElements=ExportMatrixElements[
 	ParticleName,
 	ParticleMasses,
 	{
-		TruncateAtLeadingLog->True,
+		Verbose->True,
+		(*TruncateAtLeadingLog->True,*)
 		Replacements->{gw->0,g1->0},
 		NormalizeWithDOF->False,
 		Format->{"json","txt"}}];
+
+
+(* ::Section:: *)
+(*Tests*)
 
 
 (* ::Subsubsection:: *)
@@ -285,7 +239,7 @@ MatrixElements=ExportMatrixElements[
 
 1/2*M[0,0,2,2]/.MatrixElements/.{mq2->0}//Expand
 1/2*M[0,2,0,2]/.MatrixElements/.{mq2->0}//Expand
-1/2*(M[0,1,0,1]+M[0,9,0,9])/.MatrixElements/.{mq2->0,yt1->0}//Expand
+1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{mq2->0,yt1->0}//Expand
 
 
 (* ::Subsubsection:: *)
@@ -296,21 +250,17 @@ MatrixElements=ExportMatrixElements[
 1/2*M[0,0,6,2]/.MatrixElements/.{mq2->0}//Expand
 
 
-1/2*M[0,1,7,2]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,1,8,2]/.MatrixElements/.{mq2->0}//Expand
 
 
 1/2*M[0,2,0,5]/.MatrixElements/.{mq2->0}//Expand
 1/2*M[0,2,0,6]/.MatrixElements/.{mq2->0}//Expand
 
 
-1/2*M[0,2,1,6]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,6,1,2]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,2,1,8]/.MatrixElements/.{mq2->0}//Expand
 
 
-1/2*M[0,2,1,7]/.MatrixElements/.{mq2->0}//Expand
-
-
-1/2*M[0,7,1,2]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,8,1,2]/.MatrixElements/.{mq2->0}//Expand
 
 
 (* ::Subsubsection:: *)
@@ -321,13 +271,13 @@ MatrixElements=ExportMatrixElements[
 1/2*M[0,0,6,6]/.MatrixElements/.{mq2->0}//Expand
 
 
-1/2*M[0,0,7,7]/.MatrixElements/.{mq2->0}//Expand
+1/2*(M[0,0,7,7]+M[0,0,8,8])/.MatrixElements/.{mq2->0}//Expand
 
 
 1/2*M[0,0,5,6]/.MatrixElements/.{mq2->0}//Expand
 
 
-1/2*M[0,1,5,7]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,1,5,8]/.MatrixElements/.{mq2->0}//Expand
 1/2*M[0,1,6,7]/.MatrixElements/.{mq2->0}//Expand
 
 
@@ -337,12 +287,8 @@ MatrixElements=ExportMatrixElements[
 1/2*M[0,6,6,0]/.MatrixElements/.{mq2->0}//Expand
 
 
-1/2*M[0,7,5,1]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,8,5,1]/.MatrixElements/.{mq2->0}//Expand
 1/2*M[0,7,6,1]/.MatrixElements/.{mq2->0}//Expand
 
 
-1/2*M[0,7,5,1]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,7,7,1]/.MatrixElements/.{mq2->0}//Expand
-
-
-StringTake["YourStringHere", 1]
+1/2*M[0,7,7,0]/.MatrixElements/.{mq2->0}//Expand

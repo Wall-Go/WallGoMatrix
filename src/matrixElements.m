@@ -119,10 +119,10 @@ CreateParticle[Indices_,Type_]:=Block[
 
 	FieldPosition=PrintFieldRepPositions[Field];
 	Do[
-		If[Length[i]>=2, (*if there is more than 1 argument the SymmetryBreakingGauge[] split is assumed*)
-				AppendTo[Particle,{MassiveReps[Field][[i[[1]]]][[i[[2]]]][[1]]}]
-			,
-				AppendTo[Particle,{RepToIndices[{FieldPosition[[i]]}]}]
+		If[Length[i]>=2,
+			(*if there is more than 1 argument the SymmetryBreaking["X"] split is assumed*)
+			AppendTo[Particle,{MassiveReps[Field][[i[[1]]]][[i[[2]]]][[1]]}],
+			AppendTo[Particle,{RepToIndices[{FieldPosition[[i]]}]}]
 		];
 	,{i,Indices}];
 	Return[{Flatten[Particle],Type}]
@@ -186,7 +186,6 @@ SymmetryBreakingField["Scalar"][Indices_,vev_] :=Module[
 	Finds the masses for the fermion-representation Indices.
 *)
 	PosScalar=PrintFieldRepPositions["Scalar"];
-	Print[PosScalar];
 	
 (*Scalars*)
 	massS=(
@@ -195,19 +194,14 @@ SymmetryBreakingField["Scalar"][Indices_,vev_] :=Module[
 		+ (vev . \[Lambda]3)
 		)//Normal//SparseArray;
 	scalarInd=Delete[massS//ArrayRules,-1]/.(({i1_,i2_}->x_)->i1);
-	Print[massS//MatrixForm];
-	Print[scalarInd];
 	
 	posHeavy=Intersection[RangeToIndices[PosScalar[[Indices]]],scalarInd];
 	posLight=Complement[RangeToIndices[PosScalar[[Indices]]],scalarInd];
-	Print[posHeavy];
-	Print[posLight];
 	
 	If[Length[massS[[posHeavy,;;]]]==0,
 			rep={{posLight,0}};
 		,	
 			val=massS[[posHeavy,;;]]["NonzeroValues"]//DeleteDuplicates;
-			Print[val];
 			pos=Table[i,{i,Length[posHeavy]}];
 	
 			rep={};
@@ -258,7 +252,6 @@ SymmetryBreakingField["Fermion"][Indices_,vev_] :=Module[
 			AppendTo[rep,{posLight,0}];
 			If[posLight=={},rep=Drop[rep,-1]];
 	];
-	Print[rep];
 	Return[rep]
 ]
 
@@ -1953,8 +1946,8 @@ collisions = {
 };
 
 CollEllTotal = 
-  Map[
-   ExtractOutOfEqElement[#][particleList, LightParticles, ParticleMasses] &, 
+  Map[(If[bVerbose,Print[#]];
+   ExtractOutOfEqElement[#][particleList, LightParticles, ParticleMasses])&, 
    collisions
   ]//Flatten[#,1]&;
  
@@ -2011,6 +2004,15 @@ Extracting the out-of-eq particles
 
 GenerateMatrixElements[MatrixElements_,Cij_,particleListFull_,LightParticles_,ParticleMasses_,OutOfEqParticles_]:=
 Block[{Elem},
+
+	Do[
+		If[item[[1]] === {},
+			Message[WallGoMatrix::failmsg,
+				"Found empty particle species "<>ToString[item]<>" in "<>ToString[particleListFull]];
+				Abort[];
+		],
+	    {item, particleListFull}
+	];
 
 	MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles,ParticleMasses];
 		

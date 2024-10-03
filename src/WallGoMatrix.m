@@ -753,6 +753,7 @@ Options[ExportMatrixElements]={
 	Replacements->{},
 	NormalizeWithDOF->True,
 	TruncateAtLeadingLog->True,
+	Verbose->False,
 	Format->"none"};
 
 
@@ -770,6 +771,9 @@ Block[
 	
 (*Specifies if only leading log terms are taken into account or not*)
 	bTruncateAtLeadingLog = OptionValue[TruncateAtLeadingLog];
+	
+(*Specifies if Output should be verbose*)
+	bVerbose = OptionValue[Verbose];
 
 (*Splits ParticleList into out-of-eq and light particles*)
 	ExtractLightParticles[particleList,OutOfEqParticles,particleListFull,LightParticles];
