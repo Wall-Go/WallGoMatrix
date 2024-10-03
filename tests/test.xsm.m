@@ -19,7 +19,7 @@ $LoadGroupMath=True;
 (*see 1506.04741 [hep-ph]*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -181,7 +181,7 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mg2,mw2,mb2,mG2,mh2,mGm2,mGp2,ms2}; 
+UserMasses={mq2,mg2,mw2,mb2,mG2,mh2,mGm2,mGp2,ms2}; 
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -292,3 +292,59 @@ MatrixElements=ExportMatrixElements[
 
 
 1/2*M[0,7,7,0]/.MatrixElements/.{mq2->0}//Expand
+
+
+file=FileNameJoin[{NotebookDirectory[],"qcd.test.json"}];
+{particleNames,parameters,FeynMatrixElements}=ImportMatrixElements[file];
+
+
+(* ::Section:: *)
+(*Tests*)
+
+
+symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
+fixConvention[arg_]:=symmetriseTU[arg/.{s->(-t-u)}]//Expand//Simplify//Expand
+removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
+
+
+(* ::Subsection:: *)
+(*Test with [Hyperlink[1506.04741,{URL["https://arxiv.org/pdf/1506.04741"], None},Apply[Sequence, {ActiveStyle -> {"HyperlinkActive"}, BaseStyle -> {"Hyperlink"}, HyperlinkAction -> "Recycled"}]]]*)
+
+
+testList={};
+
+
+(* ::Subsubsection:: *)
+(*O(g3^4)*)
+
+
+(*tt->gg*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,0,2,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	128/3 g3^4(u/t+t/u)//fixConvention//removeMissing
+]];
+
+
+(*tg->tg*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,2,0,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	-(128/3)g3^4 s/u+96*g3^4 (s^2+u^2)/t^2//fixConvention//removeMissing
+]];
+
+
+(*tq->tq*)
+(*has additional yt^2 g3^2 term than reference*)
+AppendTo[testList,
+TestCreate[
+	1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{yt1->0}/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	160*g3^4 (u^2+s^2)/t^2//fixConvention//removeMissing
+]];
+
+
+report=TestReport[testList]
+report["ResultsDataset"]
+
+
+
