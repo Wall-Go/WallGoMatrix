@@ -1,14 +1,12 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-(*<<../DRalgo/DRalgo.m
-<<../src/matrixElements.old.m*)
 <<../src/WallGoMatrix.m
 
 
@@ -19,7 +17,7 @@ $LoadGroupMath=True;
 (*see 1506.04741 [hep-ph]*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -108,10 +106,10 @@ InputInv={{1,1,2},{False,False,True}};
 YukawaDoublet1=CreateInvariantYukawa[Group,RepScalar,RepFermion3Gen,InputInv]//Simplify;
 
 
-Ysff=-yt1*GradYukawa[YukawaDoublet1[[1]]];
+Ysff=-yt*GradYukawa[YukawaDoublet1[[1]]];
 
 
-YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt1>0}]];
+YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt>0}]];
 
 
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
@@ -191,22 +189,11 @@ ParticleList={
 	Reph,Rep\[Phi]0,Rep\[Phi]p,Rep\[Phi]m,
 	Reps
 	};
-(*ParticleList={
-	ReptL,RepbL,ReptR,
-	RepGluon,RepW,RepB,
-	Reph,Rep\[Phi]0,Rep\[Phi]pm,
-	Reps
-	};*)
 ParticleName={
 	"Top","Bottom",
 	"Gluon","W","B",
 	"Higgs","Goldstone0","GoldStoneMinus","GoldstonePlus",
 	"Singlet"};
-(*ParticleName={
-	"TopL","BotL","TopR",
-	"Gluon","W","B",
-	"Higgs","Goldstone0","GoldstonePlus",
-	"Singlet"};*)
 
 
 (*
@@ -230,19 +217,19 @@ MatrixElements=ExportMatrixElements[
 
 
 (* ::Section:: *)
-(*Tests*)
+(*Tests try*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(g3^4)*)
 
 
 1/2*M[0,0,2,2]/.MatrixElements/.{mq2->0}//Expand
 1/2*M[0,2,0,2]/.MatrixElements/.{mq2->0}//Expand
-1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{mq2->0,yt1->0}//Expand
+1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{mq2->0,yt->0}//Expand
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(g3^2*yt^2)*)
 
 
@@ -294,10 +281,6 @@ MatrixElements=ExportMatrixElements[
 1/2*M[0,7,7,0]/.MatrixElements/.{mq2->0}//Expand
 
 
-file=FileNameJoin[{NotebookDirectory[],"qcd.test.json"}];
-{particleNames,parameters,FeynMatrixElements}=ImportMatrixElements[file];
-
-
 (* ::Section:: *)
 (*Tests*)
 
@@ -314,7 +297,7 @@ removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(g3^4)*)
 
 
@@ -322,7 +305,8 @@ testList={};
 AppendTo[testList,
 TestCreate[
 	1/2*M[0,0,2,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	128/3 g3^4(u/t+t/u)//fixConvention//removeMissing
+	128/3 g3^4(u/t+t/u)//fixConvention//removeMissing,
+	TestID->"tt->gg"
 ]];
 
 
@@ -330,7 +314,8 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	1/2*M[0,2,0,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-(128/3)g3^4 s/u+96*g3^4 (s^2+u^2)/t^2//fixConvention//removeMissing
+	-(128/3)g3^4 s/u+96*g3^4 (s^2+u^2)/t^2//fixConvention//removeMissing,
+	TestID->"tg->tg"
 ]];
 
 
@@ -338,9 +323,190 @@ TestCreate[
 (*has additional yt^2 g3^2 term than reference*)
 AppendTo[testList,
 TestCreate[
-	1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{yt1->0}/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	160*g3^4 (u^2+s^2)/t^2//fixConvention//removeMissing
+	1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{yt->0}/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	160*g3^4 (u^2+s^2)/t^2//fixConvention//removeMissing,
+	TestID->"tq->tq"
 ]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*O(g3^2*yt^2)*)
+
+
+	1/2*M[0,0,5,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing
+	8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing
+
+
+(*tt->hg*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,0,5,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing,
+	TestID->"tt->hg"
+]];
+(*tt->\[Phi]0 g*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,0,6,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing,
+	TestID->"tt->\[Phi]0g"
+]];
+
+
+(*tt->\[Phi]+ g*)
+AppendTo[testList,
+TestCreate[
+	1/2*(M[0,1,2,8]+M[0,1,8,2])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing,
+	TestID->"tt->\!\(\*SuperscriptBox[\(\[Phi]\), \(+\)]\)g"
+]];
+
+
+(*tg->th*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,2,0,5]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
+	TestID->"tg->th"
+]];
+(*tg->t\[Phi]0*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,2,0,6]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
+	TestID->"tg->t\[Phi]0"
+]];
+
+
+(*tg->b\[Phi]+*)
+AppendTo[testList,
+TestCreate[
+	1/2*(M[0,2,1,8]+M[0,2,8,1])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
+	TestID->"tg->\!\(\*SuperscriptBox[\(b\[Phi]\), \(+\)]\)"
+]];
+
+
+(*t\[Phi]-->bg*)
+AppendTo[testList,
+TestCreate[
+	1/2*(M[0,8,1,2]+M[0,8,2,1])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
+	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(-\)]\)->bg"
+]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*O(yt^4)*)
+
+
+(*tt->hh*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,0,5,5]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	(3 t yt^4)/(2 u)+(3 u yt^4)/(2 t)//fixConvention//removeMissing,
+	TestID->"tt->hh"
+]];
+(*tt->\[Phi]0\[Phi]0*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,0,6,6]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	(3 t yt^4)/(2 u)+(3 u yt^4)/(2 t)//fixConvention//removeMissing,
+	TestID->"tt->\[Phi]0\[Phi]0"
+]];
+
+
+(*tt->\[Phi]^+\[Phi]^-*)
+AppendTo[testList,
+TestCreate[
+	1/2*(M[0,0,7,7]+M[0,0,8,8])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	3*yt^4*u/t//fixConvention//removeMissing,
+	TestID->"tt->\!\(\*SuperscriptBox[\(\[Phi]\), \(+\)]\)\!\(\*SuperscriptBox[\(\[Phi]\), \(-\)]\)"
+]];
+
+
+(*tt->h\[Phi]0*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,0,5,6]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	(3 t yt^4)/(2 u)+(3 u yt^4)/(2 t)//fixConvention//removeMissing,
+	TestID->"tt->h\[Phi]0"
+]];
+
+
+(*tt->h\[Phi]+*)
+AppendTo[testList,
+TestCreate[
+	1/2*(M[0,1,5,8]+M[0,1,8,5])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	3/2*yt^4*u/t//fixConvention//removeMissing,
+	TestID->"tt->\!\(\*SuperscriptBox[\(h\[Phi]\), \(+\)]\)"
+]];
+(*tt->\[Phi]0\[Phi]+*)
+AppendTo[testList,
+TestCreate[
+	1/2*(M[0,1,6,8]+M[0,1,8,6])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	3/2*yt^4*u/t//fixConvention//removeMissing,
+	TestID->"tt->\!\(\*SuperscriptBox[\(\[Phi]0\[Phi]\), \(+\)]\)"
+]];
+
+
+(*th->ht*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,5,5,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	-3/2*yt^4*s/t//fixConvention//removeMissing,
+	TestID->"th->th"
+]];
+(*th->\[Phi]0t*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,5,6,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	-3/2*yt^4*s/t//fixConvention//removeMissing,
+	TestID->"th->\[Phi]0t"
+]];
+(*t\[Phi]0->ht*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,6,5,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	-3/2*yt^4*s/t//fixConvention//removeMissing,
+	TestID->"t\[Phi]0->ht"
+]];
+(*t\[Phi]0->\[Phi]0t*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,6,6,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	-3/2*yt^4*s/t//fixConvention//removeMissing,
+	TestID->"t\[Phi]0->\[Phi]0t"
+]];
+
+
+(*t\[Phi]-->hb*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,8,5,1]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	3/2*yt^4*u/t//fixConvention//removeMissing,
+	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(-\)]\)->hb"
+]];
+(*t\[Phi]-->\[Phi]0b*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,8,6,1]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	3/2*yt^4*u/t//fixConvention//removeMissing,
+	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(-\)]\)->\[Phi]0b"
+]];
+
+
+(*t\[Phi]+->\[Phi]+t*)
+AppendTo[testList,
+TestCreate[
+	1/2*M[0,8,6,1]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	3*yt^4*u/t//fixConvention//removeMissing,
+	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(+\)]\)->\!\(\*SuperscriptBox[\(\[Phi]\), \(+\)]\)t"
+]];
+
+
+(* ::Subsection:: *)
+(*Report*)
 
 
 report=TestReport[testList]
