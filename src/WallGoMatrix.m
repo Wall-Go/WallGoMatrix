@@ -69,6 +69,21 @@ Print[Grid[{{Image[WallGoMatrixLoad,ImageSize->140],Row[result,"\n",BaseStyle->(
 
 
 (*List of public functions*)
+ImportModel::usage="\
+ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False,Mode->ModeNumber] \
+Loads the model and creates help tensors. Here,
+gvvv:  structure constants
+gvff:  vector-fermion trilinear couplings
+gvss:  vector-scalar trilinear couplings
+\[Lambda]1:    scalar tadpole couplings
+\[Lambda]3:    cubic couplings
+\[Lambda]4:    quartic couplings
+\[Mu]ij:   scalar-mass matrix
+\[Mu]IJ:   fermion-mass matrices
+\[Mu]IJC:  fermion-mass matrices
+Ysff:  Yukawa couplings
+YsffC: Yukawa couplings.
+";
 
 CreateParticle::usage=
 "CreateOutOfEq[{{\!\(\*SubscriptBox[\(r\), \(1\)]\),\!\(\*SubscriptBox[\(m\), \(1\)]\)},...,{\!\(\*SubscriptBox[\(r\), \(n\)]\),\!\(\*SubscriptBox[\(m\), \(n\)]\)}},\"R\"] is a function that groups n particles into one representation for
@@ -148,8 +163,9 @@ Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Pri
 	Mode=2 calculates everything, Mode=1 only calculates LO masses and couplings
 	Mode=0 only calculates LO masses
 *)
-Options[ImportModelDRalgo]={
-	Verbose -> False,Mode->2,
+Options[ImportModel]={
+	Verbose->False,
+	Mode->2,
 	Dim6->False,
 	Normalization4D->False,
 	AutoRG->True}
@@ -174,7 +190,7 @@ Get[FileNameJoin[{$DRalgoDirectory,"matrixelements.m"}]];(*Loads matrix element 
 	Defines internal tensors from the loaded model. Also creates help-tensors used for
 	intermediate calculations.
 *)
-ImportModelDRalgo[GroupI_,gvvvI_,gvffI_,gvssI_,\[Lambda]1I_,\[Lambda]3I_,\[Lambda]4I_,\[Mu]ijI_,\[Mu]IJFI_,\[Mu]IJFCI_,YsffI_,YsffCI_, OptionsPattern[]]:=Module[
+ImportModel[GroupI_,gvvvI_,gvffI_,gvssI_,\[Lambda]1I_,\[Lambda]3I_,\[Lambda]4I_,\[Mu]ijI_,\[Mu]IJFI_,\[Mu]IJFCI_,YsffI_,YsffCI_, OptionsPattern[]]:=Module[
 {
 	GroupP=GroupI,gvvvP=gvvvI,gvffP=gvffI,gvssP=gvssI,\[Lambda]1IP=\[Lambda]1I,\[Lambda]3P=\[Lambda]3I,\[Lambda]4P=\[Lambda]4I,
 	\[Mu]ijP=\[Mu]ijI,\[Mu]IJFP=\[Mu]IJFI,\[Mu]IJFCP=\[Mu]IJFCI,YsffP=YsffI,YsffCP=YsffCI},

@@ -19,7 +19,7 @@ $LoadGroupMath=True;
 (*see 1506.04741 [hep-ph]*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -114,7 +114,7 @@ Ysff=-yt1*GradYukawa[YukawaDoublet1[[1]]];
 YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt1>0}]];
 
 
-ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
+ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
 
 
 (* ::Section:: *)
@@ -223,7 +223,7 @@ MatrixElements=ExportMatrixElements[
 	ParticleMasses,
 	{
 		Verbose->True,
-		(*TruncateAtLeadingLog->True,*)
+		TruncateAtLeadingLog->True,
 		Replacements->{gw->0,g1->0},
 		NormalizeWithDOF->False,
 		Format->{"json","txt"}}];
