@@ -720,7 +720,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2-D*)
 
 
@@ -816,20 +816,21 @@ If[
 
 (*The result*)
 	(*SS->S->FF squared*)
-	TotRes=  ASSY *TotalConj[CYS Conjugate[CYS]];
+	TotRes=ASSY * TotalConj[CYS*Conjugate[CYS]];
 	
 	(*Squared Yukawa diagrams with fermion exchanges*)
-	TotRes+=A   TotalConj[CYT Conjugate[CYT]]; (*squared t-channel diagram*)
-	TotRes+=A   TotalConj[CYU Conjugate[CYU]]; (*squared u-channel diagram*)
-	TotRes+=-A  TotalConj[CYU CYT+CYT CYU]; (*mixed u & t-channel diagrams*)
+	TotRes+=+A * TotalConj[CYT*Conjugate[CYT]]; (*squared t-channel diagram*)
+	TotRes+=+A * TotalConj[CYU*Conjugate[CYU]]; (*squared u-channel diagram*)
+	TotRes+=-A * TotalConj[CYU*CYT+CYT*CYU]; (*mixed u & t-channel diagrams*)
 	
 	(*Squared s-channel diagram with a vector boson*)
-	TotRes+=4*A*TotalConj[CVS Conjugate[CVS]]; 
+	TotRes+=4*A*TotalConj[CVS*Conjugate[CVS]]; 
 	
 	(*Mix between vector- and fermion-exchange diagrams*)
-	TotRes+=-2*A*TotalConj[-I(CYT+CYU) Conjugate[CVS]+I*CVS Conjugate[(CYT+CYU)]]; 
-
-
+	TotRes+=-2*A*TotalConj[
+		-I(CYT+CYU)*Conjugate[CVS]
+		+I*CVS*Conjugate[(CYT+CYU)]
+		]; 
 
 (*The full result*)
 	Return[2*Refine[TotRes,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
@@ -908,9 +909,11 @@ SortF1S1toF1V1[L_]:=Block[{helpList,ordering,kinFlip},
 
 
 CreateMatrixElementF1S1toF1V1[particle1_,particle2_,particle3_,particle4_,fermionMass_]:=
-Block[{s,t,u,gTensor,gTensorC,gTensorVFC,gTensorVF,gTensorVS,SortHelp,
-		fermionPropS,particleNull,gTensorF,YTensor,CS,resTot,
-		YTensor2,gTensorF2,fermionPropU,CU,kinFlip,t2,u2},
+Block[{
+	s,t,u,gTensor,gTensorC,gTensorVFC,gTensorVF,gTensorVS,SortHelp,
+	fermionPropS,particleNull,gTensorF,YTensor,CS,resTot,
+	YTensor2,gTensorF2,fermionPropU,CU,kinFlip,t2,u2
+},
 (*
 	This module returns the squared matrix element of FS->FV summed over all quantum numbers of the incoming particles.
 	If the incoming particles are not of the form FSFVFF the routine returns 0.
@@ -952,9 +955,9 @@ If[ (
 	CU=Contract[YTensor2 . fermionPropU ,gTensorF2,{{3,6}}]//OrderArray[#,4,1,2,3]&;
 
 (*Collecting the final result*)		
-	resTot=2*s*u* TotalConj[CS Conjugate[CS]]; (*Squared s-channel*)
-	resTot+=2*s*u* TotalConj[CU Conjugate[CU]]; (*Squared u-channel*)
-	resTot+=- 2*s*u* TotalConj[CS Conjugate[CU]+CU Conjugate[CS]]; (*Mixed s & u channel*)
+	resTot=+2*s*u* TotalConj[CS*Conjugate[CS]]; (*Squared s-channel*)
+	resTot+=+2*s*u* TotalConj[CU*Conjugate[CU]]; (*Squared u-channel*)
+	resTot+=-2*s*u* TotalConj[CS*Conjugate[CU]+CU*Conjugate[CS]]; (*Mixed s & u channel*)
 	
 	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t2,u->u2}/.{t2->u,u2->t};];
 	

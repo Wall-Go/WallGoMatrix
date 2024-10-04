@@ -396,7 +396,7 @@ TestCreate[
 ]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*O(yt^4)*)
 
 
@@ -499,7 +499,7 @@ TestCreate[
 (*t\[Phi]+->\[Phi]+t*)
 AppendTo[testList,
 TestCreate[
-	1/2*M[0,8,6,1]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	1/2*M[0,7,7,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
 	3*yt^4*u/t//fixConvention//removeMissing,
 	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(+\)]\)->\!\(\*SuperscriptBox[\(\[Phi]\), \(+\)]\)t"
 ]];
@@ -511,6 +511,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

@@ -157,14 +157,14 @@ ParticleList={RepScalar,RepFermionL,RepFermionR};
 (*Defining various masses and couplings*)
 
 
-VectorMass=Table[mv,{i,1,RepZ[[1]]//Length}];
-FermionMass=Table[mf,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms,{i,1,Length[gvss[[1]]]}];
+VectorMass=Table[mv2,{i,1,RepZ[[1]]//Length}];
+FermionMass=Table[mf2,{i,1,Length[gvff[[1]]]}];
+ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={ms,mf,mf};
+UserMasses={ms2,mf2,mf2};
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -181,7 +181,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
+	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
 
 
 MatrixElements

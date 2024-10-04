@@ -125,11 +125,6 @@ PrintFieldRepPositions::usage="Prints the indices of X={Gauge,Fermion,Scalar} re
 ImportMatrixElements::usage="";
 
 
-(*SymmetryBreakingGauge::usage="";
-SymmetryBreakingFermion::usage="";
-SymmetryBreakingScalar::usage="";*)
-
-
 WallGoMatrix::failmsg =
 "Error! WallGoMatrix has encountered a fatal problem and must abort the computation. \
 The problem reads: `1`";
@@ -143,7 +138,7 @@ CompareInvariants::usage="\
 Finds relations between couplings by calculating basis-invariant tensors";
 
 
-$DRalgoDirectory=DirectoryName[$InputFileName];
+$WallGoMatrixDirectory=DirectoryName[$InputFileName];
 
 
 (*
@@ -160,7 +155,8 @@ Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Pri
 
 (*
 	Verbose=True removes progress messages.
-	Mode=2 calculates everything, Mode=1 only calculates LO masses and couplings
+	Mode=2 calculates everything,
+	Mode=1 only calculates LO masses and couplings
 	Mode=0 only calculates LO masses
 *)
 Options[ImportModel]={
@@ -177,9 +173,10 @@ Begin["`Private`"]
 (*
 	Loads all functions.
 *)
-Get[FileNameJoin[{$DRalgoDirectory,"modelCreation.m"}]];(*Loads DRalgo model creation*)
-(*Get[FileNameJoin[{$DRalgoDirectory,"HardToSoft.m"}]];(*Loads Hard -> Soft functions*)*)
-Get[FileNameJoin[{$DRalgoDirectory,"matrixelements.m"}]];(*Loads matrix element creation*)
+(*Loads DRalgo model creation*)
+Get[FileNameJoin[{$WallGoMatrixDirectory,"modelCreation.m"}]];
+(*Loads matrix element creation*)
+Get[FileNameJoin[{$WallGoMatrixDirectory,"matrixelements.m"}]];
 
 
 (* ::Section:: *)
@@ -348,43 +345,6 @@ RelationsBVariables[list_,listVar_]:=Module[{L=list,LV=listVar},
 	];
 	LVTemp
 ]
-
-
-(*
-	Creates a list of all possible couplings that can appear in
-	1-loop matching relations
-	Note that this does not include couplings in debye/scalar masses
-	at 1-loop level
-*)
-CreateBasisVanDeVis[]:=Module[{},
-(* This module received founding from the fish *)
-
-	FermionFamVar=Normal[NFMat]//Variables;
-	ScalVar=\[Lambda]4//Normal//Variables;
-
-	GaugeVarPre=Join[Normal[gvvv]//Variables,Normal[gvff]//Variables,Normal[gvss]//Variables]//DeleteDuplicates; (*Includes possible non-numeric charges*)
-	GaugeCharge=Complement[GaugeVarPre,GaugeCouplingNames];(*Possible non-numeric gauge charges*)
-
-	GaugeVarHelp=Table[i*j,{i,GaugeCouplingNames},{j,GaugeCharge}];
-	GaugeVar=Join[GaugeCouplingNames,GaugeVarHelp];
-
-	YukVar=Normal[Ysff]//Variables;
-	AuxVar={1,Lb,Lf};
-	AuxVar=Join[AuxVar,FermionFamVar]//DeleteDuplicates;
-	varHelp=Join[ScalVar,GaugeVar,YukVar];
-	t2=Table[i*j,{i,varHelp},{j,varHelp}]//Flatten[#]&//DeleteDuplicates;
-	t3G=Table[i*j*k,{i,ScalVar},{j,GaugeVar},{k,GaugeVar}]//Flatten[#]&//DeleteDuplicates;
-	t3F=Table[i*j*k,{i,ScalVar},{j,YukVar},{k,YukVar}]//Flatten[#]&//DeleteDuplicates;
-	t4=Table[i*j*k*l,{i,GaugeVar},{j,GaugeVar},{k,GaugeVar},{l,GaugeVar}]//Flatten[#]&//DeleteDuplicates;
-	t4F=Table[i*j*k*l,{i,YukVar},{j,YukVar},{k,YukVar},{l,YukVar}]//Flatten[#]&//DeleteDuplicates;
-	t4FG=Table[i*j*k*l,{i,YukVar},{j,YukVar},{k,GaugeVar},{l,GaugeVar}]//Flatten[#]&//DeleteDuplicates;
-	basPre=Join[varHelp,t2,t3G,t3F,t4,t4F,t4FG];
-
-	basDR=Table[i*j*k,{i,basPre},{j,AuxVar},{k,{1,T,T^2}}]//Flatten[#]&//DeleteDuplicates;
-]
-
-
-{basDR};
 
 
 (*
