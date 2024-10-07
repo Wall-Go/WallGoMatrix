@@ -7,8 +7,6 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-(*<<../DRalgo/DRalgo.m
-<<../src/matrixElements.old.m*)
 <<../src/WallGoMatrix.m
 
 
@@ -16,7 +14,7 @@ $LoadGroupMath=True;
 (*QCD*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -68,9 +66,6 @@ Rep1=CreateParticle[{1,2},"F"];
 RepGluon=CreateParticle[{1},"V"];
 
 
-
-
-
 (*
 These particles do not necessarily have to be out of equilibrium
 the remainin particle content is set as light
@@ -106,6 +101,7 @@ MatrixElements=ExportMatrixElements[
 	ParticleName,
 	ParticleMasses,
 	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
+
 
 
 

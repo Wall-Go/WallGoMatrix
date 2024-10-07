@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 SetDirectory[NotebookDirectory[]];
@@ -80,13 +80,13 @@ one right-handed fermoon
 	reps 5,6 are vector bosons
 *)
 (*left-handed top-quark*)
-ReptL=CreateParticle[{1},"F"];
+ReptL=CreateParticle[{{1,1}},"F"];
 
 (*right-handed top-quark*)
 ReptR=CreateParticle[{2},"F"];
 
-(*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F"];
+(*(*right-handed bottom-quark*)
+RepbR=CreateParticle[{3},"F"];*)
 
 (*Vector bosons*)
 RepGluon=CreateParticle[{1},"V"];
@@ -94,13 +94,6 @@ RepW=CreateParticle[{{2,1}},"V"];
 
 (*Higgs*)
 RepH = CreateParticle[{1},"S"];
-
-
-(*
-These particles do not necessarily have to be out of equilibrium
-the remainin particle content is set as light
-*)
-ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepH};
 
 
 (*Defining various masses and couplings*)
@@ -120,11 +113,18 @@ UserCouplings={gs,gw};
 
 
 (*
+These particles do not necessarily have to be out of equilibrium
+the remaining particle content is set as light
+*)
+ParticleList={ReptL,ReptR,(*RepbR,*)RepGluon,RepW,RepH};
+ParticleName={"TopL","TopR",(*"BotR",*)"Gluon","W","H"};
+
+
+(*
 	output of matrix elements
 *)
-OutputFile="matrixElements.ew";
 SetDirectory[NotebookDirectory[]];
-ParticleName={"TopL","TopR","BotR","Gluon","W","H"};
+OutputFile="matrixElements.ew";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,

@@ -146,11 +146,11 @@ $WallGoMatrixDirectory=DirectoryName[$InputFileName];
 *)
 If[Global`$LoadGroupMath,
 	Get["GroupMath`"];
-	Print["GroupMath is an independent package, and is not part of DRalgo"];
-	Print["Please Cite GroupMath: Comput.Phys.Commun. 267 (2021) 108085 \[Bullet] e-Print: 2011.01764 [hep-th]"];
+	Print["GroupMath is an independent package, and is not part of WallGoMatrix"];
+	Print["Please cite GroupMath: Comput.Phys.Commun. 267 (2021) 108085 \[Bullet] e-Print: \!\(\*TemplateBox[{RowBox[{\"2011.01764\", \" \", \"[\", RowBox[{\"hep\", \"-\", \"th\"}], \"]\"}], {URL[\"https://arxiv.org/abs/2011.01764\"], None}, \"https://arxiv.org/abs/2011.01764\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\n\"HyperlinkTemplate\"]\)"];
 ];
 Print["WallGoMatrix is powered by the DRalgo ModelCreation."]
-Print["Please Cite DRalgo: Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Print: 2205.08815 [hep-ph]"];
+Print["Please cite \!\(\*TemplateBox[{\"DRalgo\", {URL[\"https://github.com/DR-algo/DRalgo\"], None}, \"https://github.com/DR-algo/DRalgo\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\n\"HyperlinkTemplate\"]\): Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Print: \!\(\*TemplateBox[{RowBox[{\"2205.08815\", \" \", \"[\", RowBox[{\"hep\", \"-\", \"ph\"}], \"]\"}], {URL[\"https://arxiv.org/abs/2205.08815\"], None}, \"https://arxiv.org/abs/2205.08815\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\n\"HyperlinkTemplate\"]\)"];
 
 
 (*
