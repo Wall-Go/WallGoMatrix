@@ -1999,7 +1999,9 @@ Extracting the out-of-eq particles
 	LightParticles=Table[i,{i,Length[particleList]+1,Length[particleListFull]}];
 	If[
 		Length[LightParticles]>1,
-		Message[WallGoMatrix::failmsg, "Multiple species declared as light. Only one species allowed. Solution: make additional species explicit in particleList."];
+		Message[WallGoMatrix::failmsg,
+			"Multiple species declared as light in "<>ToString[particleListFull[[LightParticles]]]<>". "<>
+			"Only one species allowed. Solution: make additional species explicit in particleList."];
 		Abort[];
 		]
 ]

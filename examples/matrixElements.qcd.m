@@ -66,13 +66,6 @@ Rep1=CreateParticle[{1,2},"F"];
 RepGluon=CreateParticle[{1},"V"];
 
 
-(*
-These particles do not necessarily have to be out of equilibrium
-the remainin particle content is set as light
-*)
-ParticleList={Rep1,RepGluon};
-
-
 (*Defining various masses and couplings*)
 
 
@@ -88,11 +81,20 @@ UserCouplings={gs};
 
 
 (*
+These particles do not necessarily have to be out of equilibrium
+the remainin particle content is set as light
+*)
+ParticleList={Rep1,RepGluon};
+ParticleName={"Top", "Gluon"};
+ParticleList={Rep1};
+ParticleName={"Top"};
+
+
+(*
 	output of matrix elements
 *)
-OutputFile="matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
-ParticleName={"Top", "Gluon"};
+OutputFile="matrixElements.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -101,7 +103,6 @@ MatrixElements=ExportMatrixElements[
 	ParticleName,
 	ParticleMasses,
 	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
-
 
 
 
