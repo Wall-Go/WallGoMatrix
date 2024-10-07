@@ -86,8 +86,6 @@ the remainin particle content is set as light
 *)
 ParticleList={Rep1,RepGluon};
 ParticleName={"Top", "Gluon"};
-ParticleList={Rep1};
-ParticleName={"Top"};
 
 
 (*

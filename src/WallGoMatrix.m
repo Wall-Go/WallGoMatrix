@@ -625,10 +625,15 @@ results=Map[M[#[[1]]/.List->Sequence]->#[[2]]&,results];
 
 
 
-ExportTo["json"][MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[{toExportJson},
+ExportTo["json"][MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[
+{
+	toExportJson,
+	particleName=ParticleName
+},
 	
 (*Formatting the matrix elements*)
-	toExportJson=makeJsonMatrixElements[ParticleName,UserCouplings,MatrixElement];
+	AppendTo[particleName,"LightParticle"];
+	toExportJson=makeJsonMatrixElements[particleName,UserCouplings,MatrixElement];
 (*Exporting the result*)
 	exportJsonMatrixElements[StringJoin[file,".json"],toExportJson];	
 	Print["Results have been exported to: ", StringJoin[file,".json"]];	
