@@ -14,7 +14,7 @@ $LoadGroupMath=True;
 (*QCD+W boson*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -27,6 +27,7 @@ Rep1={{{1,0},{1}},"L"};
 Rep2={{{1,0},{0}},"R"};
 Rep3={{{1,0},{0}},"R"};
 RepFermion1Gen={Rep1,Rep2,Rep3};
+RepFermion1Gen={Rep1,Rep2};
 
 
 HiggsDoublet={{{0,0},{1}},"C"};
@@ -88,18 +89,19 @@ ReptR=CreateParticle[{2},"F"];
 (*right-handed bottom-quark*)
 RepbR=CreateParticle[{3},"F"];
 
-(*light quarks*)
-RepLight=CreateParticle[{4,5,6,7,8,9},"F"];
-
 (*Vector bosons*)
 RepGluon=CreateParticle[{1},"V"];
 RepW=CreateParticle[{{2,1}},"V"];
 
+(*Higgs*)
+RepH = CreateParticle[{1},"S"];
 
-ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW};
+
 (*
-These particles do not have out-of-eq contributions
+These particles do not necessarily have to be out of equilibrium
+the remainin particle content is set as light
 *)
+ParticleList={ReptL,ReptR,(*RepbR,*)RepGluon,RepW,RepH};
 
 
 (*Defining various masses and couplings*)
@@ -114,8 +116,8 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mg2,mw2,ms2}; 
-UserCouplings=CouplingName;
+UserMasses={mq2,mg2,mw2}; 
+UserCouplings={gs,gw};
 
 
 (*
@@ -123,7 +125,7 @@ UserCouplings=CouplingName;
 *)
 OutputFile="matrixElements.ew";
 SetDirectory[NotebookDirectory[]];
-ParticleName={"TopL","TopR","BotR","Gluon","W"};
+ParticleName={"TopL","TopR","BotR","Gluon","W","H"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -131,22 +133,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	Format->{"json","txt","hdf5"}];
+	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
 
 
 MatrixElements//Expand
-
-
-Import[OutputFile<>".hdf5"]
-
-
-Import[OutputFile<>".hdf5","CouplingInfo"]
-
-
-Import[OutputFile<>".hdf5","ParticleInfo"]
-
-
-Import[OutputFile<>".hdf5","CouplingInfo"]
-
-
-Import[OutputFile<>".hdf5","ParticleInfo"]
