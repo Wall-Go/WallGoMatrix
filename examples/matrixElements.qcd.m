@@ -16,7 +16,7 @@ $LoadGroupMath=True;
 (*QCD*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -56,7 +56,7 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 In DRalgo fermions are Weyl.
 So to create one Dirac we need
 one left-handed and
-one right-handed fermoon
+one right-handed fermion
 *)
 
 
@@ -69,6 +69,13 @@ RepGluon=CreateParticle[{1},"V"];
 
 
 
+
+
+(*
+These particles do not necessarily have to be out of equilibrium
+the remainin particle content is set as light
+*)
+ParticleList={Rep1,RepGluon};
 
 
 (*Defining various masses and couplings*)
@@ -89,8 +96,8 @@ UserCouplings={gs};
 	output of matrix elements
 *)
 OutputFile="matrixElements.qcd.top";
-ParticleList={Rep1};
-ParticleName={"Top"};
+SetDirectory[NotebookDirectory[]];
+ParticleName={"Top", "Gluon"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -98,8 +105,7 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	Format->{"json","txt"}];
-MatrixElements
+	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
 
 
 SetDirectory[NotebookDirectory[]];
