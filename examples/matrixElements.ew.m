@@ -27,7 +27,6 @@ Rep1={{{1,0},{1}},"L"};
 Rep2={{{1,0},{0}},"R"};
 Rep3={{{1,0},{0}},"R"};
 RepFermion1Gen={Rep1,Rep2,Rep3};
-RepFermion1Gen={Rep1,Rep2};
 
 
 HiggsDoublet={{{0,0},{1}},"C"};
@@ -101,7 +100,7 @@ RepH = CreateParticle[{1},"S"];
 These particles do not necessarily have to be out of equilibrium
 the remainin particle content is set as light
 *)
-ParticleList={ReptL,ReptR,(*RepbR,*)RepGluon,RepW,RepH};
+ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepH};
 
 
 (*Defining various masses and couplings*)
