@@ -95,7 +95,7 @@ UserCouplings={gs};
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.qcd.top";
+OutputFile="matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top", "Gluon"};
 MatrixElements=ExportMatrixElements[
@@ -108,28 +108,4 @@ MatrixElements=ExportMatrixElements[
 	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
 
 
-SetDirectory[NotebookDirectory[]];
-OutputFile="matrixElements.qcd";
-ParticleName={"Top","Gluon"};
-ParticleList={Rep1,RepGluon};
-MatrixElements=ExportMatrixElements[
-	OutputFile,
-	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
-MatrixElements
 
-
-Import[OutputFile<>".hdf5"]
-
-
-Import[OutputFile<>".hdf5","MatrixElementsTopTop"]
-
-
-Import[OutputFile<>".hdf5","CouplingInfo"]
-
-
-Import[OutputFile<>".hdf5","ParticleInfo"]
