@@ -12,17 +12,19 @@ for computing the bubble wall speed for cosmological phase transitions.
 
 ## About this project
 
-**WallGo** is an open source code for the computation of the bubble wall
-velocity and bubble wall width in first-order cosmological phase transitions.
-The main WallGo Python package determines the wall velocity and width by
+[**WallGo**](https://github.com/Wall-Go) is an open source code for the
+computation of the bubble wall velocity and bubble wall width in first-order
+cosmological phase transitions. There is a main Python package together with
+two subsidiary software packages.
+
+- [**WallGo**](https://github.com/Wall-Go/WallGo) is the name of the main Python
+package. This determines the wall velocity and width by
 solving the scalar field(s) equation of motion, the Boltzmann equations and
 energy-momentum conservation for the fluid velocity and temperature.
-
-**WallGo** is accompanied by two subsidiary software packages:
-- **WallGoMatrix** computes the relevant matrix elements for the
+- [**WallGoMatrix**](https://github.com/Wall-Go/WallGoMatrix) computes the relevant matrix elements for the
 out-of-equilibrium particles, and is written in Mathematica.
 It builds on existing Mathematica packages DRalgo and GroupMath.
-- **WallGoCollision** performs the higher-dimensional integrals to obtain the
+- [**WallGoCollision**](https://github.com/Wall-Go/WallGoCollision) performs the higher-dimensional integrals to obtain the
  collision terms in the Boltzmann equations, and is written in C++. It also
  has Python bindings so that it can be called directly from Python, but
  still benefits from the speedup from compiled C++ code.
@@ -35,14 +37,14 @@ factors appropriately to yield the 2-to-2 scattering matrix elements.
 ## Installation
 
 **WallGoMatrix** can be installed as a Mathematica package by downloading the
-package
+zip file from the following link:
 
-![Download](download.svg)
+![GitHub Downloads (package, latest release)](https://img.shields.io/github/downloads/Wall-Go/WallGo/latest/total)
 
-The WallGoMatrix directory should be put inside either the base or the user
-Mathematica Applications directory. The locations of these directories can be found
-by inspecting **$BaseDirectory** or **$UserBaseDirectory** within Mathematica.
-Often the paths are the following ones
+Unpack the zip file and then put the WallGoMatrix directory inside either the base
+or the user Mathematica Applications directory. The locations of these directories
+can be found by inspecting **$BaseDirectory** or **$UserBaseDirectory** within
+Mathematica. Often the paths are the following ones
 
 **Linux**
 - /usr/share/Mathematica/Applications
