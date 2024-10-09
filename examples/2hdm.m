@@ -190,8 +190,8 @@ ParticleName={
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.2hdm";
 SetDirectory[NotebookDirectory[]];
+OutputFile="output/matrixElements.2hdm";
 
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -205,3 +205,6 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
+
+
+

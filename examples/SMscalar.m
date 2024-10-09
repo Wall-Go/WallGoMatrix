@@ -11,7 +11,7 @@ $LoadGroupMath=True;
 
 
 (* ::Chapter:: *)
-(*QCD+W boson*)
+(*SM quarks + gauge bosons*)
 
 
 (* ::Section:: *)
@@ -43,16 +43,33 @@ RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
 {gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
 
 
+InputInv={{1,1},{True,False}};
+MassTerm1=CreateInvariant[Group,RepScalar,InputInv][[1]]//Simplify//FullSimplify;
+VMass=m2*MassTerm1;
+\[Mu]ij=GradMass[VMass]//Simplify//SparseArray;
+QuarticTerm1=MassTerm1^2;
+VQuartic=lam1H*QuarticTerm1;
+\[Lambda]4=GradQuartic[VQuartic];
+
 InputInv={{1,1,2},{False,False,True}}; 
 YukawaDoublet=CreateInvariantYukawa[Group,RepScalar,RepFermion3Gen,InputInv]//Simplify;
-Ysff=-GradYukawa[yt*YukawaDoublet[[1]]];
+Ysff=-GradYukawa[yt1*YukawaDoublet[[1]]];
+YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt1>0}]];
 
 
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
 
 
 (* ::Section:: *)
-(*SM quarks + gauge bosons*)
+(*MatrixElements*)
+
+
+(*
+In DRalgo fermions are Weyl.
+So to create one Dirac we need
+one left-handed and
+one right-handed fermion
+*)
 
 
 (* ::Subsection:: *)
@@ -68,14 +85,6 @@ SymmetryBreaking[vev]
 
 
 (*
-In DRalgo fermions are Weyl.
-So to create one Dirac we need
-one left-handed and
-one right-handed fermoon
-*)
-
-
-(*
 	Reps 1-4 are quarks,
 	reps 5,6 are vector bosons
 *)
@@ -85,15 +94,15 @@ ReptL=CreateParticle[{{1,1}},"F"];
 (*right-handed top-quark*)
 ReptR=CreateParticle[{2},"F"];
 
-(*(*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F"];*)
+(*right-handed bottom-quark*)
+RepbR=CreateParticle[{3},"F"];
 
 (*Vector bosons*)
 RepGluon=CreateParticle[{1},"V"];
 RepW=CreateParticle[{{2,1}},"V"];
 
-(*Higgs*)
-RepH = CreateParticle[{1},"S"];
+(*Scalar particles*)
+RepHiggs=CreateParticle[{1},"S"];
 
 
 (*Defining various masses and couplings*)
@@ -108,23 +117,22 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mg2,mw2}; 
-UserCouplings={gs,gw};
+UserMasses={mq2,mg2,mw2,ms2};
+UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 (*
-These particles do not necessarily have to be out of equilibrium
-the remaining particle content is set as light
+These particles do not have out-of-eq contributions
 *)
-ParticleList={ReptL,ReptR,(*RepbR,*)RepGluon,RepW,RepH};
-ParticleName={"TopL","TopR",(*"BotR",*)"Gluon","W","H"};
+ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepHiggs};
+ParticleName={"TopL","TopR","BotR","Gluon","W","Higgs"};
 
 
 (*
 	output of matrix elements
 *)
 SetDirectory[NotebookDirectory[]];
-OutputFile="matrixElements.ew";
+OutputFile="output/matrixElements.scalar";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -132,7 +140,22 @@ MatrixElements=ExportMatrixElements[
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
+	Format->{"json","txt","hdf5"}];
 
 
 MatrixElements//Expand
+
+
+Import[OutputFile<>".hdf5"]
+
+
+Import[OutputFile<>".hdf5","CouplingInfo"]
+
+
+Import[OutputFile<>".hdf5","ParticleInfo"]
+
+
+Import[OutputFile<>".hdf5","CouplingInfo"]
+
+
+Import[OutputFile<>".hdf5","ParticleInfo"]

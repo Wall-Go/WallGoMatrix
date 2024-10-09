@@ -3,15 +3,6 @@
 Quit[];
 
 
-(*SetDirectory[NotebookDirectory[]];
-(*Put this if you want to create multiple model-files with the same kernel*)
-$GroupMathMultipleModels=True;
-$LoadGroupMath=True;
-(*<<../DRalgo/DRalgo.m*)
-<<DRalgo`
-<<../src/matrixElements.old.m*)
-
-
 SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
@@ -171,8 +162,8 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.yukawa";
 SetDirectory[NotebookDirectory[]];
+OutputFile="output/matrixElements.yukawa";
 ParticleName={"Phi","PsiL","PsiR"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,

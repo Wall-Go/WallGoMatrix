@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 SetDirectory[NotebookDirectory[]];
@@ -11,7 +11,7 @@ $LoadGroupMath=True;
 
 
 (* ::Chapter:: *)
-(*QCD+W boson*)
+(*Full Standard Model*)
 
 
 (* ::Section::Closed:: *)
@@ -104,7 +104,6 @@ RepTauL=CreateParticle[{4},"F"];
 RepTauR=CreateParticle[{5},"F"];
 
 
-
 (*Second generation of fermions*)
 RepCharmStrangeL=CreateParticle[{6},"F"];
 RepCharmR=CreateParticle[{7},"F"];
@@ -167,17 +166,24 @@ UserMasses={mq2,ml2,mg2,mw2,mb2,mG2,mH2};
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
-ParticleList={ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,RepCharmStrangeL,RepCharmR,RepStrangeR,RepMuonL,RepMuonR
-			,RepUpDownL,ReUpR,RepDownR,RepElectronL,RepElectronR,RepGluon,RepW,RepB,RepHiggs,RepGoldstone};
-ParticleName={"TopL","BotL","TopR","BotR","tauL","tauR","CharmStrangeL","CharmR","StrangeR","MuonL","MuonR",
-				"UpDownL","UpR","DownR","ElectronL","ElectronR","Gluon","W","B","Higgs","Goldstone"};
+ParticleList={
+	ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,
+	RepCharmStrangeL,RepCharmR,RepStrangeR,RepMuonL,RepMuonR,
+	RepUpDownL,ReUpR,RepDownR,RepElectronL,RepElectronR,RepGluon,
+	RepW,RepB,RepHiggs,RepGoldstone};
+ParticleName={
+	"TopL","BotL","TopR","BotR","tauL","tauR",
+	"CharmStrangeL","CharmR","StrangeR","MuonL","MuonR",
+	"UpDownL","UpR","DownR","ElectronL","ElectronR",
+	"Gluon","W","B","Higgs",
+	"Goldstone"};
 
 
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElementsFull";
 SetDirectory[NotebookDirectory[]];
+OutputFile="output/matrixElementsFull";
 
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -192,8 +198,8 @@ MatrixElements=ExportMatrixElements[
 (*
 	output of matrix elements 
 *)
-OutputFile="matrixElementsFull.LL";
 SetDirectory[NotebookDirectory[]];
+OutputFile="output/matrixElementsFull.LL";
 
 MatrixElements=ExportMatrixElements[
 	OutputFile,

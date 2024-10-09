@@ -7,13 +7,11 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-(*<<../DRalgo/DRalgo.m
-<<../src/matrixElements.old.m*)
 <<../src/WallGoMatrix.m
 
 
 (* ::Chapter:: *)
-(*SM+sr1*)
+(*SM+scalar Singlet*)
 
 
 (*see 2102.11145 [hep-ph]*)
@@ -164,11 +162,9 @@ RepGluon=CreateParticle[{1},"V"];
 RepW=CreateParticle[{{2,1}},"V"];
 RepZ=CreateParticle[{{3,1}},"V"];
 
-
-ParticleList={ReptL,ReptR,RepGluon,RepW,RepZ};
-(*
-These particles do not have out-of-eq contributions
-*)
+(*Higgs*)
+RepH = CreateParticle[{1},"S"];
+RepS = CreateParticle[{2},"S"];
 
 
 VectorMass=Join[
@@ -186,11 +182,17 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 
 
 (*
+These particles do not have out-of-eq contributions
+*)
+ParticleList={ReptL,ReptR,RepGluon,RepW,RepZ,RepH,RepS};
+ParticleName={"TopL","TopR","Gluon","W","Z","H","S"};
+
+
+(*
 	output of matrix elements
 *)
-OutputFile="matrixElements.xsm";
 SetDirectory[NotebookDirectory[]];
-ParticleName={"TopL","TopR","Gluon","W","Z"};
+OutputFile="output/matrixElements.xsm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
@@ -229,11 +231,9 @@ RepGluon=CreateParticle[{1},"V"];
 RepW=CreateParticle[{2},"V"];
 RepZ=CreateParticle[{3},"V"];
 
-
-ParticleList={Rept,RepGluon};
-(*
-These particles do not have out-of-eq contributions
-*)
+(*Higgs*)
+RepH = CreateParticle[{1},"S"];
+RepS = CreateParticle[{2},"S"];
 
 
 VectorMass=Join[
@@ -251,11 +251,17 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 
 
 (*
+These particles do not have out-of-eq contributions
+*)
+ParticleList={Rept,RepGluon,RepW,RepZ,RepH,RepS};
+ParticleName={"Top","Gluon","W","Z","H","S"};
+
+
+(*
 	output of matrix elements
 *)
-OutputFile="matrixElements.xsm.qcd";
 SetDirectory[NotebookDirectory[]];
-ParticleName={"Top","Gluon"};
+OutputFile="output/matrixElements.xsm.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,

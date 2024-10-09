@@ -94,11 +94,11 @@ SymmetryBreaking::usage=
 "Classify different scalar, fermion, and vector representations into respective particles using VEV-induced masses.
 As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(m\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(m\), \(i\)]\) is the label of the particle mass in that representation"
 ExportMatrixElements::usage=
-"ExportMatrixElements[file,particleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,OptionsPattern[]]
-
-generates all possible matrix elements with the external particles specified in particleList.
-The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none ,
-the last two options exports the result in all possible formats, and in none, respectively. A list of matrix elements is returned by the function regardless of the choosen format.";
+"ExportMatrixElements[file,particleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,OptionsPattern[]]\n"<>
+"Generates all possible matrix elements with the external particles specified in particleList.\n"<>
+"The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none, "<>
+"the last two options exports the result in all possible formats, and in none, respectively.\n"<>
+"A list of matrix elements is returned by the function regardless of the choosen format.";
 
 
 AllocateTensors::usage="\
