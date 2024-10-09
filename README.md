@@ -1,4 +1,4 @@
-![WallGo](wallgo.svg)
+![WallGo](docs/wallgo.svg)
 
 # WallGoMatrix
 
