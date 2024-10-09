@@ -7,14 +7,14 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../src/WallGoMatrix.m
+<<../WallGoMatrix.m
 
 
 (* ::Chapter:: *)
 (*QCD*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -101,6 +101,7 @@ MatrixElements=ExportMatrixElements[
 	ParticleName,
 	ParticleMasses,
 	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
+
 
 
 

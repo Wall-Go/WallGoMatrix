@@ -7,7 +7,7 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../src/WallGoMatrix.m
+<<../WallGoMatrix.m
 
 
 (* ::Chapter:: *)
@@ -205,6 +205,4 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
-
-
 
