@@ -3,9 +3,6 @@
 (*Quit[];*)
 
 
-Quit[];
-
-
 (* Check Mathematica version *)
 If[$VersionNumber < 13.3,
   Print["The Mathematica testing framework requires Mathematica version ", requiredVersion," or higher. You are using version ", currentVersion, "."];
@@ -224,8 +221,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
 
 
