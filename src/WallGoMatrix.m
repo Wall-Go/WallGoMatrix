@@ -41,7 +41,7 @@ AppendTo[result,Row[{
 	TexFor["GOGOGOGOGOGOGOGOGOGOGOGO "],
 	TexFor["WallGoMatrix"],
 	TexFor[" GOGOGOGOGOGOGOGOGOGOGGOGOGO"]}]];
-AppendTo[result,Row[{"Version: "//TexFor,"0.02 (30-09-2024)"//TexFor}]];
+AppendTo[result,Row[{"Version: "//TexFor,"0.1.0 (09-10-2024)"//TexFor}]];
 AppendTo[result,Row[{"Authors: "//TexFor,
     Hyperlink["Andreas Ekstedt","https://inspirehep.net/authors/1799400"],", "//TexFor,
     Hyperlink["Oliver Gould","https://inspirehep.net/authors/1606373"],", "//TexFor,
