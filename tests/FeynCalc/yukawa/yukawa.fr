@@ -1,0 +1,112 @@
+(****************************
+        Information
+****************************)
+M$ModelName = "Yukawa";
+
+M$Information = {
+    Authors -> {"O. Gould"},
+    Institutions -> {"U. Nottingham"},
+    Emails -> {"oliver.gould@nottingham.ac.uk"},
+    Date -> "November 19th, 2024"
+};
+
+
+(****************************
+           Indices
+****************************)
+(* only Lorentz *)
+
+
+(****************************
+        Particles
+****************************)
+M$ClassesDescription = {
+
+    (* Real scalar *)
+    S[1] == {
+        ClassName -> Phi,
+        PropagatorLabel -> Phi,
+        PropagatorArrow -> False,
+        SelfConjugate -> True,
+        Mass -> {mPhi, Internal}
+    },
+
+	(* Dirac Fermion *)
+	F[1] == {
+		ClassName -> Psi,
+        PropagatorLabel	-> Psi,
+        PropagatorArrow -> True,
+		SelfConjugate -> False,
+		Mass -> {mPsi, Internal}
+    }
+};
+
+
+(****************************
+        Parameters
+****************************)
+M$Parameters = {
+
+    (* Scalar parameters *)
+    msq == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> msq,
+        Description -> "Scalar mass squared"
+    },
+    g == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> g,
+        Description -> "Scalar cubic coupling"
+    },
+    lam == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> lam,
+        Description -> "Scalar quartic coupling"
+    },
+    mPhi == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> Sqrt[msq],
+        Description -> "Scalar mass"
+    },
+
+	(* Fermion parameters *)
+	mPsi == {
+    	ParameterType -> External,
+    	Value -> mPsi,
+	    ComplexParameter -> False,
+    	Description -> "Fermion mass term"
+	},
+	(* Yukawa coupling *)
+    y == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> y,
+        Description -> "Yukawa coupling"
+    }
+};
+
+
+(****************************
+        Lagrangian
+****************************)
+
+(* Scalar Lagrangian *)
+LScalar := Module[{T, V},
+    T = 1/2 * del[Phi, mu] * del[Phi, mu];
+    V = msq/2 * Phi^2 +
+        g/6 * Phi^3 + lam/24 * Phi^4;
+    T - V
+];
+
+(* Fermion Lagrangian *)
+LFermion := I * Psibar.Ga[mu].del[Psi, mu] - mPsi * Psibar.Psi
+
+(* Yukawa Lagrangian *)
+LYukawa := - y * Phi * Psibar.Psi;
+
+(* Full Lagrangian *)
+L := LScalar + LFermion + LYukawa;
