@@ -3,6 +3,9 @@
 (*Quit[];*)
 
 
+Quit[];
+
+
 (* Check Mathematica version *)
 If[$VersionNumber < 13.3,
   Print["The Mathematica testing framework requires Mathematica version ", requiredVersion," or higher. You are using version ", currentVersion, "."];
@@ -13,8 +16,6 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-(*<<../DRalgo/DRalgo.m
-<<../src/matrixElements.old.m*)
 <<../src/WallgoMatrix.m
 
 
@@ -223,6 +224,8 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
 
 
 

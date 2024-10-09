@@ -2043,7 +2043,7 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 	
 	MatrixElementsF=Map[{
 		Plus@@Table[
-		+SeriesCoefficient[#[[1]]/.{T->xLarge*T,U->xLarge*U},{xLarge,0,-i}]
+		+SeriesCoefficient[#[[1]]/.{T->xLarge*T,U->xLarge*U},{xLarge,Infinity,-i}]
 		,
 		{i,If[#[[2]][[3]]==#[[2]][[4]],2,1],2}],
 		#[[2]]}&,
