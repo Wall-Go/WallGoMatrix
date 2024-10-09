@@ -17,9 +17,10 @@ jobs:
           zip WallGoMatrix_${tag}.zip WallGoMatrix/*
           tar -czf WallGoMatrix_${tag}.tar.gz WallGoMatrix/*
           rm -r WallGoMatrix
+          ls -a
 
       - name: Upload Release Asset
         if: ${{ github.event_name != 'workflow_dispatch' }}
         uses: softprops/action-gh-release@v1
         with:
-          files: '*.tar.gz *.zip'
+          files: '*.zip'
