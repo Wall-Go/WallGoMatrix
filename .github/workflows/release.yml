@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Build Release Asset
         run: |
@@ -36,6 +36,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./WallGoMatrix_${{ github.ref_name }}.zip
-          asset_name: WallGoMatrix_${{ github.ref_name }}.zip
+          asset_path: ./WallGoMatrix_${{ github.ref }}.zip
+          asset_name: WallGoMatrix_${{ github.ref }}.zip
           asset_content_type: application/zip
