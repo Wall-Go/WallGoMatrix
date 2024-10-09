@@ -1,3 +1,8 @@
+
+
+permissions:
+  deployments: write
+
 name: Build and release
 on:
   push:
