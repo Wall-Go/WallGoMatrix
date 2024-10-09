@@ -39,7 +39,7 @@ factors appropriately to yield the 2-to-2 scattering matrix elements.
 **WallGoMatrix** can be installed as a Mathematica package by downloading the
 zip file from the following link:
 
-![GitHub Downloads (package, latest release)](https://img.shields.io/github/downloads-pre/Wall-Go/WallGoMatrix/latest/total)
+[![Download zip](https://custom-icon-badges.demolab.com/badge/-Download-blue?style=for-the-badge&logo=download&logoColor=white "Download zip")](https://github.com/Wall-Go/WallGoMatrix/releases/latest)
 
 Unpack the zip file and then put the WallGoMatrix directory inside either the base
 or the user Mathematica Applications directory. The locations of these directories
