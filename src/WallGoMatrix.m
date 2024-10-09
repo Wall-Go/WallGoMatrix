@@ -70,7 +70,7 @@ Print[Grid[{{Image[WallGoMatrixLoad,ImageSize->140],Row[result,"\n",BaseStyle->(
 
 (*List of public functions*)
 ImportModel::usage="\
-ImportModelDRalgo[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False,Mode->ModeNumber] \
+ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False,Mode->ModeNumber] \
 Loads the model and creates help tensors. Here,
 gvvv:  structure constants
 gvff:  vector-fermion trilinear couplings
@@ -162,9 +162,7 @@ Print["Please cite \!\(\*TemplateBox[{\"DRalgo\", {URL[\"https://github.com/DR-a
 Options[ImportModel]={
 	Verbose->False,
 	Mode->2,
-	Dim6->False,
-	Normalization4D->False,
-	AutoRG->True}
+	Dim6->False}
 
 
 Begin["`Private`"]
@@ -179,19 +177,21 @@ Get[FileNameJoin[{$WallGoMatrixDirectory,"modelCreation.m"}]];
 Get[FileNameJoin[{$WallGoMatrixDirectory,"matrixelements.m"}]];
 
 
-(* ::Section:: *)
-(*Initialization*)
+(* ::Section::Closed:: *)
+(*Model: Initialization*)
 
 
 (*
 	Defines internal tensors from the loaded model. Also creates help-tensors used for
 	intermediate calculations.
 *)
-ImportModel[GroupI_,gvvvI_,gvffI_,gvssI_,\[Lambda]1I_,\[Lambda]3I_,\[Lambda]4I_,\[Mu]ijI_,\[Mu]IJFI_,\[Mu]IJFCI_,YsffI_,YsffCI_, OptionsPattern[]]:=Module[
+ImportModel[GroupI_,gvvvI_,gvffI_,gvssI_,\[Lambda]1I_,\[Lambda]3I_,\[Lambda]4I_,\[Mu]ijI_,\[Mu]IJFI_,\[Mu]IJFCI_,YsffI_,YsffCI_, OptionsPattern[]]:=
+Module[
 {
-	GroupP=GroupI,gvvvP=gvvvI,gvffP=gvffI,gvssP=gvssI,\[Lambda]1IP=\[Lambda]1I,\[Lambda]3P=\[Lambda]3I,\[Lambda]4P=\[Lambda]4I,
-	\[Mu]ijP=\[Mu]ijI,\[Mu]IJFP=\[Mu]IJFI,\[Mu]IJFCP=\[Mu]IJFCI,YsffP=YsffI,YsffCP=YsffCI},
-
+	GroupP=GroupI,
+	gvvvP=gvvvI,gvffP=gvffI,gvssP=gvssI,\[Lambda]1IP=\[Lambda]1I,\[Lambda]3P=\[Lambda]3I,\[Lambda]4P=\[Lambda]4I,
+	\[Mu]ijP=\[Mu]ijI,\[Mu]IJFP=\[Mu]IJFI,\[Mu]IJFCP=\[Mu]IJFCI,YsffP=YsffI,YsffCP=YsffCI
+},
 
 If[ Global`$LoadGroupMath,
 	If[!GroupMathCleared && !ValueQ[Global`$GroupMathMultipleModels],
@@ -218,14 +218,8 @@ If[ Global`$LoadGroupMath,
 (*Options*)
 	verbose=OptionValue[Verbose];
 	mode=OptionValue[Mode]; (*If 2 everthing is calculated. And if 2 only 1-loop contributions are calculated*)
-	NFMat=IdentityMatrix[nf]//SparseArray; (*This matrix is only relevant if the user wants an arbitrary number of fermion families*)
-	normalization4D=OptionValue[Normalization4D];
-	If[OptionValue[AutoRG],rgFac=1,rgFac=0]; (*Determines whether the RG-running is automatically incorporated in the soft masses and tadpoles*)
 (*End of Options*)
 
-	CT=False; (*Checks if counter-terms have already been calculated*)
-	DefineGroup[GroupP]; (*Names Debye masses*)
-	GroupDR=GroupP; (*For saving purposes*)
 	CreateHelpTensors[] (*Creates recurring tensors*)
 ];
 
@@ -237,228 +231,14 @@ DefineDim6[\[Lambda]6I_]:=Module[{\[Lambda]6P=\[Lambda]6I},
 	If[mode>=3,
 		\[Lambda]6=\[Lambda]6P//SparseArray;
 	,
-		Message[DRalgo::ImplementationFail, "Please set mode=3 to use this feature"];
+		Message[WallGoMatrix::failmsg, "Please set mode=3 to use this feature"];
 		Abort[]
 	];
 ];
 
 
-(*
-	Takes the user-defined group and names debye masses.
-*)
-DefineGroup[GroupI_]:=Module[{GroupP=GroupI},
-(*The Debye mass matrix is \[Mu]abDef*)
-(*At tree-level this matrix is 0. But after DR, thermal masses are named accoording to \[Mu]abDef.*)
-	\[Mu]abDef=CreateDebyeMasses[GroupP];
-	VecMassDefined=True;
-];
-
-
-(*
-	Enables the user to add an arbitrary number of fermions.
-	This works by creating a diagonal matrix. Each element NFMatP[[i,i]] corresponds to how many times the
-	fermion labled by ii appears.
-*)
-DefineNF[NFMatP_]:=Module[{NFMatI=NFMatP},
-	Do[NFMat[[i[[2]],i[[2]]]]*=i[[1]],{i,NFMatI}];(*Each element is multiplied with nF_i*)
-];
-
-
-(* ::Section:: *)
-(*Help functions*)
-
-
-OutputFormatDR[x_]:=ToExpression[StringReplace[ToString[StandardForm[x]],"WallGoMatrix`Private`"->""]];
-
-
-(*
-	Prints constants that appear in the effective theory.
-*)
-PrintConstants[]:=Module[{},
-ToExpression[StringReplace[ToString[StandardForm[{Lb->(Log[\[Mu]^2/T^2]-2 Log[4 \[Pi]]+2EulerGamma),Lf->(Log[\[Mu]^2/T^2]-2 Log[4 \[Pi]]+2EulerGamma+4 Log[2])}]],"WallGoMatrix`Private`"->""]]
-];
-
-
-(*
-	Replaces the Glaisher constant by c, which is sometimes used in the litterature. See for example hep-ph: 9508379
-*)
-PrintGenericBasis[]:=Module[{},
-ToExpression[StringReplace[ToString[StandardForm[{Log[Glaisher]->-1/12 (Lb+2cplus-EulerGamma)}]],"WallGoMatrix`Private`"->""]]
-];
-
-
-(*
-	Checks if two variables are identical up to a numerical factor
-	For example if a=x^2 y and b=y, then there's no relation, and the function returns nothing.
-	While if a=x^2 and b=5 x^2 the function returns 5
-*)
-CompExp2[a0_,b0_]:=Module[{a=a0,b=b0},
-Comps=Solve[a v[1]- b ==0,v[1]]//Simplify//DeleteDuplicates//Select[#,UnsameQ[#,{}]&]&;
-Comps/. {v[x_]->a_}:>a
-]
-
-
-(*
-	Old function: Should maybe be removed.
-	This function finds linear dependencies between the variables in list.
-	Only numerical factors are included.
-	The result is given in Mat. Where Mat[[i,j]]=0 if list[[i]]!=N list[[j]] where N is a number.
-	Otherwise Mat[[i,j]]=N if list[[i]]=Nlist[[j]]
-*)
-OverallFac[list_,varMat_]:=Module[{L=list,Mat=varMat},
-
-	For[i=1,i<Length[list],i++,
-		For[j=i+1,j<Length[list]+1,j++,
-			help=CompExp2[list[[i]],list[[j]]];
-			TempIf=If[Length[help]>0,{NumericQ/@help}[[1,1]]&&Equal@@NumericQ/@help,False];
-			If[TempIf,a=help[[1]],a=0];
-				Mat[[i,j]]=a;
-			];
-		];
-	Mat
-]
-
-
-(*
-	Old function:Should maybe be removed.
-	This function finds linear dependences between the variables in listvar
-	Only relations between two variables are considered.
-	This function is only used for the soft->supersoft step where the faster, and more general,
-	RelationsBVariables3 has problems due to inverse powers of masses.
-*)
-RelationsBVariables[list_,listVar_]:=Module[{L=list,LV=listVar},
-	LVTemp=LV;
-	If[L[[1]]==0,
-		L=Delete[L,1];
-	];
-
-	Mat=ConstantArray[0,{Length[L],Length[L]}];(*Linear-dependency matrix*)
-	Mat1=OverallFac[L,Mat];
-	TempVar=ConstantArray[0,{Length[LV]}];
-	For[i=1,i<Length[LV],i++,
-		For[j=i+1,j<Length[LV]+1,j++,
-			IfTemp=Mat1[[1;;i,j]]//DeleteDuplicates//DeleteCases[#,0,Infinity]&; (*Removes cases when the numerical factor is 0 or infinity*)
-			If[Length[IfTemp]==1&&Mat1[[i,j]]!=0,
-				LVTemp[[j]]=Mat1[[i,j]]LV[[i]];(*Creates a list with all linear relations*)
-			];
-		];
-	];
-	LVTemp
-]
-
-
-(*
-	This function finds linear dependences between the variables in list.
-	This works by treating each element in list as a vector in the space spanned by basDR.
-	All vectors are then rowreduced, and a minimal set of basis vectors (in list) are found.
-*)
-RelationsBVariables3[list_]:=Module[{L=list},
-(*Creates a vector-basis*)
-
-(*One could say that v3 and v2 are identical. With v3 being almost twice as identical as v2*)
-	If[L[[1]]==0&&Length[L]>1,
-		Lp=Delete[L,1];
-	,
-		Lp=L;
-	];
-
-	varHelp=Lp//Variables;
-	varFix=#->0&/@varHelp; (*Trick to ensure that vectors are expanded properly*)
-
-(*
-Expands all elements in Lp in terms of basDR.
-*)
-	setVecs=Table[Coefficient[i,basDR],{i,Lp}]/.varFix;  
-(*Delete columns with only 0s*)
-	setVecs=Transpose[DeleteCases[Transpose[setVecs], {0 ..}, Infinity]];
-
-(*Finds independent basis*)
-	rr = setVecs // Transpose // RowReduce;
-	rr=DeleteCases[rr, {0 ..}, Infinity];
-(*Basis elements*)
-	basisElements = Flatten[FirstPosition[#, 1, Nothing] & /@ rr];
-	varBasis=Table[ \[Lambda]VL[a],{a,1,Length[basisElements]}];
-
-(*Puts everything together*)
-	LVTemp=LVTemp=ConstantArray[0,Length[Lp]];
-	Do[LVTemp[[i]]=rr[[;;,i]] . varBasis,{i,1,Length[LVTemp]}];
-
-	Return[LVTemp];
-]
-
-
-myPrint[args__,{style__}]:=Print[Row[{args},BaseStyle->{style}]]
-
-
-(*
-	Old function: Should maybe be removed.
-	This function finds linear dependencies between the variables in list.
-	Only numerical factors are included.
-	The result is given in Mat. Where Mat[[i,j]]=0 if list[[i]]!=N list[[j]] where N is a number.
-	Otherwise Mat[[i,j]]=N if list[[i]]=Nlist[[j]]
-*)
-OverallFac2[list_,varMat_]:=Module[{L=list,Mat=varMat},
-
-	TotVar=L//Variables;
-	DoneList=ConstantArray[0,1];
-
-	For[i=1,i<Length[list],i++,
-		Var=list[[i]]//Variables;
-		varCompliment=Complement[TotVar,Var];
-		For[j=i+1,j<Length[list]+1,j++,
-			If[!MemberQ[DoneList, j],
-				If[!CheckVariables[list[[j]],varCompliment],
-					h=CompExp3[list[[i]],list[[j]]];
-					Mat[[i,j]]=h;
-					If[h!=0,AppendTo[DoneList,j]];
-				];
-
-			];
-		];
-	];
-	Mat
-]
-
-
-(*
-	This function finds linear dependencies between the variables in list.
-	Only numerical factors are included.
-	The result is given in Mat. Where Mat[[i,j]]=0 if list[[i]]!=N list[[j]] where N is a number.
-	Otherwise Mat[[i,j]]=N if list[[i]]=Nlist[[j]]
-*)
-	RelationsBVariables2[list_,listVar_]:=Module[{L=list,LV=listVar},
-	LVTemp=LV//FullSimplify;
-	Mat=ConstantArray[0,{Length[Delete[L,1]],Length[Delete[L,1]]}];(*Linear-dependency matrix*)
-	Mat1=OverallFac2[Delete[L,1],Mat];
-	TempVar=ConstantArray[0,{Length[LV]}];
-	For[i=1,i<Length[LV],i++,
-		For[j=i+1,j<Length[LV]+1,j++,
-			IfTemp=Mat1[[1;;i,j]]//DeleteDuplicates//DeleteCases[#,0,Infinity]&; (*Removes cases when the numerical factor is 0 or infinity*)
-			If[Length[IfTemp]==1&&Mat1[[i,j]]!=0,
-				LVTemp[[j]]=Mat1[[i,j]]LV[[i]](*Creates a list with all linear relations*)
-			];
-		];
-	];
-	LVTemp
-]
-
-
-CheckVariables[a_,Vars_]:=MemberQ[Boole@(MemberQ[a, #, {0, -1}, Heads -> True]&/@Vars),1, {0, -1}, Heads -> True];
-
-
-(*
-	Checks if two variables are identical up to a numerical factor
-	For example if a=x^2 y and b=y, then there's no relation, and the function returns nothing.
-	 While if a=x^2 and b=5 x^2 the function returns 5.
-*)
-CompExp3[a0_,b0_]:=Module[{a=a0,b=b0},
-	Temp=Simplify[b/a];
-	If[NumericQ[Temp],Return[Temp],Return[0]];
-]
-
-
-(* ::Section:: *)
-(*Functions for loading and printing*)
+(* ::Section::Closed:: *)
+(*Model: Functions for loading and printing*)
 
 
 (*
@@ -498,7 +278,7 @@ LoadCouplingNames[couplingNamesI_]:=Module[{couplingNamesP=couplingNamesI},
 (*
 	Saves a model by converting all coupling-tensors to a list.
 *)
-SaveModelDRalgo[modelInfo_,fileName_]:=Module[{modelInfoP=modelInfo},
+SaveModel[modelInfo_,fileName_]:=Module[{modelInfoP=modelInfo},
 
 	PosScalar=PrintScalarRepPositions[];
 	PosVector=PrintGaugeRepPositions[];
@@ -517,9 +297,9 @@ SaveModelDRalgo[modelInfo_,fileName_]:=Module[{modelInfoP=modelInfo},
 
 
 (*
-	Loads tensors that are saved by SaveModelDRalgo
+	Loads tensors that are saved by SaveModel
 *)
-LoadModelDRalgo[fileName_]:=Module[{},
+LoadModel[fileName_]:=Module[{},
 	arrImp=ReadList[fileName];
 	InfoText=arrImp[[1]];(*The first element is the info*)
 	arrImp=Delete[arrImp,1];
@@ -543,12 +323,8 @@ LoadModelDRalgo[fileName_]:=Module[{},
 ];
 
 
-(* ::Title:: *)
-(*Matrix elements*)
-
-
-(* ::Section:: *)
-(*Export functions for different formats*)
+(* ::Section::Closed:: *)
+(*MatrixElements: Export functions for different formats*)
 
 
 (* ::Subsubsection:: *)
@@ -722,8 +498,8 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,f
 ]
 
 
-(* ::Section:: *)
-(*Exporting the results*)
+(* ::Section::Closed:: *)
+(*MatrixElements: Exporting the results*)
 
 
 PrintNonPrivate[PrivateExpression_]:=ToExpression[StringReplace[ToString[StandardForm[PrivateExpression]],"WallGoMatrix`Private`"->""]];
@@ -834,35 +610,20 @@ ImportMatrixElements[file_]:=Module[
 ];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Private constants*)
 
 
-{ZLij,GvvssTSS,\[Lambda]3DSS,\[Mu]ijSSLO,\[Mu]ijSSNLO,\[Mu]ijSNLOSS,\[Lambda]3DSS,\[Lambda]KVecTSS,\[Lambda]3CTot,\[Lambda]3CSSS,ZSij,\[Mu]ijSSNLO2,Ggvvv};
-
-
-{TadPoleS,ContriTadPoleSoftToHard,GgvvvSS,\[Lambda]4SMod,\[Lambda]4Tot,IdentMatPre};
-
-
-{\[Beta]gvff,Zgvff,\[Mu]ijEP,gvvvEP,gvssEP,\[Lambda]4EP,\[Lambda]3EP,nsEP,nvEP,CT,HelpSolveEffectiveHardM};
-
-
-{aS3D,ZijS,aV3D,ZabT,ZabL,\[Lambda]3D,GvvssL,GvvssT,\[Lambda]AA,\[Lambda]3CS,\[Mu]SijNLO,GvvsL};(*DimRed Results*)
+{CT}
 
 
 {\[CapitalLambda]\[Lambda],\[CapitalLambda]g,Hg,Habij,HabIJF,HabIJFC,Ysij,YsijC,YTemp,YTempC,Yhelp,YhelpC};(*Private Variables*)
 
 
-{\[Gamma]ij,\[Beta]mij,\[Beta]\[Lambda]ijkl,Z\[Lambda]ijkl,\[Gamma]ab,\[Beta]vvss,Zgvvss,\[Beta]gvvv,Zgvvv,\[Gamma]IJF,\[Beta]Ysij,ZYsij,\[Beta]YsijC,ZYsijC};(*CounterTerms*)
+{\[Lambda]1IP};(*Private Variables*)
 
 
-{\[Lambda]3DS,\[Lambda]KVecT,\[Lambda]KVec,\[Lambda]AAS,IdentMat,\[Mu]ijVNLO,\[Mu]ijSNLO,\[Lambda]3CSRed,\[Lambda]1IP,NFMat,NSMat};(*Private Variables*)
-
-
-{nsH,nSl,\[Lambda]K,\[Lambda]4S,\[Lambda]4K,\[Lambda]x,\[Lambda]y,gAvss,gvssL,\[Mu]ijL,\[Mu]ijLight};
-
-
-{HabijL,HabijVL,HabijA,HabijVA,\[Lambda]3Cx,\[Lambda]3Cy,\[Lambda]3CLight,\[Lambda]3CHeavy,\[Mu]IJF,\[Mu]IJFC,\[Mu]VabNLO,\[Mu]abDef,GroupMathCleared}
+{\[Mu]IJF,\[Mu]IJFC,GroupMathCleared}
 
 
 End[]
