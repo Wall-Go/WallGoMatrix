@@ -12,6 +12,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cp -r src WallGoMatrix
           zip WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix/*
