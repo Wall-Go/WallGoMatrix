@@ -1,5 +1,3 @@
-
-
 permissions:
   deployments: write
 
@@ -8,6 +6,8 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+
     
 jobs:
   release:
