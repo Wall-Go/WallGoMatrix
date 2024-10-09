@@ -23,7 +23,7 @@ solving the scalar field(s) equation of motion, the Boltzmann equations and
 energy-momentum conservation for the fluid velocity and temperature.
 - [**WallGoMatrix**](https://github.com/Wall-Go/WallGoMatrix) computes the relevant matrix elements for the
 out-of-equilibrium particles, and is written in Mathematica.
-It builds on existing Mathematica packages DRalgo and GroupMath.
+It builds on existing Mathematica packages [DRalgo](https://github.com/DR-algo/DRalgo) and [GroupMath](https://renatofonseca.net/groupmath).
 - [**WallGoCollision**](https://github.com/Wall-Go/WallGoCollision) performs the higher-dimensional integrals to obtain the
  collision terms in the Boltzmann equations, and is written in C++. It also
  has Python bindings so that it can be called directly from Python, but
@@ -44,7 +44,8 @@ zip file from the following link:
 Unpack the zip file and then put the WallGoMatrix directory inside either the base
 or the user Mathematica Applications directory. The locations of these directories
 can be found by inspecting **$BaseDirectory** or **$UserBaseDirectory** within
-Mathematica. Often the paths are the following ones
+Mathematica. For versions of Mathematica before 14.1, the paths are commonly the
+following ones
 
 **Linux**
 - /usr/share/Mathematica/Applications
@@ -55,7 +56,10 @@ Mathematica. Often the paths are the following ones
 
 **Windows**
 - C:\ProgramData\Mathematica\Applications 
-- C:\Users\(computer name)\AppData\Roaming\Mathematica\Applications 
+- C:\Users\(computer name)\AppData\Roaming\Mathematica\Applications
+
+Note that from Mathematica 14.1 onwards this directory contains *Wolfram* rather than
+*Mathematica*.
 
 Once the WallGoMatrix directory has been put inside the Mathematica applications
 directory, the package can be loaded from within Mathematica using
@@ -69,7 +73,7 @@ To see how WallGoMatrix is used in practice, we recommend taking a look at the
 
 WallGoMatrix is written in Wolfram Mathematica, and depends on the Mathematica package GroupMath. It has been tested on the following versions.
 
-- [Mathematica](https://www.wolfram.com/mathematica/) versions 12.x, 13.x and 14.0
+- [Mathematica](https://www.wolfram.com/mathematica/) versions 12.x, 13.x and 14.x
     - [GroupMath](https://renatofonseca.net/groupmath) version 1.1.2
 
 WallGoMatrix builds on [DRalgo](https://github.com/DR-algo/DRalgo) version 1.2, but the required elements are included directly in the WallGoMatrix package, so separate installation of DRalgo is not necessary.

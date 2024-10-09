@@ -143,9 +143,6 @@ UserMasses={mv,mf,ms};
 UserCouplings={g1,b3,b4,a1,a2,lam,y}//Flatten;
 
 
-Options[ExportMatrixElements]
-
-
 (*
 	output of matrix elements
 *)
