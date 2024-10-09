@@ -1,4 +1,4 @@
-![WallGo](docs/wallgo.svg)
+![WallGo](https://raw.githubusercontent.com/Wall-Go/WallGo/refs/heads/main/docs/source/figures/wallgo.svg)
 
 # WallGoMatrix
 
