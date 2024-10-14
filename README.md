@@ -8,7 +8,7 @@ for computing the bubble wall speed for cosmological phase transitions.
 
 ## Status
 
-**Version** v0.1.0 (alpha)
+[![Version](https://img.shields.io/github/v/tag/Wall-Go/WallGoMatrix?label=Version)](https://github.com/Wall-Go/WallGoMatrix/releases/latest/)
 
 [![Release](https://github.com/Wall-Go/WallGoMatrix/actions/workflows/release.yml/badge.svg)](https://github.com/Wall-Go/WallGoMatrix/actions/workflows/release.yml)
 
