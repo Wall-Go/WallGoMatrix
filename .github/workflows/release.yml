@@ -1,4 +1,5 @@
 permissions:
+  contents: write
   deployments: write
 
 name: Build and release
