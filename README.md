@@ -73,7 +73,7 @@ To see how WallGoMatrix is used in practice, we recommend taking a look at the
 
 ### Requirements
 
-WallGoMatrix is written in Wolfram Mathematica, and depends on the Mathematica package GroupMath. It has been tested on the following versions.
+WallGoMatrix is written in the Wolfram Mathematica language, and depends on the Mathematica package GroupMath. It has been tested on the following versions.
 
 - [Mathematica](https://www.wolfram.com/mathematica/) versions 12.x, 13.x and 14.x
     - [GroupMath](https://renatofonseca.net/groupmath) version 1.1.2
