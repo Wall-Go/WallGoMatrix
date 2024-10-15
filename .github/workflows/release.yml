@@ -1,9 +1,14 @@
-name: Release
+permissions:
+  contents: write
+  deployments: write
+
+name: Build and release
 on:
   push:
     tags:
       - "v*"
-    
+  workflow_dispatch:
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -11,13 +16,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build Release Asset
+      - name: Set up Git
         run: |
-          cp -r src WallGoMatrix
-          zip WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix/*
-          tar -czf WallGoMatrix_${{ github.ref_name }}.tar.gz WallGoMatrix/*
-          rm -r WallGoMatrix
-          ls -a
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+
+      - name: Get the latest tag and date
+        id: version_info
+        run: |
+          echo "tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
+          echo "date=$(date +"(%m-%d-%Y)")" >> $GITHUB_ENV
+
+      - name: Update version and date in WallGoMatrix.m
+        run: |
+          sed -i.bak \
+            -e "s/WallGoMatrix\\\$WallGoMatrixVersion = \".*\";/WallGoMatrix\\\$WallGoMatrixVersion = \"$tag\";/" \
+            -e "s/WallGoMatrix\\\$WallGoMatrixVersionDate = \".*\";/WallGoMatrix\\\$WallGoMatrixVersionDate = \"$date\";/" \
+            WallGoMatrix.m
+
+      - name: Commit and push version update
+        run: |
+          rm WallGoMatrix.m.bak
+          git add WallGoMatrix.m
+          git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
+          git push origin HEAD
 
       - name: Create Release
         id: create_release
@@ -30,12 +52,21 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: Build Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp -r src WallGoMatrix
+          zip WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix/*
+          rm -r WallGoMatrix
+          ls -a
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./WallGoMatrix_${{ github.ref }}.zip
-          asset_name: WallGoMatrix_${{ github.ref }}.zip
+          asset_path: ./WallGoMatrix_${{ github.ref_name }}.zip
+          asset_name: WallGoMatrix_${{ github.ref_name }}.zip
           asset_content_type: application/zip
