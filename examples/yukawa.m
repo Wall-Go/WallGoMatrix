@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 SetDirectory[NotebookDirectory[]];
@@ -133,9 +133,6 @@ RepFermionR=CreateParticle[{2},"F"];
 
 (*Vector bosons*)
 RepZ=CreateParticle[{1},"V"];
-
-
-CreateParticle[{1,2},"F"]
 
 
 (*
