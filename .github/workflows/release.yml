@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get the latest tag and date
         id: version_info
@@ -29,6 +31,8 @@ jobs:
           git add WallGoMatrix.m
           git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
           git push origin HEAD
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Release Asset
         run: |
