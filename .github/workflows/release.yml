@@ -11,6 +11,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Get the latest tag and date
+        id: version_info
+        run: |
+          echo "tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
+          echo "date=$(date +"(%m-%d-%Y)")" >> $GITHUB_ENV
+
+      - name: Update version and date in WallGoMatrix.m
+        run: |
+          sed -i.bak \
+            -e "s/WallGoMatrix\\\$WallGoMatrixVersion = \".*\";/WallGoMatrix\\\$WallGoMatrixVersion = \"$tag\";/" \
+            -e "s/WallGoMatrix\\\$WallGoMatrixVersionDate = \".*\";/WallGoMatrix\\\$WallGoMatrixVersionDate = \"$date\";/" \
+            WallGoMatrix.m
+
+      - name: Commit and push version update
+        run: |
+          git add WallGoMatrix.m
+          git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
+          git push origin HEAD
+
       - name: Build Release Asset
         run: |
           cp -r src WallGoMatrix
