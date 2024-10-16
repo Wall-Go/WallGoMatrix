@@ -95,6 +95,8 @@ To run the example files, you can use the following command:
 
     $ wolframscript -file examples/qcd.m 
 
+One requirement for the above command is an active `WolframKernel`.
+
 
 ## License
 
