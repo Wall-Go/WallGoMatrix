@@ -82,6 +82,9 @@ For non-commercial use,
 **WallGoMatrix** can be run via
 the [Wolfram Engine](https://www.wolfram.com/engine/).
 The Wolfram Engine is essentially the core computational engine of Wolfram Mathematica, and it can be used to run scripts, including those written in the Wolfram Language, without requiring a full Mathematica installation.
+As an example one can run:
+
+    wolframscript -file examples/qcd.m 
 
 
 ## License
