@@ -13,7 +13,8 @@ jobs:
 
       - name: Build Release Asset
         run: |
-          cp -r src WallGoMatrix
+          mkdir -p new_folder
+          cp -r src WallGoMatrix.m WallGoMatrix/
           zip WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix/*
           tar -czf WallGoMatrix_${{ github.ref_name }}.tar.gz WallGoMatrix/*
           rm -r WallGoMatrix
