@@ -78,6 +78,11 @@ WallGoMatrix is written in Wolfram Mathematica, and depends on the Mathematica p
 
 WallGoMatrix builds on [DRalgo](https://github.com/DR-algo/DRalgo) version 1.2, but the required elements are included directly in the WallGoMatrix package, so separate installation of DRalgo is not necessary.
 
+For non-commercial use,
+**WallGoMatrix** can be run via
+the [Wolfram Engine](https://www.wolfram.com/engine/).
+The Wolfram Engine is essentially the core computational engine of Wolfram Mathematica, and it can be used to run scripts, including those written in the Wolfram Language, without requiring a full Mathematica installation.
+
 
 ## License
 
