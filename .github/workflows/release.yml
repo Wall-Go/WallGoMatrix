@@ -31,9 +31,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp -r src WallGoMatrix/
+          cp src/*.m WallGoMatrix/src/
           cp WallGoMatrix.m WallGoMatrix/
-          zip WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix
+          zip -r WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix
           rm -r WallGoMatrix
           ls -a
 
