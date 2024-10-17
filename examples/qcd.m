@@ -10,7 +10,7 @@ If[$InputFileName=="",
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../WallGoMatrix.m
+<<WallGoMatrix`
 
 
 (* ::Chapter:: *)
@@ -104,6 +104,4 @@ MatrixElements=ExportMatrixElements[
 	ParticleName,
 	ParticleMasses,
 	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
-
-
 
