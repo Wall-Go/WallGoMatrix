@@ -40,6 +40,7 @@ If[$ScriptCommandLine=={},Null,
 ];
 
 
+
 BeginPackage["WallGoMatrix`"]
 
 
@@ -358,7 +359,7 @@ LoadModel[fileName_]:=Module[{},
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*MatrixElements: Export functions for different formats*)
 
 
