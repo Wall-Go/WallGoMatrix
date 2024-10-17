@@ -126,7 +126,6 @@ ParticleName={"TopL","TopR",(*"BotR",*)"Gluon","W","H"};
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.ew";
 MatrixElements=ExportMatrixElements[
 	OutputFile,

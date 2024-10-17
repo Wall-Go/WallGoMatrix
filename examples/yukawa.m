@@ -162,7 +162,6 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.yukawa";
 ParticleName={"Phi","PsiL","PsiR"};
 MatrixElements=ExportMatrixElements[

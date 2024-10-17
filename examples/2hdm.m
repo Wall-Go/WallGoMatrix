@@ -193,7 +193,6 @@ ParticleName={
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.2hdm";
 
 MatrixElements=ExportMatrixElements[

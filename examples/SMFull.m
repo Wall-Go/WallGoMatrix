@@ -185,7 +185,6 @@ ParticleName={
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElementsFull";
 
 MatrixElements=ExportMatrixElements[
@@ -201,7 +200,6 @@ MatrixElements=ExportMatrixElements[
 (*
 	output of matrix elements 
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElementsFull.LL";
 
 MatrixElements=ExportMatrixElements[

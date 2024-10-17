@@ -194,7 +194,6 @@ ParticleName={"TopL","TopR","Gluon","W","Z","H","S"};
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.xsm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -263,7 +262,6 @@ ParticleName={"Top","Gluon","W","Z","H","S"};
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.xsm.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,

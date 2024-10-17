@@ -94,7 +94,6 @@ ParticleName={"Top", "Gluon"};
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,

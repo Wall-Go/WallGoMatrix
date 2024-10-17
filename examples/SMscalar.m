@@ -134,7 +134,6 @@ ParticleName={"TopL","TopR","BotR","Gluon","W","Higgs"};
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.scalar";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
