@@ -8,7 +8,9 @@ for computing the bubble wall speed for cosmological phase transitions.
 
 ## Status
 
-**Version** v0.1.0 (alpha)
+[![Version](https://img.shields.io/github/v/tag/Wall-Go/WallGoMatrix?label=Version)](https://github.com/Wall-Go/WallGoMatrix/releases/latest/)
+
+[![Release](https://github.com/Wall-Go/WallGoMatrix/actions/workflows/release.yml/badge.svg)](https://github.com/Wall-Go/WallGoMatrix/actions/workflows/release.yml)
 
 ## About this project
 
@@ -39,7 +41,7 @@ factors appropriately to yield the 2-to-2 scattering matrix elements.
 **WallGoMatrix** can be installed as a Mathematica package by downloading the
 zip file from the following link:
 
-![GitHub Downloads (package, latest release)](https://img.shields.io/github/downloads/Wall-Go/WallGo/latest/total)
+[![Download zip](https://custom-icon-badges.demolab.com/badge/-Download-blue?style=for-the-badge&logo=download&logoColor=white "Download zip")](https://github.com/Wall-Go/WallGoMatrix/releases/latest)
 
 After unpacking the zip file, place the **WallGoMatrix** directory inside the **Applications** folder within either the base or user-specific **Mathematica Applications** directory. These directories store Mathematica packages and can be located by evaluating the variables **`$BaseDirectory`** and **`$UserBaseDirectory`** within a Mathematica session.
 To find these directories, you can run the following command in Mathematica:
@@ -79,7 +81,7 @@ To see how WallGoMatrix is used in practice, we recommend taking a look at the
 
 ### Requirements
 
-WallGoMatrix is written in Wolfram Mathematica, and depends on the Mathematica package GroupMath. It has been tested on the following versions.
+WallGoMatrix is written in the Wolfram Mathematica language, and depends on the Mathematica package GroupMath. It has been tested on the following versions.
 
 - [Mathematica](https://www.wolfram.com/mathematica/) versions 12.x, 13.x and 14.x
     - [GroupMath](https://renatofonseca.net/groupmath) version 1.1.2
