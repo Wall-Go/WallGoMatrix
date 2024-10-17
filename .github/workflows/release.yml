@@ -1,28 +1,20 @@
-name: Release
+permissions:
+  contents: write
+  deployments: write
+
+name: Build and release
 on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
     
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Build Release Asset
-        run: |
-          mkdir -p WallGoMatrix
-          cp -r src WallGoMatrix.m WallGoMatrix/
-          zip WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix/*
-          tar -czf WallGoMatrix_${{ github.ref_name }}.tar.gz WallGoMatrix/*
-          rm -r WallGoMatrix
-          ls -a
 
       - name: Create Release
         id: create_release
@@ -35,12 +27,22 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: Build Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p WallGoMatrix
+          cp -r src WallGoMatrix.m WallGoMatrix/
+          zip WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix/*
+          rm -r WallGoMatrix
+          ls -a
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./WallGoMatrix_${{ github.ref }}.zip
-          asset_name: WallGoMatrix_${{ github.ref }}.zip
+          asset_path: ./WallGoMatrix_${{ github.ref_name }}.zip
+          asset_name: WallGoMatrix_${{ github.ref_name }}.zip
           asset_content_type: application/zip
