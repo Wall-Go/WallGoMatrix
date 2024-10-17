@@ -21,6 +21,17 @@
 (* ------------------------------------------------------------------------ *)
 
 
+$WallGoMatrixVersion::usage =
+"$WallGoMatrixVersion is a string that represents the version of WallGoMatrix.";
+$WallGoMatrixVersionDate::usage =
+"$WallGoMatrixVersionDate is a string that represents the version date of WallGoMatrix.";
+
+
+(* Set the version number *)
+WallGoMatrix`$WallGoMatrixVersion = "0.1.1";
+WallGoMatrix`$WallGoMatrixVersionDate = "(09-10-2024)";
+
+
 BeginPackage["WallGoMatrix`"]
 
 
@@ -41,7 +52,7 @@ AppendTo[result,Row[{
 	TexFor["GOGOGOGOGOGOGOGOGOGOGOGO "],
 	TexFor["WallGoMatrix"],
 	TexFor[" GOGOGOGOGOGOGOGOGOGOGGOGOGO"]}]];
-AppendTo[result,Row[{"Version: "//TexFor,"0.1.0 (09-10-2024)"//TexFor}]];
+AppendTo[result,Row[{"Version: "//TexFor,ToString[$WallGoMatrixVersion]<>" "<>ToString[$WallGoMatrixVersionDate]//TexFor}]];
 AppendTo[result,Row[{"Authors: "//TexFor,
     Hyperlink["Andreas Ekstedt","https://inspirehep.net/authors/1799400"],", "//TexFor,
     Hyperlink["Oliver Gould","https://inspirehep.net/authors/1606373"],", "//TexFor,
@@ -94,7 +105,13 @@ SymmetryBreaking::usage=
 "Classify different scalar, fermion, and vector representations into respective particles using VEV-induced masses.
 As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(m\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(m\), \(i\)]\) is the label of the particle mass in that representation"
 ExportMatrixElements::usage=
-"ExportMatrixElements[file,particleList,UserMasses,UserCouplings,ParticleName,ParticleMasses,OptionsPattern[]]\n"<>
+"ExportMatrixElements[\!\(\*
+StyleBox[\"fileName\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"particleList\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"UserMasses\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"UserCouplings\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"ParticleName\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"ParticleMasses\",\nFontSlant->\"Italic\"]\),OptionsPattern[]]\n"<>
 "Generates all possible matrix elements with the external particles specified in particleList.\n"<>
 "The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none, "<>
 "the last two options exports the result in all possible formats, and in none, respectively.\n"<>
@@ -172,9 +189,9 @@ Begin["`Private`"]
 	Loads all functions.
 *)
 (*Loads DRalgo model creation*)
-Get[FileNameJoin[{$WallGoMatrixDirectory,"modelCreation.m"}]];
+Get[FileNameJoin[{$WallGoMatrixDirectory,"src/modelCreation.m"}]];
 (*Loads matrix element creation*)
-Get[FileNameJoin[{$WallGoMatrixDirectory,"matrixelements.m"}]];
+Get[FileNameJoin[{$WallGoMatrixDirectory,"src/matrixElements.m"}]];
 
 
 (* ::Section::Closed:: *)
@@ -498,7 +515,7 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,f
 ]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*MatrixElements: Exporting the results*)
 
 
@@ -520,8 +537,19 @@ Block[
 	ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
 	Cij,ParticleInfo,LightParticles,particleListFull,
 	CouplingInfo,MatrixElements,OutOfEqParticles,RepMasses,RepCouplings,
-	FormatOptions,userFormat,MatrixElementsList,userParameters
+	FormatOptions,userFormat,MatrixElementsList,userParameters,
+	privFile=file,commandLineArgs
 },
+	
+	commandLineArgs = $ScriptCommandLine;
+
+	(*Loop over command line input to overrule output file name for command line usage*)
+	Do[
+		If[
+			commandLineArgs[[i]] == "--outputFile",
+			privFile = commandLineArgs[[i + 1]]], (* Get the value after the flag *)
+		{i, 2, Length[commandLineArgs] - 1} (* Start from 2 and go up to the second-to-last element *)
+	];
 
 (*Specifies if the first particle should be normalized by the number of degrees of freedom*)
 	bNormalizeWithDOF = OptionValue[NormalizeWithDOF];
@@ -563,11 +591,11 @@ Block[
 	   (* Iterate over each format and perform the export *)
 	   Do[
 	     Switch[fmt,
-	       "txt", ExportTo["txt"][MatrixElementsList, OutOfEqParticles, ParticleName, UserCouplings, file],
-	       "hdf5", ExportTo["hdf5"][Cij, OutOfEqParticles, ParticleName, UserCouplings, file],
+	       "txt", ExportTo["txt"][MatrixElementsList, OutOfEqParticles, ParticleName, UserCouplings, privFile],
+	       "hdf5", ExportTo["hdf5"][Cij, OutOfEqParticles, ParticleName, UserCouplings, privFile],
 	       "json",
 	       userParameters = Flatten[Join[UserCouplings, ParticleMasses]] // DeleteDuplicates;
-	       ExportTo["json"][MatrixElementsList, ParticleName, userParameters, file]
+	       ExportTo["json"][MatrixElementsList, ParticleName, userParameters, privFile]
 	     ],
 	     {fmt, userFormatsList}
 	   ],

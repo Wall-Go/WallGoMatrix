@@ -1,13 +1,16 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
-SetDirectory[NotebookDirectory[]];
+If[$InputFileName=="",
+	SetDirectory[NotebookDirectory[]],
+	SetDirectory[DirectoryName[$InputFileName]]
+]
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../src/WallGoMatrix.m
+<<WallGoMatrix`
 
 
 (* ::Chapter:: *)
@@ -135,9 +138,6 @@ RepFermionR=CreateParticle[{2},"F"];
 RepZ=CreateParticle[{1},"V"];
 
 
-CreateParticle[{1,2},"F"]
-
-
 (*
 These particles do not necessarily have to be out of equilibrium
 the remainin particle content is set as light
@@ -162,7 +162,6 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.yukawa";
 ParticleName={"Phi","PsiL","PsiR"};
 MatrixElements=ExportMatrixElements[

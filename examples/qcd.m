@@ -1,20 +1,23 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
-SetDirectory[NotebookDirectory[]];
+If[$InputFileName=="",
+	SetDirectory[NotebookDirectory[]],
+	SetDirectory[DirectoryName[$InputFileName]]
+]
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../src/WallGoMatrix.m
+<<WallGoMatrix`
 
 
 (* ::Chapter:: *)
 (*QCD*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -91,7 +94,6 @@ ParticleName={"Top", "Gluon"};
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -101,7 +103,4 @@ MatrixElements=ExportMatrixElements[
 	ParticleName,
 	ParticleMasses,
 	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
-
-
-
 

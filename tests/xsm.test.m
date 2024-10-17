@@ -7,7 +7,7 @@ SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../src/WallGoMatrix.m
+<<../WallGoMatrix.m
 
 
 (* ::Chapter:: *)
@@ -511,6 +511,4 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
