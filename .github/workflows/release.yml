@@ -33,6 +33,7 @@ jobs:
         run: |
           mkdir -p WallGoMatrix
           cp -r src WallGoMatrix/
+          cp src/*.m WallGoMatrix/src/
           cp WallGoMatrix.m WallGoMatrix/
           zip WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix/*
           rm -r WallGoMatrix
