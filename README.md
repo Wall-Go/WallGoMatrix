@@ -8,7 +8,9 @@ for computing the bubble wall speed for cosmological phase transitions.
 
 ## Status
 
-**Version** v0.1.0 (alpha)
+[![Version](https://img.shields.io/github/v/tag/Wall-Go/WallGoMatrix?label=Version)](https://github.com/Wall-Go/WallGoMatrix/releases/latest/)
+
+[![Release](https://github.com/Wall-Go/WallGoMatrix/actions/workflows/release.yml/badge.svg)](https://github.com/Wall-Go/WallGoMatrix/actions/workflows/release.yml)
 
 ## About this project
 
@@ -39,12 +41,17 @@ factors appropriately to yield the 2-to-2 scattering matrix elements.
 **WallGoMatrix** can be installed as a Mathematica package by downloading the
 zip file from the following link:
 
-![GitHub Downloads (package, latest release)](https://img.shields.io/github/downloads/Wall-Go/WallGo/latest/total)
+[![Download zip](https://custom-icon-badges.demolab.com/badge/-Download-blue?style=for-the-badge&logo=download&logoColor=white "Download zip")](https://github.com/Wall-Go/WallGoMatrix/releases/latest)
 
-Unpack the zip file and then put the WallGoMatrix directory inside either the base
-or the user Mathematica Applications directory. The locations of these directories
-can be found by inspecting **$BaseDirectory** or **$UserBaseDirectory** within
-Mathematica. For versions of Mathematica before 14.1, the paths are commonly the
+After unpacking the zip file, place the **WallGoMatrix** directory inside the **Applications** folder within either the base or user-specific **Mathematica Applications** directory. These directories store Mathematica packages and can be located by evaluating the variables **`$BaseDirectory`** and **`$UserBaseDirectory`** within a Mathematica session.
+To find these directories, you can run the following command in Mathematica:
+
+```mathematica
+Print["Base Directory: ", FileNameJoin[{$BaseDirectory, "Applications"}]]
+Print["User Base Directory: ", FileNameJoin[{$UserBaseDirectory, "Applications"}]]
+```
+
+For versions of Mathematica before 14.1, the paths are commonly the
 following ones
 
 **Linux**
@@ -52,31 +59,45 @@ following ones
 - ~/.Mathematica/Applications
 
 **macOS**
-- ~/Library/Mathematica/Applications/GroupMath
+- ~/Library/Mathematica/Applications
 
 **Windows**
 - C:\ProgramData\Mathematica\Applications 
 - C:\Users\(computer name)\AppData\Roaming\Mathematica\Applications
 
-Note that from Mathematica 14.1 onwards this directory contains *Wolfram* rather than
-*Mathematica*.
+Note that from Mathematica 14.1 onwards,
+these directories are renamed to contain Wolfram instead of Mathematica.
+For example, the path for macOS becomes `~/Library/Wolfram/Applications`.
 
 Once the WallGoMatrix directory has been put inside the Mathematica applications
 directory, the package can be loaded from within Mathematica using
 
-    <<WallGoMatrix`
+```mathematica
+<<WallGoMatrix`
+```
 
 To see how WallGoMatrix is used in practice, we recommend taking a look at the
 [examples](https://github.com/Wall-Go/WallGoMatrix/tree/main/examples).
 
 ### Requirements
 
-WallGoMatrix is written in Wolfram Mathematica, and depends on the Mathematica package GroupMath. It has been tested on the following versions.
+WallGoMatrix is written in the Wolfram Mathematica language, and depends on the Mathematica package GroupMath. It has been tested on the following versions.
 
 - [Mathematica](https://www.wolfram.com/mathematica/) versions 12.x, 13.x and 14.x
     - [GroupMath](https://renatofonseca.net/groupmath) version 1.1.2
 
 WallGoMatrix builds on [DRalgo](https://github.com/DR-algo/DRalgo) version 1.2, but the required elements are included directly in the WallGoMatrix package, so separate installation of DRalgo is not necessary.
+
+### Running the examples
+
+Within **WallGo**, **WallGoMatrix** is executed using 
+[Wolframscript](https://www.wolfram.com/wolframscript/).
+Wolframscript provides the core computational capabilities of Wolfram Mathematica and allows Wolfram Language scripts to be run without needing a full Mathematica installation.
+To run the example files, you can use the following command:
+
+    $ wolframscript -file examples/qcd.m 
+
+One requirement for the above command is an active `WolframKernel`.
 
 
 ## License

@@ -1,13 +1,16 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
-SetDirectory[NotebookDirectory[]];
+If[$InputFileName=="",
+	SetDirectory[NotebookDirectory[]],
+	SetDirectory[DirectoryName[$InputFileName]]
+]
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../WallGoMatrix.m
+<<WallGoMatrix`
 
 
 (* ::Chapter:: *)
@@ -190,7 +193,6 @@ ParticleName={
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.2hdm";
 
 MatrixElements=ExportMatrixElements[

@@ -3,11 +3,14 @@
 (*Quit[];*)
 
 
-SetDirectory[NotebookDirectory[]];
+If[$InputFileName=="",
+	SetDirectory[NotebookDirectory[]],
+	SetDirectory[DirectoryName[$InputFileName]]
+]
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../WallGoMatrix.m
+<<WallGoMatrix`
 
 
 (* ::Chapter:: *)
@@ -159,7 +162,6 @@ UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//Dele
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.yukawa";
 ParticleName={"Phi","PsiL","PsiR"};
 MatrixElements=ExportMatrixElements[

@@ -1,13 +1,16 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
-SetDirectory[NotebookDirectory[]];
+If[$InputFileName=="",
+	SetDirectory[NotebookDirectory[]],
+	SetDirectory[DirectoryName[$InputFileName]]
+]
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../WallGoMatrix.m
+<<WallGoMatrix`
 
 
 (* ::Chapter:: *)
@@ -123,7 +126,6 @@ ParticleName={"TopL","TopR",(*"BotR",*)"Gluon","W","H"};
 (*
 	output of matrix elements
 *)
-SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.ew";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
