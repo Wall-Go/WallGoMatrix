@@ -15,35 +15,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Git
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-
       - name: Get the latest tag and date
         id: version_info
         run: |
           echo "tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
           echo "date=$(date +"(%m-%d-%Y)")" >> $GITHUB_ENV
       
-      - name: Debugging
-        run: |
-          echo "The current version is: $tag"
-          echo "The current date is: $date"
-
       - name: Update version and date in WallGoMatrix.m
         run: |
           sed -i.bak \
-            -e "s/WallGoMatrix\`\$WallGoMatrixVersion = \".*\";/WallGoMatrix\`\$WallGoMatrixVersion = \"$tag\"\;/" \
-            -e "s/WallGoMatrix\`\$WallGoMatrixVersionDate = \".*\"\;/WallGoMatrix\`\$WallGoMatrixVersionDate = \"$date\"\;/" \
+            -e "s/WallGoMatrix\`\$WallGoMatrixVersion = \".*\";/WallGoMatrix\`\$WallGoMatrixVersion = \"${{ env.tag }}\"\;/" \
+            -e "s/WallGoMatrix\`\$WallGoMatrixVersionDate = \".*\"\;/WallGoMatrix\`\$WallGoMatrixVersionDate = \"${{ env.date }}\"\;/" \
             WallGoMatrix.m
 
       - name: Commit and push version update
         run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
           rm WallGoMatrix.m.bak
-          git add WallGoMatrix.m
           git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
-          git push origin HEAD
+          git tag "v${{ env.tag }}"  # Properly format the tag
+          git push origin "v${{ env.tag }}"  # Push the new tag
 
       - name: Create Release
         id: create_release
