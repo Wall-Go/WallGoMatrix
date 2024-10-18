@@ -35,7 +35,11 @@ jobs:
           rm WallGoMatrix.m.bak
           git add WallGoMatrix.m
           git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
-          git push origin
+
+          git branch  # Check the current detached state
+          branch_name=$(echo $GITHUB_REF | sed 's/refs\/heads\///')
+          echo "Pushing to branch: $branch_name"
+          git push origin HEAD:$branch_name
 
       - name: Create Release
         id: create_release
