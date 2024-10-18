@@ -28,8 +28,8 @@ $WallGoMatrixVersionDate::usage =
 
 
 (* Set the version number *)
-WallGoMatrix`$WallGoMatrixVersion = "111";
-WallGoMatrix`$WallGoMatrixVersionDate = "111";
+WallGoMatrix`$WallGoMatrixVersion = "(10-18-2024)";
+WallGoMatrix`$WallGoMatrixVersionDate = "(10-18-2024)";
 
 
 BeginPackage["WallGoMatrix`"]
