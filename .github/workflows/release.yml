@@ -8,11 +8,7 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
-<<<<<<< HEAD
-
-=======
     
->>>>>>> main
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -20,7 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-<<<<<<< HEAD
       - name: Set up Git
         run: |
           git config --global user.name 'github-actions'
@@ -46,8 +41,6 @@ jobs:
           git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
           git push origin HEAD
 
-=======
->>>>>>> main
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -63,15 +56,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-<<<<<<< HEAD
-          cp -r src WallGoMatrix
-          zip WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix/*
-=======
           mkdir -p WallGoMatrix
           cp -r src WallGoMatrix/
           cp WallGoMatrix.m WallGoMatrix/
           zip -r WallGoMatrix_${{ github.ref_name }}.zip WallGoMatrix/*
->>>>>>> main
           rm -r WallGoMatrix
           ls -a
 
