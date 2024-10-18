@@ -26,6 +26,9 @@ jobs:
         run: |
           echo "tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
           echo "date=$(date +"(%m-%d-%Y)")" >> $GITHUB_ENV
+      
+      - name: Debugging
+        run: |
           echo "The current version is: $tag"
           echo "The current date is: $date"
 
