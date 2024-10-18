@@ -40,7 +40,6 @@ If[$ScriptCommandLine=={},Null,
 ];
 
 
-
 BeginPackage["WallGoMatrix`"]
 
 
@@ -93,8 +92,6 @@ Print[Grid[
 	}},
 	Alignment->{Left,Center}]
 ];
-(**)
-
 
 
 (*List of public functions*)
