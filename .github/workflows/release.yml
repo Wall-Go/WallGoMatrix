@@ -34,8 +34,8 @@ jobs:
           git config --global user.email 'github-actions@github.com'
           rm WallGoMatrix.m.bak
           git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
-          git tag "${{ env.tag }}"  # Properly format the tag
-          git push origin "${{ env.tag }}"  # Push the new tag
+          git tag ${{ env.tag }}  # Properly format the tag
+          git push origin ${{ env.tag }}  # Push the new tag
 
       - name: Create Release
         id: create_release
