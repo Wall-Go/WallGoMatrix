@@ -29,16 +29,13 @@ jobs:
 
       - name: Update version and date in WallGoMatrix.m
         run: |
-          sed -i.bak \
-            -e "s/WallGoMatrix\\\$WallGoMatrixVersion = \".*\";/WallGoMatrix\\\$WallGoMatrixVersion = \"$tag\";/" \
-            -e "s/WallGoMatrix\\\$WallGoMatrixVersionDate = \".*\";/WallGoMatrix\\\$WallGoMatrixVersionDate = \"$date\";/" \
-            WallGoMatrix.m
+          sed -i.bak -e 's/WallGoMatrix`\$WallGoMatrixVersion = ".*";/WallGoMatrix`$WallGoMatrixVersion = "v1.2.3";/' WallGoMatrix.m
 
       - name: Commit and push version update
         run: |
           rm WallGoMatrix.m.bak
           git add WallGoMatrix.m
-          git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
+          git commit -m "Update WallGoMatrix version to 1.2.3 and date to ${{ env.date }}"
           git push origin HEAD
 
       - name: Create Release
