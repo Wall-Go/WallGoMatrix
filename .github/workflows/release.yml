@@ -7,6 +7,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
     
 jobs:
   release:
@@ -20,6 +21,22 @@ jobs:
         run: |
           echo "tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
           echo "date=$(date +"(%m-%d-%Y)")" >> $GITHUB_ENV
+          WallGoMatrixVersion=$(grep -oP 'WallGoMatrix`\$WallGoMatrixVersion = "\K[^"]+' WallGoMatrix.m)
+          WallGoMatrixVersionDate=$(grep -oP 'WallGoMatrix`\$WallGoMatrixVersionDate = "\K[^"]+' WallGoMatrix.m)
+
+      - name : Debugging
+        run: |
+          echo "WallGoMatrixVersion: $WallGoMatrixVersion"
+          echo "WallGoMatrixVersionDate: $WallGoMatrixVersionDate"
+      
+      # - name: Check if WallGoMatrixVersion matches GitHub tag
+      #   run: |
+      #     if [ "$WallGoMatrixVersion" == "${{ env.tag }}" ]; then
+      #         echo "Error: WallGoMatrixVersion ($WallGoMatrixVersion) does not match tag (${{ env.tag }})" 1>&2
+      #         exit 64
+      #     else
+      #         echo "WallGoMatrixVersion matches the tag"
+      #     fi
       
       - name: Update version and date in WallGoMatrix.m
         run: |
@@ -28,14 +45,14 @@ jobs:
             -e "s/WallGoMatrix\`\$WallGoMatrixVersionDate = \".*\"\;/WallGoMatrix\`\$WallGoMatrixVersionDate = \"${{ env.date }}\"\;/" \
             WallGoMatrix.m
 
-      - name: Commit and push version update
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          rm WallGoMatrix.m.bak
-          git add WallGoMatrix.m
-          git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
-          git push origin HEAD
+      # - name: Commit and push version update
+      #   run: |
+      #     git config --global user.name 'github-actions'
+      #     git config --global user.email 'github-actions@github.com'
+      #     rm WallGoMatrix.m.bak
+      #     git add WallGoMatrix.m
+      #     git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
+      #     git push origin HEAD
 
       - name: Create Release
         id: create_release
