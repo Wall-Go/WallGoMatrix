@@ -7,7 +7,6 @@ on:
   push:
     tags:
       - "v*"
-  workflow_dispatch:
     
 jobs:
   release:
@@ -35,7 +34,7 @@ jobs:
       - name: Update version and date in WallGoMatrix.m
         run: |
           sed -i.bak \
-            -e "s/WallGoMatrix\`\$WallGoMatrixVersion = \".*\";/WallGoMatrix\`\$WallGoMatrixVersion = \"$date\"\;/" \
+            -e "s/WallGoMatrix\`\$WallGoMatrixVersion = \".*\";/WallGoMatrix\`\$WallGoMatrixVersion = \"$tag\"\;/" \
             -e "s/WallGoMatrix\`\$WallGoMatrixVersionDate = \".*\"\;/WallGoMatrix\`\$WallGoMatrixVersionDate = \"$date\"\;/" \
             WallGoMatrix.m
 
