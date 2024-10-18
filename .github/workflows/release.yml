@@ -30,8 +30,8 @@ jobs:
       - name: Update version and date in WallGoMatrix.m
         run: |
           sed -i.bak \
-            -e "s/WallGoMatrix\`\$WallGoMatrixVersion = \".*\";/WallGoMatrix\`\$WallGoMatrixVersion = \"111\"\;/" \
-            -e "s/WallGoMatrix\`\$WallGoMatrixVersionDate = \".*\"\;/WallGoMatrix\`\$WallGoMatrixVersionDate = \"111\"\;/" \
+            -e "s/WallGoMatrix\`\$WallGoMatrixVersion = \".*\";/WallGoMatrix\`\$WallGoMatrixVersion = \"${{ env.tag }}\"\;/" \
+            -e "s/WallGoMatrix\`\$WallGoMatrixVersionDate = \".*\"\;/WallGoMatrix\`\$WallGoMatrixVersionDate = \"${{ env.date }}\"\;/" \
             WallGoMatrix.m
 
       - name: Commit and push version update
