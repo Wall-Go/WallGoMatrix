@@ -39,8 +39,8 @@ jobs:
       - name: Tagging
         run: |
           # remove old tag
-          git tag -d "v${{ env.tag }}"
-          git push --delete origin "v${{ env.tag }}"
+          git tag -d ${{ env.tag }}
+          git push --delete origin ${{ env.tag }}
           # rename new tag
           git tag ${{ env.tag }}
           git push origin ${{ env.tag }}
