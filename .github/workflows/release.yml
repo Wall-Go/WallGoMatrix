@@ -35,8 +35,15 @@ jobs:
           rm WallGoMatrix.m.bak
           git add WallGoMatrix.m
           git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
-          git tag ${{ env.tag }}  # Properly format the tag
-          git push origin ${{ env.tag }}  # Push the new tag
+
+      - name: Tagging
+        run: |
+          # remove old tag
+          git tag -d "v${{ env.tag }}"
+          git push --delete origin "v${{ env.tag }}"
+          # rename new tag
+          git tag ${{ env.tag }}
+          git push origin ${{ env.tag }}
 
       - name: Create Release
         id: create_release
