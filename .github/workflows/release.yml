@@ -16,27 +16,46 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Git
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-
       - name: Get the latest tag and date
         id: version_info
         run: |
           echo "tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
-          echo "date=$(date +"(%m-%d-%Y)")" >> $GITHUB_ENV
+          echo "date=$(date +"(%d-%m-%Y)")" >> $GITHUB_ENV
 
-      - name: Update version and date in WallGoMatrix.m
+      - name: Check if WallGoMatrixVersion matches GitHub tag
         run: |
-          sed -i.bak -e 's/WallGoMatrix`\$WallGoMatrixVersion = ".*";/WallGoMatrix`$WallGoMatrixVersion = "v1.2.3";/' WallGoMatrix.m
+          WallGoMatrixVersion=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersion = "\(.*\)";/\1/p' WallGoMatrix.m)
+          WallGoMatrixVersionDate=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersionDate = "\(.*\)";/\1/p' WallGoMatrix.m)
 
-      - name: Commit and push version update
-        run: |
-          rm WallGoMatrix.m.bak
-          git add WallGoMatrix.m
-          git commit -m "Update WallGoMatrix version to 1.2.3 and date to ${{ env.date }}"
-          git push origin HEAD
+          if [ "$WallGoMatrixVersion" == "${{ env.tag }}" ]; then
+              echo "WallGoMatrixVersion matches the tag"
+          else
+              echo "Error: WallGoMatrixVersion ($WallGoMatrixVersion) does not match tag (${{ env.tag }})" 1>&2
+              exit 64
+          fi
+
+          if [ "$WallGoMatrixVersionDate" == "${{ env.date }}" ]; then
+              echo "WallGoMatrixVersionDate matches the date"
+          else
+              echo "Error: WallGoMatrix date $WallGoMatrixVersionDate does not match date ${{ env.date }}" 1>&2
+              exit 64
+          fi
+      
+      # - name: Update version and date in WallGoMatrix.m
+      #   run: |
+      #     sed -i.bak \
+      #       -e "s/WallGoMatrix\`\$WallGoMatrixVersion = \".*\";/WallGoMatrix\`\$WallGoMatrixVersion = \"${{ env.tag }}\"\;/" \
+      #       -e "s/WallGoMatrix\`\$WallGoMatrixVersionDate = \".*\"\;/WallGoMatrix\`\$WallGoMatrixVersionDate = \"${{ env.date }}\"\;/" \
+      #       WallGoMatrix.m
+
+      # - name: Commit and push version update
+      #   run: |
+      #     git config --global user.name 'github-actions'
+      #     git config --global user.email 'github-actions@github.com'
+      #     rm WallGoMatrix.m.bak
+      #     git add WallGoMatrix.m
+      #     git commit -m "Update WallGoMatrix version to ${{ env.tag }} and date to ${{ env.date }}"
+      #     git push origin HEAD
 
       - name: Create Release
         id: create_release
