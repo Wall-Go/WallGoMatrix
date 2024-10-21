@@ -3,17 +3,18 @@
 (*Quit[];*)
 
 
-(* Check Mathematica version *)
-If[$VersionNumber < 13.3,
-  Print["The Mathematica testing framework requires Mathematica version ", requiredVersion," or higher. You are using version ", currentVersion, "."];
-  Abort[]
+If[$InputFileName=="",
+	SetDirectory[NotebookDirectory[]],
+	SetDirectory[DirectoryName[$InputFileName]]
 ];
-
-SetDirectory[NotebookDirectory[]];
 (*Put this if you want to create multiple model-files with the same kernel*)
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
-<<../WallGoMatrix.m
+Check[
+    Get["../WallGoMatrix.m"],
+    Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
+    Abort[];
+]
 
 
 (* ::Chapter:: *)

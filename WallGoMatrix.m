@@ -27,11 +27,14 @@ $WallGoMatrixVersionDate::usage =
 "$WallGoMatrixVersionDate is a string that represents the version date of WallGoMatrix.";
 $WallGoMatrixOutput::usage =
 "$WallGoMatrixOutputFlag contains std output.";
+$WallGoMatrixRequiredVersion::usage =
+"$WallGoMatrixRequiredVersion is the minimal required Mathematica version.";
 
 
 (* Set the version number *)
 WallGoMatrix`$WallGoMatrixVersion = "0.1.1";
 WallGoMatrix`$WallGoMatrixVersionDate = "(09-10-2024)";
+WallGoMatrix`$WallGoMatrixRequiredVersion = 13.0;
 
 
 WallGoMatrix`$WallGoMatrixOutput = $Output;
@@ -41,6 +44,15 @@ If[$ScriptCommandLine=={},Null,
 
 
 BeginPackage["WallGoMatrix`"]
+
+
+(* Define a custom message for version mismatch *)
+WallGoMatrix::versionRequirement = "Mathematica version expected to be larger than `1` but found version `2`.";
+
+If[$VersionNumber < $WallGoMatrixRequiredVersion,
+	Message[WallGoMatrix::versionRequirement, $WallGoMatrixRequiredVersion, $VersionNumber];
+    Abort[]
+];
 
 
 Unprotect@Definition;
@@ -178,7 +190,10 @@ $WallGoMatrixDirectory=DirectoryName[$InputFileName];
 *)
 
 If[Global`$LoadGroupMath,
-	Get["GroupMath`"];
+	(* Issue of GroupMath: Need to unprotect BlockDiagonalMatrix to not throw error upon loading *)
+	Unprotect[BlockDiagonalMatrix];
+	
+	Needs["GroupMath`"];
 	Print["GroupMath is an independent package, and is not part of WallGoMatrix."];
 	Print["Please cite GroupMath: Comput.Phys.Commun. 267 (2021) 108085 \[Bullet] e-Print: \!\(\*TemplateBox[{RowBox[{\"2011.01764\", \" \", \"[\", RowBox[{\"hep\", \"-\", \"th\"}], \"]\"}], {URL[\"https://arxiv.org/abs/2011.01764\"], None}, \"https://arxiv.org/abs/2011.01764\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\n\"HyperlinkTemplate\"]\)"];
 ];
@@ -210,7 +225,7 @@ Get[FileNameJoin[{$WallGoMatrixDirectory,"src/modelCreation.m"}]];
 Get[FileNameJoin[{$WallGoMatrixDirectory,"src/matrixElements.m"}]];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model: Initialization*)
 
 
