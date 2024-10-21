@@ -2,11 +2,11 @@
 
 (* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *)
 
-(* :Title: WallGoMatrix                                                          	*)
+(* :Title: WallGoMatrix *)
 
 (*
-      	This software is covered by the GNU General Public License 3.
-       	Copyright (C) 2024-2024 Andreas Ekstedt
+    	This software is covered by the GNU General Public License 3.
+    	Copyright (C) 2024-2024 Andreas Ekstedt
        	Copyright (C) 2024-2024 Oliver Gould
        	Copyright (C) 2024-2024 Joonas Hirvonen
        	Copyright (C) 2024-2024 Benoit Laurent
@@ -16,7 +16,8 @@
 *)
 
 (* :Summary:	WallgoMatirx is an algorithm that constructs
-				the Matrix Elements at Leading Log and partially NLL for generic models.	*)	
+				the Matrix Elements at Leading Log and partially NLL for generic models.
+*)	
 
 (* ------------------------------------------------------------------------ *)
 
