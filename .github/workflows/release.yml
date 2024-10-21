@@ -35,9 +35,9 @@ jobs:
           fi
 
           if [ "$WallGoMatrixVersionDate" == "${{ env.date }}" ]; then
-              echo "WallGoMatrixVersion matches the tag"
+              echo "WallGoMatrixVersionDate matches the date"
           else
-              echo "Error: WallGoMatrix date ($WallGoMatrixVersionDate) does not match date (${{ env.date }})" 1>&2
+              echo "Error: WallGoMatrix date $WallGoMatrixVersionDate does not match date ${{ env.date }}" 1>&2
               exit 64
           fi
       
