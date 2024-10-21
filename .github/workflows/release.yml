@@ -20,7 +20,7 @@ jobs:
         id: version_info
         run: |
           echo "tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
-          echo "date=$(date +"(%m-%d-%Y)")" >> $GITHUB_ENV
+          echo "date=$(date +"(%d-%m-%Y)")" >> $GITHUB_ENV
 
       - name: Check if WallGoMatrixVersion matches GitHub tag
         run: |
