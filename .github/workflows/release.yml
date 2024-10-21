@@ -21,25 +21,18 @@ jobs:
         run: |
           echo "tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
           echo "date=$(date +"(%m-%d-%Y)")" >> $GITHUB_ENV
+
+      - name: Check if WallGoMatrixVersion matches GitHub tag
+        run: |
           WallGoMatrixVersion=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersion = "\(.*\)";/\1/p' WallGoMatrix.m)
           WallGoMatrixVersionDate=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersionDate = "\(.*\)";/\1/p' WallGoMatrix.m)
 
-          echo "WallGoMatrixVersion: $WallGoMatrixVersion"
-          echo "WallGoMatrixVersionDate: $WallGoMatrixVersionDate"
-
-      - name : Debugging
-        run: |
-          echo "WallGoMatrixVersion: $WallGoMatrixVersion"
-          echo "WallGoMatrixVersionDate: $WallGoMatrixVersionDate"
-      
-      # - name: Check if WallGoMatrixVersion matches GitHub tag
-      #   run: |
-      #     if [ "$WallGoMatrixVersion" == "${{ env.tag }}" ]; then
-      #         echo "Error: WallGoMatrixVersion ($WallGoMatrixVersion) does not match tag (${{ env.tag }})" 1>&2
-      #         exit 64
-      #     else
-      #         echo "WallGoMatrixVersion matches the tag"
-      #     fi
+          if [ "$WallGoMatrixVersion" == "${{ env.tag }}" ]; then
+              echo "Error: WallGoMatrixVersion ($WallGoMatrixVersion) does not match tag (${{ env.tag }})" 1>&2
+              exit 64
+          else
+              echo "WallGoMatrixVersion matches the tag"
+          fi
       
       - name: Update version and date in WallGoMatrix.m
         run: |
