@@ -28,10 +28,17 @@ jobs:
           WallGoMatrixVersionDate=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersionDate = "\(.*\)";/\1/p' WallGoMatrix.m)
 
           if [ "$WallGoMatrixVersion" == "${{ env.tag }}" ]; then
+              echo "WallGoMatrixVersion matches the tag"
+          else
               echo "Error: WallGoMatrixVersion ($WallGoMatrixVersion) does not match tag (${{ env.tag }})" 1>&2
               exit 64
-          else
+          fi
+
+          if [ "$WallGoMatrixVersionDate" == "${{ env.date }}" ]; then
               echo "WallGoMatrixVersion matches the tag"
+          else
+              echo "Error: WallGoMatrix date ($WallGoMatrixVersionDate) does not match date (${{ env.date }})" 1>&2
+              exit 64
           fi
       
       - name: Update version and date in WallGoMatrix.m
