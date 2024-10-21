@@ -24,6 +24,9 @@ jobs:
           WallGoMatrixVersion=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersion = "\(.*\)";/\1/p' WallGoMatrix.m)
           WallGoMatrixVersionDate=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersionDate = "\(.*\)";/\1/p' WallGoMatrix.m)
 
+          echo "WallGoMatrixVersion: $WallGoMatrixVersion"
+          echo "WallGoMatrixVersionDate: $WallGoMatrixVersionDate"
+
       - name : Debugging
         run: |
           echo "WallGoMatrixVersion: $WallGoMatrixVersion"
