@@ -609,6 +609,7 @@ Block[
 	GenerateMatrixElements[MatrixElements,Cij,particleListFull,LightParticles,ParticleMassesI,OutOfEqParticles];
 (*Creates a replacement list and shifts the indices to start at 0.*)
 	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}];
+	MatrixElementsList=DeleteCases[MatrixElementsList, a_->0];
 
 (*Exporting the matrix elements to the choosen format*)
 	FormatOptions = {"txt", "json", "hdf5", "all", "none"};
