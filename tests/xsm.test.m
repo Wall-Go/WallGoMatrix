@@ -164,8 +164,8 @@ Repb={Join[RepbL[[1]],RepbR[[1]]],"F"};
 Reph=CreateParticle[{{1,2}},"S"];
 Rep\[Phi]0=CreateParticle[{{1,1}},"S"];
 Rep\[Phi]pm=CreateParticle[{{1,3}},"S"];
-Rep\[Phi]0={{1},"S"};
-Rep\[Phi]p={{4},"S"};
+Rep\[Phi]0={{4},"S"};
+Rep\[Phi]p={{1},"S"};
 Rep\[Phi]m={{3},"S"};
 
 Reps=CreateParticle[{2},"S"];
@@ -178,15 +178,18 @@ RepB=CreateParticle[{{3,1}},"V"];
 
 VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mw2,{i,1,RepW[[1]]//Length}],
-	Table[mb2,{i,1,RepB[[1]]//Length}]];
+	Table[mW2,{i,1,RepW[[1]]//Length}],
+	Table[mB2,{i,1,RepB[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
+FermionMass[[Repb[[1]]]]=mb2;
+FermionMass[[Rept[[1]]]]=mt2;
 ScalarMass={mG2,mh2,mGm2,mGp2,ms2};
+
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mg2,mw2,mb2,mG2,mh2,mGm2,mGp2,ms2}; 
+UserMasses={mq2,mt2,mb2,mg2,mW2,mB2,mG2,mh2,mGm2,mGp2,ms2}; 
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -236,56 +239,56 @@ MatrixElements=ExportMatrixElements[
 1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{mq2->0,yt->0}//Expand
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*O(g3^2*yt^2)*)
 
 
-1/2*M[0,0,5,2]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,0,6,2]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,0,5,2]/.MatrixElements/.{mt2->0}//Expand
+1/2*M[0,0,6,2]/.MatrixElements/.{mt2->0}//Expand
 
 
-1/2*M[0,1,8,2]/.MatrixElements/.{mq2->0}//Expand
+1/2*(M[0,1,7,2]+M[0,1,8,2])/.MatrixElements/.{mt2->0,mb2->0}//Expand
 
 
-1/2*M[0,2,0,5]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,2,0,6]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,2,0,5]/.MatrixElements/.{mt2->0}//Expand
+1/2*M[0,2,0,6]/.MatrixElements/.{mt2->0}//Expand
 
 
-1/2*M[0,2,1,8]/.MatrixElements/.{mq2->0}//Expand
+1/2*(M[0,2,1,7]+M[0,2,1,8])/.MatrixElements/.{mb2->0}//Expand
 
 
-1/2*M[0,8,1,2]/.MatrixElements/.{mq2->0}//Expand
+1/2*(M[0,7,1,2]+M[0,8,1,2])/.MatrixElements/.{mt2->0}//Expand
 
 
 (* ::Subsubsection:: *)
 (*O(yt^4)*)
 
 
-1/2*M[0,0,5,5]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,0,6,6]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,0,5,5]/.MatrixElements/.{mt2->0}//Expand
+1/2*M[0,0,6,6]/.MatrixElements/.{mt2->0}//Expand
 
 
-1/2*(M[0,0,7,7]+M[0,0,8,8])/.MatrixElements/.{mq2->0}//Expand
+1/2*(M[0,0,7,7]+M[0,0,8,8]+M[0,0,7,8]+M[0,0,8,7])/.MatrixElements/.{mb2->0}//Expand
 
 
-1/2*M[0,0,5,6]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,0,5,6]/.MatrixElements/.{mt2->0}//Expand
 
 
-1/2*M[0,1,5,8]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,1,6,7]/.MatrixElements/.{mq2->0}//Expand
+1/2*(M[0,1,5,7]+M[0,1,5,8])/.MatrixElements/.{mt2->0}//Expand
+1/2*(M[0,1,6,7]+M[0,1,6,8])/.MatrixElements/.{mt2->0}//Expand
 
 
-1/2*M[0,5,5,0]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,5,6,0]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,6,5,0]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,6,6,0]/.MatrixElements/.{mq2->0}//Expand
+1/2*M[0,5,5,0]/.MatrixElements/.{mt2->0}//Expand
+1/2*M[0,5,6,0]/.MatrixElements/.{mt2->0}//Expand
+1/2*M[0,6,5,0]/.MatrixElements/.{mt2->0}//Expand
+1/2*M[0,6,6,0]/.MatrixElements/.{mt2->0}//Expand
 
 
-1/2*M[0,8,5,1]/.MatrixElements/.{mq2->0}//Expand
-1/2*M[0,7,6,1]/.MatrixElements/.{mq2->0}//Expand
+1/2*(M[0,7,5,1]+M[0,8,5,1])/.MatrixElements/.{mt2->0}//Expand
+1/2*(M[0,7,6,1]+M[0,8,6,1])/.MatrixElements/.{mt2->0}//Expand
 
 
-1/2*M[0,7,7,0]/.MatrixElements/.{mq2->0}//Expand
+1/2*(M[0,7,7,0]+M[0,8,8,0]+M[0,7,8,0]+M[0,8,7,0])/.MatrixElements/.{mb2->0}//Expand
 
 
 (* ::Section:: *)
@@ -340,10 +343,6 @@ TestCreate[
 (*O(g3^2*yt^2)*)
 
 
-	1/2*M[0,0,5,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing
-	8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing
-
-
 (*tt->hg*)
 AppendTo[testList,
 TestCreate[
@@ -363,7 +362,7 @@ TestCreate[
 (*tt->\[Phi]+ g*)
 AppendTo[testList,
 TestCreate[
-	1/2*(M[0,1,2,8]+M[0,1,8,2])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	1/2*(M[0,1,7,2]+M[0,1,8,2])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
 	8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing,
 	TestID->"tt->\!\(\*SuperscriptBox[\(\[Phi]\), \(+\)]\)g"
 ]];
@@ -388,7 +387,7 @@ TestCreate[
 (*tg->b\[Phi]+*)
 AppendTo[testList,
 TestCreate[
-	1/2*(M[0,2,1,8]+M[0,2,8,1])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	1/2*(M[0,2,1,7]+M[0,2,1,8])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
 	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
 	TestID->"tg->\!\(\*SuperscriptBox[\(b\[Phi]\), \(+\)]\)"
 ]];
@@ -397,7 +396,7 @@ TestCreate[
 (*t\[Phi]-->bg*)
 AppendTo[testList,
 TestCreate[
-	1/2*(M[0,8,1,2]+M[0,8,2,1])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	1/2*(M[0,7,1,2]+M[0,8,1,2])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
 	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
 	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(-\)]\)->bg"
 ]];
@@ -490,14 +489,14 @@ TestCreate[
 (*t\[Phi]-->hb*)
 AppendTo[testList,
 TestCreate[
-	1/2*M[0,8,5,1]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	1/2*(M[0,7,5,1]+M[0,8,5,1])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
 	3/2*yt^4*u/t//fixConvention//removeMissing,
 	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(-\)]\)->hb"
 ]];
 (*t\[Phi]-->\[Phi]0b*)
 AppendTo[testList,
 TestCreate[
-	1/2*M[0,8,6,1]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	1/2*(M[0,7,6,1]+M[0,8,6,1])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
 	3/2*yt^4*u/t//fixConvention//removeMissing,
 	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(-\)]\)->\[Phi]0b"
 ]];
@@ -506,7 +505,7 @@ TestCreate[
 (*t\[Phi]+->\[Phi]+t*)
 AppendTo[testList,
 TestCreate[
-	1/2*M[0,7,7,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
+	1/2*(M[0,7,7,0]+M[0,8,8,0]+M[0,7,8,0]+M[0,8,7,0])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
 	3*yt^4*u/t//fixConvention//removeMissing,
 	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(+\)]\)->\!\(\*SuperscriptBox[\(\[Phi]\), \(+\)]\)t"
 ]];
@@ -518,4 +517,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
 
