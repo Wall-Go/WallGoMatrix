@@ -206,7 +206,7 @@ ParticleName={
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.xsm";
+OutputFile="output/matrixElements.xsm";
 SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,

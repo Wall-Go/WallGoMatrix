@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -147,7 +147,7 @@ UserCouplings={g1,b3,b4,a1,a2,lam,y}//Flatten;
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.u1_higgs_yukawa";
+OutputFile="output/matrixElements.u1_higgs_yukawa";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","Chi","Psi","Xi","A"};
 MatrixElements=ExportMatrixElements[
@@ -320,3 +320,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+

@@ -159,7 +159,7 @@ UserCouplings={CouplingName,\[Lambda],\[Gamma],y}//Flatten;
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.yukawa";
+OutputFile="output/matrixElements.yukawa";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Phi","PsiL","PsiR"};
 MatrixElements=ExportMatrixElements[
@@ -252,4 +252,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
 

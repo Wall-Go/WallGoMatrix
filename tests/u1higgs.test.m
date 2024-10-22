@@ -116,7 +116,7 @@ UserCouplings={CouplingName,\[Lambda]}//Flatten;
 	output of matrix elements
 *)
 SetDirectory[NotebookDirectory[]];
-OutputFile="matrixElements.ah";
+OutputFile="output/matrixElements.u1higgs";
 ParticleName={"Phi","Vector"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -208,3 +208,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+

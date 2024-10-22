@@ -89,7 +89,7 @@ UserCouplings={gs};
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.qcd";
+OutputFile="output/matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
 ParticleName={"Top","Gluon"};
 MatrixElements=ExportMatrixElements[
@@ -222,3 +222,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
