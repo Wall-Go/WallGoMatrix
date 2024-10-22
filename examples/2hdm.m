@@ -157,12 +157,13 @@ RepGoldstoneHpI={{7},"S"}; (*imag charged inert scalar*)
 (*Defining various masses and couplings*)
 VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mw2,{i,1,RepW[[1]]//Length}],{mb2}]; (*mb2 is the mass of the U(1) gauge field*)
+	Table[mW2,{i,1,RepW[[1]]//Length}],
+	{mB2}]; (*mb2 is the mass of the U(1) gauge field*)
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass={mG2,mh2,mG2,mG2,mHp,mH2,mHp,mA2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
-UserMasses={mq2,mg2,mw2,mb2,mG2,mh2,mH2,mA2,mHp};
+UserMasses={mq2,mg2,mW2,mB2,mG2,mh2,mH2,mA2,mHp};
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -195,6 +196,4 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
-
-
 

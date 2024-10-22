@@ -167,7 +167,7 @@ RepLight=CreateParticle[Range[3,2*4+3],"F"];
 (*Vector bosons*)
 RepGluon=CreateParticle[{1},"V"];
 RepW=CreateParticle[{{2,1}},"V"];
-RepZ=CreateParticle[{{3,1}},"V"];
+RepB=CreateParticle[{{3,1}},"V"];
 
 (*Higgs*)
 RepH = CreateParticle[{1},"S"];
@@ -176,23 +176,23 @@ RepS = CreateParticle[{2},"S"];
 
 VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mw2,{i,1,RepW[[1]]//Length}],
-	Table[mz2,{i,1,RepZ[[1]]//Length}]];
+	Table[mW2,{i,1,RepW[[1]]//Length}],
+	Table[mB2,{i,1,RepB[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mg2,mw2,mz2,ms2}; 
+UserMasses={mq2,mg2,mW2,mB2,ms2}; 
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 (*
 These particles do not have out-of-eq contributions
 *)
-ParticleList={ReptL,ReptR,RepGluon,RepW,RepZ,RepH,RepS};
-ParticleName={"TopL","TopR","Gluon","W","Z","H","S"};
+ParticleList={ReptL,ReptR,RepGluon,RepW,RepB,RepH,RepS};
+ParticleName={"TopL","TopR","Gluon","W","B","H","S"};
 
 
 (*
@@ -235,7 +235,7 @@ RepLight=CreateParticle[Range[3,2*4+3],"F"];
 (*Vector bosons*)
 RepGluon=CreateParticle[{1},"V"];
 RepW=CreateParticle[{2},"V"];
-RepZ=CreateParticle[{3},"V"];
+RepB=CreateParticle[{3},"V"];
 
 (*Higgs*)
 RepH = CreateParticle[{1},"S"];
@@ -244,23 +244,23 @@ RepS = CreateParticle[{2},"S"];
 
 VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mw2,{i,1,RepW[[1]]//Length}],
-	Table[mz2,{i,1,RepZ[[1]]//Length}]];
+	Table[mW2,{i,1,RepW[[1]]//Length}],
+	Table[mB2,{i,1,RepB[[1]]//Length}]];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 (*
 up to the user to make sure that the same order is given in the python code
 *)
-UserMasses={mq2,mg2,mw2,mz2,ms2}; 
+UserMasses={mq2,mg2,mW2,mB2,ms2}; 
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 (*
 These particles do not have out-of-eq contributions
 *)
-ParticleList={Rept,RepGluon,RepW,RepZ,RepH,RepS};
-ParticleName={"Top","Gluon","W","Z","H","S"};
+ParticleList={Rept,RepGluon,RepW,RepB,RepH,RepS};
+ParticleName={"Top","Gluon","W","B","H","S"};
 
 
 (*

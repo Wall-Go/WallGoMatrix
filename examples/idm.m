@@ -154,13 +154,13 @@ RepGoldstoneA=CreateParticle[{{2,3},{2,1}},"S"]; (*CP-odd inert and charged scal
 (*Defining various masses and couplings*)
 VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mw2,{i,1,RepW[[1]]//Length}]
+	Table[mW2,{i,1,RepW[[1]]//Length}]
 	];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass={mG2,mh2,mG2,mG2,mA2,mH2,mA2,mA2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
-UserMasses={mq2,mg2,mw2,mG2,mh2,mH2,mA2};
+UserMasses={mq2,mg2,mW2,mG2,mh2,mH2,mA2};
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,vev}//DeleteDuplicates;
 
 
@@ -193,7 +193,5 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
-
-
 
 
