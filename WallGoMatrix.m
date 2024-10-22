@@ -626,8 +626,10 @@ Block[
 	   (* Iterate over each format and perform the export *)
 	   Do[
 	     Switch[fmt,
-	       "txt", ExportTo["txt"][MatrixElementsList, OutOfEqParticles, ParticleName, UserCouplings, privFile],
-	       "hdf5", ExportTo["hdf5"][Cij, OutOfEqParticles, ParticleName, UserCouplings, privFile],
+	       "txt",
+	       ExportTo["txt"][MatrixElementsList, OutOfEqParticles, ParticleName, UserCouplings, privFile],
+	       "hdf5",
+	       ExportTo["hdf5"][Cij, OutOfEqParticles, ParticleName, UserCouplings, privFile],
 	       "json",
 	       userParameters = Flatten[Join[UserCouplings, ParticleMasses]] // DeleteDuplicates;
 	       ExportTo["json"][MatrixElementsList, ParticleName, userParameters, privFile]
