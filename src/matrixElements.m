@@ -258,9 +258,13 @@ SymmetryBreakingField["Fermion"][Indices_,vev_] :=Module[
 
 SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 {
-	FieldPosition,PosVector,PosFermion,PosScalar,count(*,
+	FieldPosition,PosVector,PosFermion,PosScalar,count,(*,
 	GaugeMassiveReps,FermionMassiveReps,ScalarMassiveReps*)
+	lambda
 },	
+	(* reset cubics *)
+	\[Lambda]3=(\[Lambda]3//Normal)/.Thread[vev->0]//SparseArray;
+	
 	Do[
 		FieldPosition[Field]=PrintFieldRepPositions[Field];
 		(* TODO Gauge fix massive reps as internal variables*)
@@ -278,10 +282,26 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 	,{Field,{"Vector","Fermion","Scalar"}}
 	];
 	
-	If[OptionValue[VevDependentCouplings]==True, (*Additional terms are added to scalar trillinear coupligs if the VevDependentCouplings option is used*)
-		\[Lambda]3=\[Lambda]3+\[Lambda]4 . vev;
+	(* 
+		Additional terms are added to scalar trillinear coupligs if 
+		the VevDependentCouplings option is used
+	*)
+	If[OptionValue[VevDependentCouplings]==True,
+		\[Lambda]3=(
+			+\[Lambda]3
+			+\[Lambda]4 . vev
+		);
 	]
 ]
+
+
+(*Module[{flag = False},
+  onceIf[cond_, then_, else_] := If[!flag, flag = True; If[cond, then, else]]
+]
+
+(* Usage *)
+onceIf[True, Print["This will run"], Print["This won't run"]];
+onceIf[True, Print["This will NOT run"], Print["This won't run either"]];*)
 
 
 (* ::Section:: *)
@@ -2049,7 +2069,8 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 		#[[2]]}&,
 		MatrixElementsF];
 
-	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.{S*T->0,S*U->0,T*U->0}/.Thread[{T,U,S}->1];
+	MatrixElementsF=Expand[MatrixElementsF]/.{S*T->0,S*U->0,T*U->0};
+	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.Thread[{T,U,S}->1];
 	MatrixElementsF=DeleteCases[MatrixElementsF, {0,{a__}}];
 	
 	Return[MatrixElementsF];

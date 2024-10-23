@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[](*;*)
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -24,23 +24,23 @@ Check[
 (*See 2211.13142 for implementation details*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
-Group={"SU3","SU2","U1"};
+Group={"SU3","SU2"};
 RepAdjoint={{1,1},{2},0};
-HiggsDoublet1={{{0,0},{1},1/2},"C"};
-HiggsDoublet2={{{0,0},{1},1/2},"C"};
+HiggsDoublet1={{{0,0},{1}},"C"};
+HiggsDoublet2={{{0,0},{1}},"C"};
 RepScalar={HiggsDoublet1,HiggsDoublet2};
-CouplingName={g3,gw,g1};
+CouplingName={g3,gw};
 
 
-Rep1={{{1,0},{1},1/6},"L"};
-Rep2={{{1,0},{0},2/3},"R"};
-Rep3={{{1,0},{0},-1/3},"R"};
-Rep4={{{0,0},{1},-1/2},"L"};
-Rep5={{{0,0},{0},-1},"R"};
+Rep1={{{1,0},{1}},"L"};
+Rep2={{{1,0},{0}},"R"};
+Rep3={{{1,0},{0}},"R"};
+Rep4={{{0,0},{1}},"L"};
+Rep5={{{0,0},{0}},"R"};
 RepFermion1Gen={Rep1,Rep2,Rep3,Rep4,Rep5};
 
 
@@ -140,7 +140,6 @@ ReptR=CreateParticle[{{2,1}},"F"];
 (*Vector bosons*)
 RepGluon=CreateParticle[{1},"V"]; (*Gluons*)
 RepW=CreateParticle[{{2,1}},"V"]; (*SU2 gauge bosons*)
-RepB=CreateParticle[{3},"V"]; (*U1 gauge boson*)
 
 
 (*Scalars bosons*)
@@ -149,40 +148,38 @@ RepGoldstoneGpR={{1},"S"}; (*real charged Goldstone*)
 RepGoldstoneGpI={{3},"S"}; (*imag charged Golstone*)
 RepGoldstoneGp0={{4},"S"}; (*neutral Goldstone*)
 RepHiggsH=CreateParticle[{{2,2}},"S"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3}},"S"]; (*CP-odd inert scalar*)
-RepGoldstoneHpR={{5},"S"}; (*real charged inert scalar*)
-RepGoldstoneHpI={{7},"S"}; (*imag charged inert scalar*)
+RepGoldstoneA=CreateParticle[{{2,3},{2,1}},"S"]; (*CP-odd inert and charged scalars *)
 
 
 (*Defining various masses and couplings*)
 VectorMass=Join[
 	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}],
-	{mB2}]; (*mb2 is the mass of the U(1) gauge field*)
+	Table[mW2,{i,1,RepW[[1]]//Length}]
+	];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass={mG2,mh2,mG2,mG2,mHp,mH2,mHp,mA2};
+ScalarMass={mG2,mh2,mG2,mG2,mA2,mH2,mA2,mA2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
-UserMasses={mq2,mg2,mW2,mB2,mG2,mh2,mH2,mA2,mHp};
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
+UserMasses={mq2,mg2,mW2,mG2,mh2,mH2,mA2};
+UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,vev}//DeleteDuplicates;
 
 
 ParticleList={
 	ReptL,RepbL,ReptR,
-	RepGluon,RepW,RepB,
+	RepGluon,RepW,
 	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
-	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI};
+	RepHiggsH,RepGoldstoneA};
 ParticleName={
 	"TopL","BotL","TopR",
-	"Gluon","W","B",
+	"Gluon","W",
 	"Higgs","GoldstoneG0","GoldstoneGpR","GoldstoneGpI",
-	"H","A","GoldstoneHpR","GolstoneHpI"};
+	"H","A"};
 
 
 (*
 	output of matrix elements
 *)
-OutputFile="output/matrixElements.2hdm";
+OutputFile="output/matrixElements.idm";
 
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -196,4 +193,5 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
+
 
