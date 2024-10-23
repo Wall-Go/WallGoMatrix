@@ -32,8 +32,8 @@ $WallGoMatrixRequiredVersion::usage =
 
 
 (* Set the version number *)
-WallGoMatrix`$WallGoMatrixVersion = "0.1.1";
-WallGoMatrix`$WallGoMatrixVersionDate = "(09-10-2024)";
+WallGoMatrix`$WallGoMatrixVersion = "v0.1.2";
+WallGoMatrix`$WallGoMatrixVersionDate = "(23-10-2024)";
 WallGoMatrix`$WallGoMatrixRequiredVersion = 13.0;
 
 
