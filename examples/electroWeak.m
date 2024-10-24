@@ -112,10 +112,8 @@ VectorMass=Join[
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mg2,mW2}; 
+
+ (* List of all couplings *) 
 UserCouplings={gs,gw};
 
 
@@ -134,11 +132,12 @@ OutputFile="output/matrixElements.ew";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
+	{
+		TruncateAtLeadingLog->True,
+		Format->{"json","txt"}}];
 
 
 MatrixElements//Expand

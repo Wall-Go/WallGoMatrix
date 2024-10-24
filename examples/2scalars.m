@@ -131,7 +131,6 @@ FermionMass={};
 ScalarMass={mG2,mh2,mG2,mG2,mHp,mH2,mHp,mA2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
-UserMasses={mW2,mG2,mh2,mH2,mA2,mHp};
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -151,7 +150,6 @@ OutputFile="output/matrixElements.2scalars";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,

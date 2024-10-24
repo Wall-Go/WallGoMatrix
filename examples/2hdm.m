@@ -163,7 +163,6 @@ FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass={mG2,mh2,mG2,mG2,mHp,mH2,mHp,mA2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
-UserMasses={mq2,mg2,mW2,mB2,mG2,mh2,mH2,mA2,mHp};
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -187,7 +186,6 @@ OutputFile="output/matrixElements.2hdm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,

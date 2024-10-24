@@ -80,10 +80,8 @@ VectorMass=Table[mg2,{i,1,Length[gvff]}];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass={};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mg2};
+
+(* List of all couplings *) 
 UserCouplings={gs};
 
 
@@ -102,7 +100,6 @@ OutputFile="output/matrixElements.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,

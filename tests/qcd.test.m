@@ -11,7 +11,7 @@ If[$InputFileName=="",
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 Check[
-    Get["../WallGoMatrix.m"],
+    Get["../src/Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -79,10 +79,10 @@ VectorMass=Table[mg2,{i,1,Length[gvff]}];
 FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass={};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
+
+
 UserMasses={mq2,mg2};
+(* List of all couplings *)
 UserCouplings={gs};
 
 
@@ -95,7 +95,6 @@ ParticleName={"Top","Gluon"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
@@ -222,6 +221,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

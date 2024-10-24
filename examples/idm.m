@@ -160,7 +160,6 @@ FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass={mG2,mh2,mG2,mG2,mA2,mH2,mA2,mA2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
-UserMasses={mq2,mg2,mW2,mG2,mh2,mH2,mA2};
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,vev}//DeleteDuplicates;
 
 
@@ -184,7 +183,6 @@ OutputFile="output/matrixElements.idm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
@@ -193,5 +191,3 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
-
-

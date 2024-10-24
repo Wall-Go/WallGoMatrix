@@ -11,7 +11,7 @@ If[$InputFileName=="",
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 Check[
-    Get["../WallGoMatrix.m"],
+    Get["../src/Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -186,10 +186,9 @@ FermionMass[[Rept[[1]]]]=mt2;
 ScalarMass={mG2,mh2,mGm2,mGp2,ms2};
 
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mt2,mb2,mg2,mW2,mB2,mG2,mh2,mGm2,mGp2,ms2}; 
+
+UserMasses={mq2,mt2,mb2,mg2,mW2,mB2,mG2,mh2,mGm2,mGp2,ms2};
+(* List of all couplings *) 
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -214,7 +213,6 @@ SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
@@ -307,7 +305,7 @@ removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 testList={};
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*O(g3^4)*)
 
 
@@ -517,6 +515,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

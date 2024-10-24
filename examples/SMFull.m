@@ -166,10 +166,7 @@ ScalarMass={mG2,mH2,mG2,mG2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
 
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,ml2,mg2,mw2,mb2,mG2,mH2}; 
+(* List of all couplings *) 
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -194,7 +191,6 @@ OutputFile="output/matrixElementsFull";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,
@@ -209,7 +205,6 @@ OutputFile="output/matrixElementsFull.LL";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,

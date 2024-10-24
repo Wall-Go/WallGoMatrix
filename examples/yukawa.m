@@ -156,10 +156,8 @@ VectorMass=Table[mv2,{i,1,RepZ[[1]]//Length}];
 FermionMass=Table[mf2,{i,1,Length[gvff[[1]]]}];
 ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={ms2,mf2,mf2};
+
+(* List of all couplings *)
 UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
@@ -171,7 +169,6 @@ ParticleName={"Phi","PsiL","PsiR"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,

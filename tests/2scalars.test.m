@@ -11,7 +11,7 @@ If[$InputFileName=="",
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 Check[
-    Get["../WallGoMatrix.m"],
+    Get["../src/Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -151,7 +151,6 @@ OutputFile="output/matrixElements.2scalars";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
 	UserCouplings,
 	ParticleName,
 	ParticleMasses,

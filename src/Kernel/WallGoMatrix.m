@@ -106,7 +106,6 @@ ExportMatrixElements::usage=
 "ExportMatrixElements[\!\(\*
 StyleBox[\"fileName\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"particleList\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"UserMasses\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"UserCouplings\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"ParticleName\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"ParticleMasses\",\nFontSlant->\"Italic\"]\),OptionsPattern[]]\n"<>
@@ -256,7 +255,7 @@ DefineDim6[\[Lambda]6I_]:=Module[{\[Lambda]6P=\[Lambda]6I},
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model: Functions for loading and printing*)
 
 
@@ -533,7 +532,7 @@ Options[ExportMatrixElements]={
 	Format->"none"};
 
 
-ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,OptionsPattern[]]:=
+ExportMatrixElements[file_,particleList_,UserCouplings_,ParticleName_,ParticleMasses_,OptionsPattern[]]:=
 Block[
 {
 	ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
