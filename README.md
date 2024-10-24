@@ -38,10 +38,19 @@ factors appropriately to yield the 2-to-2 scattering matrix elements.
 
 ## Installation
 
-**WallGoMatrix** can be installed as a Mathematica package by downloading the
+### Paclet Installation
+
+**WallGoMatrix** can be installed as a Wolfram Paclet by running the following in Mathematica
+```mathematica
+PacletInstall["https://github.com/Wall-Go/WallGoMatrix/releases/latest/download/WallGoMatrix.paclet"]
+```
+
+### Manual Installation
+
+**WallGoMatrix** can alternatively be installed manually by downloading the
 zip file from the following link:
 
-[![Download zip](https://custom-icon-badges.demolab.com/badge/-Download-blue?style=for-the-badge&logo=download&logoColor=white "Download zip")](https://github.com/Wall-Go/WallGoMatrix/releases/latest)
+[![Download zip](https://custom-icon-badges.demolab.com/badge/-Download-blue?style=for-the-badge&logo=download&logoColor=white "Download zip")](https://github.com/Wall-Go/WallGoMatrix/releases/latest/download/WallGoMatrix.zip)
 
 After unpacking the zip file, place the **WallGoMatrix** directory inside the **Applications** folder within either the base or user-specific **Mathematica Applications** directory. These directories store Mathematica packages and can be located by evaluating the variables **`$BaseDirectory`** and **`$UserBaseDirectory`** within a Mathematica session.
 To find these directories, you can run the following command in Mathematica:
@@ -69,8 +78,7 @@ Note that from Mathematica 14.1 onwards,
 these directories are renamed to contain Wolfram instead of Mathematica.
 For example, the path for macOS becomes `~/Library/Wolfram/Applications`.
 
-Once the WallGoMatrix directory has been put inside the Mathematica applications
-directory, the package can be loaded from within Mathematica using
+Once the WallGoMatrix directory has been installed, the package can be loaded from within Mathematica using
 
 ```mathematica
 <<WallGoMatrix`
