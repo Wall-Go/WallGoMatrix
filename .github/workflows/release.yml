@@ -16,14 +16,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Get the latest tag and date
+        id: version_info
+        run: |
+          echo "tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
+          echo "date=$(date +"(%d-%m-%Y)")" >> $GITHUB_ENV
+
       - name: Check if WallGoMatrix version matches GitHub tag
         run: |
           WallGoMatrixVersion=$(sed -n 's/^\([[:space:]]*\)"Version" -> "\([^.]*\)\.\([^.]*\)\.\([^.]\)",/v\2.\3.\4/p' src/PacletInfo.m)
 
-          if [ "$WallGoMatrixVersion" == "${{ github.ref }}" ]; then
+          if [ "$WallGoMatrixVersion" == "${{ env.tag }}" ]; then
               echo "WallGoMatrixVersion matches the tag"
           else
-              echo "Error: WallGoMatrixVersion ($WallGoMatrixVersion) does not match tag (${{ github.ref }})" 1>&2
+              echo "Error: WallGoMatrixVersion ($WallGoMatrixVersion) does not match tag (${{ env.tag }})" 1>&2
               exit 64
           fi
 
