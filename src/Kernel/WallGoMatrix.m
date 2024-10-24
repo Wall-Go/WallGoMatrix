@@ -22,20 +22,8 @@
 (* ------------------------------------------------------------------------ *)
 
 
-$WallGoMatrixVersion::usage =
-"$WallGoMatrixVersion is a string that represents the version of WallGoMatrix.";
-$WallGoMatrixVersionDate::usage =
-"$WallGoMatrixVersionDate is a string that represents the version date of WallGoMatrix.";
 $WallGoMatrixOutput::usage =
 "$WallGoMatrixOutputFlag contains std output.";
-$WallGoMatrixRequiredVersion::usage =
-"$WallGoMatrixRequiredVersion is the minimal required Mathematica version.";
-
-
-(* Set the version number *)
-WallGoMatrix`$WallGoMatrixVersion = "v0.1.2";
-WallGoMatrix`$WallGoMatrixVersionDate = "(23-10-2024)";
-WallGoMatrix`$WallGoMatrixRequiredVersion = 13.0;
 
 
 WallGoMatrix`$WallGoMatrixOutput = $Output;
@@ -45,15 +33,6 @@ If[$ScriptCommandLine=={},Null,
 
 
 BeginPackage["WallGoMatrix`"]
-
-
-(* Define a custom message for version mismatch *)
-WallGoMatrix::versionRequirement = "Mathematica version expected to be larger than `1` but found version `2`.";
-
-If[$VersionNumber < $WallGoMatrixRequiredVersion,
-	Message[WallGoMatrix::versionRequirement, $WallGoMatrixRequiredVersion, $VersionNumber];
-    Abort[]
-];
 
 
 Unprotect@Definition;
@@ -73,7 +52,6 @@ AppendTo[result,Row[{
 	TexFor["GOGOGOGOGOGOGOGOGOGOGOGO "],
 	TexFor["WallGoMatrix"],
 	TexFor[" GOGOGOGOGOGOGOGOGOGOGGOGOGO"]}]];
-AppendTo[result,Row[{"Version: "//TexFor,ToString[$WallGoMatrixVersion]<>" "<>ToString[$WallGoMatrixVersionDate]//TexFor}]];
 AppendTo[result,Row[{"Authors: "//TexFor,
     Hyperlink["Andreas Ekstedt","https://inspirehep.net/authors/1799400"],", "//TexFor,
     Hyperlink["Oliver Gould","https://inspirehep.net/authors/1606373"],", "//TexFor,
