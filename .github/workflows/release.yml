@@ -24,8 +24,8 @@ jobs:
 
       - name: Check if WallGoMatrixVersion matches GitHub tag
         run: |
-          WallGoMatrixVersion=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersion = "\(.*\)";/\1/p' WallGoMatrix.m)
-          WallGoMatrixVersionDate=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersionDate = "\(.*\)";/\1/p' WallGoMatrix.m)
+          WallGoMatrixVersion=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersion = "\(.*\)";/\1/p' src/Kernel/WallGoMatrix.m)
+          WallGoMatrixVersionDate=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersionDate = "\(.*\)";/\1/p' src/Kernel/WallGoMatrix.m)
 
           if [ "$WallGoMatrixVersion" == "${{ env.tag }}" ]; then
               echo "WallGoMatrixVersion matches the tag"
