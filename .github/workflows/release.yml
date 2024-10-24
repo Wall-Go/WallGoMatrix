@@ -24,8 +24,8 @@ jobs:
 
       - name: Check if WallGoMatrixVersion matches GitHub tag
         run: |
-          WallGoMatrixVersion=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersion = "\(.*\)";/\1/p' WallGoMatrix.m)
-          WallGoMatrixVersionDate=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersionDate = "\(.*\)";/\1/p' WallGoMatrix.m)
+          WallGoMatrixVersion=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersion = "\(.*\)";/\1/p' src/Kernel/WallGoMatrix.m)
+          WallGoMatrixVersionDate=$(sed -n 's/WallGoMatrix`\$WallGoMatrixVersionDate = "\(.*\)";/\1/p' src/Kernel/WallGoMatrix.m)
 
           if [ "$WallGoMatrixVersion" == "${{ env.tag }}" ]; then
               echo "WallGoMatrixVersion matches the tag"
@@ -73,8 +73,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p WallGoMatrix
-          cp -r src WallGoMatrix/
-          cp WallGoMatrix.m WallGoMatrix/
+          cp src/Kernel/*.m WallGoMatrix
           zip -r WallGoMatrix.zip WallGoMatrix/*
           rm -r WallGoMatrix
           ls -a
