@@ -221,9 +221,9 @@ Begin["`Private`"]
 	Loads all functions.
 *)
 (*Loads DRalgo model creation*)
-Get[FileNameJoin[{$WallGoMatrixDirectory,"src/modelCreation.m"}]];
+Get[FileNameJoin[{$WallGoMatrixDirectory,"modelCreation.m"}]];
 (*Loads matrix element creation*)
-Get[FileNameJoin[{$WallGoMatrixDirectory,"src/matrixElements.m"}]];
+Get[FileNameJoin[{$WallGoMatrixDirectory,"matrixElements.m"}]];
 
 
 (* ::Section:: *)
