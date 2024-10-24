@@ -1,2 +1,10 @@
 .DS_STORE
+.vscode
+.mypy_cache
 *.txt
+*.zip
+*.paclet
+*.nb
+*.txt
+*.json
+*.hdf5

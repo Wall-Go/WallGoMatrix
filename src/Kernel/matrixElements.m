@@ -1151,7 +1151,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3V1-D*)
 
 
@@ -1224,7 +1224,7 @@ If[ (
 	CU=Contract[scalarPropU . \[Lambda]3Tensor[[2,3]], gTensor[[1]],{{1,6}}]//OrderArray[#,4,1,2,3]&;
 	
 (*This result is beautiful in much the same way that a carrot isn't. *)
-	resTot=-4*Total[CS (u*CT+t*CU),-1];
+	resTot=-4*Total[CS*(u*CT+t*CU),-1];
 	resTot+=-4 s*Total[CT CU,-1];
 	
 	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t1,u->u1}/.{t1->u,u1->t};];

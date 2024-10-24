@@ -10,8 +10,6 @@ for computing the bubble wall speed for cosmological phase transitions.
 
 [![Version](https://img.shields.io/github/v/tag/Wall-Go/WallGoMatrix?label=Version)](https://github.com/Wall-Go/WallGoMatrix/releases/latest/)
 
-[![Release](https://github.com/Wall-Go/WallGoMatrix/actions/workflows/release.yml/badge.svg)](https://github.com/Wall-Go/WallGoMatrix/actions/workflows/release.yml)
-
 ## About this project
 
 [**WallGo**](https://github.com/Wall-Go) is an open source code for the
@@ -38,10 +36,19 @@ factors appropriately to yield the 2-to-2 scattering matrix elements.
 
 ## Installation
 
-**WallGoMatrix** can be installed as a Mathematica package by downloading the
+### Paclet Installation
+
+**WallGoMatrix** can be installed as a Wolfram Paclet by running the following in Mathematica
+```mathematica
+PacletInstall["https://github.com/Wall-Go/WallGoMatrix/releases/latest/download/WallGoMatrix.paclet"]
+```
+
+### Manual Installation
+
+**WallGoMatrix** can alternatively be installed manually by downloading the
 zip file from the following link:
 
-[![Download zip](https://custom-icon-badges.demolab.com/badge/-Download-blue?style=for-the-badge&logo=download&logoColor=white "Download zip")](https://github.com/Wall-Go/WallGoMatrix/releases/latest)
+[![Download zip](https://custom-icon-badges.demolab.com/badge/-Download-blue?style=for-the-badge&logo=download&logoColor=white "Download zip")](https://github.com/Wall-Go/WallGoMatrix/releases/latest/download/WallGoMatrix.zip)
 
 After unpacking the zip file, place the **WallGoMatrix** directory inside the **Applications** folder within either the base or user-specific **Mathematica Applications** directory. These directories store Mathematica packages and can be located by evaluating the variables **`$BaseDirectory`** and **`$UserBaseDirectory`** within a Mathematica session.
 To find these directories, you can run the following command in Mathematica:
@@ -69,16 +76,6 @@ Note that from Mathematica 14.1 onwards,
 these directories are renamed to contain Wolfram instead of Mathematica.
 For example, the path for macOS becomes `~/Library/Wolfram/Applications`.
 
-Once the WallGoMatrix directory has been put inside the Mathematica applications
-directory, the package can be loaded from within Mathematica using
-
-```mathematica
-<<WallGoMatrix`
-```
-
-To see how WallGoMatrix is used in practice, we recommend taking a look at the
-[examples](https://github.com/Wall-Go/WallGoMatrix/tree/main/examples).
-
 ### Requirements
 
 WallGoMatrix is written in the Wolfram Mathematica language, and depends on the Mathematica package GroupMath. It has been tested on the following versions.
@@ -87,6 +84,17 @@ WallGoMatrix is written in the Wolfram Mathematica language, and depends on the 
     - [GroupMath](https://renatofonseca.net/groupmath) version 1.1.2
 
 WallGoMatrix builds on [DRalgo](https://github.com/DR-algo/DRalgo) version 1.2, but the required elements are included directly in the WallGoMatrix package, so separate installation of DRalgo is not necessary.
+
+## Running
+
+Once the WallGoMatrix directory has been installed, the package can be loaded from within Mathematica using
+
+```mathematica
+<<WallGoMatrix`
+```
+
+To see how WallGoMatrix is used in practice, we recommend taking a look at the
+[examples](https://github.com/Wall-Go/WallGoMatrix/tree/main/examples).
 
 ### Running the examples
 
