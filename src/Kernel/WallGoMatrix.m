@@ -35,14 +35,6 @@ If[$ScriptCommandLine=={},Null,
 BeginPackage["WallGoMatrix`"]
 
 
-Unprotect@Definition;
-Definition[x_Symbol] /; StringMatchQ[Context[x], "Package`" ~~ ___] :=
-    StringReplace[ToString@FullDefinition[x],
-        (WordCharacter .. ~~ DigitCharacter ... ~~ "`") .. ~~ s_ :> s
-    ];
-Protect@Definition;
-
-
 (*
 	Welcome banner: All credit for this part to GroupMath
 *)
