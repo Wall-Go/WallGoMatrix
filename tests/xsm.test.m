@@ -24,7 +24,7 @@ Check[
 (*see 1506.04741 [hep-ph]*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -188,8 +188,6 @@ ScalarMass={mG2,mh2,mGm2,mGp2,ms2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
 UserMasses={mq2,mt2,mb2,mg2,mW2,mB2,mG2,mh2,mGm2,mGp2,ms2};
-(* List of all couplings *) 
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 
 ParticleList={
@@ -213,7 +211,6 @@ SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
 	{
@@ -515,6 +512,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

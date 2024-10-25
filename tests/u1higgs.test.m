@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -21,7 +21,7 @@ Check[
 (*Abelian Higgs*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -107,8 +107,6 @@ ScalarMass=Table[ms,{i,1,Length[RepScalar[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
 UserMasses={ms,ms,mv};
-(* List of all couplings *)
-UserCouplings={CouplingName,\[Lambda]}//Flatten;
 
 
 (*
@@ -120,10 +118,11 @@ ParticleName={"Phi","Vector"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"}}];
 
 
 MatrixElements
@@ -206,7 +205,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 

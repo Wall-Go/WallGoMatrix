@@ -81,9 +81,6 @@ FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass={};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
-(* List of all couplings *) 
-UserCouplings={gs};
-
 
 (*
 These particles do not necessarily have to be out of equilibrium
@@ -100,7 +97,8 @@ OutputFile="output/matrixElements.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
+	{
+		TruncateAtLeadingLog->True,
+		Format->{"json","txt"}}];

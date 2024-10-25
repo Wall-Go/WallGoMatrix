@@ -106,7 +106,6 @@ ExportMatrixElements::usage=
 "ExportMatrixElements[\!\(\*
 StyleBox[\"fileName\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"particleList\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"UserCouplings\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"ParticleName\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"ParticleMasses\",\nFontSlant->\"Italic\"]\),OptionsPattern[]]\n"<>
 "Generates all possible matrix elements with the external particles specified in particleList.\n"<>
@@ -532,10 +531,11 @@ Options[ExportMatrixElements]={
 	Format->"none"};
 
 
-ExportMatrixElements[file_,particleList_,UserCouplings_,ParticleName_,ParticleMasses_,OptionsPattern[]]:=
+ExportMatrixElements[file_,particleList_,ParticleName_,ParticleMasses_,OptionsPattern[]]:=
 Block[
 {
-	ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
+	ParticleMassesI=ParticleMasses,
+	UserCouplings,ExportTXT,ExportH5,
 	Cij,ParticleInfo,LightParticles,particleListFull,
 	CouplingInfo,MatrixElements,OutOfEqParticles,RepMasses,RepCouplings,
 	FormatOptions,userFormat,MatrixElementsList,userParameters,
@@ -566,6 +566,9 @@ Block[
 
 (*Splits ParticleList into out-of-eq and light particles*)
 	ExtractLightParticles[particleList,OutOfEqParticles,particleListFull,LightParticles];
+
+(*Collects all the UserCouplings*)
+	UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 (*Creates an assumption rule for simplifying Conjugate[....] terms*)
 	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,ParticleMasses,s,t,u}; (*All variables are assumed to be real*)

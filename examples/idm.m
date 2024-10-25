@@ -160,8 +160,6 @@ FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass={mG2,mh2,mG2,mG2,mA2,mH2,mA2,mA2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,vev}//DeleteDuplicates;
-
 
 ParticleList={
 	ReptL,RepbL,ReptR,
@@ -183,7 +181,6 @@ OutputFile="output/matrixElements.idm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
 	{

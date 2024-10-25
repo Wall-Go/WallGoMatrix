@@ -113,9 +113,6 @@ FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
 ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
- (* List of all couplings *) 
-UserCouplings={gs,gw};
-
 
 (*
 These particles do not necessarily have to be out of equilibrium
@@ -132,7 +129,6 @@ OutputFile="output/matrixElements.ew";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
 	{

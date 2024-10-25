@@ -166,10 +166,6 @@ ScalarMass={mG2,mH2,mG2,mG2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
 
-(* List of all couplings *) 
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
-
-
 ParticleList={
 	ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,
 	RepCharmStrangeL,RepCharmR,RepStrangeR,RepMuonL,RepMuonR,
@@ -191,10 +187,11 @@ OutputFile="output/matrixElementsFull";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"}}];
 
 
 (*
@@ -205,10 +202,11 @@ OutputFile="output/matrixElementsFull.LL";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
+	{
+		TruncateAtLeadingLog->True,
+		Format->{"json","txt"}}];
 
 
 MatrixElements

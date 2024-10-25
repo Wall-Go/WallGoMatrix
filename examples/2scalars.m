@@ -131,8 +131,6 @@ FermionMass={};
 ScalarMass={mG2,mh2,mG2,mG2,mHp,mH2,mHp,mA2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
-
 
 ParticleList={
 	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
@@ -150,7 +148,6 @@ OutputFile="output/matrixElements.2scalars";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
 	{

@@ -21,7 +21,7 @@ Check[
 (*Yukawa Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -151,8 +151,6 @@ ScalarMass=Table[ms,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
 UserMasses={ms,mf,mf};
-(* List of all couplings *)
-UserCouplings={CouplingName,\[Lambda],\[Gamma],y}//Flatten;
 
 
 (*
@@ -164,7 +162,6 @@ ParticleName={"Phi","PsiL","PsiR"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
 	{
@@ -252,6 +249,5 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 

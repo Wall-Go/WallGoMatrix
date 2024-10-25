@@ -139,8 +139,6 @@ ScalarMass=Table[ms,{i,1,Length[gvss[[1]]]}];
 ParticleMasses={VectorMass,FermionMass,ScalarMass}
 
 UserMasses={mv,mf,ms};
-(* List of all couplings *)
-UserCouplings={g1,b3,b4,a1,a2,lam,y}//Flatten;
 
 
 (*
@@ -152,11 +150,12 @@ ParticleName={"Phi","Chi","Psi","Xi","A"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{TruncateAtLeadingLog->False,
-	NormalizeWithDOF->False,Format->{"json","txt"}}];
+	{
+		TruncateAtLeadingLog->False,
+		NormalizeWithDOF->False,
+		Format->{"json","txt"}}];
 
 
 MatrixElements
@@ -318,7 +317,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 

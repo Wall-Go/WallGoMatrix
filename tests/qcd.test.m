@@ -82,8 +82,6 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
 
 UserMasses={mq2,mg2};
-(* List of all couplings *)
-UserCouplings={gs};
 
 
 (*
@@ -95,10 +93,11 @@ ParticleName={"Top","Gluon"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserCouplings,
 	ParticleName,
 	ParticleMasses,
-	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"}}];
 
 
 MatrixElements
@@ -221,7 +220,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 
