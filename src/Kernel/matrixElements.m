@@ -308,7 +308,7 @@ onceIf[True, Print["This will NOT run"], Print["This won't run either"]];*)
 
 
 (* ::Subsubsection::Closed:: *)
-(*V1V2toV3V4-D*)
+(*V1V2toV3V4*)
 
 
 CreateMatrixElement["V1V2toV3V4"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -377,7 +377,7 @@ If[
 
 
 (* ::Subsubsection::Closed:: *)
-(*F1F2toF3F4-D*)
+(*F1F2toF3F4*)
 
 
 CreateMatrixElement["F1F2toF3F4"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -528,7 +528,7 @@ If[
 
 
 (* ::Subsubsection::Closed:: *)
-(*F1F2toV1V2-D*)
+(*F1F2toV1V2*)
 
 
 CreateMatrixElement["F1F2toV1V2"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -644,7 +644,7 @@ If[
 
 
 (* ::Subsubsection::Closed:: *)
-(*F1V1toF1V1-D*)
+(*F1V1toF1V1*)
 
 
 CreateMatrixElement["F1V1toF1V1"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -695,7 +695,7 @@ If[ (
 
 
 (* ::Subsubsection::Closed:: *)
-(*S1S2toS3S4-D*)
+(*S1S2toS3S4*)
 
 
 CreateMatrixElement["S1S2toS3S4"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -772,7 +772,7 @@ If[
 
 
 (* ::Subsubsection::Closed:: *)
-(*S1S2toF1F2-D*)
+(*S1S2toF1F2*)
 
 
 CreateMatrixElement["S1S2toF1F2"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -906,7 +906,7 @@ If[
 
 
 (* ::Subsubsection::Closed:: *)
-(*F1S1toF1S1-D*)
+(*F1S1toF1S1*)
 
 
 CreateMatrixElement["F1S1toF1S1"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -954,7 +954,7 @@ If[ (
 
 
 (* ::Subsubsection::Closed:: *)
-(*F1S1toF1V1-D*)
+(*F1S1toF1V1*)
 
 
 SortF1S1toF1V1[L_]:=Block[{helpList,ordering,kinFlip},
@@ -1040,7 +1040,7 @@ If[ (
 
 
 (* ::Subsubsection::Closed:: *)
-(*F1F1toS1V1-D*)
+(*F1F1toS1V1*)
 
 
 CreateMatrixElement["F1F2toS1V1"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -1066,7 +1066,7 @@ If[
 
 
 (* ::Subsubsection::Closed:: *)
-(*S1S2toV1V2-D*)
+(*S1S2toV1V2*)
 
 
 CreateMatrixElement["S1S2toV1V2"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -1160,7 +1160,7 @@ If[
 
 
 (* ::Subsubsection::Closed:: *)
-(*S1V1toS1V1-D*)
+(*S1V1toS1V1*)
 
 
 CreateMatrixElement["S1V1toS1V1"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
@@ -1210,7 +1210,7 @@ If[ (
 
 
 (* ::Subsubsection::Closed:: *)
-(*S1S2toS3V1-D*)
+(*S1S2toS3V1*)
 
 
 CreateMatrixElement["S1S2toS3V1"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
