@@ -1320,10 +1320,11 @@ degreeOfFreedom[particle_]:=Block[{dof},
 ]
 
 
-ExtractOutOfEqElement[Channel_][particleList_,LightParticles_,particleMasses_]:=
+ExtractOutOfEqElement[Channel_?StringQ][particleList_,LightParticles_,particleMasses_]:=
 Block[{
 	OutOfEqParticles,MatrixElements,Elements,CollElements,
-	VectorMass,FermionMass,ScalarMass
+	VectorMass,FermionMass,ScalarMass,
+	symmetries,deltaF
 },
 (*incomingParticle is the particle associated with the momentum p_1*)
 (*deltaFparticle is the particles whos deltaF contributions we want*)
@@ -1348,8 +1349,7 @@ Block[{
 If[Length[Elements]==0,
 	Return[{}]; 
 ,
-
-	MatrixElements=Table[ Extract[MatrixElements,Elements[[i]]],{i,1,Length[Elements]}];
+	MatrixElements=Map[Extract[MatrixElements, #] &, Elements];
 
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
@@ -1365,7 +1365,7 @@ If[Length[Elements]==0,
 
 (*We now add all elements with the same deltaF list*)
 	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
-	CollElements=Table[{symmetries[[i]][[;;,1]]//Total[#,-1]&,symmetries[[i]][[1,2]]},{i,1,Length[symmetries]}];
+	CollElements=Map[{Total[#[[;;,1]], -1], #[[1, 2]]} &,symmetries];
 	
 	Return[CollElements]
 ]	
