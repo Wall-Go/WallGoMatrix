@@ -531,13 +531,17 @@ Options[ExportMatrixElements]={
 	Format->"none"};
 
 
-ExportMatrixElements[file_,particleList_,ParticleName_,ParticleMasses_,OptionsPattern[]]:=
+ExportMatrixElements[file_,particleList_,particleMasses_,OptionsPattern[]]:=
 Block[
 {
-	ParticleMassesI=ParticleMasses,
-	UserCouplings,ExportTXT,ExportH5,
-	Cij,ParticleInfo,LightParticles,particleListFull,
-	CouplingInfo,MatrixElements,OutOfEqParticles,RepMasses,RepCouplings,
+	particleMassesI=particleMasses,
+	userCouplings,
+	particleNames,
+	particles,
+	ExportTXT,ExportH5,
+	Cij,ParticleInfo,lightParticles,particleListFull,
+	CouplingInfo,MatrixElements,
+	outOfEqParticles,RepMasses,RepCouplings,
 	FormatOptions,userFormat,MatrixElementsList,userParameters,
 	privFile=file,commandLineArgs
 },
@@ -564,22 +568,26 @@ Block[
 (*Specifies if Output should be verbose*)
 	bVerbose = OptionValue[Verbose];
 
+(*Separate names and particles*)
+	particleNames=particleList[[All,3]];
+	particles=particleList[[All,1;;2]];
+
 (*Splits ParticleList into out-of-eq and light particles*)
-	ExtractLightParticles[particleList,OutOfEqParticles,particleListFull,LightParticles];
+	ExtractLightParticles[particles,outOfEqParticles,particleListFull,lightParticles];
 
 (*Collects all the UserCouplings*)
-	UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
+	userCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 
 (*Creates an assumption rule for simplifying Conjugate[....] terms*)
-	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,ParticleMasses,s,t,u}; (*All variables are assumed to be real*)
+	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u}; (*All variables are assumed to be real*)
 	
 (*Allocates one element for each species mass to avoid errors*)	
-	If[ParticleMasses[[1]]=={},ParticleMassesI[[1]]={msq}];
-	If[ParticleMasses[[2]]=={},ParticleMassesI[[2]]={msq}];
-	If[ParticleMasses[[3]]=={},ParticleMassesI[[3]]={msq}];
+	If[particleMasses[[1]]=={},particleMassesI[[1]]={msq}];
+	If[particleMasses[[2]]=={},particleMassesI[[2]]={msq}];
+	If[particleMasses[[3]]=={},particleMassesI[[3]]={msq}];
 
 (*Extracting all matrix elements*)	
-	GenerateMatrixElements[MatrixElements,Cij,particleListFull,LightParticles,ParticleMassesI,OutOfEqParticles];
+	GenerateMatrixElements[MatrixElements,Cij,particleListFull,lightParticles,particleMassesI,outOfEqParticles];
 (*Creates a replacement list and shifts the indices to start at 0.*)
 	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}];
 	MatrixElementsList=DeleteCases[MatrixElementsList, a_->0];
@@ -600,12 +608,12 @@ Block[
 	   Do[
 	     Switch[fmt,
 	       "txt",
-	       ExportTo["txt"][MatrixElementsList, OutOfEqParticles, ParticleName, UserCouplings, privFile],
+	       ExportTo["txt"][MatrixElementsList, outOfEqParticles, particleNames, userCouplings, privFile],
 	       "hdf5",
-	       ExportTo["hdf5"][Cij, OutOfEqParticles, ParticleName, UserCouplings, privFile],
+	       ExportTo["hdf5"][Cij, outOfEqParticles, particleNames, userCouplings, privFile],
 	       "json",
-	       userParameters = Flatten[Join[UserCouplings, ParticleMasses]] // DeleteDuplicates;
-	       ExportTo["json"][MatrixElementsList, ParticleName, userParameters, privFile]
+	       userParameters = Flatten[Join[userCouplings, particleMasses]] // DeleteDuplicates;
+	       ExportTo["json"][MatrixElementsList, particleNames, userParameters, privFile]
 	     ],
 	     {fmt, userFormatsList}
 	   ],

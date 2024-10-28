@@ -109,24 +109,24 @@ SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-de
 
 
 (*Vector bosons*)
-RepW=CreateParticle[{{1,1}},"V"]; (*SU2 gauge bosons*)
+RepW=CreateParticle[{{1,1}},"V","W"]; (*SU2 gauge bosons*)
 
 
 (*Scalars bosons*)
-RepHiggsh=CreateParticle[{{1,2}},"S"]; (*Higgs*)
-RepGoldstoneGpR={{1},"S"}; (*real charged Goldstone*)
-RepGoldstoneGpI={{3},"S"}; (*imag charged Golstone*)
-RepGoldstoneGp0={{4},"S"}; (*neutral Goldstone*)
-RepHiggsH=CreateParticle[{{2,2}},"S"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3}},"S"]; (*CP-odd inert scalar*)
-RepGoldstoneHpR={{5},"S"}; (*real charged inert scalar*)
-RepGoldstoneHpI={{7},"S"}; (*imag charged inert scalar*)
+RepHiggsh=CreateParticle[{{1,2}},"S","Higgs"]; (*Higgs*)
+RepGoldstoneGpR={{1},"S","GoldstoneGPR"}; (*real charged Goldstone*)
+RepGoldstoneGpI={{3},"S","RepGoldstoneGpI"}; (*imag charged Golstone*)
+RepGoldstoneGp0={{4},"S","RepGoldstoneGp0"}; (*neutral Goldstone*)
+RepHiggsH=CreateParticle[{{2,2}},"S","H"]; (*CP-even inert scalar*)
+RepGoldstoneA=CreateParticle[{{2,3}},"S","A"]; (*CP-odd inert scalar*)
+RepGoldstoneHpR={{5},"S","RepGoldstoneHpR"}; (*real charged inert scalar*)
+RepGoldstoneHpI={{7},"S","RepGoldstoneHpI"}; (*imag charged inert scalar*)
 
 
 (*Defining various masses and couplings*)
 VectorMass=Join[
-	Table[mw2,{i,1,RepW[[1]]//Length}]
-	]; (*mb2 is the mass of the U(1) gauge field*)
+	Table[mW2,{i,1,RepW[[1]]//Length}]
+	];
 FermionMass={};
 ScalarMass={mG2,mh2,mG2,mG2,mHp,mH2,mHp,mA2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
@@ -137,9 +137,6 @@ UserMasses={mw2,mG2,mh2,mH2,mA2,mHp};
 ParticleList={
 	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
 	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI};
-ParticleName={
-	"Higgs","GoldstoneG0","GoldstoneGpR","GoldstoneGpI",
-	"H","A","GoldstoneHpR","GolstoneHpI"};
 
 
 (*
@@ -150,7 +147,6 @@ OutputFile="output/matrixElements.2scalars";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->True,

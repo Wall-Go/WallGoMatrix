@@ -112,15 +112,15 @@ rep 1-2 are fermions,
 (*rep 3 is a scalar*)
 *)
 (* scalar *)
-RepPhi=CreateParticle[{1},"S"];
-RepChi=CreateParticle[{2},"S"];
+RepPhi=CreateParticle[{1},"S","Phi"];
+RepChi=CreateParticle[{2},"S","Chi"];
 
 (* left-handed fermion *)
-RepPsi=CreateParticle[{1,2},"F"];
-RepXi=CreateParticle[{3,4},"F"];
+RepPsi=CreateParticle[{1,2},"F","Psi"];
+RepXi=CreateParticle[{3,4},"F","Xi"];
 
 (*Vector bosons*)
-RepA=CreateParticle[{1},"V"];
+RepA=CreateParticle[{1},"V","A"];
 
 
 (*
@@ -146,11 +146,9 @@ UserMasses={mv,mf,ms};
 *)
 OutputFile="output/matrixElements.u1_higgs_yukawa";
 SetDirectory[NotebookDirectory[]];
-ParticleName={"Phi","Chi","Psi","Xi","A"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->False,
@@ -317,6 +315,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

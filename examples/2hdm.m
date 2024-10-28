@@ -132,26 +132,26 @@ SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-de
 
 
 (*Third generation of fermions*)
-ReptL=CreateParticle[{{1,1}},"F"];
-RepbL=CreateParticle[{{1,2}},"F"];
-ReptR=CreateParticle[{{2,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F","TopL"];
+RepbL=CreateParticle[{{1,2}},"F","BotL"];
+ReptR=CreateParticle[{{2,1}},"F","TopR"];
 
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"]; (*Gluons*)
-RepW=CreateParticle[{{2,1}},"V"]; (*SU2 gauge bosons*)
-RepB=CreateParticle[{3},"V"]; (*U1 gauge boson*)
+RepGluon=CreateParticle[{1},"V","Gluon"]; (*Gluons*)
+RepW=CreateParticle[{{2,1}},"V","W"]; (*SU2 gauge bosons*)
+RepB=CreateParticle[{3},"V","B"]; (*U1 gauge boson*)
 
 
 (*Scalars bosons*)
-RepHiggsh=CreateParticle[{{1,2}},"S"]; (*Higgs*)
-RepGoldstoneGpR={{1},"S"}; (*real charged Goldstone*)
-RepGoldstoneGpI={{3},"S"}; (*imag charged Golstone*)
-RepGoldstoneGp0={{4},"S"}; (*neutral Goldstone*)
-RepHiggsH=CreateParticle[{{2,2}},"S"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3}},"S"]; (*CP-odd inert scalar*)
-RepGoldstoneHpR={{5},"S"}; (*real charged inert scalar*)
-RepGoldstoneHpI={{7},"S"}; (*imag charged inert scalar*)
+RepHiggsh=CreateParticle[{{1,2}},"S","Higgs"]; (*Higgs*)
+RepGoldstoneGpR={{1},"S","GoldstoneGpR"}; (*real charged Goldstone*)
+RepGoldstoneGpI={{3},"S","GoldstoneGpI"}; (*imag charged Golstone*)
+RepGoldstoneG0={{4},"S","GoldstoneG0"}; (*neutral Goldstone*)
+RepHiggsH=CreateParticle[{{2,2}},"S","H"]; (*CP-even inert scalar*)
+RepGoldstoneA=CreateParticle[{{2,3}},"S","A"]; (*CP-odd inert scalar*)
+RepGoldstoneHpR={{5},"S","GoldstoneHpR"}; (*real charged inert scalar*)
+RepGoldstoneHpI={{7},"S","GoldstoneHpI"}; (*imag charged inert scalar*)
 
 
 (*Defining various masses and couplings*)
@@ -169,11 +169,6 @@ ParticleList={
 	RepGluon,RepW,RepB,
 	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
 	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI};
-ParticleName={
-	"TopL","BotL","TopR",
-	"Gluon","W","B",
-	"Higgs","GoldstoneG0","GoldstoneGpR","GoldstoneGpI",
-	"H","A","GoldstoneHpR","GolstoneHpI"};
 
 
 (*
@@ -184,7 +179,6 @@ OutputFile="output/matrixElements.2hdm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->True,

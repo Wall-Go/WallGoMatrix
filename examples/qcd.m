@@ -69,8 +69,8 @@ one right-handed fermion
 rep 1-6 are quarks,
 rep 7 is a gluon
 *)
-Rep1=CreateParticle[{1,2},"F"];
-RepGluon=CreateParticle[{1},"V"];
+Rep1=CreateParticle[{1,2},"F","Top"];
+RepGluon=CreateParticle[{1},"V","Gluon"];
 
 
 (*Defining various masses and couplings*)
@@ -87,7 +87,6 @@ These particles do not necessarily have to be out of equilibrium
 the remainin particle content is set as light
 *)
 ParticleList={Rep1,RepGluon};
-ParticleName={"Top", "Gluon"};
 
 
 (*
@@ -97,7 +96,6 @@ OutputFile="output/matrixElements.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->True,

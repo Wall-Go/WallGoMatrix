@@ -109,18 +109,18 @@ SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-de
 
 
 (*Vector bosons*)
-RepW=CreateParticle[{{1,1}},"V"]; (*SU2 gauge bosons*)
+RepW=CreateParticle[{{1,1}},"V","W"]; (*SU2 gauge bosons*)
 
 
 (*Scalars bosons*)
-RepHiggsh=CreateParticle[{{1,2}},"S"]; (*Higgs*)
-RepGoldstoneGpR={{1},"S"}; (*real charged Goldstone*)
-RepGoldstoneGpI={{3},"S"}; (*imag charged Golstone*)
-RepGoldstoneGp0={{4},"S"}; (*neutral Goldstone*)
-RepHiggsH=CreateParticle[{{2,2}},"S"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3}},"S"]; (*CP-odd inert scalar*)
-RepGoldstoneHpR={{5},"S"}; (*real charged inert scalar*)
-RepGoldstoneHpI={{7},"S"}; (*imag charged inert scalar*)
+RepHiggsh=CreateParticle[{{1,2}},"S","Higgs"]; (*Higgs*)
+RepGoldstoneGpR={{1},"S","GoldstoneGpR"}; (*real charged Goldstone*)
+RepGoldstoneGpI={{3},"S","GoldstoneGpI"}; (*imag charged Golstone*)
+RepGoldstoneG0={{4},"S","GoldstoneG0"}; (*neutral Goldstone*)
+RepHiggsH=CreateParticle[{{2,2}},"S","H"]; (*CP-even inert scalar*)
+RepGoldstoneA=CreateParticle[{{2,3}},"S","A"]; (*CP-odd inert scalar*)
+RepGoldstoneHpR={{5},"S","GoldstoneHpR"}; (*real charged inert scalar*)
+RepGoldstoneHpI={{7},"S","GoldstoneHpI"}; (*imag charged inert scalar*)
 
 
 (*Defining various masses and couplings*)
@@ -133,11 +133,8 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
 
 ParticleList={
-	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
+	RepHiggsh,RepGoldstoneG0,RepGoldstoneGpR,RepGoldstoneGpI,
 	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI};
-ParticleName={
-	"Higgs","GoldstoneG0","GoldstoneGpR","GoldstoneGpI",
-	"H","A","GoldstoneHpR","GolstoneHpI"};
 
 
 (*
@@ -148,7 +145,6 @@ OutputFile="output/matrixElements.2scalars";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->True,

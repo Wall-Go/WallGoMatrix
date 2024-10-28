@@ -65,8 +65,8 @@ one right-handed fermion
 rep 1-6 are quarks,
 rep 7 is a gluon
 *)
-Rep1=CreateParticle[{1,2},"F"];
-RepGluon=CreateParticle[{1},"V"];
+Rep1=CreateParticle[{1,2},"F","Top"];
+RepGluon=CreateParticle[{1},"V","Gluon"];
 
 
 ParticleList={Rep1,RepGluon};
@@ -89,11 +89,9 @@ UserMasses={mq2,mg2};
 *)
 OutputFile="output/matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
-ParticleName={"Top","Gluon"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->False,
@@ -220,6 +218,4 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 

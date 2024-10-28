@@ -103,46 +103,47 @@ SymmetryBreaking[vev]
 
 
 (*Third generation of fermions*)
-ReptL=CreateParticle[{{1,1}},"F"];
-RepbL=CreateParticle[{{1,2}},"F"];
-ReptR=CreateParticle[{{2,1}},"F"];
-RepbR=CreateParticle[{3},"F"];
-RepTauL=CreateParticle[{4},"F"];
-RepTauR=CreateParticle[{5},"F"];
+ReptL=CreateParticle[{{1,1}},"F","TopL"];
+RepbL=CreateParticle[{{1,2}},"F","BotL"];
+ReptR=CreateParticle[{{2,1}},"F","TopR"];
+RepbR=CreateParticle[{3},"F","BotR"];
+RepTauL=CreateParticle[{4},"F","TauL"];
+RepTauR=CreateParticle[{5},"F","TauR"];
 
 
 (*Second generation of fermions*)
-RepCharmStrangeL=CreateParticle[{6},"F"];
-RepCharmR=CreateParticle[{7},"F"];
-RepStrangeR=CreateParticle[{8},"F"];
-RepMuonL=CreateParticle[{9},"F"];
-RepMuonR=CreateParticle[{10},"F"];
+RepCharmStrangeL=CreateParticle[{6},"F","CharmStrangeL"];
+RepCharmR=CreateParticle[{7},"F","CharmR"];
+RepStrangeR=CreateParticle[{8},"F","StrangeR"];
+RepMuonL=CreateParticle[{9},"F","MuonL"];
+RepMuonR=CreateParticle[{10},"F","MuonR"];
 
 
 (*First generation of fermions*)
-RepUpDownL=CreateParticle[{11},"F"];
-ReUpR=CreateParticle[{12},"F"];
-RepDownR=CreateParticle[{13},"F"];
-RepElectronL=CreateParticle[{14},"F"];
-RepElectronR=CreateParticle[{15},"F"];
+RepUpDownL=CreateParticle[{11},"F","UpDownL"];
+ReUpR=CreateParticle[{12},"F","UpR"];
+RepDownR=CreateParticle[{13},"F","DownR"];
+RepElectronL=CreateParticle[{14},"F","ElectronL"];
+RepElectronR=CreateParticle[{15},"F","ElectronR"];
 
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"]; (*Gluons*)
-RepW=CreateParticle[{{2,1}},"V"]; (*SU2 gauge bosons*)
-RepB=CreateParticle[{3},"V"]; (*U1 gauge boson*)
+RepGluon=CreateParticle[{1},"V","Gluon"]; (*Gluons*)
+RepW=CreateParticle[{{2,1}},"V","W"]; (*SU2 gauge bosons*)
+RepB=CreateParticle[{3},"V","B"]; (*U1 gauge boson*)
 
 
 (*Scalars bosons*)
-RepHiggs=CreateParticle[{{1,2}},"S"];
-RepGoldstone=CreateParticle[{{1,1}},"S"];
+RepHiggs=CreateParticle[{{1,2}},"S","Higgs"];
+RepGoldstone=CreateParticle[{{1,1}},"S","Goldstone"];
 
 
 ParticleList={
 	ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,
 	RepCharmStrangeL,RepCharmR,RepStrangeR,RepMuonL,RepMuonR,
 	RepUpDownL,ReUpR,RepDownR,RepElectronL,RepElectronR,
-	RepGluon,RepW,RepB,RepHiggs,RepGoldstone};
+	RepGluon,RepW,RepB,RepHiggs,RepGoldstone
+	};
 
 
 (*Defining various masses and couplings*)
@@ -166,19 +167,6 @@ ScalarMass={mG2,mH2,mG2,mG2};
 ParticleMasses={VectorMass,FermionMass,ScalarMass};
 
 
-ParticleList={
-	ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,
-	RepCharmStrangeL,RepCharmR,RepStrangeR,RepMuonL,RepMuonR,
-	RepUpDownL,ReUpR,RepDownR,RepElectronL,RepElectronR,RepGluon,
-	RepW,RepB,RepHiggs,RepGoldstone};
-ParticleName={
-	"TopL","BotL","TopR","BotR","tauL","tauR",
-	"CharmStrangeL","CharmR","StrangeR","MuonL","MuonR",
-	"UpDownL","UpR","DownR","ElectronL","ElectronR",
-	"Gluon","W","B","Higgs",
-	"Goldstone"};
-
-
 (*
 	output of matrix elements
 *)
@@ -187,7 +175,6 @@ OutputFile="output/matrixElementsFull";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->False,
@@ -202,7 +189,6 @@ OutputFile="output/matrixElementsFull.LL";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->True,

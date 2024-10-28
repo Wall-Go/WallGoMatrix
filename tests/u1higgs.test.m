@@ -81,13 +81,13 @@ SymmetryBreaking[vev]*)
 
 
 (* vector *)
-RepVector=CreateParticle[{1},"V"];
+RepVector=CreateParticle[{1},"V","Vector"];
 
 (* fermion *)
 RepFermion={};
 
 (* scalar *)
-RepScalar=CreateParticle[{1},"S"];
+RepScalar=CreateParticle[{1},"S","Phi"];
 
 
 
@@ -114,11 +114,9 @@ UserMasses={ms,ms,mv};
 *)
 SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.u1higgs";
-ParticleName={"Phi","Vector"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->False,
@@ -205,6 +203,4 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 

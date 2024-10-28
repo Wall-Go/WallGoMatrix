@@ -143,37 +143,36 @@ SymmetryBreaking[vev];
 
 
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F","TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{2},"F","TopR"];
 
 (*join topL and topR into one rep*)
-Rept={Join[ReptL[[1]],ReptR[[1]]],"F"};
+Rept=CreateParticle[{{1,1},2},"F","Top"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateParticle[{{1,2}},"F"];
+RepbL=CreateParticle[{{1,2}},"F","BottomL"];
 
 (*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F"];
+RepbR=CreateParticle[{3},"F","BottomR"];
 
 (*join bottomL and bottomR into one rep*)
-Repb={Join[RepbL[[1]],RepbR[[1]]],"F"};
+Repb=CreateParticle[{{1,2},3},"F","Bottom"];
 
 (*scalar reps*)
-Reph=CreateParticle[{{1,2}},"S"];
-Rep\[Phi]0=CreateParticle[{{1,1}},"S"];
-Rep\[Phi]pm=CreateParticle[{{1,3}},"S"];
-Rep\[Phi]0={{4},"S"};
-Rep\[Phi]p={{1},"S"};
-Rep\[Phi]m={{3},"S"};
+Reph=CreateParticle[{{1,2}},"S","Higgs"];
+Rep\[Phi]0=CreateParticle[{{1,1}},"S","Goldstone"];
+Rep\[Phi]0={{4},"S","Goldstone0"};
+Rep\[Phi]p={{1},"S","GoldstonePlus"};
+Rep\[Phi]m={{3},"S","GoldstoneMinus"};
 
-Reps=CreateParticle[{2},"S"];
+Reps=CreateParticle[{2},"S","Singlet"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{{2,1}},"V"];
-RepB=CreateParticle[{{3,1}},"V"];
+RepGluon=CreateParticle[{1},"V","Gluon"];
+RepW=CreateParticle[{{2,1}},"V","W"];
+RepB=CreateParticle[{{3,1}},"V","B"];
 
 
 VectorMass=Join[
@@ -196,11 +195,6 @@ ParticleList={
 	Reph,Rep\[Phi]0,Rep\[Phi]p,Rep\[Phi]m,
 	Reps
 	};
-ParticleName={
-	"Top","Bottom",
-	"Gluon","W","B",
-	"Higgs","Goldstone0","GoldStoneMinus","GoldstonePlus",
-	"Singlet"};
 
 
 (*
@@ -211,7 +205,6 @@ SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		Verbose->True,
@@ -512,6 +505,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

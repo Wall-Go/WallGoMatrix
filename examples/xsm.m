@@ -153,25 +153,25 @@ SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F","TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{2},"F","TopR"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateParticle[{{1,2}},"F"];
+RepbL=CreateParticle[{{1,2}},"F","BotL"];
 
 (*light quarks*)
-RepLight=CreateParticle[Range[3,2*4+3],"F"];
+RepLight=CreateParticle[Range[3,2*4+3],"F","Light"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{{2,1}},"V"];
-RepB=CreateParticle[{{3,1}},"V"];
+RepGluon=CreateParticle[{1},"V","Gluon"];
+RepW=CreateParticle[{{2,1}},"V","W"];
+RepB=CreateParticle[{{3,1}},"V","B"];
 
 (*Higgs*)
-RepH = CreateParticle[{1},"S"];
-RepS = CreateParticle[{2},"S"];
+RepH = CreateParticle[{1},"S","H"];
+RepS = CreateParticle[{2},"S","S"];
 
 
 VectorMass=Join[
@@ -187,7 +187,6 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 These particles do not have out-of-eq contributions
 *)
 ParticleList={ReptL,ReptR,RepGluon,RepW,RepB,RepH,RepS};
-ParticleName={"TopL","TopR","Gluon","W","B","H","S"};
 
 
 (*
@@ -197,7 +196,6 @@ OutputFile="output/matrixElements.xsm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		Replacements->{gw->0,g1->0},
@@ -213,28 +211,28 @@ SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F","TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{2},"F","TopR"];
 
 (*join topL and topR into one rep*)
-Rept={Join[ReptL[[1]],ReptR[[1]]],"F"};
+Rept=CreateParticle[{{1,1},2},"F","Top"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateParticle[{{1,2}},"F"];
+RepbL=CreateParticle[{{1,2}},"F","BotL"];
 
 (*light quarks*)
-RepLight=CreateParticle[Range[3,2*4+3],"F"];
+RepLight=CreateParticle[Range[3,2*4+3],"F","Light"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{2},"V"];
-RepB=CreateParticle[{3},"V"];
+RepGluon=CreateParticle[{1},"V","Gluon"];
+RepW=CreateParticle[{2},"V","W"];
+RepB=CreateParticle[{3},"V","B"];
 
 (*Higgs*)
-RepH = CreateParticle[{1},"S"];
-RepS = CreateParticle[{2},"S"];
+RepH = CreateParticle[{1},"S","H"];
+RepS = CreateParticle[{2},"S","S"];
 
 
 VectorMass=Join[
@@ -250,7 +248,6 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 These particles do not have out-of-eq contributions
 *)
 ParticleList={Rept,RepGluon,RepW,RepB,RepH,RepS};
-ParticleName={"Top","Gluon","W","B","H","S"};
 
 
 (*
@@ -260,7 +257,6 @@ OutputFile="output/matrixElements.xsm.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		Replacements->{gw->0,g1->0},

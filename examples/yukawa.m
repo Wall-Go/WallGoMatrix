@@ -130,16 +130,16 @@ rep 1-2 are fermions,
 (*rep 3 is a scalar*)
 *)
 (* scalar *)
-RepScalar=CreateParticle[{1},"S"];
+RepScalar=CreateParticle[{1},"S","Phi"];
 
 (* left-handed fermion *)
-RepFermionL=CreateParticle[{1},"F"];
+RepFermionL=CreateParticle[{1},"F","PsiL"];
 
 (* right-handed fermion *)
-RepFermionR=CreateParticle[{2},"F"];
+RepFermionR=CreateParticle[{2},"F","PsiR"];
 
 (*Vector bosons*)
-RepZ=CreateParticle[{1},"V"];
+RepZ=CreateParticle[{1},"V","Z"];
 
 
 (*
@@ -162,11 +162,9 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 	output of matrix elements
 *)
 OutputFile="output/matrixElements.yukawa";
-ParticleName={"Phi","PsiL","PsiR"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->True,

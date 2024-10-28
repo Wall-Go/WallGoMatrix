@@ -11,7 +11,7 @@ If[$InputFileName=="",
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 Check[
-    Get["WallGoMatrix`"],
+    Get["../src/Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -146,7 +146,7 @@ RepW=CreateParticle[{{2,1}},"V","W"]; (*SU2 gauge bosons*)
 RepHiggsh=CreateParticle[{{1,2}},"S","Higgs"]; (*Higgs*)
 RepGoldstoneGpR={{1},"S","GoldstoneGpR"}; (*real charged Goldstone*)
 RepGoldstoneGpI={{3},"S","GoldstoneGpI"}; (*imag charged Golstone*)
-RepGoldstoneG0={{4},"S","RepGoldstoneG0"}; (*neutral Goldstone*)
+RepGoldstoneGp0={{4},"S","GoldstoneG0"}; (*neutral Goldstone*)
 RepHiggsH=CreateParticle[{{2,2}},"S","H"]; (*CP-even inert scalar*)
 RepGoldstoneA=CreateParticle[{{2,3},{2,1}},"S","A"]; (*CP-odd inert and charged scalars *)
 
@@ -164,7 +164,7 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 ParticleList={
 	ReptL,RepbL,ReptR,
 	RepGluon,RepW,
-	RepHiggsh,RepGoldstoneG0,RepGoldstoneGpR,RepGoldstoneGpI,
+	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
 	RepHiggsH,RepGoldstoneA};
 
 
@@ -182,3 +182,5 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
+
+

@@ -96,20 +96,20 @@ SymmetryBreaking[vev]
 	reps 5,6 are vector bosons
 *)
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F","TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{2},"F","TopR"];
 
 (*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F"];
+RepbR=CreateParticle[{3},"F","BotR"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{{2,1}},"V"];
+RepGluon=CreateParticle[{1},"V","Gluon"];
+RepW=CreateParticle[{{2,1}},"V","W"];
 
 (*Scalar particles*)
-RepHiggs=CreateParticle[{1},"S"];
+RepHiggs=CreateParticle[{1},"S","Higgs"];
 
 
 (*Defining various masses and couplings*)
@@ -127,7 +127,6 @@ ParticleMasses={VectorMass,FermionMass,ScalarMass};
 These particles do not have out-of-eq contributions
 *)
 ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepHiggs};
-ParticleName={"TopL","TopR","BotR","Gluon","W","Higgs"};
 
 
 (*
@@ -137,7 +136,6 @@ OutputFile="output/matrixElements.scalar";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	Format->{"json","txt","hdf5"}];
 

@@ -87,20 +87,20 @@ one right-handed fermoon
 	reps 5,6 are vector bosons
 *)
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F","TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{2},"F","TopR"];
 
 (*(*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F"];*)
+RepbR=CreateParticle[{3},"F","BotR"];*)
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{{2,1}},"V"];
+RepGluon=CreateParticle[{1},"V","Gluon"];
+RepW=CreateParticle[{{2,1}},"V","W"];
 
 (*Higgs*)
-RepH = CreateParticle[{1},"S"];
+RepH = CreateParticle[{1},"S","H"];
 
 
 (*Defining various masses and couplings*)
@@ -119,7 +119,6 @@ These particles do not necessarily have to be out of equilibrium
 the remaining particle content is set as light
 *)
 ParticleList={ReptL,ReptR,(*RepbR,*)RepGluon,RepW,RepH};
-ParticleName={"TopL","TopR",(*"BotR",*)"Gluon","W","H"};
 
 
 (*
@@ -129,7 +128,6 @@ OutputFile="output/matrixElements.ew";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleName,
 	ParticleMasses,
 	{
 		TruncateAtLeadingLog->True,
