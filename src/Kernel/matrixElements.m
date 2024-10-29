@@ -1410,9 +1410,7 @@ Return[CollEllTotal]
 
 ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_,LightParticles_]:=Block[
 {
-	posFermions,NonEqFermions,LightFermions,
-	posVectors,NonEqVectors,LightVectors,
-	posScalars,NonEqScalars,LightScalars
+	position,nonEqParticles,lightParticles
 },
 (*
 Extracting the out-of-eq particles
@@ -1421,21 +1419,13 @@ Extracting the out-of-eq particles
 	particleListFull=particleList; (*This list includes the light particles which are added below*)
 		
 (*Adding all remaining particles as light*)
-	posFermions=Position[particleList, _?(# =="F" &)][[;;,1]];
-	NonEqFermions=Table[particleList[[i]][[1]],{i,posFermions}]//Flatten[#]&;
-	LightFermions={Complement[RepToIndices[PrintFieldRepPositions["Fermion"]],NonEqFermions],"F"};
-	
-	posVectors=Position[particleList, _?(# =="V" &)][[;;,1]];
-	NonEqVectors=Table[particleList[[i]][[1]],{i,posVectors}]//Flatten[#]&;
-	LightVectors={Complement[RepToIndices[PrintFieldRepPositions["Vector"]],NonEqVectors],"V"};
-	
-	posScalars=Position[particleList, _?(# =="S" &)][[;;,1]];
-	NonEqScalars=Table[particleList[[i]][[1]],{i,posScalars}]//Flatten[#]&;
-	LightScalars={Complement[RepToIndices[PrintFieldRepPositions["Scalar"]],NonEqScalars],"S"};
-	
-	If[Length[LightVectors[[1]]]>0,AppendTo[particleListFull,LightVectors]];
-	If[Length[LightFermions[[1]]]>0,AppendTo[particleListFull,LightFermions]];
-	If[Length[LightScalars[[1]]]>0,AppendTo[particleListFull,LightScalars]];
+	Table[
+		position=Position[particleList, _?(# == StringTake[particle, 1] &)][[;;,1]];
+		nonEqParticles=Table[particleList[[i]][[1]],{i,position}]//Flatten[#]&;
+		lightParticles={Complement[RepToIndices[PrintFieldRepPositions[particle]],nonEqParticles],StringTake[particle, 1]};
+		If[Length[lightParticles[[1]]]>0,AppendTo[particleListFull,lightParticles]],
+		{particle,{"Vector","Fermion","Scalar"}}
+	];
 
 	LightParticles=Table[i,{i,Length[particleList]+1,Length[particleListFull]}];
 	If[
