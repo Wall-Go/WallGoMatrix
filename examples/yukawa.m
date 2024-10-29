@@ -130,32 +130,24 @@ rep 1-2 are fermions,
 (*rep 3 is a scalar*)
 *)
 (* scalar *)
-RepScalar=CreateParticle[{1},"S","Phi"];
+RepScalar=CreateParticle[{1},"S",ms2,"Phi"];
 
 (* left-handed fermion *)
-RepFermionL=CreateParticle[{1},"F","PsiL"];
+RepFermionL=CreateParticle[{1},"F",mf2,"PsiL"];
 
 (* right-handed fermion *)
-RepFermionR=CreateParticle[{2},"F","PsiR"];
+RepFermionR=CreateParticle[{2},"F",mf2,"PsiR"];
 
 (*Vector bosons*)
-RepZ=CreateParticle[{1},"V","Z"];
+RepZ=CreateParticle[{1},"V",mv2,"Z"];
 
 
 (*
 These particles do not necessarily have to be out of equilibrium
-the remainin particle content is set as light
+the particle RepZ is set as light
 *)
 ParticleList={RepScalar,RepFermionL,RepFermionR};
-
-
-(*Defining various masses and couplings*)
-
-
-VectorMass=Table[mv2,{i,1,RepZ[[1]]//Length}];
-FermionMass=Table[mf2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
+LightParticleList={RepZ};
 
 
 (*
@@ -165,7 +157,7 @@ OutputFile="output/matrixElements.yukawa";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
 		Format->{"json","txt"}}];

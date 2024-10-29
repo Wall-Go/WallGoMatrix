@@ -153,40 +153,35 @@ SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F","TopL"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F","TopR"];
+ReptR=CreateParticle[{2},"F",mq2,"TopR"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateParticle[{{1,2}},"F","BotL"];
+RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"];
 
 (*light quarks*)
-RepLight=CreateParticle[Range[3,2*4+3],"F","Light"];
+RepLight=CreateParticle[Range[3,2*4+3],"F",mq2,"Light"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V","Gluon"];
-RepW=CreateParticle[{{2,1}},"V","W"];
-RepB=CreateParticle[{{3,1}},"V","B"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+RepW=CreateParticle[{{2,1}},"V",mW2,"W"];
+RepB=CreateParticle[{{3,1}},"V",mB2,"B"];
 
 (*Higgs*)
-RepH = CreateParticle[{1},"S","H"];
-RepS = CreateParticle[{2},"S","S"];
+RepH = CreateParticle[{1},"S",ms2,"H"];
+RepS = CreateParticle[{2},"S",ms2,"S"];
 
-
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}],
-	Table[mB2,{i,1,RepB[[1]]//Length}]];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
+(*Light fermions*)
+LightFermions={{2,4,6,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39},"F",mq2,"LightFermions"};
 
 
 (*
 These particles do not have out-of-eq contributions
 *)
 ParticleList={ReptL,ReptR,RepGluon,RepW,RepB,RepH,RepS};
+LightParticleList={LightFermions};
 
 
 (*
@@ -196,7 +191,7 @@ OutputFile="output/matrixElements.xsm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		Replacements->{gw->0,g1->0},
 		Format->{"json","txt"}}];
@@ -211,43 +206,38 @@ SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F","TopL"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F","TopR"];
+ReptR=CreateParticle[{2},"F",mq2,"TopR"];
 
 (*join topL and topR into one rep*)
-Rept=CreateParticle[{{1,1},2},"F","Top"];
+Rept=CreateParticle[{{1,1},2},"F",mq2,"Top"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateParticle[{{1,2}},"F","BotL"];
+RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"];
 
 (*light quarks*)
-RepLight=CreateParticle[Range[3,2*4+3],"F","Light"];
+RepLight=CreateParticle[Range[3,2*4+3],"F",mq2,"Light"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V","Gluon"];
-RepW=CreateParticle[{2},"V","W"];
-RepB=CreateParticle[{3},"V","B"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+RepW=CreateParticle[{2},"V",mW2,"W"];
+RepB=CreateParticle[{3},"V",mB2,"B"];
 
 (*Higgs*)
-RepH = CreateParticle[{1},"S","H"];
-RepS = CreateParticle[{2},"S","S"];
+RepH = CreateParticle[{1},"S",ms2,"H"];
+RepS = CreateParticle[{2},"S",ms2,"S"];
 
-
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}],
-	Table[mB2,{i,1,RepB[[1]]//Length}]];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
+(*Light fermions*)
+LightFermions={{2,4,6,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39},"F",mq2,"LightFermions"};
 
 
 (*
 These particles do not have out-of-eq contributions
 *)
 ParticleList={Rept,RepGluon,RepW,RepB,RepH,RepS};
+LightParticleList={LightFermions};
 
 
 (*
@@ -257,7 +247,7 @@ OutputFile="output/matrixElements.xsm.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		Replacements->{gw->0,g1->0},
 		Format->{"json","txt"}}];
