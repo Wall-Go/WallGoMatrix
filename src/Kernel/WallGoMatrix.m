@@ -144,6 +144,14 @@ The problem reads: `1`";
 WallGoMatrix::failWarning =
 "Error! WallGoMatrix has encountered a problem. \
 The problem reads: `1`";
+WallGoMatrix::missingParticles = 
+ "WallGoMatrix encountered a critical issue and must terminate the computation.\n\n\
+Issue: Missing particle declarations.\n\n\
+The following particles need to be declared as input particles in ExportMatrixElements[]:\n\
+- Vector-Type particles: `1`\n\
+- Fermion-Type particles: `2`\n\
+- Scalar-Type particles: `3`\n\n\
+Please ensure all required particles are specified before proceeding.";
 
 
 DefineDim6::usage="Defines a dimension 6 operator";

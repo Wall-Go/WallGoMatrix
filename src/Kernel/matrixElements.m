@@ -1423,18 +1423,23 @@ Extracting the out-of-eq particles
 		position=Position[particleList, _?(# == StringTake[particle, 1] &)][[;;,1]];
 		nonEqParticles=Table[particleList[[i]][[1]],{i,position}]//Flatten[#]&;
 		lightParticles={Complement[RepToIndices[PrintFieldRepPositions[particle]],nonEqParticles],StringTake[particle, 1]};
-		If[Length[lightParticles[[1]]]>0,AppendTo[particleListFull,lightParticles]],
+		AppendTo[particleListFull,lightParticles],
 		{particle,{"Vector","Fermion","Scalar"}}
 	];
 
 	LightParticles=Table[i,{i,Length[particleList]+1,Length[particleListFull]}];
+	If[
+		Length[LightParticles]>0,
+		Message[WallGoMatrix::missingParticles, particleListFull[[LightParticles]][[1]], particleListFull[[LightParticles]][[2]],particleListFull[[LightParticles]][[3]]];
+		Abort[];
+	];
 	If[
 		Length[LightParticles]>1,
 		Message[WallGoMatrix::failmsg,
 			"Multiple species declared as light in "<>ToString[particleListFull[[LightParticles]]]<>". "<>
 			"Only one species allowed. Solution: make additional species explicit in particleList."];
 		Abort[];
-		]
+	];
 ]
 
 
