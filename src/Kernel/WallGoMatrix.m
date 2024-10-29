@@ -106,7 +106,7 @@ ExportMatrixElements::usage=
 "ExportMatrixElements[\!\(\*
 StyleBox[\"fileName\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"particleList\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"ParticleMasses\",\nFontSlant->\"Italic\"]\),OptionsPattern[]]\n"<>
+OptionsPattern[]]\n"<>
 "Generates all possible matrix elements with the external particles specified in particleList.\n"<>
 "The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none, "<>
 "the last two options exports the result in all possible formats, and in none, respectively.\n"<>
@@ -542,27 +542,29 @@ extractParticleMasses[particleList_, type_, length_] :=
       {entry, Select[particleList, #[[2]] === type &]},
       {pos, entry[[1]]}
     ];
-    If[MemberQ[resultVector, Null],
+(*    If[MemberQ[resultVector, Null],
     Message[WallGoMatrix::failmsg,
 			"Missing particle mass declarations."];
 		Abort[];
-	];
-
+	];*)
+	
     Return[resultVector];
   ];
 
 
-ExportMatrixElements[file_,particleList_,OptionsPattern[]]:=
+ExportMatrixElements[file_,outOfEqParticleList_,lightParticleList_,OptionsPattern[]]:=
 Block[
 {
-	particleMassesI,
+	particleMasses,
 	userCouplings,
 	particleNames,
-	particles,
+	particlesAll,particlesOutOfEq,
+	particleListAll,
 	ExportTXT,ExportH5,
 	Cij,ParticleInfo,particleListFull,
 	CouplingInfo,MatrixElements,
-	outOfEqParticles,RepMasses,RepCouplings,
+	particleIndex,
+	RepMasses,RepCouplings,
 	FormatOptions,userFormat,MatrixElementsList,userParameters,
 	privFile=file,commandLineArgs
 },
@@ -589,33 +591,38 @@ Block[
 (*Specifies if Output should be verbose*)
 	bVerbose = OptionValue[Verbose];
 
-(*Separate names and particles*)
-	particleNames=particleList[[All,4]];
-	particles=particleList[[All,1;;2]];
+(*All particles*)
+	(*particleListAll=Join[particleList,lightParticleList];*)
 
 (*Splits ParticleList into out-of-eq and light particles*)
-	ExtractLightParticles[particles,outOfEqParticles,particleListFull];
+	ExtractLightParticles[outOfEqParticleList,lightParticleList,particleListAll];
+
+(*Separate names and particles*)
+	particleNames=particleListAll[[All,4]];
+	particlesOutOfEq=outOfEqParticleList[[All,1;;2]];
+	particlesAll=particleListAll[[All,1;;2]];
 
 (*Collects all the UserCouplings*)
 	userCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 	
 (*Make particle masses vector*)
-	particleMassesI={
-		extractParticleMasses[particleList, "V", Length[gvff]],
-		extractParticleMasses[particleList, "F", Length[gvff[[1]]]],
-		extractParticleMasses[particleList, "S", Length[gvss[[1]]]]
+	particleMasses={
+		extractParticleMasses[particleListAll, "V", Length[gvff]],
+		extractParticleMasses[particleListAll, "F", Length[gvff[[1]]]],
+		extractParticleMasses[particleListAll, "S", Length[gvss[[1]]]]
 		};
 		
 (*Creates an assumption rule for simplifying Conjugate[....] terms*)
-	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMassesI,s,t,u}; (*All variables are assumed to be real*)
+	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u}; (*All variables are assumed to be real*)
 	
 (*Allocates one element for each species mass to avoid errors*)
 	Table[
-		If[particleMassesI[[i]]=={},particleMassesI[[i]]={msq}],
+		If[particleMasses[[i]]=={},particleMasses[[i]]={msq}],
 		{i,1,3}];
 
 (*Extracting all matrix elements*)	
-	GenerateMatrixElements[MatrixElements,Cij,particleListFull,particleMassesI,outOfEqParticles];
+	GenerateMatrixElements[MatrixElements,Cij,particlesAll,particlesOutOfEq,particleMasses];
+	
 (*Creates a replacement list and shifts the indices to start at 0.*)
 	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}];
 	MatrixElementsList=DeleteCases[MatrixElementsList, a_->0];
@@ -631,14 +638,15 @@ Block[
 	If[MemberQ[userFormatsList, "all"], userFormatsList = {"txt", "json", "hdf5"}];
 	
 	(* Check if all formats in the list are valid *)
+	particleIndex=Table[i,{i,Length[particleListAll]}];
 	If[AllTrue[userFormatsList, MemberQ[FormatOptions, #] &],
 	   (* Iterate over each format and perform the export *)
 	   Do[
 	     Switch[fmt,
 	       "txt",
-	       ExportTo["txt"][MatrixElementsList, outOfEqParticles, particleNames, userCouplings, privFile],
+	       ExportTo["txt"][MatrixElementsList, particleIndex, particleNames, userCouplings, privFile],
 	       "hdf5",
-	       ExportTo["hdf5"][Cij, outOfEqParticles, particleNames, userCouplings, privFile],
+	       ExportTo["hdf5"][Cij, particleIndex, particleNames, userCouplings, privFile],
 	       "json",
 	       userParameters = Flatten[Join[userCouplings, particleMasses]] // DeleteDuplicates;
 	       ExportTo["json"][MatrixElementsList, particleNames, userParameters, privFile]

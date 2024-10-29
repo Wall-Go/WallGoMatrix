@@ -119,38 +119,32 @@ one right-handed fermion
 
 
 (*Below
-rep 1-2 are fermions,
-(*rep 3 is a scalar*)
+rep 1 is a scalar
+rep 2-3 are fermions,
 *)
 (* scalar *)
-RepScalar=CreateParticle[{1},"S","Phi"];
+RepScalar=CreateParticle[{1},"S",ms,"Phi"];
 
 (* left-handed fermion *)
-RepFermionL=CreateParticle[{1},"F","PsiL"];
+RepFermionL=CreateParticle[{1},"F",mf,"PsiL"];
 
 (* right-handed fermion *)
-RepFermionR=CreateParticle[{2},"F","PsiR"];
+RepFermionR=CreateParticle[{2},"F",mf,"PsiR"];
 
 (*Vector bosons*)
-RepZ=CreateParticle[{1},"V","Z"];
+RepZ=CreateParticle[{1},"V",mv,"LightParticle"];
 
 
 (*
 These particles do not necessarily have to be out of equilibrium
-the remainin particle content is set as light
+RepZ can later be assumed to be a light particle
 *)
 ParticleList={RepScalar,RepFermionL,RepFermionR};
+LightParticleList={RepZ};
 
 
 (*Defining various masses and couplings*)
-
-
-VectorMass=Table[mv,{i,1,RepZ[[1]]//Length}];
-FermionMass=Table[mf,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-
-UserMasses={ms,mf,mf};
+UserMasses={ms,mf};
 
 
 (*
@@ -161,7 +155,7 @@ SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->False,
 		Format->{"json","txt"}}];
@@ -247,6 +241,5 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 

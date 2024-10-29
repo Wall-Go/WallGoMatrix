@@ -307,7 +307,7 @@ onceIf[True, Print["This will NOT run"], Print["This won't run either"]];*)
 (*Matrix elements*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*V1V2toV3V4*)
 
 
@@ -1320,7 +1320,7 @@ degreeOfFreedom[particle_]:=Block[{dof},
 ]
 
 
-ExtractOutOfEqElement[Channel_?StringQ][particleList_,particleMasses_]:=
+ExtractOutOfEqElement[Channel_?StringQ][particleListAll_, particleListOutOfEq_, particleMasses_]:=
 Block[{
 	OutOfEqParticles,MatrixElements,Elements,CollElements,
 	VectorMass,FermionMass,ScalarMass,
@@ -1332,19 +1332,19 @@ Block[{
 	Essentially this is generates the elements going into
 	Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]
 *)
-	
+
 (*First we generate all matrix elements*)
 (*	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];*)
-	OutOfEqParticles=Table[i,{i,1,Length[particleList]}];
+(*	OutOfEqParticles=Table[i,{i,1,Length[particleListOutOfEq]}];*)
 
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
-		1/degreeOfFreedom[particleList[[a]]]
-		CreateMatrixElement[Channel][particleList[[a]],b,c,d,particleMasses],
-		{a,OutOfEqParticles},{b,particleList},{c,particleList},{d,particleList}]//SparseArray;
+		1/degreeOfFreedom[a]
+		CreateMatrixElement[Channel][a,b,c,d,particleMasses],
+		{a,particleListOutOfEq},
+		{b,particleListAll},{c,particleListAll},{d,particleListAll}]//SparseArray;
 	(*This is a list of all non-zero matrix elements*)
 	Elements=MatrixElements["NonzeroPositions"];
-
 
 (*If there are no matching matrix elements we return 0*)
 If[Length[Elements]==0,
@@ -1373,7 +1373,7 @@ If[Length[Elements]==0,
 ];
 
 
-ExtractOutOfEqElement[particleList_,ParticleMasses_]:=
+ExtractOutOfEqElement[particleListAll_,particleListOutOfEq_,ParticleMasses_]:=
 Block[{
 	CollEll,collisions,CollEllTotal
 },
@@ -1392,7 +1392,7 @@ collisions = {
 
 CollEllTotal = 
   Map[(If[bVerbose,Print[#]];
-   ExtractOutOfEqElement[#][particleList, ParticleMasses])&, 
+   ExtractOutOfEqElement[#][particleListAll, particleListOutOfEq, ParticleMasses])&, 
    collisions
   ]//Flatten[#,1]&;
 
@@ -1409,8 +1409,8 @@ Return[CollEllTotal]
 (*Generating matrix elements*)
 
 
-ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_]:=Block[
-{
+ExtractLightParticles[outOfEqParticleList_,lightParticleList_,particleListAll_]:=
+Block[{
 	position,nonEqParticles,lightParticles,
 	missingParticles
 },
@@ -1418,60 +1418,63 @@ ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_]:=Block[
 Extracting the out-of-eq particles
 *)
 	missingParticles={};
-	OutOfEqParticles=Table[i,{i,1,Length[particleList]}];
-	particleListFull=particleList; (*This list includes the light particles which are added below*)
+	(*This list includes the light particles which are added below*)
+	particleListAll=Join[outOfEqParticleList,lightParticleList];
 		
 (*Adding all remaining particles as light*)
 	Table[
-		position=Position[particleList, _?(# == StringTake[particle, 1] &)][[;;,1]];
-		nonEqParticles=Table[particleList[[i]][[1]],{i,position}]//Flatten[#]&;
+		position=Position[particleListAll, _?(# == StringTake[particle, 1] &)][[;;,1]];
+		nonEqParticles=Table[particleListAll[[i]][[1]],{i,position}]//Flatten[#]&;
 		lightParticles={Complement[RepToIndices[PrintFieldRepPositions[particle]],nonEqParticles],StringTake[particle, 1]};
 		AppendTo[missingParticles,lightParticles],
 		{particle,{"Vector","Fermion","Scalar"}}
 	];
-
-	particleListFull=Join[particleListFull,DeleteCases[missingParticles, {{},a__}]];
+	
 	If[
 		Length[DeleteCases[missingParticles, {{},a__}]]>0,
 		Message[WallGoMatrix::missingParticles,
-			If[missingParticles[[1]][[1]]=={},"None",missingParticles[[1]]],
-			If[missingParticles[[2]][[1]]=={},"None",missingParticles[[2]]],
-			If[missingParticles[[3]][[1]]=={},"None",missingParticles[[3]]]
+			If[missingParticles[[1]][[1]]=={},"None", missingParticles[[1]]],
+			If[missingParticles[[2]][[1]]=={},"None", missingParticles[[2]]],
+			If[missingParticles[[3]][[1]]=={},"None", missingParticles[[3]]]
 		];
 		Abort[];
 	];
 	If[
 		Length[DeleteCases[missingParticles, {{},a__}]]>1,
 		Message[WallGoMatrix::failmsg,
-			"Multiple species declared as light in "<>ToString[particleListFull[[missingParticles]]]<>". "<>
+			"Multiple species declared as light in "<>ToString[particleListAll[[missingParticles]]]<>". "<>
 			"Only one species allowed. Solution: make additional species explicit in particleList."];
 		Abort[];
 	];
 ]
 
 
-GenerateMatrixElements[MatrixElements_,Cij_,particleListFull_,ParticleMasses_,OutOfEqParticles_]:=
-Block[{Elem},
+GenerateMatrixElements[MatrixElements_,Cij_,particleListAll_,particleListOutOfEq_,particleMasses_]:=
+Block[{Elements},
 
 	Do[
 		If[item[[1]] === {},
 			Message[WallGoMatrix::failmsg,
-				"Found empty particle species "<>ToString[item]<>" in "<>ToString[particleListFull]];
+				"Found empty particle species "<>ToString[item]<>" in "<>ToString[particleListAll]];
 				Abort[];
 		],
-	    {item, particleListFull}
+	    {item, particleListAll}
 	];
 
-	MatrixElements=ExtractOutOfEqElement[particleListFull,ParticleMasses];
+	MatrixElements=ExtractOutOfEqElement[particleListAll,particleListOutOfEq,particleMasses];
 		
 (*Extract various C^{ij} components*)	
-	Cij=ConstantArray[0,{Length[OutOfEqParticles],Length[OutOfEqParticles]}];
+	Cij=ConstantArray[0,{Length[particleListOutOfEq],Length[particleListOutOfEq]}];
 	Do[
-		Elem=Extract[MatrixElements,Position[MatrixElements[[;;,2]],{i,___}]];
-			Do[
-				Cij[[i,j]]=Extract[Elem,#]&/@Union[Position[Elem[[;;,2]],{_,j,__}],Position[Elem[[;;,2]],{_,_,j,_}],Position[Elem[[;;,2]],{_,__,j}]];
-				,{j,OutOfEqParticles}],
-		{i,OutOfEqParticles}
+		Elements=Extract[MatrixElements,Position[MatrixElements[[;;,2]],{i,___}]];
+		Do[
+			Cij[[i,j]]=Extract[Elements,#]&/@Union[
+						Position[Elements[[;;,2]],{_,j,__}],
+						Position[Elements[[;;,2]],{_,_,j,_}],
+						Position[Elements[[;;,2]],{_,__,j}]];,
+			{j,Length[particleListOutOfEq]}
+		],
+		{i,Length[particleListOutOfEq]}
 	];
 
 ];

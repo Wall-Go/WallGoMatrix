@@ -109,34 +109,28 @@ SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-de
 
 
 (*Vector bosons*)
-RepW=CreateParticle[{{1,1}},"V","W"]; (*SU2 gauge bosons*)
+RepW=CreateParticle[{{1,1}},"V",mW2,"W"]; (*SU2 gauge bosons*)
 
 
 (*Scalars bosons*)
-RepHiggsh=CreateParticle[{{1,2}},"S","Higgs"]; (*Higgs*)
-RepGoldstoneGpR={{1},"S","GoldstoneGPR"}; (*real charged Goldstone*)
-RepGoldstoneGpI={{3},"S","RepGoldstoneGpI"}; (*imag charged Golstone*)
-RepGoldstoneGp0={{4},"S","RepGoldstoneGp0"}; (*neutral Goldstone*)
-RepHiggsH=CreateParticle[{{2,2}},"S","H"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3}},"S","A"]; (*CP-odd inert scalar*)
-RepGoldstoneHpR={{5},"S","RepGoldstoneHpR"}; (*real charged inert scalar*)
-RepGoldstoneHpI={{7},"S","RepGoldstoneHpI"}; (*imag charged inert scalar*)
+RepHiggsh=CreateParticle[{{1,2}},"S",mh2,"Higgs"]; (*Higgs*)
+RepGoldstoneGpR={{1},"S",mG2,"GoldstoneGPR"}; (*real charged Goldstone*)
+RepGoldstoneGpI={{3},"S",mG2,"RepGoldstoneGpI"}; (*imag charged Golstone*)
+RepGoldstoneGp0={{4},"S",mG2,"RepGoldstoneGp0"}; (*neutral Goldstone*)
+RepHiggsH=CreateParticle[{{2,2}},"S",mH2,"H"]; (*CP-even inert scalar*)
+RepGoldstoneA=CreateParticle[{{2,3}},"S",mA2,"A"]; (*CP-odd inert scalar*)
+RepGoldstoneHpR={{5},"S",mHp,"RepGoldstoneHpR"}; (*real charged inert scalar*)
+RepGoldstoneHpI={{7},"S",mHp,"RepGoldstoneHpI"}; (*imag charged inert scalar*)
 
 
 (*Defining various masses and couplings*)
-VectorMass=Join[
-	Table[mW2,{i,1,RepW[[1]]//Length}]
-	];
-FermionMass={};
-ScalarMass={mG2,mh2,mG2,mG2,mHp,mH2,mHp,mA2};
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-
 UserMasses={mw2,mG2,mh2,mH2,mA2,mHp};
 
 
 ParticleList={
 	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
 	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI};
+LightParticleList={RepW};
 
 
 (*
@@ -147,10 +141,13 @@ OutputFile="output/matrixElements.2scalars";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
 		Replacements->{gw->0,lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
+
+
+
 

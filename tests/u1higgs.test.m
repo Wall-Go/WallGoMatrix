@@ -81,13 +81,13 @@ SymmetryBreaking[vev]*)
 
 
 (* vector *)
-RepVector=CreateParticle[{1},"V","Vector"];
+RepVector=CreateParticle[{1},"V",mv,"Vector"];
 
 (* fermion *)
 RepFermion={};
 
 (* scalar *)
-RepScalar=CreateParticle[{1},"S","Phi"];
+RepScalar=CreateParticle[{1},"S",ms,"Phi"];
 
 
 
@@ -96,17 +96,11 @@ These particles do not necessarily have to be out of equilibrium
 the remainin particle content is set as light
 *)
 ParticleList={RepScalar,RepVector};
+LightParticleList={}
 
 
 (*Defining various masses and couplings*)
-
-
-VectorMass=Table[mv,{i,1,Length[RepVector[[1]]]}];
-FermionMass={};
-ScalarMass=Table[ms,{i,1,Length[RepScalar[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-
-UserMasses={ms,ms,mv};
+UserMasses={ms,mv};
 
 
 (*
@@ -117,13 +111,10 @@ OutputFile="output/matrixElements.u1higgs";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->False,
 		Format->{"json","txt"}}];
-
-
-MatrixElements
 
 
 (* ::Section:: *)
@@ -203,4 +194,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
 

@@ -132,33 +132,27 @@ SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-de
 
 
 (*Third generation of fermions*)
-ReptL=CreateParticle[{{1,1}},"F","TopL"];
-RepbL=CreateParticle[{{1,2}},"F","BotL"];
-ReptR=CreateParticle[{{2,1}},"F","TopR"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
+RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"];
+ReptR=CreateParticle[{{2,1}},"F",mq2,"TopR"];
 
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V","Gluon"]; (*Gluons*)
-RepW=CreateParticle[{{2,1}},"V","W"]; (*SU2 gauge bosons*)
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"]; (*Gluons*)
+RepW=CreateParticle[{{2,1}},"V",mW2,"W"]; (*SU2 gauge bosons*)
 
 
 (*Scalars bosons*)
-RepHiggsh=CreateParticle[{{1,2}},"S","Higgs"]; (*Higgs*)
-RepGoldstoneGpR={{1},"S","GoldstoneGpR"}; (*real charged Goldstone*)
-RepGoldstoneGpI={{3},"S","GoldstoneGpI"}; (*imag charged Golstone*)
-RepGoldstoneGp0={{4},"S","GoldstoneG0"}; (*neutral Goldstone*)
-RepHiggsH=CreateParticle[{{2,2}},"S","H"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3},{2,1}},"S","A"]; (*CP-odd inert and charged scalars *)
+RepHiggsh=CreateParticle[{{1,2}},"S",mh2,"Higgs"]; (*Higgs*)
+RepGoldstoneGpR={{1},"S",mG2,"GoldstoneGpR"}; (*real charged Goldstone*)
+RepGoldstoneGpI={{3},"S",mG2,"GoldstoneGpI"}; (*imag charged Golstone*)
+RepGoldstoneGp0={{4},"S",mG2,"GoldstoneG0"}; (*neutral Goldstone*)
+RepHiggsH=CreateParticle[{{2,2}},"S",mH2,"H"]; (*CP-even inert scalar*)
+RepGoldstoneA=CreateParticle[{{2,3},{2,1}},"S",mA2,"A"]; (*CP-odd inert and charged scalars *)
 
 
-(*Defining various masses and couplings*)
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}]
-	];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass={mG2,mh2,mG2,mG2,mA2,mH2,mA2,mA2};
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
+(*Light particles*)
+LightFermions={{10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45},"F",mq2,"LightFermions"};
 
 
 ParticleList={
@@ -166,6 +160,7 @@ ParticleList={
 	RepGluon,RepW,
 	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
 	RepHiggsH,RepGoldstoneA};
+LightParticleList={LightFermions};
 
 
 (*
@@ -176,11 +171,12 @@ OutputFile="output/matrixElements.idm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
+
 
 

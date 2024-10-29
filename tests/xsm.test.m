@@ -143,49 +143,42 @@ SymmetryBreaking[vev];
 
 
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F","TopL"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F","TopR"];
+ReptR=CreateParticle[{2},"F",mq2,"TopR"];
 
 (*join topL and topR into one rep*)
-Rept=CreateParticle[{{1,1},2},"F","Top"];
+Rept=CreateParticle[{{1,1},2},"F",mq2,"Top"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateParticle[{{1,2}},"F","BottomL"];
+RepbL=CreateParticle[{{1,2}},"F",mb2,"BottomL"];
 
 (*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F","BottomR"];
+RepbR=CreateParticle[{3},"F",mb2,"BottomR"];
 
 (*join bottomL and bottomR into one rep*)
-Repb=CreateParticle[{{1,2},3},"F","Bottom"];
+Repb=CreateParticle[{{1,2},3},"F",mb2,"Bottom"];
 
 (*scalar reps*)
-Reph=CreateParticle[{{1,2}},"S","Higgs"];
-Rep\[Phi]0=CreateParticle[{{1,1}},"S","Goldstone"];
-Rep\[Phi]0={{4},"S","Goldstone0"};
-Rep\[Phi]p={{1},"S","GoldstonePlus"};
-Rep\[Phi]m={{3},"S","GoldstoneMinus"};
+Reph=CreateParticle[{{1,2}},"S",mh2,"Higgs"];
+Rep\[Phi]0=CreateParticle[{{1,1}},"S",mG2,"Goldstone"];
+Rep\[Phi]0={{4},"S",mG2,"Goldstone0"};
+Rep\[Phi]p={{1},"S",mGp2,"GoldstonePlus"};
+Rep\[Phi]m={{3},"S",mGm2,"GoldstoneMinus"};
 
-Reps=CreateParticle[{2},"S","Singlet"];
+Reps=CreateParticle[{2},"S",ms2,"Singlet"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V","Gluon"];
-RepW=CreateParticle[{{2,1}},"V","W"];
-RepB=CreateParticle[{{3,1}},"V","B"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+RepW=CreateParticle[{{2,1}},"V",mW2,"W"];
+RepB=CreateParticle[{{3,1}},"V",mB2,"B"];
+
+(*Light quarks*)
+LightQuarks={{13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39},"F",mq2,"LightParticles"};
 
 
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}],
-	Table[mB2,{i,1,RepB[[1]]//Length}]];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-FermionMass[[Repb[[1]]]]=mb2;
-FermionMass[[Rept[[1]]]]=mt2;
-ScalarMass={mG2,mh2,mGm2,mGp2,ms2};
-
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-
+(*List of user masses*)
 UserMasses={mq2,mt2,mb2,mg2,mW2,mB2,mG2,mh2,mGm2,mGp2,ms2};
 
 
@@ -195,6 +188,7 @@ ParticleList={
 	Reph,Rep\[Phi]0,Rep\[Phi]p,Rep\[Phi]m,
 	Reps
 	};
+LightParticleList={LightQuarks};
 
 
 (*
@@ -205,7 +199,7 @@ SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		Verbose->True,
 		TruncateAtLeadingLog->True,
@@ -505,7 +499,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 

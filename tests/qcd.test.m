@@ -65,22 +65,16 @@ one right-handed fermion
 rep 1-6 are quarks,
 rep 7 is a gluon
 *)
-Rep1=CreateParticle[{1,2},"F","Top"];
-RepGluon=CreateParticle[{1},"V","Gluon"];
+Rep1=CreateParticle[{1,2},"F",mq2,"Top"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+LightQuarks={{7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36},"F",mq2,"LightQuarks"};
 
 
 ParticleList={Rep1,RepGluon};
+LightParticleList={LightQuarks};
 
 
 (*Defining various masses and couplings*)
-
-
-VectorMass=Table[mg2,{i,1,Length[gvff]}];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass={};
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-
-
 UserMasses={mq2,mg2};
 
 
@@ -92,7 +86,7 @@ SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->False,
 		Format->{"json","txt"}}];
@@ -218,4 +212,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
 
