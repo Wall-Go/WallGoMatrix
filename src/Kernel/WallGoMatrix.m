@@ -106,7 +106,6 @@ ExportMatrixElements::usage=
 "ExportMatrixElements[\!\(\*
 StyleBox[\"fileName\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"particleList\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"ParticleName\",\nFontSlant->\"Italic\"]\),\!\(\*
 StyleBox[\"ParticleMasses\",\nFontSlant->\"Italic\"]\),OptionsPattern[]]\n"<>
 "Generates all possible matrix elements with the external particles specified in particleList.\n"<>
 "The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none, "<>
@@ -433,7 +432,6 @@ ExportTo["json"][MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[
 },
 	
 (*Formatting the matrix elements*)
-	AppendTo[particleName,"LightParticle"];
 	toExportJson=makeJsonMatrixElements[particleName,UserCouplings,MatrixElement];
 (*Exporting the result*)
 	exportJsonMatrixElements[StringJoin[file,".json"],toExportJson];	
@@ -461,7 +459,6 @@ ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Blo
 	
 (*Metadata*)
 	ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
-	AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
 	CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 	
 	CijExport=Cij;
@@ -501,7 +498,6 @@ ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,f
 
 	(*Creating some metadata*)
 		ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
-		AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
 		CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 		
 		ExportTXT=MatrixElements/.{s->sReplace,t->tReplace,u->uReplace};
@@ -547,7 +543,7 @@ Block[
 	particleNames,
 	particles,
 	ExportTXT,ExportH5,
-	Cij,ParticleInfo,lightParticles,particleListFull,
+	Cij,ParticleInfo,particleListFull,
 	CouplingInfo,MatrixElements,
 	outOfEqParticles,RepMasses,RepCouplings,
 	FormatOptions,userFormat,MatrixElementsList,userParameters,
@@ -581,7 +577,7 @@ Block[
 	particles=particleList[[All,1;;2]];
 
 (*Splits ParticleList into out-of-eq and light particles*)
-	ExtractLightParticles[particles,outOfEqParticles,particleListFull,lightParticles];
+	ExtractLightParticles[particles,outOfEqParticles,particleListFull];
 
 (*Collects all the UserCouplings*)
 	userCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
@@ -595,7 +591,7 @@ Block[
 	If[particleMasses[[3]]=={},particleMassesI[[3]]={msq}];
 
 (*Extracting all matrix elements*)	
-	GenerateMatrixElements[MatrixElements,Cij,particleListFull,lightParticles,particleMassesI,outOfEqParticles];
+	GenerateMatrixElements[MatrixElements,Cij,particleListFull,particleMassesI,outOfEqParticles];
 (*Creates a replacement list and shifts the indices to start at 0.*)
 	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}];
 	MatrixElementsList=DeleteCases[MatrixElementsList, a_->0];

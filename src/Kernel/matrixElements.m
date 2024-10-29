@@ -1320,7 +1320,7 @@ degreeOfFreedom[particle_]:=Block[{dof},
 ]
 
 
-ExtractOutOfEqElement[Channel_?StringQ][particleList_,LightParticles_,particleMasses_]:=
+ExtractOutOfEqElement[Channel_?StringQ][particleList_,particleMasses_]:=
 Block[{
 	OutOfEqParticles,MatrixElements,Elements,CollElements,
 	VectorMass,FermionMass,ScalarMass,
@@ -1334,7 +1334,8 @@ Block[{
 *)
 	
 (*First we generate all matrix elements*)
-	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];
+(*	OutOfEqParticles=Complement[Table[i,{i,1,Length[particleList]}],LightParticles];*)
+	OutOfEqParticles=Table[i,{i,1,Length[particleList]}];
 
 (*Divide the incoming particle by its degree's of freedom*)
 	MatrixElements=Table[
@@ -1354,14 +1355,14 @@ If[Length[Elements]==0,
 (*We now select all elements where deltaFparticle is amongst the scattered particles*)
 (*deltaF is here a list of 1 and 0s*)
 (*Gives all light-particle the label specified by the first lightparticle*)
-	If[LightParticles!={},
+(*	If[LightParticles!={},
 		deltaF=Elements/. x_?NumericQ /;MemberQ[ LightParticles,x ] -> LightParticles[[1]]; 
 	,
 		deltaF=Elements;
-	];
+	];*)
 	
 (*Now we create the full list of distinct collision elements*)
-	CollElements=Table[{MatrixElements[[i]],deltaF[[i]]},{i,1,Length[Elements]}];
+	CollElements=Table[{MatrixElements[[i]],Elements[[i]]},{i,1,Length[Elements]}];
 
 (*We now add all elements with the same deltaF list*)
 	symmetries=Gather[CollElements,#1[[2]]==#2[[2]]&];
@@ -1372,7 +1373,7 @@ If[Length[Elements]==0,
 ];
 
 
-ExtractOutOfEqElement[particleList_,LightParticles_,ParticleMasses_]:=
+ExtractOutOfEqElement[particleList_,ParticleMasses_]:=
 Block[{
 	CollEll,collisions,CollEllTotal
 },
@@ -1391,7 +1392,7 @@ collisions = {
 
 CollEllTotal = 
   Map[(If[bVerbose,Print[#]];
-   ExtractOutOfEqElement[#][particleList, LightParticles, ParticleMasses])&, 
+   ExtractOutOfEqElement[#][particleList, ParticleMasses])&, 
    collisions
   ]//Flatten[#,1]&;
 
@@ -1408,13 +1409,15 @@ Return[CollEllTotal]
 (*Generating matrix elements*)
 
 
-ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_,LightParticles_]:=Block[
+ExtractLightParticles[particleList_,OutOfEqParticles_,particleListFull_]:=Block[
 {
-	position,nonEqParticles,lightParticles
+	position,nonEqParticles,lightParticles,
+	missingParticles
 },
 (*
 Extracting the out-of-eq particles
 *)
+	missingParticles={};
 	OutOfEqParticles=Table[i,{i,1,Length[particleList]}];
 	particleListFull=particleList; (*This list includes the light particles which are added below*)
 		
@@ -1423,27 +1426,31 @@ Extracting the out-of-eq particles
 		position=Position[particleList, _?(# == StringTake[particle, 1] &)][[;;,1]];
 		nonEqParticles=Table[particleList[[i]][[1]],{i,position}]//Flatten[#]&;
 		lightParticles={Complement[RepToIndices[PrintFieldRepPositions[particle]],nonEqParticles],StringTake[particle, 1]};
-		AppendTo[particleListFull,lightParticles],
+		AppendTo[missingParticles,lightParticles],
 		{particle,{"Vector","Fermion","Scalar"}}
 	];
 
-	LightParticles=Table[i,{i,Length[particleList]+1,Length[particleListFull]}];
+	particleListFull=Join[particleListFull,DeleteCases[missingParticles, {{},a__}]];
 	If[
-		Length[LightParticles]>0,
-		Message[WallGoMatrix::missingParticles, particleListFull[[LightParticles]][[1]], particleListFull[[LightParticles]][[2]],particleListFull[[LightParticles]][[3]]];
+		Length[DeleteCases[missingParticles, {{},a__}]]>0,
+		Message[WallGoMatrix::missingParticles,
+			If[missingParticles[[1]][[1]]=={},"None",missingParticles[[1]]],
+			If[missingParticles[[2]][[1]]=={},"None",missingParticles[[2]]],
+			If[missingParticles[[3]][[1]]=={},"None",missingParticles[[3]]]
+		];
 		Abort[];
 	];
 	If[
-		Length[LightParticles]>1,
+		Length[DeleteCases[missingParticles, {{},a__}]]>1,
 		Message[WallGoMatrix::failmsg,
-			"Multiple species declared as light in "<>ToString[particleListFull[[LightParticles]]]<>". "<>
+			"Multiple species declared as light in "<>ToString[particleListFull[[missingParticles]]]<>". "<>
 			"Only one species allowed. Solution: make additional species explicit in particleList."];
 		Abort[];
 	];
 ]
 
 
-GenerateMatrixElements[MatrixElements_,Cij_,particleListFull_,LightParticles_,ParticleMasses_,OutOfEqParticles_]:=
+GenerateMatrixElements[MatrixElements_,Cij_,particleListFull_,ParticleMasses_,OutOfEqParticles_]:=
 Block[{Elem},
 
 	Do[
@@ -1455,7 +1462,7 @@ Block[{Elem},
 	    {item, particleListFull}
 	];
 
-	MatrixElements=ExtractOutOfEqElement[particleListFull,LightParticles,ParticleMasses];
+	MatrixElements=ExtractOutOfEqElement[particleListFull,ParticleMasses];
 		
 (*Extract various C^{ij} components*)	
 	Cij=ConstantArray[0,{Length[OutOfEqParticles],Length[OutOfEqParticles]}];
