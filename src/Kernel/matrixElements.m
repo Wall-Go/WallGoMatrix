@@ -105,7 +105,7 @@ RepToIndices[ListI_]:=Block[{},
 (*CreateParticle*)
 
 
-CreateParticle[Indices_,Type_,Name_]:=Block[
+CreateParticle[Indices_,Type_,Mass_,Name_]:=Block[
 {
 	Field,FieldPosition,temp,Particle
 },
@@ -124,7 +124,7 @@ CreateParticle[Indices_,Type_,Name_]:=Block[
 			AppendTo[Particle,{RepToIndices[{FieldPosition[[i]]}]}]
 		];
 	,{i,Indices}];
-	Return[{Flatten[Particle],Type,Name}]
+	Return[{Flatten[Particle],Type,Mass,Name}]
 ];
 
 

@@ -535,10 +535,27 @@ Options[ExportMatrixElements]={
 	Format->"none"};
 
 
-ExportMatrixElements[file_,particleList_,particleMasses_,OptionsPattern[]]:=
+extractParticleMasses[particleList_, type_, length_] := 
+  Module[{resultVector = ConstantArray[Null, length]},
+    Do[
+      resultVector[[pos]] = entry[[3]],
+      {entry, Select[particleList, #[[2]] === type &]},
+      {pos, entry[[1]]}
+    ];
+    If[MemberQ[resultVector, Null],
+    Message[WallGoMatrix::failmsg,
+			"Missing particle mass declarations."];
+		Abort[];
+	];
+
+    Return[resultVector];
+  ];
+
+
+ExportMatrixElements[file_,particleList_,OptionsPattern[]]:=
 Block[
 {
-	particleMassesI=particleMasses,
+	particleMassesI,
 	userCouplings,
 	particleNames,
 	particles,
@@ -573,7 +590,7 @@ Block[
 	bVerbose = OptionValue[Verbose];
 
 (*Separate names and particles*)
-	particleNames=particleList[[All,3]];
+	particleNames=particleList[[All,4]];
 	particles=particleList[[All,1;;2]];
 
 (*Splits ParticleList into out-of-eq and light particles*)
@@ -581,14 +598,21 @@ Block[
 
 (*Collects all the UserCouplings*)
 	userCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
-
-(*Creates an assumption rule for simplifying Conjugate[....] terms*)
-	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u}; (*All variables are assumed to be real*)
 	
-(*Allocates one element for each species mass to avoid errors*)	
-	If[particleMasses[[1]]=={},particleMassesI[[1]]={msq}];
-	If[particleMasses[[2]]=={},particleMassesI[[2]]={msq}];
-	If[particleMasses[[3]]=={},particleMassesI[[3]]={msq}];
+(*Make particle masses vector*)
+	particleMassesI={
+		extractParticleMasses[particleList, "V", Length[gvff]],
+		extractParticleMasses[particleList, "F", Length[gvff[[1]]]],
+		extractParticleMasses[particleList, "S", Length[gvss[[1]]]]
+		};
+		
+(*Creates an assumption rule for simplifying Conjugate[....] terms*)
+	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMassesI,s,t,u}; (*All variables are assumed to be real*)
+	
+(*Allocates one element for each species mass to avoid errors*)
+	Table[
+		If[particleMassesI[[i]]=={},particleMassesI[[i]]={msq}],
+		{i,1,3}];
 
 (*Extracting all matrix elements*)	
 	GenerateMatrixElements[MatrixElements,Cij,particleListFull,particleMassesI,outOfEqParticles];
