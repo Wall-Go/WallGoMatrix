@@ -78,39 +78,98 @@ Print[Grid[
 
 
 (*List of public functions*)
-ImportModel::usage="\
-ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False,Mode->ModeNumber] \
-Loads the model and creates help tensors. Here,
-gvvv:  structure constants
-gvff:  vector-fermion trilinear couplings
-gvss:  vector-scalar trilinear couplings
-\[Lambda]1:    scalar tadpole couplings
-\[Lambda]3:    cubic couplings
-\[Lambda]4:    quartic couplings
-\[Mu]ij:   scalar-mass matrix
-\[Mu]IJ:   fermion-mass matrices
-\[Mu]IJC:  fermion-mass matrices
-Ysff:  Yukawa couplings
-YsffC: Yukawa couplings.
+ImportModel::usage = 
+"ImportModel[Group, gvvv, gvff, gvss, \[Lambda]1, \[Lambda]3, \[Lambda]4, \[Mu]ij, \[Mu]IJ, \[Mu]IJC, Ysff, YsffC, Verbose -> False, Mode -> ModeNumber] \
+loads the model and creates helper tensors.
+
+Arguments:
+  - Group: The symmetry group of the model.
+  - gvvv: Structure constants.
+  - gvff: Vector-fermion trilinear couplings.
+  - gvss: Vector-scalar trilinear couplings.
+  - \[Lambda]1: Scalar tadpole couplings.
+  - \[Lambda]3: Cubic couplings.
+  - \[Lambda]4: Quartic couplings.
+  - \[Mu]ij: Scalar mass matrix.
+  - \[Mu]IJ: Fermion mass matrices.
+  - \[Mu]IJC: Extended fermion mass matrices.
+  - Ysff: Yukawa couplings.
+  - YsffC: Conjugate Yukawa couplings.
+
+Options:
+  - Verbose: If True, enables verbose output (default is False).
+  - Mode: Specifies the operating mode using ModeNumber.
+
+This function organizes the parameters necessary for model loading and tensor generation.";
+
+
+SymmetryBreaking::usage = 
+"SymmetryBreaking classifies different scalar, fermion, and vector representations into their respective particles based on VEV-induced masses.
+
+Output:
+  - Each particle i is represented as {ri, mi}, where:
+      - ri: Label for the particle's representation.
+      - mi: Label for the particle's mass within that representation.
+
+Options:
+  - VevDependentCouplings (Boolean): If True, allows for VEV-dependent couplings (default is False).
+
+This function allows the classification of particles by type and mass using the representation-breaking mechanism provided by VEVs.\
 ";
 
-CreateParticle::usage=
-"CreateOutOfEq[{{\!\(\*SubscriptBox[\(r\), \(1\)]\),\!\(\*SubscriptBox[\(m\), \(1\)]\)},...,{\!\(\*SubscriptBox[\(r\), \(n\)]\),\!\(\*SubscriptBox[\(m\), \(n\)]\)}},\"R\"] is a function that groups n particles into one representation for
-Fermions (R=F),
-Vector Bosons (R=V), and
-Scalars (R=S)."
-SymmetryBreaking::usage=
-"Classify different scalar, fermion, and vector representations into respective particles using VEV-induced masses.
-As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(m\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(m\), \(i\)]\) is the label of the particle mass in that representation"
-ExportMatrixElements::usage=
-"ExportMatrixElements[\!\(\*
-StyleBox[\"fileName\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"particleList\",\nFontSlant->\"Italic\"]\),\!\(\*
-OptionsPattern[]]\n"<>
-"Generates all possible matrix elements with the external particles specified in particleList.\n"<>
-"The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none, "<>
-"the last two options exports the result in all possible formats, and in none, respectively.\n"<>
-"A list of matrix elements is returned by the function regardless of the choosen format.";
+
+CreateParticle::usage = 
+"CreateParticle[{{r1, m1}, ..., {rn, mn}}, \"R\", M, \"particleName\"] \
+groups n particles into a single representation.
+
+Arguments:
+  - {{r1, m1}, ..., {rn, mn}}: A list of particle parameters, where each pair {r, m} represents specific properties for each particle.
+  - \"R\": Specifies the type of particle representation:
+      - \"F\" for Fermions
+      - \"V\" for Vector Bosons
+      - \"S\" for Scalars
+  - M: The mass parameter of the grouped particle representation.
+  - \"particleName\": A string specifying the name of the particle.
+
+Return:
+  - Returns a list formatted as {{fieldIndices}, R = {V, F, S}, M, particleName}, where:
+      - fieldIndices: Indices of the grouped particles.
+      - R: Type of particle representation (Vector Boson, Fermion, Scalar).
+      - M: The mass of the grouped particle.
+      - particleName: The name of the grouped particle.
+
+This function is useful for grouping particles into one collective representation based on their properties and type.";
+
+
+ExportMatrixElements::usage = 
+"ExportMatrixElements[fileName, particleList, lightParticleList, OptionsPattern[]] \
+generates all possible matrix elements with the external particles specified in particleList.
+
+Arguments:
+  - fileName: The name of the file to export the matrix elements to.
+  - particleList: A list specifying the external particles for matrix element generation, formatted as{{fieldIndices}, R = {\"V\", \"F\", \"S\"}, M, \"Name\"}, where:
+      - fieldIndices: Indices of the fields involved.
+      - R: Type of particle representation (Vector Boson, Fermion, Scalar).
+      - M: Mass parameter of the particle.
+      - Name: The name of the particle.
+  - lightParticleList: A list of light particles involved in the calculations, formatted similarly to particleList.
+
+Options:
+  - Format: Specifies the export format. Supported values include:
+      - \"txt\": Plain text format
+      - \"json\": JSON format
+      - \"hdf5\": HDF5 format
+      - \"all\": Exports in all supported formats
+      - \"none\": Does not export to a file
+  - Verbose (Boolean): If True, lists channels that are currently being computed (default is False).
+  - TruncateAtLeadingLog (Boolean): If True, truncates the matrix elements at the leading logarithmic order (default is True).
+
+Explanation:
+  - Choosing \"all\" exports the result in all possible formats, while choosing \"none\" skips exporting.
+
+Return:
+  - A list of generated matrix elements is returned by the function, regardless of the chosen export format.\
+";
 
 
 AllocateTensors::usage="\
@@ -127,22 +186,26 @@ GradMassFermion::usage="Creates Fermion Invariants";
 CreateInvariantFermion::usage="Creates Fermion Invariants";
 
 
-PerformDRhard::usage="\
-Performs the dimensional reduction from hard to soft";
-
-
-PrintFieldRepPositions::usage="Prints the indices of X={Gauge,Fermion,Scalar} reps";
+PrintFieldRepPositions::usage = 
+"PrintFieldRepPositions[\"Field\"] prints the indices of field representations for the given input \"Field\", \
+where \"Field\" can be one of the following representations:
+  - Gauge: Represents gauge fields.
+  - Fermion: Represents fermionic fields.
+  - Scalar: Represents scalar fields.\
+";
 
 
 ImportMatrixElements::usage="";
 
 
 WallGoMatrix::failmsg =
-"Error! WallGoMatrix has encountered a fatal problem and must abort the computation. \
-The problem reads: `1`";
+"Fatal Error! WallGoMatrix has encountered a critical issue and must abort the computation. \
+Details of the problem: `1`.";
+
 WallGoMatrix::failWarning =
-"Error! WallGoMatrix has encountered a problem. \
-The problem reads: `1`";
+"Warning! WallGoMatrix has encountered a non-fatal issue. \
+Please review the following problem: `1`.";
+
 WallGoMatrix::missingParticles = 
  "WallGoMatrix encountered a critical issue and must terminate the computation.\n\n\
 Issue: Missing particle declarations.\n\n\
