@@ -151,8 +151,8 @@ RepHiggsH=CreateParticle[{{2,2}},"S",mH2,"H"]; (*CP-even inert scalar*)
 RepGoldstoneA=CreateParticle[{{2,3},{2,1}},"S",mA2,"A"]; (*CP-odd inert and charged scalars *)
 
 
-(*Light particles*)
-LightFermions={{10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45},"F",mq2,"LightFermions"};
+(*Light fermions*)
+LightFermions=CreateParticle[{3,4,5,6,7,8,9,10,11,12,13,14,15},"F",mq2,"LightFermions"];
 
 
 ParticleList={
@@ -177,6 +177,4 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
-
-
 

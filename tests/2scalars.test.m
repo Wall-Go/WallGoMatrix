@@ -130,6 +130,9 @@ UserMasses={mw2,mG2,mh2,mH2,mA2,mHp};
 ParticleList={
 	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
 	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI};
+(*
+Light particles are never incoming particles 
+*)
 LightParticleList={RepW};
 
 
