@@ -115,17 +115,6 @@ RepHiggs=CreateParticle[{1},"S",ms2,"Higgs"];
 LightFermions=CreateParticle[{{1,2},4,5,6,7,8,9},"F",mq2,"LightFermions"];
 
 
-(*Defining various masses and couplings*)
-
-
-(*VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}]];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};*)
-
-
 (*
 These particles do not have out-of-eq contributions
 *)

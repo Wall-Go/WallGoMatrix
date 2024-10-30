@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[](*;*)
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -24,7 +24,7 @@ Check[
 (*See 2211.13142 for implementation details*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -132,43 +132,41 @@ SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-de
 
 
 (*Third generation of fermions*)
-ReptL=CreateParticle[{{1,1}},"F","TopL"];
-RepbL=CreateParticle[{{1,2}},"F","BotL"];
-ReptR=CreateParticle[{{2,1}},"F","TopR"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
+RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"];
+ReptR=CreateParticle[{{2,1}},"F",mq2,"TopR"];
 
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V","Gluon"]; (*Gluons*)
-RepW=CreateParticle[{{2,1}},"V","W"]; (*SU2 gauge bosons*)
-RepB=CreateParticle[{3},"V","B"]; (*U1 gauge boson*)
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"]; (*Gluons*)
+RepW=CreateParticle[{{2,1}},"V",mW2,"W"]; (*SU2 gauge bosons*)
+RepB=CreateParticle[{3},"V",mB2,"B"]; (*U1 gauge boson*)
 
 
 (*Scalars bosons*)
-RepHiggsh=CreateParticle[{{1,2}},"S","Higgs"]; (*Higgs*)
-RepGoldstoneGpR={{1},"S","GoldstoneGpR"}; (*real charged Goldstone*)
-RepGoldstoneGpI={{3},"S","GoldstoneGpI"}; (*imag charged Golstone*)
-RepGoldstoneG0={{4},"S","GoldstoneG0"}; (*neutral Goldstone*)
-RepHiggsH=CreateParticle[{{2,2}},"S","H"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3}},"S","A"]; (*CP-odd inert scalar*)
-RepGoldstoneHpR={{5},"S","GoldstoneHpR"}; (*real charged inert scalar*)
-RepGoldstoneHpI={{7},"S","GoldstoneHpI"}; (*imag charged inert scalar*)
+RepHiggsh=CreateParticle[{{1,2}},"S",mh2,"Higgs"]; (*Higgs*)
+RepGoldstoneGpR={{1},"S",mG2,"GoldstoneGpR"}; (*real charged Goldstone*)
+RepGoldstoneGpI={{3},"S",mG2,"GoldstoneGpI"}; (*imag charged Golstone*)
+RepGoldstoneG0={{4},"S",mG2,"GoldstoneG0"}; (*neutral Goldstone*)
+RepHiggsH=CreateParticle[{{2,2}},"S",mH2,"H"]; (*CP-even inert scalar*)
+RepGoldstoneA=CreateParticle[{{2,3}},"S",mA2,"A"]; (*CP-odd inert scalar*)
+RepGoldstoneHpR={{5},"S",mHp,"GoldstoneHpR"}; (*real charged inert scalar*)
+RepGoldstoneHpI={{7},"S",mHp,"GoldstoneHpI"}; (*imag charged inert scalar*)
 
 
-(*Defining various masses and couplings*)
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}],
-	{mB2}]; (*mb2 is the mass of the U(1) gauge field*)
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass={mG2,mh2,mG2,mG2,mHp,mH2,mHp,mA2};
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
+(*Light particles*)
+LightFermions=CreateParticle[{3,4,5,6,7,8,9,10,11,12,13,14,15},"F",mq2,"LightFermions"];
 
 
 ParticleList={
 	ReptL,RepbL,ReptR,
 	RepGluon,RepW,RepB,
-	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
+	RepHiggsh,RepGoldstoneG0,RepGoldstoneGpR,RepGoldstoneGpI,
 	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI};
+(*
+Light particles are never incoming particles 
+*)
+LightParticleList={LightFermions};
 
 
 (*
@@ -179,10 +177,13 @@ OutputFile="output/matrixElements.2hdm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
+
+
+
 

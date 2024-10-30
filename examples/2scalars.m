@@ -109,32 +109,27 @@ SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-de
 
 
 (*Vector bosons*)
-RepW=CreateParticle[{{1,1}},"V","W"]; (*SU2 gauge bosons*)
+RepW=CreateParticle[{{1,1}},"V",mW2,"W"]; (*SU2 gauge bosons*)
 
 
 (*Scalars bosons*)
-RepHiggsh=CreateParticle[{{1,2}},"S","Higgs"]; (*Higgs*)
-RepGoldstoneGpR={{1},"S","GoldstoneGpR"}; (*real charged Goldstone*)
-RepGoldstoneGpI={{3},"S","GoldstoneGpI"}; (*imag charged Golstone*)
-RepGoldstoneG0={{4},"S","GoldstoneG0"}; (*neutral Goldstone*)
-RepHiggsH=CreateParticle[{{2,2}},"S","H"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3}},"S","A"]; (*CP-odd inert scalar*)
-RepGoldstoneHpR={{5},"S","GoldstoneHpR"}; (*real charged inert scalar*)
-RepGoldstoneHpI={{7},"S","GoldstoneHpI"}; (*imag charged inert scalar*)
-
-
-(*Defining various masses and couplings*)
-VectorMass=Join[
-	Table[mW2,{i,1,RepW[[1]]//Length}]
-	];
-FermionMass={};
-ScalarMass={mG2,mh2,mG2,mG2,mHp,mH2,mHp,mA2};
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
+RepHiggsh=CreateParticle[{{1,2}},"S",mh2,"Higgs"]; (*Higgs*)
+RepGoldstoneGpR={{1},"S",mG2,"GoldstoneGpR"}; (*real charged Goldstone*)
+RepGoldstoneGpI={{3},"S",mG2,"GoldstoneGpI"}; (*imag charged Golstone*)
+RepGoldstoneG0={{4},"S",mG2,"GoldstoneG0"}; (*neutral Goldstone*)
+RepHiggsH=CreateParticle[{{2,2}},"S",mH2,"H"]; (*CP-even inert scalar*)
+RepGoldstoneA=CreateParticle[{{2,3}},"S",mA2,"A"]; (*CP-odd inert scalar*)
+RepGoldstoneHpR={{5},"S",mHp,"GoldstoneHpR"}; (*real charged inert scalar*)
+RepGoldstoneHpI={{7},"S",mHp,"GoldstoneHpI"}; (*imag charged inert scalar*)
 
 
 ParticleList={
 	RepHiggsh,RepGoldstoneG0,RepGoldstoneGpR,RepGoldstoneGpI,
 	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI};
+(*
+Light particles are never incoming particles 
+*)
+LightParticleList={RepW};
 
 
 (*
@@ -145,10 +140,13 @@ OutputFile="output/matrixElements.2scalars";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
 		Replacements->{gw->0,lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
+
+
+
 
