@@ -21,7 +21,7 @@ Check[
 (*QCD*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -69,24 +69,19 @@ one right-handed fermion
 rep 1-6 are quarks,
 rep 7 is a gluon
 *)
-Rep1=CreateParticle[{1,2},"F","Top"];
-RepGluon=CreateParticle[{1},"V","Gluon"];
-
-
-(*Defining various masses and couplings*)
-
-
-VectorMass=Table[mg2,{i,1,Length[gvff]}];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass={};
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
+Rep1=CreateParticle[{1,2},"F",mq2,"Top"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+LightQuarks=CreateParticle[{3,4,5,6,7,8,9,10,11,12},"F",mq2,"LightParticle"];
 
 
 (*
 These particles do not necessarily have to be out of equilibrium
-the remainin particle content is set as light
 *)
 ParticleList={Rep1,RepGluon};
+(*
+Light particles are never incoming particles 
+*)
+LightParticleList={LightQuarks};
 
 
 (*
@@ -96,7 +91,10 @@ OutputFile="output/matrixElements.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
 		Format->{"json","txt"}}];
+
+
+

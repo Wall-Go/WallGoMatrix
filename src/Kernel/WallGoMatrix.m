@@ -451,24 +451,39 @@ exportJsonMatrixElements[file_,jsonMatrixElements_]:=Module[{test},
 ];
 
 
+Range[6]
+
+
 (* ::Subsubsection:: *)
 (*hdf5 matrix elements functions*)
 
 
-ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[{ExportH5,writeData,CijName,CijExport,ParticleInfo,CouplingInfo},
+ExportTo["hdf5"][Cij_,OutOfEqParticleList_,ParticleName_,UserCouplings_,file_]:=
+Block[{
+	ExportH5,writeData,CijName,CijExport,
+	OutOfEqParticles,
+	ParticleInfo,CouplingInfo
+},
+	OutOfEqParticles=Range[Length[OutOfEqParticleList]];
 	
 (*Metadata*)
 	ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
 	CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 	
 	CijExport=Cij;
-	Do[CijExport[[i,j]]=Table[MatrixElemToC@k,{k,Cij[[i,j]]}];,
-		{i,OutOfEqParticles},{j,OutOfEqParticles}];
+	Do[
+		CijExport[[i,j]]=Table[MatrixElemToC@k,{k,Cij[[i,j]]}];,
+		{i,OutOfEqParticles},{j,OutOfEqParticles}
+	];
+
 (*In the hdf5 file we separate them into Cij components*)
 	ExportH5=Reap[Do[
 		CijName=StringJoin["MatrixElements",ParticleName[[i]],ParticleName[[j]]];
 		Sow[
-			writeData=Table[{ToString[FortranForm[PrintNonPrivate[a[[1]]]]],ToString[FortranForm[PrintNonPrivate[a[[2]]]]]},{a,CijExport[[i,j]]}];
+			writeData=Table[{
+				ToString[FortranForm[PrintNonPrivate[a[[1]]]]],
+				ToString[FortranForm[PrintNonPrivate[a[[2]]]]]
+				},{a,CijExport[[i,j]]}];
 			If[Length[CijExport[[i,j]]]==0,writeData=""];
 			CijName -> {"Data" -> writeData}
 			];
@@ -490,14 +505,17 @@ ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Blo
 (*txt matrix elements functions*)
 
 
-ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[
-{
-	ParticleInfo,CouplingInfo,ExportTXT,matrixElementsTXT,replaceSpecials,toString,
+ExportTo["txt"][MatrixElements_,particleListAll_,UserCouplings_,file_]:=
+Block[{
+	ParticleInfo,CouplingInfo,
+	particleNames,
+	ExportTXT,matrixElementsTXT,replaceSpecials,toString,
 	sReplace,tReplace,uReplace
 },
+	particleNames=particleListAll[[All,4]];
 
 	(*Creating some metadata*)
-		ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
+		ParticleInfo=Table[{ToString[i-1],particleNames[[i]]},{i,Length[particleListAll]}];
 		CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 		
 		ExportTXT=MatrixElements/.{s->sReplace,t->tReplace,u->uReplace};
@@ -638,15 +656,14 @@ Block[
 	If[MemberQ[userFormatsList, "all"], userFormatsList = {"txt", "json", "hdf5"}];
 	
 	(* Check if all formats in the list are valid *)
-	particleIndex=Table[i,{i,Length[particleListAll]}];
 	If[AllTrue[userFormatsList, MemberQ[FormatOptions, #] &],
 	   (* Iterate over each format and perform the export *)
 	   Do[
 	     Switch[fmt,
 	       "txt",
-	       ExportTo["txt"][MatrixElementsList, particleIndex, particleNames, userCouplings, privFile],
+	       ExportTo["txt"][MatrixElementsList, particleListAll, userCouplings, privFile],
 	       "hdf5",
-	       ExportTo["hdf5"][Cij, particleIndex, particleNames, userCouplings, privFile],
+	       ExportTo["hdf5"][Cij, outOfEqParticleList, particleNames, userCouplings, privFile],
 	       "json",
 	       userParameters = Flatten[Join[userCouplings, particleMasses]] // DeleteDuplicates;
 	       ExportTo["json"][MatrixElementsList, particleNames, userParameters, privFile]
