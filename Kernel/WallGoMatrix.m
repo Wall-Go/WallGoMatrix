@@ -103,72 +103,148 @@ Options:
 This function organizes the parameters necessary for model loading and tensor generation.";
 
 
+LatexStyle[text_] := StyleBox[text, FontFamily -> "Times New Roman", FontWeight -> "Regular", FontSlant -> "Italic"];
+
+
 SymmetryBreaking::usage = 
 "SymmetryBreaking classifies different scalar, fermion, and vector representations into their respective particles based on VEV-induced masses.
 
+Usage:
+SymmetryBreaking[\!\(\*
+StyleBox[\"vev\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)];
+
+Arguments:
+- \!\(\*
+StyleBox[\"vev\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): \
+List of vacuum expectation values
+
 Output:
-  - Each particle i is represented as {ri, mi}, where:
-      - ri: Label for the particle's representation.
-      - mi: Label for the particle's mass within that representation.
+- Each particle i is represented as {\
+\!\(\*StyleBox[\"ri\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"mi\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}, \
+where:
+    - \!\(\*StyleBox[\"ri\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): \
+Label for the particle's representation.
+    - \!\(\*StyleBox[\"mi\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): \
+Label for the particle's mass within that representation.
 
 Options:
-  - VevDependentCouplings (Boolean): If True, allows for VEV-dependent couplings (default is False).
+- VevDependentCouplings (Boolean): If True, allows for VEV-dependent couplings (default is False).
 
 This function allows the classification of particles by type and mass using the representation-breaking mechanism provided by VEVs.\
 ";
 
 
 CreateParticle::usage = 
-"CreateParticle[{{r1, m1}, ..., {rn, mn}}, \"R\", M, \"particleName\"] \
-groups n particles into a single representation.
+"Groups \
+\!\(\*StyleBox[\"n\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) \
+particles into a single representation.
+
+Usage:
+CreateParticle[{\
+\!\(\*StyleBox[\"r1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\
+,...,\
+\!\(\*StyleBox[\"rn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}}, \
+\"\!\(\*StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\", \
+\!\(\*StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \
+\"\!\(\*StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"\
+]
+CreateParticle[{{\!\(\*
+StyleBox[\"r1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"m1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},...,{\!\(\*
+StyleBox[\"rn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"mn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}}, \"\!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\", \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \"\!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"]
 
 Arguments:
-  - {{r1, m1}, ..., {rn, mn}}: A list of particle parameters, where each pair {r, m} represents specific properties for each particle.
-  - \"R\": Specifies the type of particle representation:
-      - \"F\" for Fermions
-      - \"V\" for Vector Bosons
-      - \"S\" for Scalars
-  - M: The mass parameter of the grouped particle representation.
-  - \"particleName\": A string specifying the name of the particle.
+- {{\!\(\*
+StyleBox[\"r1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"m1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},...,{\!\(\*
+StyleBox[\"rn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"mn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}}:
+    List of particle indices (obtainable via PrintFieldRepPositions[]), where each pair {\!\(\*
+StyleBox[\"ri\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"mi\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)} represents,
+    - \!\(\*
+StyleBox[\"ri\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Label for the particle's representation,
+    - \!\(\*
+StyleBox[\"mi\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Label for the particle's mass within that representation.
+- \"\!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\": Specifies the type of particle representation:
+    - \"F\" for Fermions
+    - \"V\" for Vector Bosons
+    - \"S\" for Scalars
+- \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The mass parameter of the grouped particle representation.
+- \"\!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\": A string specifying the name of the particle.
 
 Return:
-  - Returns a list formatted as {{fieldIndices}, R = {V, F, S}, M, particleName}, where:
-      - fieldIndices: Indices of the grouped particles.
-      - R: Type of particle representation (Vector Boson, Fermion, Scalar).
-      - M: The mass of the grouped particle.
-      - particleName: The name of the grouped particle.
+- Returns a list formatted as {{\!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}, \!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) = {V, F, S}, \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}, where:
+    - \!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Indices of the grouped particles.
+    - \!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Type of particle representation (Vector Boson, Fermion, Scalar).
+    - \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The mass of the grouped particle.
+    - \!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the grouped particle.
 
 This function is useful for grouping particles into one collective representation based on their properties and type.";
 
 
 ExportMatrixElements::usage = 
-"ExportMatrixElements[fileName, particleList, lightParticleList, OptionsPattern[]] \
-generates all possible matrix elements with the external particles specified in particleList.
+"Generates all possible matrix elements with the external particles specified in particleList.
+
+Usage:
+ExportMatrixElements[\!\(\*
+StyleBox[\"fileName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), OptionsPattern[]]
 
 Arguments:
-  - fileName: The name of the file to export the matrix elements to.
-  - particleList: A list specifying the external particles for matrix element generation, formatted as{{fieldIndices}, R = {\"V\", \"F\", \"S\"}, M, \"Name\"}, where:
-      - fieldIndices: Indices of the fields involved.
-      - R: Type of particle representation (Vector Boson, Fermion, Scalar).
-      - M: Mass parameter of the particle.
-      - Name: The name of the particle.
-  - lightParticleList: A list of light particles involved in the calculations, formatted similarly to particleList.
+- \!\(\*
+StyleBox[\"fileName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the file to export the matrix elements to.
+- \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list specifying the external particles for matrix element generation, formatted as{{\!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},\!\(\*
+StyleBox[\" \",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) = {\"V\", \"F\", \"S\"}, \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \"\!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"}, where:
+    - \!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Indices of the fields involved.
+    - \!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Type of particle representation (Vector Boson, Fermion, Scalar).
+    - \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Mass parameter of the particle.
+    - \!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the particle.
+- \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of light particles involved in the calculations, formatted similarly to \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\).
 
 Options:
-  - Format: Specifies the export format. Supported values include:
-      - \"txt\": Plain text format
-      - \"json\": JSON format
-      - \"hdf5\": HDF5 format
-      - \"all\": Exports in all supported formats
-      - \"none\": Does not export to a file
-  - Verbose (Boolean): If True, lists channels that are currently being computed (default is False).
-  - TruncateAtLeadingLog (Boolean): If True, truncates the matrix elements at the leading logarithmic order (default is True).
+- Format: Specifies the export format. Supported values include:
+    - \"txt\": Plain text format
+    - \"json\": JSON format
+    - \"hdf5\": HDF5 format
+    - \"all\": Exports in all supported formats
+    - \"none\": Does not export to a file
+- Verbose (Boolean): If True, lists channels that are currently being computed (default is False).
+- TruncateAtLeadingLog (Boolean): If True, truncates the matrix elements at the leading logarithmic order (default is True).
 
 Explanation:
-  - Choosing \"all\" exports the result in all possible formats, while choosing \"none\" skips exporting.
+- Choosing \"all\" exports the result in all possible formats, while choosing \"none\" skips exporting.
 
 Return:
-  - A list of generated matrix elements is returned by the function, regardless of the chosen export format.\
+- A list of generated matrix elements is returned by the function, regardless of the chosen export format.\
 ";
 
 
@@ -187,8 +263,11 @@ CreateInvariantFermion::usage="Creates Fermion Invariants";
 
 
 PrintFieldRepPositions::usage = 
-"PrintFieldRepPositions[\"Field\"] prints the indices of field representations for the given input \"Field\", \
-where \"Field\" can be one of the following representations:
+"PrintFieldRepPositions[\"\!\(\*
+StyleBox[\"Field\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"] prints the indices of field representations for the given input \"\!\(\*
+StyleBox[\"Field\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\", \
+where \"\!\(\*
+StyleBox[\"Field\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\" can be one of the following representations:
   - Gauge: Represents gauge fields.
   - Fermion: Represents fermionic fields.
   - Scalar: Represents scalar fields.\
