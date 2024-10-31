@@ -119,7 +119,6 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 
 
 vev={0,v,0,0,0,0,0,0};
-(*using this multiple times, should not changre the outcome -> needs fixing *)
 SymmetryBreaking[vev,VevDependentCouplings->True]
 (*SymmetryBreaking[vev]*)
 
