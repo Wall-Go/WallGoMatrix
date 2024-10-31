@@ -136,20 +136,24 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*MatrixElements*)
 
 
+(* ::Subsection:: *)
+(*Symmetry breaking*)
+
+
+vev={0,v,0,0,0};
+SymmetryBreaking[vev]
+
+
+(* ::Subsection:: *)
+(*Group representations*)
+
+
 (*
 In DRalgo fermions are Weyl.
 So to create one Dirac we need
 one left-handed and
 one right-handed fermion
 *)
-
-
-(* ::Subsection:: *)
-(*TopL, TopR*)
-
-
-vev={0,v,0,0,0};
-SymmetryBreaking[vev]
 
 
 (*The indices of the correpsonding fields can be found by using*)

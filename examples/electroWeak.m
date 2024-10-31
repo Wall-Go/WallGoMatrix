@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 If[$InputFileName=="",
@@ -33,7 +33,9 @@ CouplingName={gs,gw};
 Rep1={{{1,0},{1}},"L"};
 Rep2={{{1,0},{0}},"R"};
 Rep3={{{1,0},{0}},"R"};
-RepFermion1Gen={Rep1,Rep2,Rep3};
+Rep4={{{0,0},{1}},"L"};
+Rep5={{{0,0},{0}},"R"};
+RepFermion1Gen={Rep1,Rep2,Rep3, Rep4, Rep5};
 
 
 HiggsDoublet={{{0,0},{1}},"C"};
@@ -82,38 +84,39 @@ one right-handed fermoon
 *)
 
 
-(*
-	Reps 1-4 are quarks,
-	reps 5,6 are vector bosons
-*)
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
+ReptL=CreateParticle[{{1,1}},"F", mq2, "TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F",mq2,"TopR"];
+ReptR=CreateParticle[{{2,1}},"F", mq2, "TopR"];
 
-(*(*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F",mq2,"BotR"];*)
+(*light quarks*)
+RepLightQ = CreateParticle[{{1,2},3,6,7,8,11,12,13},"F",mq2, "LightQuark"];
+
+(*left-handed leptons*)
+RepLepL = CreateParticle[{4,9,14},"F", ml2,"LepL"];
+
+(*right-handed leptons -- these don't contribute*)
+RepLepR = CreateParticle[{5,10,15},"F",mlr2,"LepR"];
 
 (*Vector bosons*)
 RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
-RepW=CreateParticle[{{2,1}},"V",mW2,"W"];
+
+(*We are approximating the W and the Z as the same particle*)
+RepW=CreateParticle[{{2,1}},"V",mw2,"W"];
 
 (*Higgs*)
 RepH = CreateParticle[{1},"S",ms2,"H"];
-
-(*Light particles*)
-LightFermions=CreateParticle[{{1,2},3,4,5,6,7,8,9},"F",mq2,"LightFermions"];
 
 
 (*
 These particles do not necessarily have to be out of equilibrium
 *)
-ParticleList={ReptL,ReptR,(*RepbR,*)RepGluon,RepW,RepH};
+ParticleList={ReptL,ReptR,RepLightQ,RepGluon,RepW};
 (*
 Light particles are never incoming particles 
 *)
-LightParticleList={LightFermions};
+LightParticleList={RepLepL,RepLepR, RepH};
 
 
 (*
