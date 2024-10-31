@@ -7,7 +7,7 @@ PacletObject[
     "Creator" -> "Andreas Ekstedt, Oliver Gould, Joonas Hirvonen, Benoit Laurent, Lauri Niemi, Philipp Schicho, Jorinde van de Vis",
     "URL" -> "https://github.com/Wall-Go/WallGoMatrix",
     "PublisherID" -> "WallGo",
-    "Version" -> "0.1.4",
+    "Version" -> "0.2.0",
     "Extensions" -> {
       {
         "Kernel",
