@@ -103,87 +103,51 @@ SymmetryBreaking[vev]
 
 
 (*Third generation of fermions*)
-ReptL=CreateParticle[{{1,1}},"F"];
-RepbL=CreateParticle[{{1,2}},"F"];
-ReptR=CreateParticle[{{2,1}},"F"];
-RepbR=CreateParticle[{3},"F"];
-RepTauL=CreateParticle[{4},"F"];
-RepTauR=CreateParticle[{5},"F"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
+RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"];
+ReptR=CreateParticle[{{2,1}},"F",mq2,"TopR"];
+RepbR=CreateParticle[{3},"F",mq2,"BotR"];
+RepTauL=CreateParticle[{4},"F",ml2,"TauL"];
+RepTauR=CreateParticle[{5},"F",ml2,"TauR"];
 
 
 (*Second generation of fermions*)
-RepCharmStrangeL=CreateParticle[{6},"F"];
-RepCharmR=CreateParticle[{7},"F"];
-RepStrangeR=CreateParticle[{8},"F"];
-RepMuonL=CreateParticle[{9},"F"];
-RepMuonR=CreateParticle[{10},"F"];
+RepCharmStrangeL=CreateParticle[{6},"F",mq2,"CharmStrangeL"];
+RepCharmR=CreateParticle[{7},"F",mq2,"CharmR"];
+RepStrangeR=CreateParticle[{8},"F",mq2,"StrangeR"];
+RepMuonL=CreateParticle[{9},"F",ml2,"MuonL"];
+RepMuonR=CreateParticle[{10},"F",ml2,"MuonR"];
 
 
 (*First generation of fermions*)
-RepUpDownL=CreateParticle[{11},"F"];
-ReUpR=CreateParticle[{12},"F"];
-RepDownR=CreateParticle[{13},"F"];
-RepElectronL=CreateParticle[{14},"F"];
-RepElectronR=CreateParticle[{15},"F"];
+RepUpDownL=CreateParticle[{11},"F",mq2,"UpDownL"];
+ReUpR=CreateParticle[{12},"F",mq2,"UpR"];
+RepDownR=CreateParticle[{13},"F",mq2,"DownR"];
+RepElectronL=CreateParticle[{14},"F",ml2,"ElectronL"];
+RepElectronR=CreateParticle[{15},"F",ml2,"ElectronR"];
 
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"]; (*Gluons*)
-RepW=CreateParticle[{{2,1}},"V"]; (*SU2 gauge bosons*)
-RepB=CreateParticle[{3},"V"]; (*U1 gauge boson*)
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"]; (*Gluons*)
+RepW=CreateParticle[{{2,1}},"V",mW2,"W"]; (*SU2 gauge bosons*)
+RepB=CreateParticle[{3},"V",mB2,"B"]; (*U1 gauge boson*)
 
 
 (*Scalars bosons*)
-RepHiggs=CreateParticle[{{1,2}},"S"];
-RepGoldstone=CreateParticle[{{1,1}},"S"];
+RepHiggs=CreateParticle[{{1,2}},"S",mH2,"Higgs"];
+RepGoldstone=CreateParticle[{{1,1}},"S",mG2,"Goldstone"];
 
 
 ParticleList={
 	ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,
 	RepCharmStrangeL,RepCharmR,RepStrangeR,RepMuonL,RepMuonR,
 	RepUpDownL,ReUpR,RepDownR,RepElectronL,RepElectronR,
-	RepGluon,RepW,RepB,RepHiggs,RepGoldstone};
-
-
-(*Defining various masses and couplings*)
-
-
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mw2,{i,1,RepW[[1]]//Length}],{mb2}]; (*mb2 is the mass of the U(1) gauge field*)
-
-
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-
-
-LeptonIndices=Union[ParticleList[[5]][[1]],ParticleList[[6]][[1]],ParticleList[[10]][[1]],ParticleList[[11]][[1]],ParticleList[[15]][[1]],ParticleList[[16]][[1]]];
-
-
-FermionMass[[LeptonIndices]]=ConstantArray[ml2,Length[LeptonIndices]];
-
-
-ScalarMass={mG2,mH2,mG2,mG2};
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-
-
+	RepGluon,RepW,RepB,RepHiggs,RepGoldstone
+	};
 (*
-up to the user to make sure that the same order is given in the python code
+Light particles are never incoming particles 
 *)
-UserMasses={mq2,ml2,mg2,mw2,mb2,mG2,mH2}; 
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
-
-
-ParticleList={
-	ReptL,RepbL,ReptR,RepbR,RepTauL,RepTauR,
-	RepCharmStrangeL,RepCharmR,RepStrangeR,RepMuonL,RepMuonR,
-	RepUpDownL,ReUpR,RepDownR,RepElectronL,RepElectronR,RepGluon,
-	RepW,RepB,RepHiggs,RepGoldstone};
-ParticleName={
-	"TopL","BotL","TopR","BotR","tauL","tauR",
-	"CharmStrangeL","CharmR","StrangeR","MuonL","MuonR",
-	"UpDownL","UpR","DownR","ElectronL","ElectronR",
-	"Gluon","W","B","Higgs",
-	"Goldstone"};
+LightParticleList={};
 
 
 (*
@@ -194,11 +158,10 @@ OutputFile="output/matrixElementsFull";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"}}];
 
 
 (*
@@ -209,11 +172,10 @@ OutputFile="output/matrixElementsFull.LL";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->True,
+		Format->{"json","txt"}}];
 
 
 MatrixElements

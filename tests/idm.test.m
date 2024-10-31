@@ -11,7 +11,7 @@ If[$InputFileName=="",
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 Check[
-    Get["WallGoMatrix`"],
+    Get["../Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -28,19 +28,19 @@ Check[
 (*Model*)
 
 
-Group={"SU3","SU2","U1"};
+Group={"SU3","SU2"};
 RepAdjoint={{1,1},{2},0};
-HiggsDoublet1={{{0,0},{1},1/2},"C"};
-HiggsDoublet2={{{0,0},{1},1/2},"C"};
+HiggsDoublet1={{{0,0},{1}},"C"};
+HiggsDoublet2={{{0,0},{1}},"C"};
 RepScalar={HiggsDoublet1,HiggsDoublet2};
-CouplingName={g3,gw,g1};
+CouplingName={g3,gw};
 
 
-Rep1={{{1,0},{1},1/6},"L"};
-Rep2={{{1,0},{0},2/3},"R"};
-Rep3={{{1,0},{0},-1/3},"R"};
-Rep4={{{0,0},{1},-1/2},"L"};
-Rep5={{{0,0},{0},-1},"R"};
+Rep1={{{1,0},{1}},"L"};
+Rep2={{{1,0},{0}},"R"};
+Rep3={{{1,0},{0}},"R"};
+Rep4={{{0,0},{1}},"L"};
+Rep5={{{0,0},{0}},"R"};
 RepFermion1Gen={Rep1,Rep2,Rep3,Rep4,Rep5};
 
 
@@ -140,39 +140,33 @@ ReptR=CreateParticle[{{2,1}},"F",mq2,"TopR"];
 (*Vector bosons*)
 RepGluon=CreateParticle[{1},"V",mg2,"Gluon"]; (*Gluons*)
 RepW=CreateParticle[{{2,1}},"V",mW2,"W"]; (*SU2 gauge bosons*)
-RepB=CreateParticle[{3},"V",mB2,"B"]; (*U1 gauge boson*)
 
 
 (*Scalars bosons*)
 RepHiggsh=CreateParticle[{{1,2}},"S",mh2,"Higgs"]; (*Higgs*)
 RepGoldstoneGpR={{1},"S",mG2,"GoldstoneGpR"}; (*real charged Goldstone*)
 RepGoldstoneGpI={{3},"S",mG2,"GoldstoneGpI"}; (*imag charged Golstone*)
-RepGoldstoneG0={{4},"S",mG2,"GoldstoneG0"}; (*neutral Goldstone*)
+RepGoldstoneGp0={{4},"S",mG2,"GoldstoneG0"}; (*neutral Goldstone*)
 RepHiggsH=CreateParticle[{{2,2}},"S",mH2,"H"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3}},"S",mA2,"A"]; (*CP-odd inert scalar*)
-RepGoldstoneHpR={{5},"S",mHp,"GoldstoneHpR"}; (*real charged inert scalar*)
-RepGoldstoneHpI={{7},"S",mHp,"GoldstoneHpI"}; (*imag charged inert scalar*)
+RepGoldstoneA=CreateParticle[{{2,3},{2,1}},"S",mA2,"A"]; (*CP-odd inert and charged scalars *)
 
 
-(*Light particles*)
+(*Light fermions*)
 LightFermions=CreateParticle[{3,4,5,6,7,8,9,10,11,12,13,14,15},"F",mq2,"LightFermions"];
 
 
 ParticleList={
 	ReptL,RepbL,ReptR,
-	RepGluon,RepW,RepB,
-	RepHiggsh,RepGoldstoneG0,RepGoldstoneGpR,RepGoldstoneGpI,
-	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI};
-(*
-Light particles are never incoming particles 
-*)
+	RepGluon,RepW,
+	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
+	RepHiggsH,RepGoldstoneA};
 LightParticleList={LightFermions};
 
 
 (*
 	output of matrix elements
 *)
-OutputFile="output/matrixElements.2hdm";
+OutputFile="output/matrixElements.idm";
 
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -183,7 +177,4 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
-
-
-
 

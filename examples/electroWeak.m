@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 If[$InputFileName=="",
@@ -33,7 +33,9 @@ CouplingName={gs,gw};
 Rep1={{{1,0},{1}},"L"};
 Rep2={{{1,0},{0}},"R"};
 Rep3={{{1,0},{0}},"R"};
-RepFermion1Gen={Rep1,Rep2,Rep3};
+Rep4={{{0,0},{1}},"L"};
+Rep5={{{0,0},{0}},"R"};
+RepFermion1Gen={Rep1,Rep2,Rep3, Rep4, Rep5};
 
 
 HiggsDoublet={{{0,0},{1}},"C"};
@@ -82,49 +84,39 @@ one right-handed fermoon
 *)
 
 
-(*
-	Reps 1-4 are quarks,
-	reps 5,6 are vector bosons
-*)
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F", mq2, "TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{{2,1}},"F", mq2, "TopR"];
 
-(*(*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F"];*)
+(*light quarks*)
+RepLightQ = CreateParticle[{{1,2},3,6,7,8,11,12,13},"F",mq2, "LightQuark"];
+
+(*left-handed leptons*)
+RepLepL = CreateParticle[{4,9,14},"F", ml2,"LepL"];
+
+(*right-handed leptons -- these don't contribute*)
+RepLepR = CreateParticle[{5,10,15},"F",mlr2,"LepR"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{{2,1}},"V"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+
+(*We are approximating the W and the Z as the same particle*)
+RepW=CreateParticle[{{2,1}},"V",mw2,"W"];
 
 (*Higgs*)
-RepH = CreateParticle[{1},"S"];
-
-
-(*Defining various masses and couplings*)
-
-
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}]];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mg2,mW2}; 
-UserCouplings={gs,gw};
+RepH = CreateParticle[{1},"S",ms2,"H"];
 
 
 (*
 These particles do not necessarily have to be out of equilibrium
-the remaining particle content is set as light
 *)
-ParticleList={ReptL,ReptR,(*RepbR,*)RepGluon,RepW,RepH};
-ParticleName={"TopL","TopR",(*"BotR",*)"Gluon","W","H"};
+ParticleList={ReptL,ReptR,RepLightQ,RepGluon,RepW};
+(*
+Light particles are never incoming particles 
+*)
+LightParticleList={RepLepL,RepLepR, RepH};
 
 
 (*
@@ -134,11 +126,10 @@ OutputFile="output/matrixElements.ew";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->True,
+		Format->{"json","txt"}}];
 
 
 MatrixElements//Expand

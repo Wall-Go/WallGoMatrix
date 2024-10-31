@@ -11,7 +11,7 @@ If[$InputFileName=="",
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 Check[
-    Get["../WallGoMatrix.m"],
+    Get["../Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -65,25 +65,17 @@ one right-handed fermion
 rep 1-6 are quarks,
 rep 7 is a gluon
 *)
-Rep1=CreateParticle[{1,2},"F"];
-RepGluon=CreateParticle[{1},"V"];
+Rep1=CreateParticle[{1,2},"F",mq2,"Top"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+LightQuarks={{7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36},"F",mq2,"LightQuarks"};
 
 
 ParticleList={Rep1,RepGluon};
+LightParticleList={LightQuarks};
 
 
 (*Defining various masses and couplings*)
-
-
-VectorMass=Table[mg2,{i,1,Length[gvff]}];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass={};
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
 UserMasses={mq2,mg2};
-UserCouplings={gs};
 
 
 (*
@@ -91,15 +83,13 @@ UserCouplings={gs};
 *)
 OutputFile="output/matrixElements.qcd";
 SetDirectory[NotebookDirectory[]];
-ParticleName={"Top","Gluon"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"}}];
 
 
 MatrixElements
@@ -222,6 +212,5 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 

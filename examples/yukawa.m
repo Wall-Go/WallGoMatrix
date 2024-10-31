@@ -130,52 +130,37 @@ rep 1-2 are fermions,
 (*rep 3 is a scalar*)
 *)
 (* scalar *)
-RepScalar=CreateParticle[{1},"S"];
+RepScalar=CreateParticle[{1},"S",ms2,"Phi"];
 
 (* left-handed fermion *)
-RepFermionL=CreateParticle[{1},"F"];
+RepFermionL=CreateParticle[{1},"F",mf2,"PsiL"];
 
 (* right-handed fermion *)
-RepFermionR=CreateParticle[{2},"F"];
+RepFermionR=CreateParticle[{2},"F",mf2,"PsiR"];
 
 (*Vector bosons*)
-RepZ=CreateParticle[{1},"V"];
+RepZ=CreateParticle[{1},"V",mv2,"Z"];
 
 
 (*
 These particles do not necessarily have to be out of equilibrium
-the remainin particle content is set as light
+the particle RepZ is set as light
 *)
 ParticleList={RepScalar,RepFermionL,RepFermionR};
-
-
-(*Defining various masses and couplings*)
-
-
-VectorMass=Table[mv2,{i,1,RepZ[[1]]//Length}];
-FermionMass=Table[mf2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={ms2,mf2,mf2};
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
+LightParticleList={RepZ};
 
 
 (*
 	output of matrix elements
 *)
 OutputFile="output/matrixElements.yukawa";
-ParticleName={"Phi","PsiL","PsiR"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{TruncateAtLeadingLog->True,Format->{"json","txt"}}];
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->True,
+		Format->{"json","txt"}}];
 
 
 MatrixElements

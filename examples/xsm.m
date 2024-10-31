@@ -136,6 +136,18 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*MatrixElements*)
 
 
+(* ::Subsection:: *)
+(*Symmetry breaking*)
+
+
+vev={0,v,0,0,0};
+SymmetryBreaking[vev]
+
+
+(* ::Subsection:: *)
+(*Group representations*)
+
+
 (*
 In DRalgo fermions are Weyl.
 So to create one Dirac we need
@@ -144,55 +156,42 @@ one right-handed fermion
 *)
 
 
-(* ::Subsection:: *)
-(*TopL, TopR*)
-
-
-vev={0,v,0,0,0};
-SymmetryBreaking[vev]
+(*The indices of the correpsonding fields can be found by using*)
+PrintFieldRepPositions["Vector"]
+PrintFieldRepPositions["Fermion"]
+PrintFieldRepPositions["Scalar"]
 
 
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{2},"F",mq2,"TopR"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateParticle[{{1,2}},"F"];
-
-(*light quarks*)
-RepLight=CreateParticle[Range[3,2*4+3],"F"];
+RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{{2,1}},"V"];
-RepB=CreateParticle[{{3,1}},"V"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+RepW=CreateParticle[{{2,1}},"V",mW2,"W"];
+RepB=CreateParticle[{{3,1}},"V",mB2,"B"];
 
 (*Higgs*)
-RepH = CreateParticle[{1},"S"];
-RepS = CreateParticle[{2},"S"];
+RepH = CreateParticle[{1},"S",ms2,"H"];
+RepS = CreateParticle[{2},"S",ms2,"S"];
 
-
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}],
-	Table[mB2,{i,1,RepB[[1]]//Length}]];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mg2,mW2,mB2,ms2}; 
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
+(*Light fermions*)
+LightFermions=CreateParticle[{{1,2},3,4,5,6,7,8,9,10,11},"F",mq2,"LightFermions"];
 
 
 (*
 These particles do not have out-of-eq contributions
 *)
 ParticleList={ReptL,ReptR,RepGluon,RepW,RepB,RepH,RepS};
-ParticleName={"TopL","TopR","Gluon","W","B","H","S"};
+(*
+Light particles are never incoming particles 
+*)
+LightParticleList={LightFermions};
 
 
 (*
@@ -202,11 +201,10 @@ OutputFile="output/matrixElements.xsm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{Replacements->{gw->0,g1->0},Format->{"json","txt"}}];
+	LightParticleList,
+	{
+		Replacements->{gw->0,g1->0},
+		Format->{"json","txt"}}];
 
 
 (* ::Subsection:: *)
@@ -218,49 +216,38 @@ SymmetryBreaking[vev]
 
 
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{2},"F",mq2,"TopR"];
 
 (*join topL and topR into one rep*)
-Rept={Join[ReptL[[1]],ReptR[[1]]],"F"};
+Rept=CreateParticle[{{1,1},2},"F",mq2,"Top"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateParticle[{{1,2}},"F"];
-
-(*light quarks*)
-RepLight=CreateParticle[Range[3,2*4+3],"F"];
+RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{2},"V"];
-RepB=CreateParticle[{3},"V"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+RepW=CreateParticle[{2},"V",mW2,"W"];
+RepB=CreateParticle[{3},"V",mB2,"B"];
 
 (*Higgs*)
-RepH = CreateParticle[{1},"S"];
-RepS = CreateParticle[{2},"S"];
+RepH = CreateParticle[{1},"S",ms2,"H"];
+RepS = CreateParticle[{2},"S",ms2,"S"];
 
-
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}],
-	Table[mB2,{i,1,RepB[[1]]//Length}]];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mg2,mW2,mB2,ms2}; 
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
+(*Light fermions*)
+LightFermions=CreateParticle[{{1,2},3,4,5,6,7,8,9,10,11},"F",mq2,"LightFermions"];
 
 
 (*
 These particles do not have out-of-eq contributions
 *)
 ParticleList={Rept,RepGluon,RepW,RepB,RepH,RepS};
-ParticleName={"Top","Gluon","W","B","H","S"};
+(*
+Light particles are never incoming particles 
+*)
+LightParticleList={LightFermions};
 
 
 (*
@@ -270,11 +257,10 @@ OutputFile="output/matrixElements.xsm.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{Replacements->{gw->0,g1->0},Format->{"json","txt"}}];
+	LightParticleList,
+	{
+		Replacements->{gw->0,g1->0},
+		Format->{"json","txt"}}];
 
 
 MatrixElements//Expand

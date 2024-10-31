@@ -96,43 +96,33 @@ SymmetryBreaking[vev]
 	reps 5,6 are vector bosons
 *)
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{2},"F",mq2,"TopR"];
 
 (*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F"];
+RepbR=CreateParticle[{3},"F",mq2,"BotR"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{{2,1}},"V"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+RepW=CreateParticle[{{2,1}},"V",mW2,"W"];
 
 (*Scalar particles*)
-RepHiggs=CreateParticle[{1},"S"];
+RepHiggs=CreateParticle[{1},"S",ms2,"Higgs"];
 
-
-(*Defining various masses and couplings*)
-
-
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}]];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms2,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mg2,mW2,ms2};
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
+(*Light particles*)
+LightFermions=CreateParticle[{{1,2},4,5,6,7,8,9},"F",mq2,"LightFermions"];
 
 
 (*
 These particles do not have out-of-eq contributions
 *)
 ParticleList={ReptL,ReptR,RepbR,RepGluon,RepW,RepHiggs};
-ParticleName={"TopL","TopR","BotR","Gluon","W","Higgs"};
+(*
+Light particles are never incoming particles 
+*)
+LightParticleList={LightFermions};
 
 
 (*
@@ -142,10 +132,7 @@ OutputFile="output/matrixElements.scalar";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
+	LightParticleList,
 	Format->{"json","txt","hdf5"}];
 
 

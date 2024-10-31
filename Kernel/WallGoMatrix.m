@@ -78,42 +78,174 @@ Print[Grid[
 
 
 (*List of public functions*)
-ImportModel::usage="\
-ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False,Mode->ModeNumber] \
-Loads the model and creates help tensors. Here,
-gvvv:  structure constants
-gvff:  vector-fermion trilinear couplings
-gvss:  vector-scalar trilinear couplings
-\[Lambda]1:    scalar tadpole couplings
-\[Lambda]3:    cubic couplings
-\[Lambda]4:    quartic couplings
-\[Mu]ij:   scalar-mass matrix
-\[Mu]IJ:   fermion-mass matrices
-\[Mu]IJC:  fermion-mass matrices
-Ysff:  Yukawa couplings
-YsffC: Yukawa couplings.
+ImportModel::usage = 
+"ImportModel[Group, gvvv, gvff, gvss, \[Lambda]1, \[Lambda]3, \[Lambda]4, \[Mu]ij, \[Mu]IJ, \[Mu]IJC, Ysff, YsffC, Verbose -> False, Mode -> ModeNumber] \
+loads the model and creates helper tensors.
+
+Arguments:
+  - Group: The symmetry group of the model.
+  - gvvv: Structure constants.
+  - gvff: Vector-fermion trilinear couplings.
+  - gvss: Vector-scalar trilinear couplings.
+  - \[Lambda]1: Scalar tadpole couplings.
+  - \[Lambda]3: Cubic couplings.
+  - \[Lambda]4: Quartic couplings.
+  - \[Mu]ij: Scalar mass matrix.
+  - \[Mu]IJ: Fermion mass matrices.
+  - \[Mu]IJC: Extended fermion mass matrices.
+  - Ysff: Yukawa couplings.
+  - YsffC: Conjugate Yukawa couplings.
+
+Options:
+  - Verbose: If True, enables verbose output (default is False).
+  - Mode: Specifies the operating mode using ModeNumber.
+
+This function organizes the parameters necessary for model loading and tensor generation.";
+
+
+LatexStyle[text_] := StyleBox[text, FontFamily -> "Times New Roman", FontWeight -> "Regular", FontSlant -> "Italic"];
+
+
+SymmetryBreaking::usage = 
+"SymmetryBreaking classifies different scalar, fermion, and vector representations into their respective particles based on VEV-induced masses.
+
+Usage:
+SymmetryBreaking[\!\(\*
+StyleBox[\"vev\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)];
+
+Arguments:
+- \!\(\*
+StyleBox[\"vev\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): \
+List of vacuum expectation values
+
+Output:
+- Each particle i is represented as {\
+\!\(\*StyleBox[\"ri\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"mi\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}, \
+where:
+    - \!\(\*StyleBox[\"ri\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): \
+Label for the particle's representation.
+    - \!\(\*StyleBox[\"mi\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): \
+Label for the particle's mass within that representation.
+
+Options:
+- VevDependentCouplings (Boolean): If True, allows for VEV-dependent couplings (default is False).
+
+This function allows the classification of particles by type and mass using the representation-breaking mechanism provided by VEVs.\
 ";
 
-CreateParticle::usage=
-"CreateOutOfEq[{{\!\(\*SubscriptBox[\(r\), \(1\)]\),\!\(\*SubscriptBox[\(m\), \(1\)]\)},...,{\!\(\*SubscriptBox[\(r\), \(n\)]\),\!\(\*SubscriptBox[\(m\), \(n\)]\)}},\"R\"] is a function that groups n particles into one representation for
-Fermions (R=F),
-Vector Bosons (R=V), and
-Scalars (R=S)."
-SymmetryBreaking::usage=
-"Classify different scalar, fermion, and vector representations into respective particles using VEV-induced masses.
-As an output particle i are given as {\!\(\*SubscriptBox[\(r\), \(i\)]\),\!\(\*SubscriptBox[\(m\), \(i\)]\)} where \!\(\*SubscriptBox[\(r\), \(i\)]\) is the label of the representation and \!\(\*SubscriptBox[\(m\), \(i\)]\) is the label of the particle mass in that representation"
-ExportMatrixElements::usage=
-"ExportMatrixElements[\!\(\*
-StyleBox[\"fileName\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"particleList\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"UserMasses\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"UserCouplings\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"ParticleName\",\nFontSlant->\"Italic\"]\),\!\(\*
-StyleBox[\"ParticleMasses\",\nFontSlant->\"Italic\"]\),OptionsPattern[]]\n"<>
-"Generates all possible matrix elements with the external particles specified in particleList.\n"<>
-"The format can be specified by the option Format, with currently supported options: X=txt,json,hdf5,all,none, "<>
-"the last two options exports the result in all possible formats, and in none, respectively.\n"<>
-"A list of matrix elements is returned by the function regardless of the choosen format.";
+
+CreateParticle::usage = 
+"Groups \
+\!\(\*StyleBox[\"n\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) \
+particles into a single representation.
+
+Usage:
+CreateParticle[{\
+\!\(\*StyleBox[\"r1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\
+,...,\
+\!\(\*StyleBox[\"rn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}}, \
+\"\!\(\*StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\", \
+\!\(\*StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \
+\"\!\(\*StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"\
+]
+CreateParticle[{{\!\(\*
+StyleBox[\"r1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"m1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},...,{\!\(\*
+StyleBox[\"rn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"mn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}}, \"\!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\", \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \"\!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"]
+
+Arguments:
+- {{\!\(\*
+StyleBox[\"r1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"m1\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},...,{\!\(\*
+StyleBox[\"rn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\),\!\(\*
+StyleBox[\"mn\", \"TI\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}}:
+    List of particle indices (obtainable via PrintFieldRepPositions[]), where each pair {\!\(\*
+StyleBox[\"ri\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"mi\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)} represents,
+    - \!\(\*
+StyleBox[\"ri\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Label for the particle's representation,
+    - \!\(\*
+StyleBox[\"mi\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Label for the particle's mass within that representation.
+- \"\!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\": Specifies the type of particle representation:
+    - \"F\" for Fermions
+    - \"V\" for Vector Bosons
+    - \"S\" for Scalars
+- \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The mass parameter of the grouped particle representation.
+- \"\!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\": A string specifying the name of the particle.
+
+Return:
+- Returns a list formatted as {{\!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}, \!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) = {V, F, S}, \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)}, where:
+    - \!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Indices of the grouped particles.
+    - \!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Type of particle representation (Vector Boson, Fermion, Scalar).
+    - \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The mass of the grouped particle.
+    - \!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the grouped particle.
+
+This function is useful for grouping particles into one collective representation based on their properties and type.";
+
+
+ExportMatrixElements::usage = 
+"Generates all possible matrix elements with the external particles specified in particleList.
+
+Usage:
+ExportMatrixElements[\!\(\*
+StyleBox[\"fileName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), OptionsPattern[]]
+
+Arguments:
+- \!\(\*
+StyleBox[\"fileName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the file to export the matrix elements to.
+- \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list specifying the external particles for matrix element generation, formatted as{{\!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},\!\(\*
+StyleBox[\" \",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) = {\"V\", \"F\", \"S\"}, \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \"\!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"}, where:
+    - \!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Indices of the fields involved.
+    - \!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Type of particle representation (Vector Boson, Fermion, Scalar).
+    - \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Mass parameter of the particle.
+    - \!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the particle.
+- \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of light particles involved in the calculations, formatted similarly to \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\).
+
+Options:
+- Format: Specifies the export format. Supported values include:
+    - \"txt\": Plain text format
+    - \"json\": JSON format
+    - \"hdf5\": HDF5 format
+    - \"all\": Exports in all supported formats
+    - \"none\": Does not export to a file
+- Verbose (Boolean): If True, lists channels that are currently being computed (default is False).
+- TruncateAtLeadingLog (Boolean): If True, truncates the matrix elements at the leading logarithmic order (default is True).
+
+Explanation:
+- Choosing \"all\" exports the result in all possible formats, while choosing \"none\" skips exporting.
+
+Return:
+- A list of generated matrix elements is returned by the function, regardless of the chosen export format.\
+";
 
 
 AllocateTensors::usage="\
@@ -130,22 +262,37 @@ GradMassFermion::usage="Creates Fermion Invariants";
 CreateInvariantFermion::usage="Creates Fermion Invariants";
 
 
-PerformDRhard::usage="\
-Performs the dimensional reduction from hard to soft";
-
-
-PrintFieldRepPositions::usage="Prints the indices of X={Gauge,Fermion,Scalar} reps";
+PrintFieldRepPositions::usage = 
+"PrintFieldRepPositions[\"\!\(\*
+StyleBox[\"Field\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"] prints the indices of field representations for the given input \"\!\(\*
+StyleBox[\"Field\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\", \
+where \"\!\(\*
+StyleBox[\"Field\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\" can be one of the following representations:
+  - Gauge: Represents gauge fields.
+  - Fermion: Represents fermionic fields.
+  - Scalar: Represents scalar fields.\
+";
 
 
 ImportMatrixElements::usage="";
 
 
 WallGoMatrix::failmsg =
-"Error! WallGoMatrix has encountered a fatal problem and must abort the computation. \
-The problem reads: `1`";
+"Fatal Error! WallGoMatrix has encountered a critical issue and must abort the computation. \
+Details of the problem: `1`.";
+
 WallGoMatrix::failWarning =
-"Error! WallGoMatrix has encountered a problem. \
-The problem reads: `1`";
+"Warning! WallGoMatrix has encountered a non-fatal issue. \
+Please review the following problem: `1`.";
+
+WallGoMatrix::missingParticles = 
+ "WallGoMatrix encountered a critical issue and must terminate the computation.\n\n\
+Issue: Missing particle declarations.\n\n\
+The following particles need to be declared as input particles in ExportMatrixElements[]:\n\
+- Vector-Type particles: `1`\n\
+- Fermion-Type particles: `2`\n\
+- Scalar-Type particles: `3`\n\n\
+Please ensure all required particles are specified before proceeding.";
 
 
 DefineDim6::usage="Defines a dimension 6 operator";
@@ -256,7 +403,7 @@ DefineDim6[\[Lambda]6I_]:=Module[{\[Lambda]6P=\[Lambda]6I},
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model: Functions for loading and printing*)
 
 
@@ -427,7 +574,6 @@ ExportTo["json"][MatrixElement_,ParticleName_,UserCouplings_,file_]:=Block[
 },
 	
 (*Formatting the matrix elements*)
-	AppendTo[particleName,"LightParticle"];
 	toExportJson=makeJsonMatrixElements[particleName,UserCouplings,MatrixElement];
 (*Exporting the result*)
 	exportJsonMatrixElements[StringJoin[file,".json"],toExportJson];	
@@ -447,25 +593,39 @@ exportJsonMatrixElements[file_,jsonMatrixElements_]:=Module[{test},
 ];
 
 
+Range[6]
+
+
 (* ::Subsubsection:: *)
 (*hdf5 matrix elements functions*)
 
 
-ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[{ExportH5,writeData,CijName,CijExport,ParticleInfo,CouplingInfo},
+ExportTo["hdf5"][Cij_,OutOfEqParticleList_,ParticleName_,UserCouplings_,file_]:=
+Block[{
+	ExportH5,writeData,CijName,CijExport,
+	OutOfEqParticles,
+	ParticleInfo,CouplingInfo
+},
+	OutOfEqParticles=Range[Length[OutOfEqParticleList]];
 	
 (*Metadata*)
 	ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
-	AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
 	CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 	
 	CijExport=Cij;
-	Do[CijExport[[i,j]]=Table[MatrixElemToC@k,{k,Cij[[i,j]]}];,
-		{i,OutOfEqParticles},{j,OutOfEqParticles}];
+	Do[
+		CijExport[[i,j]]=Table[MatrixElemToC@k,{k,Cij[[i,j]]}];,
+		{i,OutOfEqParticles},{j,OutOfEqParticles}
+	];
+
 (*In the hdf5 file we separate them into Cij components*)
 	ExportH5=Reap[Do[
 		CijName=StringJoin["MatrixElements",ParticleName[[i]],ParticleName[[j]]];
 		Sow[
-			writeData=Table[{ToString[FortranForm[PrintNonPrivate[a[[1]]]]],ToString[FortranForm[PrintNonPrivate[a[[2]]]]]},{a,CijExport[[i,j]]}];
+			writeData=Table[{
+				ToString[FortranForm[PrintNonPrivate[a[[1]]]]],
+				ToString[FortranForm[PrintNonPrivate[a[[2]]]]]
+				},{a,CijExport[[i,j]]}];
 			If[Length[CijExport[[i,j]]]==0,writeData=""];
 			CijName -> {"Data" -> writeData}
 			];
@@ -487,15 +647,17 @@ ExportTo["hdf5"][Cij_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Blo
 (*txt matrix elements functions*)
 
 
-ExportTo["txt"][MatrixElements_,OutOfEqParticles_,ParticleName_,UserCouplings_,file_]:=Block[
-{
-	ParticleInfo,CouplingInfo,ExportTXT,matrixElementsTXT,replaceSpecials,toString,
+ExportTo["txt"][MatrixElements_,particleListAll_,UserCouplings_,file_]:=
+Block[{
+	ParticleInfo,CouplingInfo,
+	particleNames,
+	ExportTXT,matrixElementsTXT,replaceSpecials,toString,
 	sReplace,tReplace,uReplace
 },
+	particleNames=particleListAll[[All,4]];
 
 	(*Creating some metadata*)
-		ParticleInfo=Table[{ToString[OutOfEqParticles[[i]]-1],ParticleName[[i]]},{i,Length[OutOfEqParticles]}];
-		AppendTo[ParticleInfo,{ToString[Length[OutOfEqParticles]],"LightParticle"}];
+		ParticleInfo=Table[{ToString[i-1],particleNames[[i]]},{i,Length[particleListAll]}];
 		CouplingInfo=Table[{ToString[UserCouplings[[i]]],ToString[Symbol["c"][i-1]]},{i,1,Length[UserCouplings]}];
 		
 		ExportTXT=MatrixElements/.{s->sReplace,t->tReplace,u->uReplace};
@@ -533,12 +695,36 @@ Options[ExportMatrixElements]={
 	Format->"none"};
 
 
-ExportMatrixElements[file_,particleList_,UserMasses_,UserCouplings_,ParticleName_,ParticleMasses_,OptionsPattern[]]:=
+extractParticleMasses[particleList_, type_, length_] := 
+  Module[{resultVector = ConstantArray[Null, length]},
+    Do[
+      resultVector[[pos]] = entry[[3]],
+      {entry, Select[particleList, #[[2]] === type &]},
+      {pos, entry[[1]]}
+    ];
+(*    If[MemberQ[resultVector, Null],
+    Message[WallGoMatrix::failmsg,
+			"Missing particle mass declarations."];
+		Abort[];
+	];*)
+	
+    Return[resultVector];
+  ];
+
+
+ExportMatrixElements[file_,outOfEqParticleList_,lightParticleList_,OptionsPattern[]]:=
 Block[
 {
-	ParticleMassesI=ParticleMasses,ExportTXT,ExportH5,
-	Cij,ParticleInfo,LightParticles,particleListFull,
-	CouplingInfo,MatrixElements,OutOfEqParticles,RepMasses,RepCouplings,
+	particleMasses,
+	userCouplings,
+	particleNames,
+	particlesAll,particlesOutOfEq,
+	particleListAll,
+	ExportTXT,ExportH5,
+	Cij,ParticleInfo,particleListFull,
+	CouplingInfo,MatrixElements,
+	particleIndex,
+	RepMasses,RepCouplings,
 	FormatOptions,userFormat,MatrixElementsList,userParameters,
 	privFile=file,commandLineArgs
 },
@@ -565,19 +751,38 @@ Block[
 (*Specifies if Output should be verbose*)
 	bVerbose = OptionValue[Verbose];
 
-(*Splits ParticleList into out-of-eq and light particles*)
-	ExtractLightParticles[particleList,OutOfEqParticles,particleListFull,LightParticles];
+(*All particles*)
+	(*particleListAll=Join[particleList,lightParticleList];*)
 
-(*Creates an assumption rule for simplifying Conjugate[....] terms*)
-	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,ParticleMasses,s,t,u}; (*All variables are assumed to be real*)
+(*Splits ParticleList into out-of-eq and light particles*)
+	ExtractLightParticles[outOfEqParticleList,lightParticleList,particleListAll];
+
+(*Separate names and particles*)
+	particleNames=particleListAll[[All,4]];
+	particlesOutOfEq=outOfEqParticleList[[All,1;;2]];
+	particlesAll=particleListAll[[All,1;;2]];
+
+(*Collects all the UserCouplings*)
+	userCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
 	
-(*Allocates one element for each species mass to avoid errors*)	
-	If[ParticleMasses[[1]]=={},ParticleMassesI[[1]]={msq}];
-	If[ParticleMasses[[2]]=={},ParticleMassesI[[2]]={msq}];
-	If[ParticleMasses[[3]]=={},ParticleMassesI[[3]]={msq}];
+(*Make particle masses vector*)
+	particleMasses={
+		extractParticleMasses[particleListAll, "V", Length[gvff]],
+		extractParticleMasses[particleListAll, "F", Length[gvff[[1]]]],
+		extractParticleMasses[particleListAll, "S", Length[gvss[[1]]]]
+		};
+		
+(*Creates an assumption rule for simplifying Conjugate[....] terms*)
+	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u}; (*All variables are assumed to be real*)
+	
+(*Allocates one element for each species mass to avoid errors*)
+	Table[
+		If[particleMasses[[i]]=={},particleMasses[[i]]={msq}],
+		{i,1,3}];
 
 (*Extracting all matrix elements*)	
-	GenerateMatrixElements[MatrixElements,Cij,particleListFull,LightParticles,ParticleMassesI,OutOfEqParticles];
+	GenerateMatrixElements[MatrixElements,Cij,particlesAll,particlesOutOfEq,particleMasses];
+	
 (*Creates a replacement list and shifts the indices to start at 0.*)
 	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}];
 	MatrixElementsList=DeleteCases[MatrixElementsList, a_->0];
@@ -598,12 +803,12 @@ Block[
 	   Do[
 	     Switch[fmt,
 	       "txt",
-	       ExportTo["txt"][MatrixElementsList, OutOfEqParticles, ParticleName, UserCouplings, privFile],
+	       ExportTo["txt"][MatrixElementsList, particleListAll, userCouplings, privFile],
 	       "hdf5",
-	       ExportTo["hdf5"][Cij, OutOfEqParticles, ParticleName, UserCouplings, privFile],
+	       ExportTo["hdf5"][Cij, outOfEqParticleList, particleNames, userCouplings, privFile],
 	       "json",
-	       userParameters = Flatten[Join[UserCouplings, ParticleMasses]] // DeleteDuplicates;
-	       ExportTo["json"][MatrixElementsList, ParticleName, userParameters, privFile]
+	       userParameters = Flatten[Join[userCouplings, particleMasses]] // DeleteDuplicates;
+	       ExportTo["json"][MatrixElementsList, particleNames, userParameters, privFile]
 	     ],
 	     {fmt, userFormatsList}
 	   ],

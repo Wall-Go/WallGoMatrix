@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -11,7 +11,7 @@ If[$InputFileName=="",
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 Check[
-    Get["../WallGoMatrix.m"],
+    Get["../Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -21,7 +21,7 @@ Check[
 (*Abelian Higgs*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -81,13 +81,13 @@ SymmetryBreaking[vev]*)
 
 
 (* vector *)
-RepVector=CreateParticle[{1},"V"];
+RepVector=CreateParticle[{1},"V",mv,"Vector"];
 
 (* fermion *)
 RepFermion={};
 
 (* scalar *)
-RepScalar=CreateParticle[{1},"S"];
+RepScalar=CreateParticle[{1},"S",ms,"Phi"];
 
 
 
@@ -96,20 +96,11 @@ These particles do not necessarily have to be out of equilibrium
 the remainin particle content is set as light
 *)
 ParticleList={RepScalar,RepVector};
+LightParticleList={}
 
 
 (*Defining various masses and couplings*)
-
-
-VectorMass=Table[mv,{i,1,Length[RepVector[[1]]]}];
-FermionMass={};
-ScalarMass=Table[ms,{i,1,Length[RepScalar[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={ms,ms,mv};
-UserCouplings={CouplingName,\[Lambda]}//Flatten;
+UserMasses={ms,mv};
 
 
 (*
@@ -117,18 +108,13 @@ UserCouplings={CouplingName,\[Lambda]}//Flatten;
 *)
 SetDirectory[NotebookDirectory[]];
 OutputFile="output/matrixElements.u1higgs";
-ParticleName={"Phi","Vector"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{TruncateAtLeadingLog->False,Format->{"json","txt"}}];
-
-
-MatrixElements
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"}}];
 
 
 (* ::Section:: *)
@@ -208,6 +194,4 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 

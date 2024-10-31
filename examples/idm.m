@@ -21,10 +21,11 @@ Check[
 (*2HDM*)
 
 
-(*See 2211.13142 for implementation details*)
+(*See 2211.13142 for implementation details -- note our different normalization in the
+quartic couplings*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -113,6 +114,19 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*MatrixElements*)
 
 
+(* ::Subsection:: *)
+(*SymmetryBreaking*)
+
+
+vev={0,v,0,0,0,0,0,0};
+SymmetryBreaking[vev,VevDependentCouplings->True]
+(*SymmetryBreaking[vev]*)
+
+
+(* ::Subsection:: *)
+(*Grouping representations*)
+
+
 (*
 In DRalgo fermions are Weyl.
 So to create one Dirac we need
@@ -121,59 +135,33 @@ one right-handed fermoon
 *)
 
 
-(* ::Subsection:: *)
-(*TopL, TopR*)
+(*Quarks*)
+ReptL=CreateParticle[{{1,1}},"F", mq2, "TopL"]; (*left-handed top-quark*)
+ReptR=CreateParticle[{{2,1}},"F", mq2, "TopR"]; (*right-handed top-quark*)
+RepLightQ = CreateParticle[{{1,2},3,6,7,8,11,12,13},"F", mq2, "LightQuark"]; (*light quarks*)
 
 
-vev={0,v,0,0,0,0,0,0};
-(*using this multiple times, should not changre the outcome -> needs fixing *)
-SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-dependent couplings*)
-(*SymmetryBreaking[vev]*)
-
-
-(*Third generation of fermions*)
-ReptL=CreateParticle[{{1,1}},"F"];
-RepbL=CreateParticle[{{1,2}},"F"];
-ReptR=CreateParticle[{{2,1}},"F"];
+(*Leptons*)
+RepLepL = CreateParticle[{4,9,14},"F", ml2, "LepL"]; (*left-handed leptons*)
+RepLepR = CreateParticle[{5,10,15},"F", ml2, "LepR"]; (*right-handed leptons -- these don't contribute*)
 
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"]; (*Gluons*)
-RepW=CreateParticle[{{2,1}},"V"]; (*SU2 gauge bosons*)
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"]; (*Gluons*)
+RepW=CreateParticle[{{2,1}},"V",mW2,"W"]; (*SU2 gauge bosons, approximating the W and the Z as the same particle*)
 
 
 (*Scalars bosons*)
-RepHiggsh=CreateParticle[{{1,2}},"S"]; (*Higgs*)
-RepGoldstoneGpR={{1},"S"}; (*real charged Goldstone*)
-RepGoldstoneGpI={{3},"S"}; (*imag charged Golstone*)
-RepGoldstoneGp0={{4},"S"}; (*neutral Goldstone*)
-RepHiggsH=CreateParticle[{{2,2}},"S"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3},{2,1}},"S"]; (*CP-odd inert and charged scalars *)
+RepHiggs = CreateParticle[{1},"S", mh2,"Higgs"];(*Higgs and Goldstones*)
+RepH=CreateParticle[{{2,2}},"S",mH2,"H"]; (*CP-even inert scalar*)
+RepA=CreateParticle[{{2,3},{2,1}},"S",mA2,"A"]; (*CP-odd inert and charged scalars. Note that when lambda4 = lambda5, they have the same mass *)
 
 
-(*Defining various masses and couplings*)
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}]
-	];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-ScalarMass={mG2,mh2,mG2,mG2,mA2,mH2,mA2,mA2};
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-
-UserMasses={mq2,mg2,mW2,mG2,mh2,mH2,mA2};
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,vev}//DeleteDuplicates;
-
-
-ParticleList={
-	ReptL,RepbL,ReptR,
-	RepGluon,RepW,
-	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
-	RepHiggsH,RepGoldstoneA};
-ParticleName={
-	"TopL","BotL","TopR",
-	"Gluon","W",
-	"Higgs","GoldstoneG0","GoldstoneGpR","GoldstoneGpI",
-	"H","A"};
+ParticleList={ReptL,ReptR,RepLightQ,RepGluon,RepW, RepHiggs, RepA};
+(*
+Light particles are never incoming particles 
+*)
+LightParticleList={RepLepL, RepLepR, RepH};
 
 
 (*
@@ -184,14 +172,10 @@ OutputFile="output/matrixElements.idm";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
+	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
-		Replacements->{lam4H->0,lam5H->0},
+		Replacements->{lam1H->0,lam2H->0,lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
-
 

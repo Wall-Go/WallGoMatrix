@@ -11,7 +11,7 @@ If[$InputFileName=="",
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 Check[
-    Get["../WallGoMatrix.m"],
+    Get["../Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -112,36 +112,26 @@ rep 1-2 are fermions,
 (*rep 3 is a scalar*)
 *)
 (* scalar *)
-RepPhi=CreateParticle[{1},"S"];
-RepChi=CreateParticle[{2},"S"];
+RepPhi=CreateParticle[{1},"S",ms,"Phi"];
+RepChi=CreateParticle[{2},"S",ms,"Chi"];
 
 (* left-handed fermion *)
-RepPsi=CreateParticle[{1,2},"F"];
-RepXi=CreateParticle[{3,4},"F"];
+RepPsi=CreateParticle[{1,2},"F",mf,"Psi"];
+RepXi=CreateParticle[{3,4},"F",mf,"Xi"];
 
 (*Vector bosons*)
-RepA=CreateParticle[{1},"V"];
+RepA=CreateParticle[{1},"V",mv,"A"];
 
 
 (*
 These particles do not necessarily have to be out of equilibrium
-the remainin particle content is set as light
 *)
 ParticleList={RepPhi,RepChi,RepPsi,RepXi,RepA};
+LightParticleList={};
 
 
 (*Defining various masses and couplings*)
-
-
-VectorMass=Table[mv,{i,1,RepA[[1]]//Length}];
-FermionMass=Table[mf,{i,1,Length[gvff[[1]]]}];
-ScalarMass=Table[ms,{i,1,Length[gvss[[1]]]}];
-ParticleMasses={VectorMass,FermionMass,ScalarMass}
-(*
-up to the user to make sure that the same order is given in the python code
-*)
 UserMasses={mv,mf,ms};
-UserCouplings={g1,b3,b4,a1,a2,lam,y}//Flatten;
 
 
 (*
@@ -149,16 +139,14 @@ UserCouplings={g1,b3,b4,a1,a2,lam,y}//Flatten;
 *)
 OutputFile="output/matrixElements.u1_higgs_yukawa";
 SetDirectory[NotebookDirectory[]];
-ParticleName={"Phi","Chi","Psi","Xi","A"};
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
-	{TruncateAtLeadingLog->False,
-	NormalizeWithDOF->False,Format->{"json","txt"}}];
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->False,
+		NormalizeWithDOF->False,
+		Format->{"json","txt"}}];
 
 
 MatrixElements
@@ -320,6 +308,4 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 

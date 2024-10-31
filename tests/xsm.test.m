@@ -11,7 +11,7 @@ If[$InputFileName=="",
 $GroupMathMultipleModels=True;
 $LoadGroupMath=True;
 Check[
-    Get["../WallGoMatrix.m"],
+    Get["../Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -24,7 +24,7 @@ Check[
 (*see 1506.04741 [hep-ph]*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -143,54 +143,43 @@ SymmetryBreaking[vev];
 
 
 (*left-handed top-quark*)
-ReptL=CreateParticle[{{1,1}},"F"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
 
 (*right-handed top-quark*)
-ReptR=CreateParticle[{2},"F"];
+ReptR=CreateParticle[{2},"F",mq2,"TopR"];
 
 (*join topL and topR into one rep*)
-Rept={Join[ReptL[[1]],ReptR[[1]]],"F"};
+Rept=CreateParticle[{{1,1},2},"F",mq2,"Top"];
 
 (*left-handed bottom-quark*)
-RepbL=CreateParticle[{{1,2}},"F"];
+RepbL=CreateParticle[{{1,2}},"F",mb2,"BottomL"];
 
 (*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F"];
+RepbR=CreateParticle[{3},"F",mb2,"BottomR"];
 
 (*join bottomL and bottomR into one rep*)
-Repb={Join[RepbL[[1]],RepbR[[1]]],"F"};
+Repb=CreateParticle[{{1,2},3},"F",mb2,"Bottom"];
 
 (*scalar reps*)
-Reph=CreateParticle[{{1,2}},"S"];
-Rep\[Phi]0=CreateParticle[{{1,1}},"S"];
-Rep\[Phi]pm=CreateParticle[{{1,3}},"S"];
-Rep\[Phi]0={{4},"S"};
-Rep\[Phi]p={{1},"S"};
-Rep\[Phi]m={{3},"S"};
+Reph=CreateParticle[{{1,2}},"S",mh2,"Higgs"];
+Rep\[Phi]0=CreateParticle[{{1,1}},"S",mG2,"Goldstone"];
+Rep\[Phi]0={{4},"S",mG2,"Goldstone0"};
+Rep\[Phi]p={{1},"S",mGp2,"GoldstonePlus"};
+Rep\[Phi]m={{3},"S",mGm2,"GoldstoneMinus"};
 
-Reps=CreateParticle[{2},"S"];
+Reps=CreateParticle[{2},"S",ms2,"Singlet"];
 
 (*Vector bosons*)
-RepGluon=CreateParticle[{1},"V"];
-RepW=CreateParticle[{{2,1}},"V"];
-RepB=CreateParticle[{{3,1}},"V"];
+RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+RepW=CreateParticle[{{2,1}},"V",mW2,"W"];
+RepB=CreateParticle[{{3,1}},"V",mB2,"B"];
+
+(*Light fermions*)
+LightFermions=CreateParticle[{4,5,6,7,8,9,10,11},"F",mq2,"LightFermions"];
 
 
-VectorMass=Join[
-	Table[mg2,{i,1,RepGluon[[1]]//Length}],
-	Table[mW2,{i,1,RepW[[1]]//Length}],
-	Table[mB2,{i,1,RepB[[1]]//Length}]];
-FermionMass=Table[mq2,{i,1,Length[gvff[[1]]]}];
-FermionMass[[Repb[[1]]]]=mb2;
-FermionMass[[Rept[[1]]]]=mt2;
-ScalarMass={mG2,mh2,mGm2,mGp2,ms2};
-
-ParticleMasses={VectorMass,FermionMass,ScalarMass};
-(*
-up to the user to make sure that the same order is given in the python code
-*)
-UserMasses={mq2,mt2,mb2,mg2,mW2,mB2,mG2,mh2,mGm2,mGp2,ms2}; 
-UserCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
+(*List of user masses*)
+UserMasses={mq2,mt2,mb2,mg2,mW2,mB2,mG2,mh2,mGm2,mGp2,ms2};
 
 
 ParticleList={
@@ -199,11 +188,7 @@ ParticleList={
 	Reph,Rep\[Phi]0,Rep\[Phi]p,Rep\[Phi]m,
 	Reps
 	};
-ParticleName={
-	"Top","Bottom",
-	"Gluon","W","B",
-	"Higgs","Goldstone0","GoldStoneMinus","GoldstonePlus",
-	"Singlet"};
+LightParticleList={LightFermions};
 
 
 (*
@@ -214,10 +199,7 @@ SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
-	UserMasses,
-	UserCouplings,
-	ParticleName,
-	ParticleMasses,
+	LightParticleList,
 	{
 		Verbose->True,
 		TruncateAtLeadingLog->True,
@@ -307,7 +289,7 @@ removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 testList={};
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*O(g3^4)*)
 
 
@@ -517,6 +499,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
