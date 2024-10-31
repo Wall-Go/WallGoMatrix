@@ -683,7 +683,9 @@ Block[{
 (*MatrixElements: Exporting the results*)
 
 
-PrintNonPrivate[PrivateExpression_]:=ToExpression[StringReplace[ToString[StandardForm[PrivateExpression]],"WallGoMatrix`Private`"->""]];
+PrintNonPrivate[PrivateExpression_]:=ToExpression[StringReplace[
+	ToString[StandardForm[PrivateExpression]],
+	{"WallGoMatrix`Private`"->"","WallGo`"->""}]];
 ReplaceMandelStam[Expression_]:=StringReplace[ToString[Expression],{"s"->"_s","t"->"_t","u"->"_u"}];
 
 
