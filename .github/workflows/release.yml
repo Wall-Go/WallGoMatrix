@@ -49,7 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p WallGoMatrix
-          cp src/Kernel/*.m WallGoMatrix
+          cp Kernel/*.m WallGoMatrix
           zip -r WallGoMatrix.zip WallGoMatrix/*
           rm -r WallGoMatrix
           ls -a
