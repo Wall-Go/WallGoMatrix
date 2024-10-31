@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 If[$InputFileName=="",
@@ -33,7 +33,9 @@ CouplingName={gs,gw};
 Rep1={{{1,0},{1}},"L"};
 Rep2={{{1,0},{0}},"R"};
 Rep3={{{1,0},{0}},"R"};
-RepFermion1Gen={Rep1,Rep2,Rep3};
+Rep4={{{0,0},{1}},"L"};
+Rep5={{{0,0},{0}},"R"};
+RepFermion1Gen={Rep1,Rep2,Rep3, Rep4, Rep5};
 
 
 HiggsDoublet={{{0,0},{1}},"C"};
