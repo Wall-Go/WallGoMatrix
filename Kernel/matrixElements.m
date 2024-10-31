@@ -294,15 +294,6 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 ]
 
 
-(*Module[{flag = False},
-  onceIf[cond_, then_, else_] := If[!flag, flag = True; If[cond, then, else]]
-]
-
-(* Usage *)
-onceIf[True, Print["This will run"], Print["This won't run"]];
-onceIf[True, Print["This will NOT run"], Print["This won't run either"]];*)
-
-
 (* ::Section:: *)
 (*Matrix elements*)
 
