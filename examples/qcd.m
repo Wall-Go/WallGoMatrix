@@ -21,6 +21,10 @@ Check[
 (*QCD*)
 
 
+(* ::Section:: *)
+(*Model*)
+
+
 (* ::Text:: *)
 (*Using SU (3) in the representation with Dynkin index {1, 1} and representation R = 8 .*)
 
@@ -76,14 +80,6 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*UserInput*)
 
 
-(*
-In DRalgo fermions are Weyl.
-So to create one Dirac we need
-one left-handed and
-one right-handed fermion
-*)
-
-
 (* ::Text:: *)
 (*Representation for top quark:*)
 
@@ -112,8 +108,8 @@ LightQuarks=CreateParticle[{3,4,5,6,7,8,9,10,11,12},"F",mq2,"LightParticle"];
 (*
 These particles do not necessarily have to be out of equilibrium
 *)
-ParticleList={RepTop,RepGluon};
 
+ParticleList={RepTop,RepGluon};
 
 
 (* ::Text:: *)
@@ -135,4 +131,3 @@ MatrixElements=ExportMatrixElements[
 	{
 		TruncateAtLeadingLog->True,
 		Format->{"json","txt"}}];
-
