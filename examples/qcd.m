@@ -21,14 +21,25 @@ Check[
 (*QCD*)
 
 
-(* ::Section::Closed:: *)
-(*Model*)
+(* ::Text:: *)
+(*Using SU (3) in the representation with Dynkin index {1, 1} and representation R = 8 .*)
 
 
 Group={"SU3"};
 RepAdjoint={{1,1}};
-RepScalar={};
 CouplingName={gs};
+
+
+(* ::Text:: *)
+(*No scalars are present in the theory:*)
+
+
+RepScalar={};
+
+
+(* ::Text:: *)
+(*Fermions are implemented as Weyl spinors.*)
+(*Therefore, to create one Dirac fermion, one left-handed and one right-handed fermion is needed:*)
 
 
 Rep1={{{1,0}},"L"};
@@ -36,14 +47,22 @@ Rep2={{{1,0}},"R"};
 RepFermion1Gen={Rep1,Rep2};
 
 
+(* ::Text:: *)
+(*For QCD, Nf=6 fermions are needed:*)
+
+
 RepFermion3Gen={RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen,RepFermion1Gen}//Flatten[#,1]&;
 
 
 (* ::Text:: *)
-(*The input for the gauge interactions toDRalgo are then given by*)
+(*The input for the gauge interactions to DRalgo are then given by:*)
 
 
 {gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC}=AllocateTensors[Group,RepAdjoint,CouplingName,RepFermion3Gen,RepScalar];
+
+
+(* ::Text:: *)
+(*To invoke the model, it needs to be imported :*)
 
 
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
@@ -65,28 +84,49 @@ one right-handed fermion
 *)
 
 
-(*Below
-rep 1-6 are quarks,
-rep 7 is a gluon
-*)
-Rep1=CreateParticle[{1,2},"F",mq2,"Top"];
+(* ::Text:: *)
+(*Representation for top quark:*)
+
+
+RepTop=CreateParticle[{1,2},"F",mq2,"Top"];
+
+
+(* ::Text:: *)
+(*Representation for gluon :*)
+
+
 RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
+
+
+(* ::Text:: *)
+(*Representation for 5 light quarks :*)
+
+
 LightQuarks=CreateParticle[{3,4,5,6,7,8,9,10,11,12},"F",mq2,"LightParticle"];
+
+
+(* ::Text:: *)
+(*Collecting out - of - equilibrium particles :*)
 
 
 (*
 These particles do not necessarily have to be out of equilibrium
 *)
-ParticleList={Rep1,RepGluon};
-(*
-Light particles are never incoming particles 
-*)
+ParticleList={RepTop,RepGluon};
+
+
+
+(* ::Text:: *)
+(*Collecting light particles (these are never incoming) :*)
+
+
 LightParticleList={LightQuarks};
 
 
-(*
-	output of matrix elements
-*)
+(* ::Subsubsection:: *)
+(*Generating the matrix elements*)
+
+
 OutputFile="output/matrixElements.qcd";
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -95,6 +135,4 @@ MatrixElements=ExportMatrixElements[
 	{
 		TruncateAtLeadingLog->True,
 		Format->{"json","txt"}}];
-
-
 
