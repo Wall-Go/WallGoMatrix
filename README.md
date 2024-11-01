@@ -38,10 +38,18 @@ factors appropriately to yield the 2-to-2 scattering matrix elements.
 
 ### Paclet Installation
 
-**WallGoMatrix** can be installed as a Wolfram Paclet by running the following in Mathematica
+**WallGoMatrix** can be installed as a Wolfram Paclet by running either of the following two commands in Mathematica.
+Depending if the installation happens through the
+#### [Wolfram repository](https://resources.wolframcloud.com/PacletRepository/resources/WallGo/WallGoMatrix/)
 ```mathematica
-PacletInstall["https://github.com/Wall-Go/WallGoMatrix/releases/latest/download/WallGoMatrix.paclet"]
+PacletInstall["WallGo/WallGoMatrix"];
 ```
+#### GitHub repository
+```mathematica
+PacletInstall["https://github.com/Wall-Go/WallGoMatrix/releases/latest/download/WallGoMatrix.paclet"];
+```
+Depending on the installation, the loading path below is different.
+
 
 ### Manual Installation
 
@@ -87,10 +95,13 @@ WallGoMatrix builds on [DRalgo](https://github.com/DR-algo/DRalgo) version 1.2, 
 
 ## Running
 
-Once the WallGoMatrix directory has been installed, the package can be loaded from within Mathematica using
-
+Once the WallGoMatrix directory has been installed, the package can be loaded from within Mathematica using either
 ```mathematica
 <<WallGoMatrix`
+```
+or if the installation was done via the Wolfram repository Paclet
+```mathematica
+<<WallGo`WallGoMatrix`
 ```
 
 To see how WallGoMatrix is used in practice, we recommend taking a look at the
