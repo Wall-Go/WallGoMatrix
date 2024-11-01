@@ -337,18 +337,8 @@ DownloadPackage[url_, targetName_]:=Module[{zipPath, targetFolder, targetDir, ta
 
 
 (*
-	Functions from groupmath are used to create the model.
+	Functions from GroupMath are used to create the model.
 *)
-
-(*If[$LoadGroupMath,
-	(* Issue of GroupMath: Need to unprotect BlockDiagonalMatrix to not throw error upon loading *)
-	Unprotect[BlockDiagonalMatrix];
-	
-	Needs["GroupMath`"];
-	Print["GroupMath is an independent package, and is not part of WallGoMatrix."];
-	Print["Please cite GroupMath: Comput.Phys.Commun. 267 (2021) 108085 \[Bullet] e-Print: \!\(\*TemplateBox[{RowBox[{\"2011.01764\", \" \", \"[\", RowBox[{\"hep\", \"-\", \"th\"}], \"]\"}], {URL[\"https://arxiv.org/abs/2011.01764\"], None}, \"https://arxiv.org/abs/2011.01764\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\n\"HyperlinkTemplate\"]\)"];
-];*)
-
 If[$LoadGroupMath,
 	Unprotect[BlockDiagonalMatrix];
 	Check[
