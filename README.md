@@ -86,11 +86,16 @@ For example, the path for macOS becomes `~/Library/Wolfram/Applications`.
 
 ### Requirements
 
-WallGoMatrix is written in the Wolfram Mathematica language, and depends on the Mathematica package GroupMath. It has been tested on the following versions.
+WallGoMatrix is written in the Wolfram Mathematica language, and depends on the Mathematica package GroupMath.
+It has been tested on the following versions.
 
 - [Mathematica](https://www.wolfram.com/mathematica/) versions 12.x, 13.x and 14.x
     - [GroupMath](https://renatofonseca.net/groupmath) version 1.1.2
 
+GroupMath can be either manually obtained from the link above or by setting the follwoing flag before running WallGoMatrix in Mathematica
+```mathematica
+WallGoMatrix`$InstallGroupMath=True;
+```
 WallGoMatrix builds on [DRalgo](https://github.com/DR-algo/DRalgo) version 1.2, but the required elements are included directly in the WallGoMatrix package, so separate installation of DRalgo is not necessary.
 
 ## Running

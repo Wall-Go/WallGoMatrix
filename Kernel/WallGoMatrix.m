@@ -36,6 +36,8 @@ If[! ValueQ[WallGoMatrix`$GroupMathMultipleModels],
 	WallGoMatrix`$GroupMathMultipleModels = False];
 If[! ValueQ[WallGoMatrix`$LoadGroupMath],
 	WallGoMatrix`$LoadGroupMath = True];
+If[! ValueQ[WallGoMatrix`$InstallGroupMath],
+	WallGoMatrix`$InstallGroupMath = False];
 
 
 BeginPackage["WallGoMatrix`"]
@@ -341,11 +343,18 @@ DownloadPackage[url_, targetName_]:=Module[{zipPath, targetFolder, targetDir, ta
 *)
 If[$LoadGroupMath,
 	Unprotect[BlockDiagonalMatrix];
+	If[$InstallGroupMath,
+		If[
+			Quiet[Check[Needs["GroupMath`"], True]],
+			DownloadPackage["https://renatofonseca.net/groupmath/ProgramVersions/GroupMath-1.1.2.zip","GroupMath"];
+			Print[Style["GroupMath installed.","Text", Red, Bold]];
+		]
+	];
 	Check[
 		Needs["GroupMath`"];,
-		Message[Get::noopen, "GroupMath` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
-		DownloadPackage["https://renatofonseca.net/groupmath/ProgramVersions/GroupMath-1.1.2.zip","GroupMath"];
-		Print[Style["GroupMath installed: reinitialize WallGoMatrix.","Text", Red, Bold]];
+		Message[Get::noopen,
+			"GroupMath` at "<>ToString[$UserBaseDirectory]<>"/Applications.\n"<>
+			"Set WallGoMatrix`$InstallGroupMath=True for automatic installation of GroupMath"];
 		Abort[];
 	];
 	
