@@ -8,8 +8,8 @@ If[$InputFileName=="",
 	SetDirectory[DirectoryName[$InputFileName]]
 ];
 (*Put this if you want to create multiple model-files with the same kernel*)
-$GroupMathMultipleModels=True;
-$LoadGroupMath=True;
+WallGoMatrix`$GroupMathMultipleModels=True;
+WallGoMatrix`$LoadGroupMath=True;
 Check[
     Get["../Kernel/WallGoMatrix.m"],
     Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
@@ -150,5 +150,3 @@ MatrixElements=ExportMatrixElements[
 		Replacements->{gw->0,lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False}];
-
-
