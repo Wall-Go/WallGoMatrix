@@ -48,8 +48,6 @@ PacletInstall["WallGo/WallGoMatrix"];
 ```mathematica
 PacletInstall["https://github.com/Wall-Go/WallGoMatrix/releases/latest/download/WallGoMatrix.paclet"];
 ```
-Depending on the installation, the loading path below is different.
-
 
 ### Manual Installation
 
@@ -94,17 +92,13 @@ It has been tested on the following versions.
 
 GroupMath can be either manually obtained from the link above or by setting the following flag before running WallGoMatrix in Mathematica
 ```mathematica
-WallGoMatrix`$InstallGroupMath=True;
+WallGo`WallGoMatrix`$InstallGroupMath=True;
 ```
 WallGoMatrix builds on [DRalgo](https://github.com/DR-algo/DRalgo) version 1.2, but the required elements are included directly in the WallGoMatrix package, so separate installation of DRalgo is not necessary.
 
 ## Running
 
-Once the WallGoMatrix directory has been installed, the package can be loaded from within Mathematica using either
-```mathematica
-<<WallGoMatrix`
-```
-or if the installation was done via the Wolfram repository Paclet
+Once the WallGoMatrix directory has been installed, the package can be loaded from within Mathematica using
 ```mathematica
 <<WallGo`WallGoMatrix`
 ```
