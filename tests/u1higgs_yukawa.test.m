@@ -8,11 +8,11 @@ If[$InputFileName=="",
 	SetDirectory[DirectoryName[$InputFileName]]
 ];
 (*Put this if you want to create multiple model-files with the same kernel*)
-WallGoMatrix`$GroupMathMultipleModels=True;
-WallGoMatrix`$LoadGroupMath=True;
+WallGo`WallGoMatrix`$GroupMathMultipleModels=True;
+WallGo`WallGoMatrix`$LoadGroupMath=True;
 Check[
     Get["../Kernel/WallGoMatrix.m"],
-    Message[Get::noopen, "WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
+    Message[Get::noopen, "WallGo`WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
 
