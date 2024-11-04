@@ -22,25 +22,25 @@
 (* ------------------------------------------------------------------------ *)
 
 
+BeginPackage["WallGo`WallGoMatrix`"]
+
+
 $WallGoMatrixOutput::usage =
 "$WallGoMatrixOutputFlag contains std output.";
 
 
-WallGoMatrix`$WallGoMatrixOutput = $Output;
+$WallGoMatrixOutput = $Output;
 If[$ScriptCommandLine=={},Null,
 	$Output=OpenWrite["/dev/null"];
 ];
 
 
-If[! ValueQ[WallGoMatrix`$GroupMathMultipleModels],
-	WallGoMatrix`$GroupMathMultipleModels = False];
-If[! ValueQ[WallGoMatrix`$LoadGroupMath],
-	WallGoMatrix`$LoadGroupMath = True];
-If[! ValueQ[WallGoMatrix`$InstallGroupMath],
-	WallGoMatrix`$InstallGroupMath = False];
-
-
-BeginPackage["WallGoMatrix`"]
+If[! ValueQ[$GroupMathMultipleModels],
+	$GroupMathMultipleModels = False];
+If[! ValueQ[$LoadGroupMath],
+	$LoadGroupMath = True];
+If[! ValueQ[$InstallGroupMath],
+	$InstallGroupMath = False];
 
 
 (*
