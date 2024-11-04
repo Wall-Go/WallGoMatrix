@@ -29,17 +29,17 @@ It builds on existing Mathematica packages [DRalgo](https://github.com/DR-algo/D
  has Python bindings so that it can be called directly from Python, but
  still benefits from the speedup from compiled C++ code.
 
-Users can implement their own models. For WallGoMatrix, the model building
-routines are taken from DRalgo, and involve constructing coupling tensors.
-The WallGoMatrix routines then contract these coupling tensors with kinematic
-factors appropriately to yield the 2-to-2 scattering matrix elements.
+Users can implement their own models.
+For WallGoMatrix, the model building
+routines are taken from DRalgo and involve constructing coupling tensors.
+The WallGoMatrix routines then contract these coupling tensors with
+the appropriate kinematic factors to yield the 2-to-2 scattering matrix elements.
 
 ## Installation
 
 ### Paclet Installation
 
-**WallGoMatrix** can be installed as a Wolfram Paclet by running either of the following two commands in Mathematica.
-Depending if the installation happens through the
+**WallGoMatrix** can be installed as a Wolfram Paclet by running either of the following two commands in Mathematica
 #### [Wolfram repository](https://resources.wolframcloud.com/PacletRepository/resources/WallGo/WallGoMatrix/)
 ```mathematica
 PacletInstall["WallGo/WallGoMatrix"];
@@ -90,7 +90,7 @@ It has been tested on the following versions.
 - [Mathematica](https://www.wolfram.com/mathematica/) versions 12.x, 13.x and 14.x
     - [GroupMath](https://renatofonseca.net/groupmath) version 1.1.2
 
-GroupMath can be either manually obtained from the link above or by setting the following flag before running WallGoMatrix in Mathematica
+GroupMath can be either manually obtained from the link above or by setting the following flag before loading WallGoMatrix in Mathematica
 ```mathematica
 WallGo`WallGoMatrix`$InstallGroupMath=True;
 ```
@@ -108,7 +108,7 @@ To see how WallGoMatrix is used in practice, we recommend taking a look at the
 
 ### Running the examples
 
-Within **WallGo**, **WallGoMatrix** is executed using 
+Within **WallGo**, **WallGoMatrix** can be executed using 
 [Wolframscript](https://www.wolfram.com/wolframscript/).
 Wolframscript provides the core computational capabilities of Wolfram Mathematica and allows Wolfram Language scripts to be run without needing a full Mathematica installation.
 To run the example files, you can use the following command:
