@@ -92,7 +92,7 @@ It has been tested on the following versions.
 - [Mathematica](https://www.wolfram.com/mathematica/) versions 12.x, 13.x and 14.x
     - [GroupMath](https://renatofonseca.net/groupmath) version 1.1.2
 
-GroupMath can be either manually obtained from the link above or by setting the follwoing flag before running WallGoMatrix in Mathematica
+GroupMath can be either manually obtained from the link above or by setting the following flag before running WallGoMatrix in Mathematica
 ```mathematica
 WallGoMatrix`$InstallGroupMath=True;
 ```
