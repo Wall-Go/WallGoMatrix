@@ -22,17 +22,25 @@
 (* ------------------------------------------------------------------------ *)
 
 
+BeginPackage["WallGo`WallGoMatrix`"]
+
+
 $WallGoMatrixOutput::usage =
 "$WallGoMatrixOutputFlag contains std output.";
 
 
-WallGoMatrix`$WallGoMatrixOutput = $Output;
+$WallGoMatrixOutput = $Output;
 If[$ScriptCommandLine=={},Null,
 	$Output=OpenWrite["/dev/null"];
 ];
 
 
-BeginPackage["WallGoMatrix`"]
+If[! ValueQ[$GroupMathMultipleModels],
+	$GroupMathMultipleModels = False];
+If[! ValueQ[$LoadGroupMath],
+	$LoadGroupMath = True];
+If[! ValueQ[$InstallGroupMath],
+	$InstallGroupMath = False];
 
 
 (*
@@ -303,18 +311,59 @@ Finds relations between couplings by calculating basis-invariant tensors";
 $WallGoMatrixDirectory=DirectoryName[$InputFileName];
 
 
-(*
-	Functions from groupmath are used to create the model.
-*)
+DownloadPackage[url_, targetName_]:=Module[{zipPath, targetFolder, targetDir, targetPath},
+  
+  (* Define the URL and file paths *)
+  targetFolder=FileBaseName[url];
+  targetDir = FileNameJoin[{$UserBaseDirectory, "Applications"}];
+  zipPath = FileNameJoin[{targetDir, targetFolder<>".zip"}];
+  targetPath = FileNameJoin[{targetDir, targetName}];
+  
+  (* Download the ZIP file *)
+  If[! FileExistsQ[zipPath],
+    URLSave[url, zipPath];
+    Print["Downloaded "<>Last[FileNameSplit[url]]]
+  ];
+  
+  (* Unzip the file *)
+  If[DirectoryQ[targetPath],
+  Print[targetPath<>" already exists. Check your "<>targetName<>" installation."];
+  Abort[];
+  ];
+  ExtractArchive[zipPath, targetDir];
+  Print["Unpacked and installed "<>FileBaseName[url]<>" in Applications folder."];
+  
+  (* Clean up *)
+  DeleteFile[zipPath];
+]
 
-If[Global`$LoadGroupMath,
-	(* Issue of GroupMath: Need to unprotect BlockDiagonalMatrix to not throw error upon loading *)
+
+(*
+	Functions from GroupMath are used to create the model.
+*)
+If[$LoadGroupMath,
 	Unprotect[BlockDiagonalMatrix];
+	If[$InstallGroupMath,
+		If[
+			Quiet[Check[Needs["GroupMath`"], True]],
+			DownloadPackage["https://renatofonseca.net/groupmath/ProgramVersions/GroupMath-1.1.2.zip","GroupMath"];
+			Print[Style["GroupMath installed.","Text", Red, Bold]];
+		]
+	];
+	Check[
+		Needs["GroupMath`"];,
+		Message[Get::noopen,
+			"GroupMath` at "<>ToString[$UserBaseDirectory]<>"/Applications.\n"<>
+			"Set WallGoMatrix`$InstallGroupMath=True for automatic installation of GroupMath"];
+		Abort[];
+	];
 	
-	Needs["GroupMath`"];
 	Print["GroupMath is an independent package, and is not part of WallGoMatrix."];
 	Print["Please cite GroupMath: Comput.Phys.Commun. 267 (2021) 108085 \[Bullet] e-Print: \!\(\*TemplateBox[{RowBox[{\"2011.01764\", \" \", \"[\", RowBox[{\"hep\", \"-\", \"th\"}], \"]\"}], {URL[\"https://arxiv.org/abs/2011.01764\"], None}, \"https://arxiv.org/abs/2011.01764\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\n\"HyperlinkTemplate\"]\)"];
-];
+
+]
+
+
 Print["WallGoMatrix is powered by the DRalgo ModelCreation."];
 Print["Please cite \!\(\*TemplateBox[{\"DRalgo\", {URL[\"https://github.com/DR-algo/DRalgo\"], None}, \"https://github.com/DR-algo/DRalgo\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\n\"HyperlinkTemplate\"]\): Comput.Phys.Commun. 288 (2023) 108725 \[Bullet] e-Print: \!\(\*TemplateBox[{RowBox[{\"2205.08815\", \" \", \"[\", RowBox[{\"hep\", \"-\", \"ph\"}], \"]\"}], {URL[\"https://arxiv.org/abs/2205.08815\"], None}, \"https://arxiv.org/abs/2205.08815\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\n\"HyperlinkTemplate\"]\)"];
 
@@ -359,8 +408,8 @@ Module[
 	\[Mu]ijP=\[Mu]ijI,\[Mu]IJFP=\[Mu]IJFI,\[Mu]IJFCP=\[Mu]IJFCI,YsffP=YsffI,YsffCP=YsffCI
 },
 
-If[ Global`$LoadGroupMath,
-	If[!GroupMathCleared && !ValueQ[Global`$GroupMathMultipleModels],
+If[$LoadGroupMath,
+	If[!GroupMathCleared && !ValueQ[$GroupMathMultipleModels],
 		Remove["GroupMath`*"];
 		GroupMathCleared=True;
 	];
