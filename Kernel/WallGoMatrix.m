@@ -15,8 +15,8 @@
 		Copyright (C) 2024-2024 Jorinde van de Vis
 *)
 
-(* :Summary:	WallgoMatirx is an algorithm that constructs
-				the Matrix Elements at Leading Log and partially NLL for generic models.
+(* :Summary:	WallgoMatrix is an algorithm that constructs
+				the matrix elements at leading log and partially NLL for generic models.
 *)	
 
 (* ------------------------------------------------------------------------ *)
