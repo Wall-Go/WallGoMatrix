@@ -48,6 +48,7 @@ PacletInstall["WallGo/WallGoMatrix"];
 ```mathematica
 PacletInstall["https://github.com/Wall-Go/WallGoMatrix/releases/latest/download/WallGoMatrix.paclet"];
 ```
+Note that the dependencies of **WallGoMatrix** must also be installed, for which see the [Requirements section](#requirements) below.
 
 ### Manual Installation
 
