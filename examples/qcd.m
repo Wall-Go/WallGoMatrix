@@ -23,7 +23,7 @@ Check[
 
 
 (* ::Text:: *)
-(*Using SU (3) in the representation with Dynkin index {1, 1} and representation R = 8 .*)
+(*Using SU(3) in the adjoint representation with Dynkin index {1,1} and representation R= 8.*)
 
 
 Group={"SU3"};
