@@ -15,8 +15,10 @@
 		Copyright (C) 2024-2024 Jorinde van de Vis
 *)
 
-(* :Summary:	WallgoMatrix is an algorithm that constructs
-				the matrix elements at leading log and partially NLL for generic models.
+(* :Summary:	WallGoMatrix constructs matrix elements for generic models at
+				leading logarithmic (LL) and partially next-to-leading logarithmic (NLL) orders.
+				It automates the computation of these elements by contracting coupling tensors
+				with the appropriate kinematic factors.
 *)	
 
 (* ------------------------------------------------------------------------ *)
