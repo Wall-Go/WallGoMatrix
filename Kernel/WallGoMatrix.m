@@ -244,9 +244,10 @@ Options:
     - \"json\": JSON format
     - \"hdf5\": HDF5 format
     - \"all\": Exports in all supported formats
-    - \"none\": Does not export to a file
+    - \"none\": Does not export to a file (default)
 - Verbose (Boolean): If True, lists channels that are currently being computed (default is False).
 - TruncateAtLeadingLog (Boolean): If True, truncates the matrix elements at the leading logarithmic order (default is True).
+- NormalizeWithDOF (Boolean): If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
 
 Explanation:
 - Choosing \"all\" exports the result in all possible formats, while choosing \"none\" skips exporting.
