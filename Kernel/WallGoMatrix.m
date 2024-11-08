@@ -65,7 +65,7 @@ AppendTo[result,Row[{"Authors: "//TexFor,
     }
   ]];
 AppendTo[result,Row[{"Reference: "//TexFor,
-        Hyperlink["2410.xxxxx [hep-ph]","https://arxiv.org/abs/2410.xxxxx"]//TexFor}]];
+        Hyperlink["2411.04970 [hep-ph]","https://arxiv.org/abs/2411.04970"]//TexFor}]];
 AppendTo[result,Row[{"Repository link: "//TexFor,
 	Hyperlink[Mouseover[TexFor["github.com/Wall-Go/WallGoMatrix"],Style["github.com/Wall-Go/WallGoMatrix",Bold]],
 	"https://github.com/DR-algo/DRalgo"]}]];
