@@ -8,7 +8,7 @@ PacletObject[
     "URL" -> "https://github.com/Wall-Go/WallGoMatrix",
     "License" -> "GPL-3.0+",
     "PublisherID" -> "WallGo",
-    "Version" -> "0.3.0",
+    "Version" -> "1.0.0",
     "Extensions" -> {
       {
         "Kernel",

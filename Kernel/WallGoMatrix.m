@@ -15,8 +15,10 @@
 		Copyright (C) 2024-2024 Jorinde van de Vis
 *)
 
-(* :Summary:	WallgoMatirx is an algorithm that constructs
-				the Matrix Elements at Leading Log and partially NLL for generic models.
+(* :Summary:	WallGoMatrix constructs matrix elements for generic models at
+				leading logarithmic (LL) and partially next-to-leading logarithmic (NLL) orders.
+				It automates the computation of these elements by contracting coupling tensors
+				with the appropriate kinematic factors.
 *)	
 
 (* ------------------------------------------------------------------------ *)
@@ -244,9 +246,10 @@ Options:
     - \"json\": JSON format
     - \"hdf5\": HDF5 format
     - \"all\": Exports in all supported formats
-    - \"none\": Does not export to a file
+    - \"none\": Does not export to a file (default)
 - Verbose (Boolean): If True, lists channels that are currently being computed (default is False).
 - TruncateAtLeadingLog (Boolean): If True, truncates the matrix elements at the leading logarithmic order (default is True).
+- NormalizeWithDOF (Boolean): If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
 
 Explanation:
 - Choosing \"all\" exports the result in all possible formats, while choosing \"none\" skips exporting.
