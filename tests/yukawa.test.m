@@ -150,7 +150,7 @@ UserMasses={ms,mf};
 (*
 	output of matrix elements
 *)
-OutputFile="output/matrixElements.yukawa";
+OutputFile="yukawa.test";
 SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -164,12 +164,29 @@ MatrixElements=ExportMatrixElements[
 MatrixElements
 
 
-(* ::Section:: *)
+(* ::Chapter:: *)
 (*Tests*)
 
 
-file=FileNameJoin[{NotebookDirectory[],"yukawa.test.json"}];
-{particleNames,parameters,FeynMatrixElements}=ImportMatrixElements[file];
+(* ::Section:: *)
+(*Importing results from WallGo*)
+
+
+If[Not[ValueQ[MatrixElements]],
+{particleNames,parameters,MatrixElements}=ImportMatrixElements["yukawa.test.json"]
+];
+
+
+(* ::Section:: *)
+(*Importing results from FeynCalc*)
+
+
+file=FileNameJoin[{NotebookDirectory[],"yukawa.feyncalc.test.json"}];
+{particleNamesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements[file];
+
+
+(* ::Section:: *)
+(*Comparison tests*)
 
 
 insertCouplings={\[Lambda]->lam,\[Gamma]->(g+lam v),y->y};
@@ -178,6 +195,7 @@ insertCouplings={\[Lambda]->lam,\[Gamma]->(g+lam v),y->y};
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 
 
+UserMasses={ms,mf};
 fixConvention[arg_]:=symmetriseTU[arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings/.v->0]//Expand//Simplify//Expand
 
 
@@ -195,7 +213,7 @@ testList={};
 AppendTo[testList,
 TestCreate[
 	M[0,0,0,0]/.MatrixElements//fixConvention//removeMissing,
-	M[0,0,0,0]/.FeynMatrixElements//fixConvention//removeMissing
+	M[0,0,0,0]/.MatrixElementsFeyn//fixConvention//removeMissing
 ]];
 
 
@@ -203,7 +221,7 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing
+	Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing
 ]];
 
 
@@ -211,7 +229,7 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	Sum[M[c,d,0,0],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[1/2 M[c,d,0,0],{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
+	Sum[1/2 M[c,d,0,0],{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
@@ -219,7 +237,7 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing
+	Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing
 ]];
 
 
@@ -227,7 +245,7 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	Sum[M[c,0,d,0]+M[c,0,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[1/2 (M[c,0,d,0]+M[c,0,0,d]),{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
+	Sum[1/2 (M[c,0,d,0]+M[c,0,0,d]),{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
@@ -235,9 +253,12 @@ TestCreate[
 AppendTo[testList,
 TestCreate[
 	Sum[M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[1/2 M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.FeynMatrixElements//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
+	Sum[1/2 M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
 ]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
