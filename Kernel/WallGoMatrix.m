@@ -210,7 +210,7 @@ This function is useful for grouping particles into one collective representatio
 
 
 ExportMatrixElements::usage = 
-"Generates all possible matrix elements with the external particles specified in particleList.
+"Generates all possible matrix elements with the external particles specified in particleList, and exports the results to file.
 
 Usage:
 ExportMatrixElements[\!\(\*
@@ -256,6 +256,26 @@ Explanation:
 
 Return:
 - A list of generated matrix elements is returned by the function, regardless of the chosen export format.\
+";
+
+
+ImportMatrixElements::usage = 
+"Imports matrix elements from file.
+
+Usage:
+ImportMatrixElements[StyleBox[\"fileName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), OptionsPattern[]]
+\!\(\*
+
+
+Arguments:
+- \!\(\*
+StyleBox[\"fileName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the file to export the matrix elements to.
+- \!\(\*
+
+Return:
+StyleBox[\"particles\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of particle names and their associated indices.
+StyleBox[\"modelParameters\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of model parameters.
+StyleBox[\"results\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The matrix elements.
 ";
 
 
@@ -598,7 +618,7 @@ returnString="'matrixElements' keys not {'externalParticles','parameters','expre
 splitJsonMatrixElements::usage="splitJsonMatrixElements[json] splits a JSON object containing matrix elements into a list {particleNames,parameters,results}.";
 splitJsonMatrixElements[json_]:=Module[
 {
-	particles,matrixElements,particleIndices,particleNames,
+	particles,matrixElements,particleIndices,particleNames,particleRules,
 	matrixElementIndices,matrixElementParameters,matrixElementExpressions,
 	parameters,expressions,results
 }
@@ -606,6 +626,7 @@ splitJsonMatrixElements[json_]:=Module[
 particles=json["particles"];
 particleIndices=Map[#["index"]&,json["particles"]];
 particleNames=Map[#["name"]&,json["particles"]];
+particleRules=Map[{#["name"]->#["index"]}&,json["particles"]];
 matrixElements=json["matrixElements"];
 matrixElementIndices=Map[#["externalParticles"]&,json["matrixElements"]];
 matrixElementParameters=Map[#["parameters"]&,json["matrixElements"]];
@@ -614,7 +635,7 @@ parameters=Map[ToExpression,DeleteDuplicates[Flatten[matrixElementParameters]]];
 expressions=Map[ToExpression,StringReplace[matrixElementExpressions,{RegularExpression["(\\W)_s"]->"$1s",RegularExpression["(\\W)_t"]->"$1t",RegularExpression["(\\W)_u"]->"$1u"}]];
 results=Thread[matrixElementIndices->expressions];
 results=Map[M[#[[1]]/.List->Sequence]->#[[2]]&,results];
-{particleNames,parameters,PrintNonPrivate[results]}
+{particleRules,parameters,PrintNonPrivate[results]}
 ];
 
 
@@ -887,9 +908,13 @@ MatrixElemFromC[MatrixElem_]:=Block[{Ind},
 ]
 
 
+(* ::Section:: *)
+(*MatrixElements: Importing the results*)
+
+
 ImportMatrixElements[file_]:=Module[
 {
-	jsonObject,particleNames,parameters,results
+	jsonObject,particles,parameters,results
 },
 	(* Only implemented for JSON *)
 	If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
@@ -898,14 +923,14 @@ ImportMatrixElements[file_]:=Module[
 	jsonObject=importJSONMatrixElements[file];
 
 	(* Splitting JSON object *)
-	{particleNames,parameters,results}=splitJsonMatrixElements[jsonObject];
+	{particles,parameters,results}=splitJsonMatrixElements[jsonObject];
 
 	(* Returning results *)
-	Return[{particleNames,parameters,results}]
+	Return[{particles,parameters,results}]
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Private constants*)
 
 
