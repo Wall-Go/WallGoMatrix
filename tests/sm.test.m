@@ -197,7 +197,7 @@ MatrixElements
 (*Importing results from FeynCalc*)
 
 
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["sm.feyncalc.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["electroweak.bosons.feyncalc.test.json"];
 
 
 (* ::Section:: *)
@@ -217,62 +217,176 @@ fixConvention[arg_]:=symmetriseTU[arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.inser
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
-particlesIndicesSubset={0,1,2,3,16,17,18,19};
-particlesIndicesFeyn=Map[Last[Last[#]]&,particlesFeyn];
+testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;
+testsRulesFeynCalc[arg_]:=arg/.Flatten[particlesFeyn]/.MatrixElementsFeyn//fixConvention//removeMissing
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]//testsRulesWallGo
+testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]//testsRulesFeynCalc
 
 
 (* ::Subsection:: *)
 (*Test hard*)
 
 
+particles
+particlesFeyn={"W"->0,"Wbar"->1,"Z"->2,"gamma"->3,"H"->4,"G0"->5,"Gp"->6,"Gpbar"->7}
+
+
 testList={};
 
 
-(* {Higgs} -> {Higgs} *)
-AppendTo[testList,
-TestCreate[
-	M[19,19,19,19]/.MatrixElements//fixConvention//removeMissing,
-	M[0,0,0,0]/.MatrixElementsFeyn//fixConvention//removeMissing
-]];
+(* {Higgs},{Higgs} -> {Higgs},{Higgs} *)
+test["WallGo"][1]=testWallGo[
+	{"Higgs"},
+	{"Higgs"},
+	{"Higgs"},
+	{"Higgs"}
+]
+test["FeynCalc"][1]=testFeynCalc[
+	{"H"},
+	{"H"},
+	{"H"},
+	{"H"}
+]
+AppendTo[testList,TestCreate[test["WallGo"][1],test["FeynCalc"][1]]];
 
 
-(* {Higgs} -> {W,Z,B,g} *)
-AppendTo[testList,
-TestCreate[
-	Sum[M[19,19,c,d],{c,{16,17,18}},{d,{16,17,18}}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[0,0,c,d],{c,{5,6,7,8}},{d,{5,6,7,8}}]/.MatrixElementsFeyn//fixConvention//removeMissing
-]];
+(* {Higgs},{Higgs} -> {W,B},{W,B} *)
+test["WallGo"][2]=testWallGo[
+	{"Higgs"},
+	{"Higgs"},
+	{"W","B"},
+	{"W","B"}
+]
+test["FeynCalc"][2]=testFeynCalc[
+	{"H"},
+	{"H"},
+	{"W","Wbar","Z","photon"},
+	{"W","Wbar","Z","photon"}
+]
+AppendTo[testList,TestCreate[test["WallGo"][2],test["FeynCalc"][2]]];
 
 
-(* {Higgs} -> {t, b} *)
-AppendTo[testList,
-TestCreate[
-	Sum[M[19,19,c,d],{c,{0,1,2,3}},{d,{0,1,2,3}}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[0,0,c,d],{c,{1,2,3,4}},{d,{1,2,3,4}}]/.MatrixElementsFeyn//fixConvention//removeMissing
-]];
+(* {H},{W,B} -> {H},{W,B} *)
+test["WallGo"][3]=testWallGo[
+	{"Higgs"},
+	{"W","B"},
+	{"Higgs"},
+	{"W","B"}
+]
+test["FeynCalc"][3]=testFeynCalc[
+	{"H"},
+	{"W","Wbar","Z","photon"},
+	{"H"},
+	{"W","Wbar","Z","photon"}
+]
+AppendTo[testList,TestCreate[test["WallGo"][3],test["FeynCalc"][3]]];
 
 
-(* I don't expect there should be any 1/Subscript[N, dof] here because this is the physical Higgs on leg 1 *)
-Sum[M[19,19,c,d],{c,{0,1,2,3}},{d,{0,1,2,3}}]/.MatrixElements//fixConvention//removeMissing
-Sum[M[0,0,c,d],{c,{1,2,3,4}},{d,{1,2,3,4}}]/.MatrixElementsFeyn//fixConvention//removeMissing
+(* {W,B},{W,B} -> {W,B},{W,B} *)
+test["WallGo"][4]=testWallGo[
+	{"W","B"},
+	{"W","B"},
+	{"W","B"},
+	{"W","B"}
+]
+test["FeynCalc"][4]=testFeynCalc[
+	{"W","Wbar","Z","photon"},
+	{"W","Wbar","Z","photon"},
+	{"W","Wbar","Z","photon"},
+	{"W","Wbar","Z","photon"}
+]
+AppendTo[testList,TestCreate[test["WallGo"][4],test["FeynCalc"][4]]];
+
+
+test["WallGo"][3]-test["FeynCalc"][3]//Simplify//Expand
+
+
+(* {Higgs},{Higgs} -> {W,Z,B,g},{W,Z,B,g} *)
+test["WallGo"][2]=testWallGo[
+	{"Higgs"},
+	{"Higgs"},
+	{"Gluon","W","B"},
+	{"Gluon","W","B"}
+]
+test["FeynCalc"][2]=testFeynCalc[
+	{"H"},
+	{"H"},
+	{"W","Wbar","Z","g"},
+	{"W","Wbar","Z","g"}
+]
+AppendTo[testList,TestCreate[test["WallGo"][2],test["FeynCalc"][2]]];
+
+
+(* {Higgs},{W,Z,B,g} -> {Higgs},{W,Z,B,g} *)
+test["WallGo"][3]=testWallGo[
+	{"Higgs"},
+	{"Gluon","W","B"},
+	{"Higgs"},
+	{"Gluon","W","B"}
+]
+test["FeynCalc"][3]=testFeynCalc[
+	{"H"},
+	{"W","Wbar","Z","g"},
+	{"H"},
+	{"W","Wbar","Z","g"}
+]
+AppendTo[testList,TestCreate[test["WallGo"][2],test["FeynCalc"][2]]];
 
 
 (* {t, b} -> {t, b} *)
-AppendTo[testList,
-TestCreate[
-	Sum[M[a,b,c,d],{a,{0,1,2,3}},{b,{0,1,2,3}},{c,{0,1,2,3}},{d,{0,1,2,3}}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[1/(2 * 3) M[a,b,c,d],{a,{1,2,3,4}},{b,{1,2,3,4}},{c,{1,2,3,4}},{d,{1,2,3,4}}]/.MatrixElementsFeyn//fixConvention//removeMissing
-]];
+test["WallGo"][4]=testWallGo[
+	{"TopL","TopR","BotL","BotR"},
+	{"TopL","TopR","BotL","BotR"},
+	{"TopL","TopR","BotL","BotR"},
+	{"TopL","TopR","BotL","BotR"}
+]
+test["FeynCalc"][4]=testFeynCalc[
+	{"t","tbar","b","bbar"},
+	{"t","tbar","b","bbar"},
+	{"t","tbar","b","bbar"},
+	{"t","tbar","b","bbar"}
+]
+AppendTo[testList,TestCreate[test["WallGo"][4],test["FeynCalc"][4]]];
 
-
-A["WallGo"]=Sum[M[a,b,c,d],{a,{0,1,2,3}},{b,{0,1,2,3}},{c,{0,1,2,3}},{d,{0,1,2,3}}]/.MatrixElements//fixConvention//removeMissing
-A["FeynCalc"]=Sum[1/(2 * 3) M[a,b,c,d],{a,{1,2,3,4}},{b,{1,2,3,4}},{c,{1,2,3,4}},{d,{1,2,3,4}}]/.MatrixElementsFeyn//fixConvention//removeMissing
 (* doesn't cancel exactly, and the difference involves the Yukawa coupling *)
-A["WallGo"]-A["FeynCalc"]
+test["WallGo"][4]-test["FeynCalc"][4]
+
+
+(* {W,Z},{W,Z} -> {W,Z},{W,Z} *)
+test["WallGo"][5]=testWallGo[
+	{"W"},
+	{"W"},
+	{"W"},
+	{"W"}
+]
+test["FeynCalc"][5]=testFeynCalc[
+	{"W","Wbar","Z"},
+	{"W","Wbar","Z"},
+	{"W","Wbar","Z"},
+	{"W","Wbar","Z"}
+]
+AppendTo[testList,TestCreate[test["WallGo"][4],test["FeynCalc"][4]]];
+
+
+(* {g},{g} -> {g},{g} *)
+test["WallGo"][6]=testWallGo[
+	{"Gluon"},
+	{"Gluon"},
+	{"Gluon"},
+	{"Gluon"}
+]
+test["FeynCalc"][6]=testFeynCalc[
+	{"g"},
+	{"g"},
+	{"g"},
+	{"g"}
+]
+AppendTo[testList,TestCreate[test["WallGo"][4],test["FeynCalc"][4]]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
-
