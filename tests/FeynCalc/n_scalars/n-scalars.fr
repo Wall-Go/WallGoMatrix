@@ -14,7 +14,7 @@ Date -> "January 27th, 2025"
            indices
 ****************************)
 
-n = 2;
+n = 3;
 IndexRange[ Index[Flavour] ] = Range[n];
 IndexStyle[ Flavour, a];
 

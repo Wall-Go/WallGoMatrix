@@ -26,7 +26,7 @@ Check[
 
 
 (* number of scalars *)
-n=2;
+n=3;
 
 
 Group={"U1"};
@@ -151,13 +151,13 @@ file=FileNameJoin[{NotebookDirectory[],"nscalars.feyncalc.test.json"}];
 (*Comparison tests*)
 
 
-insertCouplings={\[Lambda]->lam,\[Gamma]->g};
+insertCouplings={};
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 
 
-UserMasses={ms,mf};
+UserMasses={ms,mv};
 fixConvention[arg_]:=symmetriseTU[arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings]//Expand//Simplify//Expand
 
 
@@ -172,13 +172,22 @@ testList={};
 
 
 (* the whole thing scattering*)
+test["WallGo"]=Sum[M[a,b,c,d]/.MatrixElements//fixConvention//removeMissing,{a,0,n-1},{b,0,n-1},{c,0,n-1},{d,0,n-1}]
+test["Feyn"]=Sum[M[a,b,c,d]/.MatrixElementsFeyn//fixConvention//removeMissing,{a,0,n-1},{b,0,n-1},{c,0,n-1},{d,0,n-1}];
+Simplify[test["WallGo"]-test["Feyn"]]
 AppendTo[testList,
-TestCreate[
-	Sum[M[a,b,c,d]/.MatrixElements//fixConvention//removeMissing,{a,0,n-1},{b,0,n-1},{c,0,n-1},{d,0,n-1}],
-	Sum[M[a,b,c,d]/.MatrixElementsFeyn//fixConvention//removeMissing,{a,0,n-1},{b,1,2},{c,0,n-1},{d,0,n-1}]
-]];
+	TestCreate[test["WallGo"],test["Feyn"]]
+];
+
+
+Simplify[test["WallGo"]-test["Feyn"]]//LeafCount
+Simplify[test["WallGo"]]//LeafCount
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
+
 
