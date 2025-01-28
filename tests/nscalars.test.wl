@@ -99,7 +99,7 @@ RepZ=CreateParticle[{1}, "V", mv, "LightParticle"]
 These particles do not necessarily have to be out of equilibrium
 RepZ can later be assumed to be a light particle
 *)
-ParticleList={RepScalar};
+ParticleList=RepScalars;
 LightParticleList={RepZ};
 
 
