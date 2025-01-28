@@ -180,10 +180,6 @@ AppendTo[testList,
 ];
 
 
-Simplify[test["WallGo"]-test["Feyn"]]//LeafCount
-Simplify[test["WallGo"]]//LeafCount
-
-
 report=TestReport[testList]
 report["ResultsDataset"]
 
