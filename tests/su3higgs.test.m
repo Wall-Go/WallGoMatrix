@@ -28,7 +28,7 @@ Check[
 Group={"SU3"};
 CouplingName={g};
 RepAdjoint={{1,1}};
-Higgs={{1,0},"C"}; (* fundamental *)
+Higgs={{{1,0}},"C"}; (* fundamental *)
 RepScalar={Higgs};
 
 
@@ -269,5 +269,3 @@ AppendTo[testList,TestCreate[test["WallGo"][6],test["FeynCalc"][6],TestID->"VV->
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
