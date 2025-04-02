@@ -1129,7 +1129,7 @@ If[
 	CV=gTensorV[[3,4]] . vectorPropS . gTensorS[[1,2]]//OrderArray[#,3,4,1,2]&;
 
 (*Lorentz structures that appear*)
-(*	ASS=-ass*1/2(t^2+30*t*u+u^2);*)
+(*	ASS=-1/2(t^2+30*t*u+u^2);*)
 (*	ASS=-1/2(att*t^2+atu*32*t*u-auu*u^2);*)
 	ASS=-1/2(32*t*u);
 	A=4*s;
@@ -1137,22 +1137,21 @@ If[
 	AST=-4*s(u+2*t);
 	ATU=+8*s^2;
 	
-
 (*The full result, just don't think about it.*)
-	totRes=ASS Total[CV^2,-1];
-	totRes+= ASU Total[ CV CU,-1];
-	totRes+= AST Total[ CV CT,-1];
-	totRes+=ATU Total[CT CU,-1];
-	totRes+= A Total[(t*CT+u*CU) CU,-1];
-	totRes+= A Total[(t*CT+u*CU) CT,-1];
-	totRes+=4 Total[(t*CT+u*CU)^2,-1];
+	totRes=ASS*Total[CV^2,-1];
+	totRes+=ASU*Total[CV*CU,-1];
+	totRes+=AST*Total[CV*CT,-1];
+	totRes+=ATU*Total[CT*CU,-1];
+	totRes+=A*Total[(t*CT+u*CU)*CU,-1];
+	totRes+=A*Total[(t*CT+u*CU)*CT,-1];
+	totRes+=4*Total[(t*CT+u*CU)^2,-1];
 
 	Return[Refine[totRes/2,Assumptions->VarAsum]] 
 ]	
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1V1toS1V1*)
 
 
