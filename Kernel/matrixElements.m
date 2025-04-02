@@ -298,7 +298,7 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 (*Matrix elements*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*V1V2toV3V4*)
 
 
@@ -1056,7 +1056,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toV1V2*)
 
 
@@ -1129,11 +1129,13 @@ If[
 	CV=gTensorV[[3,4]] . vectorPropS . gTensorS[[1,2]]//OrderArray[#,3,4,1,2]&;
 
 (*Lorentz structures that appear*)
-	ASS=-1/2(t^2+30 t u+u^2);
-	A=4 s;
-	ASU=4 s( t+2 u);
-	AST=-4 s (u+2 *t);
-	ATU=8 s^2;
+(*	ASS=-ass*1/2(t^2+30*t*u+u^2);*)
+(*	ASS=-1/2(att*t^2+atu*32*t*u-auu*u^2);*)
+	ASS=-1/2(32*t*u);
+	A=4*s;
+	ASU=+4*s(t+2*u);
+	AST=-4*s(u+2*t);
+	ATU=+8*s^2;
 	
 
 (*The full result, just don't think about it.*)

@@ -21,7 +21,7 @@ Check[
 (*SU(2) Higgs*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -113,22 +113,33 @@ MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
 	LightParticleList,
-	{TruncateAtLeadingLog->False,Format->{"json","txt"},NormalizeWithDOF->False}
-]
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"},
+		NormalizeWithDOF->False}
+];
+
+
+M[0,0,1,1]/.MatrixElements//Simplify
+
+
+(*Results from U1*)
+1/((ms-t)^2 (ms-u)^2) 2 g1^4 (2 t u (s^2+2 t u+s (t+u))+ms^2 (2 s^2+2 s (t+u)+(t+u)^2)-ms (2 s^2 (t+u)+4 t u (t+u)+s (t^2+6 t u+u^2)))
+2 g1^4 ((t (s+t))/(ms-t)^2+(u (s+u))/(ms-u)^2)
 
 
 (* ::Section:: *)
 (*Tests*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Importing results from WallGo*)
 
 
 {particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.su2higgs.json"];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Importing results from FeynCalc*)
 
 
@@ -289,8 +300,6 @@ AppendTo[testList,TestCreate[test["WallGo"][6],test["AMY"][6],TestID->"WallGo vs
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
 
 
