@@ -1,0 +1,160 @@
+(****************************
+        general info
+****************************)
+M$ModelName = "sun-higgs-yukawa";
+
+M$Information = {
+Authors -> {"O. Gould"},
+Institutions -> {"U. Nottingham"},
+Emails -> {"oliver.gould@nottingham.ac.uk"},
+Date -> "April 16th, 2025"
+};
+
+(****************************
+        indices
+****************************)
+IndexRange[ Index[Fundamental] ] = NoUnfold[ Range[3] ];
+IndexStyle[ Fundamental, k ];
+
+IndexRange[ Index[Adjoint] ] = NoUnfold[ Range[8] ];
+IndexStyle[ Adjoint, a ];
+
+(****************************
+        gauge groups
+****************************)
+M$GaugeGroups = {
+    SU3 == {
+        Abelian -> False,
+        GaugeBoson -> A,
+        StructureConstant -> f,
+        Representations -> {{T, Fundamental}},
+        SymmetricTensor -> dSUN,
+        CouplingConstant -> g
+    }
+};
+
+(****************************
+        fields
+****************************)
+M$ClassesDescription = {
+    (* scalar *)
+    S[1] == {
+        ClassName -> Phi,
+        SelfConjugate -> False,
+        Indices -> {Index[Fundamental]},
+        Mass -> {m, Internal}
+    },
+    (* vector *)
+    V[1] == {
+        ClassName -> A,
+        SelfConjugate -> True,
+        Indices -> {Index[Adjoint]},
+        Mass -> 0
+    },
+    (* ghost *)
+    U[1] == {
+        ClassName -> ghostA,
+        SelfConjugate -> False,
+        Indices -> {Index[Adjoint]},
+        Ghost -> A,
+        QuantumNumbers -> {GhostNumber -> 1},
+        Mass -> 0
+    },
+    (* charged fermion *)
+    F[1] == {
+		ClassName -> Psi,
+        PropagatorArrow -> True,
+		SelfConjugate -> False,
+        Indices -> {Index[Fundamental]},
+		Mass -> {mPsi, Internal}
+    },
+    (* neutral fermion *)
+    F[2] == {
+		ClassName -> Chi,
+        PropagatorArrow -> True,
+		SelfConjugate -> False,
+		Mass -> {mChi, Internal}
+    }
+};
+
+(****************************
+        gauge parameters
+****************************)
+(* Landau gauge *)
+GaugeXi[V[_]] = 0;
+GaugeXi[S[_]] = 1;
+
+(****************************
+        parameters
+****************************)
+M$Parameters = {
+    (* scalar parameters *)
+    \[Lambda] == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> \[Lambda],
+        Description -> "Quartic coupling"
+    },
+    m == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> m,
+        Description -> "Scalar mass"
+    },
+
+    (* gauge parameters *)
+    g == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> g,
+        Description -> "Gauge coupling"
+    },
+
+    (* fermion parameters *)
+	mPsi == {
+    	ParameterType -> External,
+    	Value -> mPsi,
+	    ComplexParameter -> False,
+    	Description -> "Charged fermion mass"
+	},
+    mChi == {
+    	ParameterType -> External,
+    	Value -> mChi,
+	    ComplexParameter -> False,
+    	Description -> "Neutral fermion mass"
+	},
+
+	(* Yukawa coupling *)
+    y == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> y,
+        Description -> "Yukawa coupling"
+    }
+};
+
+(****************************
+        lagrangian
+****************************)
+L := Module[
+    {LGauge, LGaugeFixing, LGhost, LHiggs, THiggs, VHiggs, LPsi, LChi, LYukawa},
+
+    LGauge = -1/4 FS[A, mu, nu, a] FS[A, mu, nu, a];
+
+    LGaugeFixing = -1/2 (del[A[mu, a], mu]) (del[A[nu, a], nu]);
+
+    LGhost = del[ghostAbar[a], mu].DC[ghostA[a], mu];
+
+    THiggs = DC[Phibar[k], mu] DC[Phi[k], mu];
+    VHiggs = (
+        m^2 Phibar[k] Phi[k] +
+        \[Lambda] (Phibar[k1] Phi[k1]) * (Phibar[k2] Phi[k2])
+    );
+    LHiggs = THiggs - VHiggs;
+
+    LPsi = I Psibar.Ga[v].del[Psi,v] - mPsi Psibar.Psi;
+    LChi = I Chibar.Ga[v].del[Chi,v] - mChi Chibar.Chi;
+    LYukawa = - y Psibar.Phi.Chi;
+
+    LGauge + LGaugeFixing + LGhost + LHiggs + LPsi + LChi + LYukawa
+];
