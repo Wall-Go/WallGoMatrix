@@ -14,9 +14,9 @@ Date -> "April 16th, 2025"
         indices
 ****************************)
 IndexRange[ Index[Fundamental] ] = NoUnfold[ Range[3] ];
-IndexStyle[ Fundamental, k ];
-
 IndexRange[ Index[Adjoint] ] = NoUnfold[ Range[8] ];
+
+IndexStyle[ Fundamental, k ];
 IndexStyle[ Adjoint, a ];
 
 (****************************
@@ -137,15 +137,18 @@ M$Parameters = {
         lagrangian
 ****************************)
 L := Module[
-    {LGauge, LGaugeFixing, LGhost, LHiggs, THiggs, VHiggs, LPsi, LChi, LYukawa},
+    {
+        mu,nu,aa,k1,k2,
+        LGauge, LGaugeFixing, LGhost, LHiggs, THiggs, VHiggs, LPsi, LChi, LYukawa
+    },
 
-    LGauge = -1/4 FS[A, mu, nu, a] FS[A, mu, nu, a];
+    LGauge = -1/4 FS[A, mu, nu, aa] FS[A, mu, nu, aa];
 
-    LGaugeFixing = -1/2 (del[A[mu, a], mu]) (del[A[nu, a], nu]);
+    LGaugeFixing = -1/2 (del[A[mu, aa], mu]) (del[A[nu, aa], nu]);
 
-    LGhost = del[ghostAbar[a], mu].DC[ghostA[a], mu];
+    LGhost = del[ghostAbar[aa], mu].DC[ghostA[aa], mu];
 
-    THiggs = DC[Phibar[k], mu] DC[Phi[k], mu];
+    THiggs = DC[Phibar[k1], mu] DC[Phi[k1], mu];
     VHiggs = (
         m^2 Phibar[k] Phi[k] +
         \[Lambda] (Phibar[k1] Phi[k1]) * (Phibar[k2] Phi[k2])
@@ -154,7 +157,8 @@ L := Module[
 
     LPsi = I Psibar.Ga[v].del[Psi,v] - mPsi Psibar.Psi;
     LChi = I Chibar.Ga[v].del[Chi,v] - mChi Chibar.Chi;
-    LYukawa = - y Psibar.Phi.Chi;
+    (* LYukawa = - y Psibar.Phi.Chi; *)
+    LYukawa = - y Psibar[k1].Chi Phi[k1] ;
 
     LGauge + LGaugeFixing + LGhost + LHiggs + LPsi + LChi + LYukawa
 ];

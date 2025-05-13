@@ -3,6 +3,10 @@
 Quit[];
 
 
+(* ::Section:: *)
+(*FeynRules evaluation*)
+
+
 $FeynRulesPath=DirectoryName[FindFile["FeynRules`"]];
 <<FeynRules`
 
