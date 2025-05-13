@@ -3,16 +3,17 @@
 Quit[];
 
 
-(* ::Input:: *)
-(*$FeynRulesPath=DirectoryName[FindFile["FeynRules`"]];*)
-(*<<FeynRules`*)
+$FeynRulesPath=DirectoryName[FindFile["FeynRules`"]];
+<<FeynRules`
 
 
-(* ::Input:: *)
-(*(* load model file *)*)
-(*model="sun-higgs-yukawa";*)
-(*modelFile =FileNameJoin[{ NotebookDirectory[],model<>".fr"}];*)
-(*LoadModel[modelFile]*)
+(* load model file *)
+model="sun-higgs-yukawa";
+modelFile =FileNameJoin[{ NotebookDirectory[],model<>".fr"}];
+LoadModel[modelFile]
+
+
+L
 
 
 (* ::Input:: *)
@@ -22,3 +23,6 @@ Quit[];
 (*WriteFeynArtsOutput[L,Output->outputFiles,CouplingRename->False]*)
 (*(* deleting empty directory made by FeynRules *)*)
 (*DeleteDirectory[outputFiles]*)
+
+
+

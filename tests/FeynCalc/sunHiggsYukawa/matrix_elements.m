@@ -19,7 +19,10 @@ SetOptions[FourVector,FeynCalcInternal->False];
 $KeepLogDivergentScalelessIntegrals=True;
 
 
-FCEnableTraditionalFormOutput[]
+(*FCEnableTraditionalFormOutput[]*)
+
+
+FCDisableTraditionalFormOutput[]
 
 
 (* ::Subsection:: *)
