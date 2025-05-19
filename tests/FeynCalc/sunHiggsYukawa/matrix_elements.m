@@ -7,7 +7,7 @@
 Quit[];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Loading packages*)
 
 
@@ -25,12 +25,12 @@ $KeepLogDivergentScalelessIntegrals=True;
 FCDisableTraditionalFormOutput[]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Choosing model*)
 
 
 (* choose model *)
-model = "sun-higgs-yukawa";
+model = "sun-higgs-yukawa_replaced";
 
 
 (* power counting *)
@@ -214,7 +214,7 @@ symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 fixConvention[arg_]:=symmetriseTU[arg/.{s->(-t-u)}]//Expand//Simplify//Expand
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*VV -> VV*)
 
 
@@ -249,11 +249,35 @@ fixConvention[ampSq[1]-resAMYSU2/.{SUNN->2}]
 ?SUNTF
 
 
+?IndexDelta
+?SDF
+
+
 (* ::Subsection:: *)
 (*SS->SS*)
 
 
+externalSignature={S[1],S[1]}->{S[1],S[1]};
 ampSq[S]=makeAmplitudeSquared[{S[1],S[1]}->{S[1],S[1]},All,True]//Contract//SUNSimplify
+
+
+(* ::Subsection:: *)
+(*FF->FF*)
+
+
+externalSignature={F[1],F[2]}->{V[1],V[1]};
+externalSignature={F[1],F[1]}->{-F[2],-F[2]};
+(*externalSignature={S[1],S[1]}->{S[1],S[1]};*)
+
+
+InsertFields[tops[[All]],externalSignature,InsertionLevel->{Classes},Model->modLoc,GenericModel->modLoc];
+CreateFeynAmp[%,PreFactor->1,Truncated->False,GaugeRules->{GaugeXi[S[_]]->1,GaugeXi[V[_]]->1,FAGaugeXi[S[_]]->1,FAGaugeXi[V[_]]->1}]
+
+
+makeAmplitude[externalSignature,All]
+
+
+ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify
 
 
 (* ::Section:: *)

@@ -158,7 +158,7 @@ L := Module[
     LPsi = I Psibar.Ga[v].del[Psi,v] - mPsi Psibar.Psi;
     LChi = I Chibar.Ga[v].del[Chi,v] - mChi Chibar.Chi;
     (* LYukawa = - y Psibar.Phi.Chi; *)
-    LYukawa = - y Psibar[k1].Chi Phi[k1] ;
+    LYukawa = - y Psibar[s, k1] Chi[s] Phi[k1] ;
 
     LGauge + LGaugeFixing + LGhost + LHiggs + LPsi + LChi + LYukawa
 ];
