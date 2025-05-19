@@ -266,7 +266,7 @@ ampSq[S]=makeAmplitudeSquared[{S[1],S[1]}->{S[1],S[1]},All,True]//Contract//SUNS
 
 
 externalSignature={F[1],F[2]}->{V[1],V[1]};
-externalSignature={F[1],F[1]}->{-F[2],-F[2]};
+externalSignature={F[1],-F[2]}->{F[1],-F[2]};
 (*externalSignature={S[1],S[1]}->{S[1],S[1]};*)
 
 
