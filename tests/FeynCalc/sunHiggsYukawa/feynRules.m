@@ -31,6 +31,7 @@ DeleteDirectory[outputFiles]
 SetDirectory[NotebookDirectory[]]
 Directory[]
 RunProcess[{"bash", "replaceFeynCalc.sh", "sun-higgs-yukawa.mod"}]
+RunProcess[{"bash", "replaceFeynCalc.sh", "sun-higgs-yukawa.gen"}]
 
 
 

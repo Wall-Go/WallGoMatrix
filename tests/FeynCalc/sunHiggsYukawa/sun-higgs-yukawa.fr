@@ -42,7 +42,7 @@ M$ClassesDescription = {
         ClassName -> Phi,
         SelfConjugate -> False,
         Indices -> {Index[Fundamental]},
-        Mass -> {m, Internal}
+        Mass -> {mPhi, Internal}
     },
     (* vector *)
     V[1] == {
@@ -81,7 +81,7 @@ M$ClassesDescription = {
         gauge parameters
 ****************************)
 (* Landau gauge *)
-GaugeXi[V[_]] = 0;
+GaugeXi[V[_]] = 1;
 GaugeXi[S[_]] = 1;
 
 (****************************
@@ -95,10 +95,10 @@ M$Parameters = {
         Value -> \[Lambda],
         Description -> "Quartic coupling"
     },
-    m == {
+    mPhi == {
         ParameterType -> External,
         ComplexParameter -> False,
-        Value -> m,
+        Value -> mPhi,
         Description -> "Scalar mass"
     },
 
@@ -142,23 +142,25 @@ L := Module[
         LGauge, LGaugeFixing, LGhost, LHiggs, THiggs, VHiggs, LPsi, LChi, LYukawa
     },
 
-    LGauge = -1/4 FS[A, mu, nu, aa] FS[A, mu, nu, aa];
+    LGauge := -1/4 FS[A, mu, nu, aa] FS[A, mu, nu, aa];
 
-    LGaugeFixing = -1/2 (del[A[mu, aa], mu]) (del[A[nu, aa], nu]);
+    LGaugeFixing := -1/2 (del[A[mu, aa], mu]) (del[A[nu, aa], nu]);
 
-    LGhost = del[ghostAbar[aa], mu].DC[ghostA[aa], mu];
+    LGhost := del[ghostAbar[aa], mu].DC[ghostA[aa], mu];
 
-    THiggs = DC[Phibar[k1], mu] DC[Phi[k1], mu];
-    VHiggs = (
-        m^2 Phibar[k] Phi[k] +
-        \[Lambda] (Phibar[k1] Phi[k1]) * (Phibar[k2] Phi[k2])
+    THiggs := DC[Phibar[k1], mu] DC[Phi[k1], mu];
+    VHiggs := (
+        + m^2 Phibar[k1] Phi[k1]
+        + \[Lambda] (Phibar[k1] Phi[k1]) * (Phibar[k2] Phi[k2])
     );
     LHiggs = THiggs - VHiggs;
 
-    LPsi = I Psibar.Ga[v].del[Psi,v] - mPsi Psibar.Psi;
-    LChi = I Chibar.Ga[v].del[Chi,v] - mChi Chibar.Chi;
+    (* LPsi = I Psibar.Ga[v].DC[Psi,v] - mPsi Psibar.Psi; *)
+    (* LChi = I Chibar.Ga[v].DC[Chi,v] - mChi Chibar.Chi; *)
+    LPsi := ExpandIndices[I Psibar[sp1, k1] Ga[v,sp1,sp2] DC[Psi[sp2,k1],v]];
+    LChi := ExpandIndices[I Chibar[sp1] Ga[v,s1,s2] DC[Chi[sp2],v]];
     (* LYukawa = - y Psibar.Phi.Chi; *)
-    LYukawa = - y Psibar[s, k1] Chi[s] Phi[k1] ;
+    LYukawa := - y Psibar[s1, k1] Chi[s1] Phi[k1] ;
 
     LGauge + LGaugeFixing + LGhost + LHiggs + LPsi + LChi + LYukawa + HC[LYukawa]
 ];
