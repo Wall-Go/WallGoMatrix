@@ -81,8 +81,9 @@ M$ClassesDescription = {
         gauge parameters
 ****************************)
 (* Landau gauge *)
-GaugeXi[V[_]] = 1;
-GaugeXi[S[_]] = 1;
+GaugeXi[ V[_] ] = 1;
+GaugeXi[ S[1,___] ] = GaugeXi[S];
+GaugeXi[S] = 1;
 
 (****************************
         parameters

@@ -132,10 +132,10 @@ diags=InsertFields[tops[[channels]],process,InsertionLevel->{Classes},Model->mod
 ampFA[1]=CreateFeynAmp[diags,PreFactor->1,
 	Truncated->False,
 	GaugeRules->{
-		GaugeXi[S[_]]->1,
-		GaugeXi[V[_]]->1,
-		FAGaugeXi[S[_]]->1,
-		FAGaugeXi[V[_]]->1
+		GaugeXi[S[___]]->1,
+		GaugeXi[V[___]]->1,
+		FAGaugeXi[S[___]]->1,
+		FAGaugeXi[V[___]]->1
 	}]; 
 
 (* introducing FeynAmpDenominator, as required by FeynCalc (not sure why this is missing in the first place) *)
@@ -185,7 +185,6 @@ ampM[1]=makeAmplitude[process,channels]
 (*/.PropagatorDenominator[a_,b_]->PropagatorDenominator[a,0]*);
 (* making amplitude squared *)
 ampSq[1]=(*1/2*)(* 1/2 is a symmetry factor *)ComplexConjugate[ampM[1]]ampM[1];
-Print[ampSq[1]];
 ampSq[2]=FeynAmpDenominatorExplicit[ampSq[1]];
 ampSq[3]=ampSq[2];
 FCClearScalarProducts[];
@@ -288,20 +287,22 @@ ampSq[S]=makeAmplitudeSquared[{S[1],S[1]}->{S[1],S[1]},All,True]//Contract//SUNS
 
 
 externalSignature={F[1],-F[1]}->{V[1],V[1]};
-externalSignature={F[1],-F[2]}->{F[1],-F[2]};
+(*externalSignature={F[1],-F[2]}->{F[1],-F[2]};*)
 (*externalSignature={S[1],S[1]}->{S[1],S[1]};*)
 
 
 InsertFields[tops[[All]],externalSignature,InsertionLevel->{Classes},Model->modLoc,GenericModel->modLoc];
-CreateFeynAmp[%,PreFactor->1,Truncated->False,GaugeRules->{GaugeXi[S[_]]->1,GaugeXi[V[_]]->1,FAGaugeXi[S[_]]->1,FAGaugeXi[V[_]]->1}]
+CreateFeynAmp[%,PreFactor->1,Truncated->False,
+	GaugeRules->{GaugeXi[S[_]]->1,GaugeXi[V[_]]->1,FAGaugeXi[S[_]]->1,FAGaugeXi[V[_]]->1}]
 
 
 makeAmplitude[externalSignature,All]
 
 
-ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify//SpinorChainEvaluate//FullSimplify
+ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify//SpinorChainEvaluate
 (*%//FullForm;*)
-%/.{GaugeXi[__]->1}//Contract
+%//Contract//Expand
+%/.{mPhi->0}
 
 
 ?Spinor
