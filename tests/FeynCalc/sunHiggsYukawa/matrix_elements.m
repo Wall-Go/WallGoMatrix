@@ -59,8 +59,15 @@ M$ExtParams//MatrixForm
 parameters=Map[#[[1]]&,M$ExtParams]
 
 
+particleTypes
+
+
 particleTypes=DeleteCases[F$Classes,U[1]|-U[1]]
-makeProcesses[firstParticle_]:=DeleteDuplicates[Flatten[Table[{firstParticle,a}->{b,c},{a,particleTypes},{b,particleTypes},{c,particleTypes}],2]];
+makeProcesses[firstParticle_]:=DeleteDuplicates[Flatten[
+	Table[{firstParticle,a}->{b,c},
+	{a,particleTypes},
+	{b,particleTypes},
+	{c,particleTypes}],2]];
 makeProcesses[S[1]];
 %[[1;;Min[10,Length[%]]]]//MatrixForm
 
@@ -80,7 +87,14 @@ makeProcesses[firstParticle_]:=Flatten[
 		{a,{S[1],-S[1],V[1]}},
 		{bc,{{S[1],-S[1]},{S[1],V[1]},{-S[1],V[1]},{V[1],V[1]}}}
 		],1]
+makeProcesses[firstParticle_]:=Flatten[
+	Table[{firstParticle,a}->bc,
+		{a,{S[1],-S[1],F[1],-F[1],F[2],-F[2],V[1]}},
+		{bc,{{S[1],-S[1]},{S[1],V[1]},{-S[1],V[1]},{V[1],V[1]},{F[1],-F[2]}}}
+		],1]
 makeProcesses[S[1]]//MatrixForm
+makeProcesses[F[1]]//MatrixForm
+makeProcesses[V[1]]//MatrixForm
 processesByHand={
 	{S[1],S[1]}->{S[1],S[1]},
 	{S[1],S[1]}->{V[1],V[1]},
@@ -112,10 +126,12 @@ polsums[x_,vec_,aux_,spinfac_]:=
 
 
 (* ::Code::Initialization:: *)
+interstingParticles={S[1],-S[1],V[1],F[1],-F[1]};
 makeProcesses[firstParticle_]:=Flatten[Table[{firstParticle,a}->{b,c},
-{a,{S[1],-S[1],V[1]}},
-{b,{S[1],-S[1],V[1]}},
-{c,{S[1],-S[1],V[1]}}],2];
+	{a,interstingParticles},
+	{b,interstingParticles},
+	{c,interstingParticles}]
+	,2];
 
 
 (* ::Code::Initialization:: *)
@@ -287,7 +303,8 @@ ampSq[S]=makeAmplitudeSquared[{S[1],S[1]}->{S[1],S[1]},All,True]//Contract//SUNS
 
 
 externalSignature={F[1],-F[1]}->{V[1],V[1]};
-(*externalSignature={F[1],-F[2]}->{F[1],-F[2]};*)
+externalSignature={F[1],-F[2]}->{F[1],-F[2]};
+externalSignature={F[1],-F[1]}->{F[1],-F[1]};
 (*externalSignature={S[1],S[1]}->{S[1],S[1]};*)
 
 
@@ -302,21 +319,47 @@ makeAmplitude[externalSignature,All]
 ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify//SpinorChainEvaluate
 (*%//FullForm;*)
 %//Contract//Expand
-%/.{mPhi->0}
-
-
-?Spinor
-?SpinorChainEvaluate
+%/.{mPhi->0,mPsi->0,CA->2,CF->3/4}
 
 
 (* ::Section:: *)
 (*Results*)
 
 
-processes=makeProcesses[S[1]]
+(* squared summed matrix elements with a vector on leg 1 *)
+processes=makeProcesses[S[1]];
 scalar=DeleteCases[ 
-Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g},Expand],{process,processes}]
-,_->0]
+	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
+	,_->0]/.{mPsi->0};
+(* squared summed matrix elements with a vector on leg 1 *)
+processes=makeProcesses[-S[1]]
+antiscalar=DeleteCases[
+	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
+	,_->0];
+
+
+(* squared summed matrix elements with a vector on leg 1 *)
+processes=makeProcesses[V[1]]
+vector=DeleteCases[
+	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
+	,_->0];
+
+
+(* squared summed matrix elements with a vector on leg 1 *)
+processes=makeProcesses[F[1]]
+fermion=DeleteCases[ 
+	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
+	,_->0]/.{mPsi->0}
+processes=makeProcesses[-F[1]]
+antifermion=DeleteCases[ 
+	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
+	,_->0]/.{mPsi->0}
+
+
+results=Flatten[{scalar,antiscalar,vector,fermion},1];
+
+
+feynAssociation=Association[results];
 
 
 (* ::Section:: *)

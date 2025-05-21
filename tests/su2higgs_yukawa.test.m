@@ -26,7 +26,7 @@ Check[
 
 
 Group={"SU2","U1"}; (* I've added the U1 field because without it the Higgs is only given 2 degrees of freedom *)
-CouplingName={g,gu1};
+CouplingName={g,gU1};
 RepAdjoint={{2},0};
 Higgs1={{{1},0},"C"}; (* fundamental *)
 RepScalar={Higgs1};
@@ -155,11 +155,15 @@ MatrixElements;
 (*Importing results from FeynCalc*)
 
 
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["sunhiggs.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["FeynCalc/sunHiggsYukawa/sun-higgs-yukawa_replaced.json"];
 
 
 (* ::Section:: *)
 (*Comparison tests*)
+
+
+(* ::Subsection:: *)
+(*Translate input*)
 
 
 insertCouplings={Global`g->g,\[Lambda]->lam,SUNN->2,gu1->0};
@@ -229,4 +233,7 @@ AppendTo[testList,TestCreate[test["WallGo"][2],test["FeynCalc"][2],TestID->"Wall
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
 
