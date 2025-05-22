@@ -126,7 +126,7 @@ polsums[x_,vec_,aux_,spinfac_]:=
 
 
 (* ::Code::Initialization:: *)
-interstingParticles={S[1],-S[1],V[1],F[1],-F[1]};
+interstingParticles={S[1],-S[1],V[1],F[1],-F[1],F[2],-F[2]};
 makeProcesses[firstParticle_]:=Flatten[Table[{firstParticle,a}->{b,c},
 	{a,interstingParticles},
 	{b,interstingParticles},
@@ -328,35 +328,39 @@ ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimpli
 
 (* squared summed matrix elements with a vector on leg 1 *)
 processes=makeProcesses[S[1]];
+processes//MatrixForm;
 scalar=DeleteCases[ 
-	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
-	,_->0]/.{mPsi->0};
+	Table[
+		makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],
+		{process,processes}],_->0]/.{mPsi->0};
 (* squared summed matrix elements with a vector on leg 1 *)
-processes=makeProcesses[-S[1]]
+processes=makeProcesses[-S[1]];
 antiscalar=DeleteCases[
-	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
-	,_->0];
+	Table[
+		makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],
+		{process,processes}]
+	,_->0]/.{mPsi->0};
 
 
 (* squared summed matrix elements with a vector on leg 1 *)
-processes=makeProcesses[V[1]]
+processes=makeProcesses[V[1]];
 vector=DeleteCases[
 	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
 	,_->0];
 
 
 (* squared summed matrix elements with a vector on leg 1 *)
-processes=makeProcesses[F[1]]
+processes=makeProcesses[F[1]];
 fermion=DeleteCases[ 
 	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
 	,_->0]/.{mPsi->0}
-processes=makeProcesses[-F[1]]
+processes=makeProcesses[-F[1]];
 antifermion=DeleteCases[ 
 	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
 	,_->0]/.{mPsi->0}
 
 
-results=Flatten[{scalar,antiscalar,vector,fermion},1];
+results=Flatten[{scalar,antiscalar,vector,fermion,antifermion},1];
 
 
 feynAssociation=Association[results];
