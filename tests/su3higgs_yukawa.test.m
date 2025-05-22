@@ -138,7 +138,7 @@ UserMasses={mv2,mf2,ms2};
 (*
 	output of matrix elements
 *)
-OutputFile="output/matrixElements.su2_higgs_yukawa";
+OutputFile="output/matrixElements.su3_higgs_yukawa";
 SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -153,10 +153,6 @@ MatrixElements=ExportMatrixElements[
 MatrixElements;
 
 
-M[1,1,3,3]/.MatrixElements
-M[1,2,1,2]/.MatrixElements
-
-
 (* ::Section:: *)
 (*Tests*)
 
@@ -165,14 +161,14 @@ M[1,2,1,2]/.MatrixElements
 (*Importing results from WallGo*)
 
 
-{particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.su2_higgs_yukawa.json"];
+{particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.su3_higgs_yukawa.json"];
 
 
 (* ::Section:: *)
 (*Importing results from FeynCalc*)
 
 
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["FeynCalc/sunHiggsYukawa/sun-higgs-yukawa_replaced.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["sun-higgs-yukawa.test.json"];
 
 
 (* ::Section:: *)
@@ -333,6 +329,4 @@ AppendTo[testList,TestCreate[test["WallGo"][7],test["FeynCalc"][7],TestID->"Wall
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 

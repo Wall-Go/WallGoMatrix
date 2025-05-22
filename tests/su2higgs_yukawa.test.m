@@ -148,10 +148,6 @@ MatrixElements=ExportMatrixElements[
 MatrixElements;
 
 
-M[1,1,3,3]/.MatrixElements
-M[1,2,1,2]/.MatrixElements
-
-
 (* ::Section:: *)
 (*Tests*)
 
@@ -167,7 +163,7 @@ M[1,2,1,2]/.MatrixElements
 (*Importing results from FeynCalc*)
 
 
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["FeynCalc/sunHiggsYukawa/sun-higgs-yukawa_replaced.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["sun-higgs-yukawa.test.json"];
 
 
 (* ::Section:: *)
