@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -25,17 +25,22 @@ Check[
 (*Model*)
 
 
-Group={"SU2","U1"}; (* I've added the U1 field because without it the Higgs is only given 2 degrees of freedom *)
+Group={"SU3","U1"}; (* I've added the U1 field because without it the Higgs is only given 2 degrees of freedom *)
 CouplingName={g,gU1};
-RepAdjoint={{2},0};
-Higgs1={{{1},0},"C"}; (* fundamental *)
+RepAdjoint={{1,1},0};
+Higgs1={{{1,0},0},"C"}; (* fundamental *)
 RepScalar={Higgs1};
 
 
-Rep1={{{1},0},"L"};
-Rep2={{{1},0},"R"};
-Rep3={{{0},0},"L"};
-Rep4={{{0},0},"R"};
+su3Reps = RepsUpToDimN[SU3,3];
+Grid[Prepend[{#,RepName[SU3,#]}&/@ su3Reps,{"Dynkin coefficients","Name"}],
+Frame->All,FrameStyle->LightGray]
+
+
+Rep1={{{1,0},0},"L"};
+Rep2={{{1,0},0},"R"};
+Rep3={{{0,0},0},"L"};
+Rep4={{{0,0},0},"R"};
 RepFermion={Rep1,Rep2,Rep3,Rep4};
 
 
@@ -66,12 +71,12 @@ VQuartic=\[Lambda]*QuarticTerm1;
 
 
 (* y \[Phi]^*(Subscript[\[Psi], L]Subscript[\[Xi], R]^++Subscript[\[Psi], R]Subscript[\[Xi], L]^+)*)
-InputInv={{1,1,4},{True,True,False}};
-Yukawa1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-InputInv={{1,2,3},{False,False,True}};
-Yukawa2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 InputInv={{1,1,4},{False,True,False}};
+Yukawa1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
+InputInv={{1,1,4},{True,False,True}};
 Yukawa1HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
+InputInv={{1,2,3},{False,True,False}};
+Yukawa2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 InputInv={{1,2,3},{True,False,True}};
 Yukawa2HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 
@@ -99,7 +104,7 @@ one right-handed fermion
 *)
 
 
-vev={0,0,0,v};
+vev={0,0,0,0,0,v};
 SymmetryBreaking[vev]
 
 
@@ -178,7 +183,7 @@ M[1,2,1,2]/.MatrixElements
 (*Translate input*)
 
 
-insertCouplings={Global`g->g,\[Lambda]->lam,SUNN->2,gu1->0};
+insertCouplings={Global`g->g,\[Lambda]->lam,SUNN->3,gu1->0};
 customCouplings={ms2->mPhi^2};
 
 
