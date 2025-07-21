@@ -22,7 +22,7 @@ output_file="${dirname}/${basename}${newExtension}.${extension}"
 # Perform replacements using Perl
 perl -pe '
   s/IndexDelta\[\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/SDF[$1, $2]/g;
-  s/SUNF\[\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/SUNF[$1, $3, Adjoint\$1] SUNF[Adjoint\$1, $4, $2]/g;
+  s/SUNF\[\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/SUNF[$1, $2, Adjoint\$1] SUNF[Adjoint\$1, $3, $4]/g;
   s/SUNT\[\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/SUNTF[{$1}, $2, $3]/g;
   s/IndexSum\[\s*(.*?),\s*\{Fundamental\$1,\s*1,\s*3\}\s*\]/$1/g;
   s/ScalarProduct/FAScalarProduct/g;

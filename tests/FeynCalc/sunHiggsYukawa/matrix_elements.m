@@ -25,7 +25,7 @@ $KeepLogDivergentScalelessIntegrals=True;
 FCDisableTraditionalFormOutput[]
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Choosing model*)
 
 
@@ -106,12 +106,10 @@ processesByHand={
 (*Automating steps*)
 
 
-(* ::Code::Initialization:: *)
 tops=CreateTopologies[0,2->2];
 massFn[particle_]:=0(*Which[particle===F[1]||particle===-F[1],mPsi,particle===S[1]||particle===-S[1],0,particle===V[1]||particle===-V[1],0]*);
 
 
-(* ::Code::Initialization:: *)
 (* converting between particle index types *)
 momenta={Momentum[p1,4],Momentum[p2,4],Momentum[p3,4],Momentum[p4,4]};
 particleIndices={{1,1},{1,2},{2,1},{2,2}};
@@ -119,13 +117,11 @@ integerToParticleIndex[integer_]:=particleIndices[[integer]];
 particleIndexToInteger[particleIndex_]:=Position[particleIndices,particleIndex][[1]][[1]];
 
 
-(* ::Code::Initialization:: *)
 (* polarization sums *)
 polsums[x_,vec_,aux_,spinfac_]:=
 	x//Collect2[#,Pair[_,Momentum[Polarization[vec,__]]]]&//Isolate[#,{Polarization[vec,__]}]&//DoPolarizationSums[#,vec,aux,ExtraFactor->spinfac]&//FixedPoint[ReleaseHold,#]&
 
 
-(* ::Code::Initialization:: *)
 interstingParticles={S[1],-S[1],V[1],F[1],-F[1],F[2],-F[2]};
 makeProcesses[firstParticle_]:=Flatten[Table[{firstParticle,a}->{b,c},
 	{a,interstingParticles},
@@ -134,7 +130,6 @@ makeProcesses[firstParticle_]:=Flatten[Table[{firstParticle,a}->{b,c},
 	,2];
 
 
-(* ::Code::Initialization:: *)
 ClearAll[makeAmplitude]
 makeAmplitude[process_,channels_:All]:=Module[
 	{
@@ -155,7 +150,7 @@ ampFA[1]=CreateFeynAmp[diags,PreFactor->1,
 	}]; 
 
 (* introducing FeynAmpDenominator, as required by FeynCalc (not sure why this is missing in the first place) *)
-ampFA[2]=ampFA[1]/.PropagatorDenominator[x_,y_]:>FeynAmpDenominator[PropagatorDenominator[x,y]];
+ampFA[2]=ampFA[1]/.FAPropagatorDenominator[x_,y_]:>FAFeynAmpDenominator[PropagatorDenominator[x,y]];
 
 (* converting to FeynCalc form *)
 transverse={};
@@ -187,7 +182,6 @@ Return[ampFC[5]//Contract]
 ]
 
 
-(* ::Code::Initialization:: *)
 ClearAll[makeAmplitudeSquared]
 makeAmplitudeSquared[process_,channels_:All,dropUnphysicalPolarizations_:True]:=
 Module[
@@ -251,11 +245,14 @@ symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 fixConvention[arg_]:=symmetriseTU[arg/.{s->(-t-u)}]//Expand//Simplify//Expand
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*VV -> VV*)
 
 
-ampSq[1]=makeAmplitudeSquared[{V[1],V[1]}->{V[1],V[1]},All,True]
+externalSignature={V[1],V[1]}->{V[1],V[1]};
+
+
+ampSq[1]=makeAmplitudeSquared[externalSignature,All,True]
 
 
 ampSq[1]/.{SUNN->2}//SUNSimplify
@@ -272,22 +269,6 @@ fixConvention[ampSq[1]/.{SUNN->2}]
 (* should be zero - pure gauge amplitude unaffected by presence of scalars or fermions *)
 fixConvention[ampSq[1]-resAMYSU3/.{SUNN->3}]
 fixConvention[ampSq[1]-resAMYSU2/.{SUNN->2}]
-
-
-?SUNF
-
-
-?SUNF
-
-
-?SUNT
-
-
-?SUNTF
-
-
-?IndexDelta
-?SDF
 
 
 (* ::Subsection::Closed:: *)
