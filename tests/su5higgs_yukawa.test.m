@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 If[$InputFileName=="",
@@ -25,22 +25,22 @@ Check[
 (*Model*)
 
 
-Group={"SU3","U1"}; (* I've added the U1 field because without it the Higgs is only given 2 degrees of freedom *)
+Group={"SU5","U1"}; (* I've added the U1 field because without it the Higgs is only given 2 degrees of freedom *)
 CouplingName={g,gU1};
-RepAdjoint={{1,1},0};
-Higgs1={{{1,0},0},"C"}; (* fundamental *)
+RepAdjoint={{1,0,0,1},0};
+Higgs1={{{1,0,0,0},0},"C"}; (* fundamental *)
 RepScalar={Higgs1};
 
 
-su3Reps = RepsUpToDimN[SU3,3];
-Grid[Prepend[{#,RepName[SU3,#]}&/@ su3Reps,{"Dynkin coefficients","Name"}],
+su5Reps = RepsUpToDimN[SU5,25];
+Grid[Prepend[{#,RepName[SU5,#]}&/@ su5Reps,{"Dynkin coefficients","Name"}],
 Frame->All,FrameStyle->LightGray]
 
 
-Rep1={{{1,0},0},"L"};
-Rep2={{{1,0},0},"R"};
-Rep3={{{0,0},0},"L"};
-Rep4={{{0,0},0},"R"};
+Rep1={{{1,0,0,0},0},"L"};
+Rep2={{{1,0,0,0},0},"R"};
+Rep3={{{0,0,0,0},0},"L"};
+Rep4={{{0,0,0,0},0},"R"};
 RepFermion={Rep1,Rep2,Rep3,Rep4};
 
 
@@ -100,7 +100,7 @@ one right-handed fermion
 *)
 
 
-vev={0,0,0,0,0,v};
+vev={0*Range[2*5-1],v}//Flatten
 SymmetryBreaking[vev]
 
 
@@ -167,26 +167,6 @@ MatrixElements;
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["sun-higgs-yukawa.test.json"];
 
 
-testFeynCalc2[
-	{"Phi","Phibar"},
-	{"Phi","Phibar"},
-	{"Psi","Psibar"},
-	{"Psi","Psibar"}
-];
-%/.Flatten[particlesFeyn]/.MatrixElementsFeyn//removeMissing
-fixConvention[%/.{SUNN->SUN}]
-
-
-testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;
-testsRulesFeynCalc[arg_]:=arg/.Flatten[particlesFeyn]/.MatrixElementsFeyn//fixConvention//removeMissing
-testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
-	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesWallGo
-testFeynCalc2[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
-	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]
-
-
 (* ::Section:: *)
 (*Comparison tests*)
 
@@ -195,7 +175,7 @@ testFeynCalc2[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 (*Translate input*)
 
 
-insertCouplings={Global`g->g,\[Lambda]->lam,SUNN->3,gu1->0,mChi->0,mPhi->0};
+insertCouplings={Global`g->g,\[Lambda]->lam,SUNN->5,gu1->0,mChi->0,mPhi->0};
 customCouplings={ms2->mPhi^2};
 
 
@@ -203,8 +183,8 @@ symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 
 
 fixConvention[arg_]:=symmetriseTU[
-	arg/.customCouplings/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings
-	]//Expand//Simplify//Expand
+	arg/.customCouplings/.{s->(-t-u)}/.insertCouplings/.Thread[UserMasses->0]
+	]//(*Expand//*)Simplify//Expand
 
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
@@ -231,7 +211,7 @@ particlesFeyn
 testList={};
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*VVtoVV*)
 
 
@@ -266,7 +246,7 @@ test["WallGo"][process]=testWallGo[
 	{"VectorSU2"},
 	{"VectorSU2"}
 ]
-test["AMY"][process]=fixConvention[16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->8,CA->3}]
+test["AMY"][process]=fixConvention[16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->5^2-1,CA->5}]
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -455,9 +435,6 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-64/24
-
-
 (* ::Subsubsection:: *)
 (*FStoFS*)
 
@@ -530,7 +507,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*SStoVV*)
 
 
@@ -608,6 +585,7 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

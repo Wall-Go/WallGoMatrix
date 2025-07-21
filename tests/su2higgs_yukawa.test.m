@@ -21,7 +21,7 @@ Check[
 (*Abelian-Higgs-Yukawa Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -30,6 +30,11 @@ CouplingName={g,gU1};
 RepAdjoint={{2},0};
 Higgs1={{{1},0},"C"}; (* fundamental *)
 RepScalar={Higgs1};
+
+
+su2Reps = RepsUpToDimN[SU2,2];
+Grid[Prepend[{#,RepName[SU2,#]}&/@ su2Reps,{"Dynkin coefficients","Name"}],
+Frame->All,FrameStyle->LightGray]
 
 
 Rep1={{{1},0},"L"};
@@ -66,18 +71,19 @@ VQuartic=\[Lambda]*QuarticTerm1;
 
 
 (* y \[Phi]^*(Subscript[\[Psi], L]Subscript[\[Xi], R]^++Subscript[\[Psi], R]Subscript[\[Xi], L]^+)*)
-InputInv={{1,1,4},{True,True,False}};
+InputInv={{1,1,4},{False,False,True}};
 Yukawa1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 InputInv={{1,2,3},{False,False,True}};
 Yukawa2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-InputInv={{1,1,4},{False,True,False}};
+InputInv={{1,4,1},{True,False,True}};
 Yukawa1HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-InputInv={{1,2,3},{True,False,True}};
+InputInv={{1,3,2},{True,False,True}};
 Yukawa2HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 
 
-Ysff=y*GradYukawa[Yukawa1+Yukawa2];
-YsffC=y*GradYukawa[Yukawa1HC+Yukawa2HC];
+Ysff=-y*GradYukawa[Yukawa1+Yukawa2];
+YsffC=-y*GradYukawa[Yukawa1HC+Yukawa2HC];
+YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{y>0}]];
 
 
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
@@ -130,36 +136,6 @@ LightParticleList={};
 UserMasses={mv2,mf2,ms2};
 
 
-c1={{{{0,0,0,0},{-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0,0,0},{0,0,0,0},{0,0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0}},{{0,0,0,0},{0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0,0},{0,0,0,0},{0,0,0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t)))}},{{0,0,0,0},{(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0,0,0},{0,0,0,0},{0,0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0}},{{0,0,0,0},{0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0,0},{0,0,0,0},{0,0,0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t)))}}},{{{y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0,0,0},{0,0,0,0},{0,0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0},{0,0,0,0}},{{0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0,0},{0,0,0,0},{0,0,0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t))},{0,0,0,0}},{{-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0,0,0},{0,0,0,0},{0,0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0},{0,0,0,0}},{{0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0,0},{0,0,0,0},{0,0,0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t))},{0,0,0,0}}},{{{0,0,0,0},{-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0,0,0},{0,0,0,0},{0,0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0}},{{0,0,0,0},{0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0,0},{0,0,0,0},{0,0,0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t))}},{{0,0,0,0},{-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0,0,0},{0,0,0,0},{0,0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0}},{{0,0,0,0},{0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0,0},{0,0,0,0},{0,0,0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t)))}}},{{{(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0,0,0},{0,0,0,0},{0,0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t))),0},{0,0,0,0}},{{0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0,0},{0,0,0,0},{0,0,0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`t)))},{0,0,0,0}},{{y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0,0,0},{0,0,0,0},{0,0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0},{0,0,0,0}},{{0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t)),0,0},{0,0,0,0},{0,0,0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`t))},{0,0,0,0}}}};
-c2={{{{0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0,0},{0,0,0,0},{0,0,0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)))},{0,0,0,0}},{{0,0,0,0},{0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0,0},{0,0,0,0},{0,0,0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)))}},{{0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0,0},{0,0,0,0},{0,0,0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u)))},{0,0,0,0}},{{0,0,0,0},{0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0,0},{0,0,0,0},{0,0,0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u)))}}},{{{y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0,0,0},{0,0,0,0},{0,0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0},{0,0,0,0}},{{0,0,0,0},{y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0,0,0},{0,0,0,0},{0,0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0}},{{-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0,0,0},{0,0,0,0},{0,0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0},{0,0,0,0}},{{0,0,0,0},{-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0,0,0},{0,0,0,0},{0,0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0}}},{{{0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0,0},{0,0,0,0},{0,0,0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u))},{0,0,0,0}},{{0,0,0,0},{0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0,0},{0,0,0,0},{0,0,0,(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u))}},{{0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0,0},{0,0,0,0},{0,0,0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)))},{0,0,0,0}},{{0,0,0,0},{0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0,0},{0,0,0,0},{0,0,0,-(y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)))}}},{{{(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0,0,0},{0,0,0,0},{0,0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0},{0,0,0,0}},{{0,0,0,0},{(I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0,0,0},{0,0,0,0},{0,0,-((I y^2)/(2 (-mf2+WallGo`WallGoMatrix`Private`u))),0}},{{y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0,0,0},{0,0,0,0},{0,0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0},{0,0,0,0}},{{0,0,0,0},{y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0,0,0},{0,0,0,0},{0,0,y^2/(2 (-mf2+WallGo`WallGoMatrix`Private`u)),0}}}};
-c3={{{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}},{{0,-((I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0},{(I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0,0},{0,0,0,-((I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s)))},{0,0,(I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0}},{{-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0,0},{0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0},{0,0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0},{0,0,0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)))}},{{0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0},{-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0,0},{0,0,0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))},{0,0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0}}},{{{0,(I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0},{-((I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0,0},{0,0,0,(I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s))},{0,0,-((I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0}},{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}},{{0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0},{-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0,0},{0,0,0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))},{0,0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0}},{{g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0,0},{0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0},{0,0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0},{0,0,0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))}}},{{{g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0,0},{0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0},{0,0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0},{0,0,0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))}},{{0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0},{g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0,0},{0,0,0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)))},{0,0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0}},{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}},{{0,-((I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0},{(I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0,0},{0,0,0,-((I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s)))},{0,0,(I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0}}},{{{0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0},{g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0,0},{0,0,0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)))},{0,0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0}},{{-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0,0},{0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0},{0,0,g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0},{0,0,0,-(g^2/(4 (-mv2+WallGo`WallGoMatrix`Private`s)))}},{{0,(I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s)),0,0},{-((I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0,0,0},{0,0,0,(I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s))},{0,0,-((I g^2)/(4 (-mv2+WallGo`WallGoMatrix`Private`s))),0}},{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}}};
-
-
-Flatten[c3,{{1},{2},{3},{4}}] //MatrixForm
-Flatten[c3,{{1},{4},{2},{3}}] //MatrixForm
-
-
-c1//MatrixForm
-c2//MatrixForm
-
-
-c3//MatrixForm
-
-
-c1[[1,2]]//MatrixForm
-c2[[1,2]]//MatrixForm
-c3[[1,2]]//MatrixForm
-
-
-Simplify[Total[%,-1]] 
-
-
-{{{{},{},{},{}},{{},{},{},{}},{{{0,0,0,0,0,0},{0,0,0,0,0,-(y/Sqrt[2])},{0,0,0,0,0,0},{0,0,0,0,-(y/Sqrt[2]),0}},{{0,0,0,0,0,y/Sqrt[2]},{0,0,0,0,0,0},{0,0,0,0,y/Sqrt[2],0},{0,0,0,0,0,0}},{{0,0,0,0,0,0},{0,0,0,0,0,-((I y)/Sqrt[2])},{0,0,0,0,0,0},{0,0,0,0,(I y)/Sqrt[2],0}},{{0,0,0,0,0,(I y)/Sqrt[2]},{0,0,0,0,0,0},{0,0,0,0,-((I y)/Sqrt[2]),0},{0,0,0,0,0,0}}},{{{0,0,0,0,0,0},{0,0,0,0,0,-(y/Sqrt[2])},{0,0,0,0,0,0},{0,0,0,0,-(y/Sqrt[2]),0}},{{0,0,0,0,0,y/Sqrt[2]},{0,0,0,0,0,0},{0,0,0,0,y/Sqrt[2],0},{0,0,0,0,0,0}},{{0,0,0,0,0,0},{0,0,0,0,0,-((I y)/Sqrt[2])},{0,0,0,0,0,0},{0,0,0,0,(I y)/Sqrt[2],0}},{{0,0,0,0,0,(I y)/Sqrt[2]},{0,0,0,0,0,0},{0,0,0,0,-((I y)/Sqrt[2]),0},{0,0,0,0,0,0}}}}}
-
-
-%[[1,3]]
-
-
 (*
 	output of matrix elements
 *)
@@ -180,6 +156,7 @@ MatrixElements;
 
 
 M[0,0,1,1]/.MatrixElements
+fixConvention[%]
 
 
 (* ::Section:: *)
@@ -444,7 +421,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoFF*)
 
 
@@ -468,7 +445,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFS*)
 
 

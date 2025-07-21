@@ -60,7 +60,8 @@ CreateHelpTensors[]:=Module[{},
 ];
 
 
-TotalConj[s_] := Simplify[Total[s,-1],Assumptions->VarAsum] (*Sums all the elements of a tensors and simplifies with the assumption that all variables are real*)
+(*Sums all the elements of a tensors and simplifies with the assumption that all variables are real*)
+TotalConj[s_] := Simplify[Total[s,-1],Assumptions->VarAsum] 
 
 
 DiagonalTensor2[s_SparseArray,a_Integer,b_Integer] := With[
@@ -298,7 +299,7 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 (*Matrix elements*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*V1V2toV3V4*)
 
 
@@ -367,7 +368,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
@@ -518,7 +519,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toV1V2*)
 
 
@@ -762,7 +763,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -811,6 +812,7 @@ If[
 		p2=p4;
 		p4=temp;
 	];
+(*	Print[particle1,particle2,particle3,particle4];*)
 	
 	particleNull={}; (*Just a trick to make the ordering of particles simpler for the benefit of my brain*)
 (*Coupling constants that we will need*)
@@ -837,6 +839,11 @@ If[
 	YTensor2=Table[Ysff[[Particle1,Particle2,;;]],
 		{Particle1,{p1,p2,particleNull,particleNull}},
 		{Particle2,{particleNull,particleNull,p3,p4}}];
+		
+(*	Print["Test YTensor2"];
+	Print[YTensor2//Normal];
+	Print[YTensor2[[1,3]]//Normal];
+	Print[YTensor2[[1,4]]//Normal];*)
 
 	YTensor2C=Table[YsffC[[Particle1,Particle2,;;]],
 		{Particle1,{p1,p2,particleNull,particleNull}},
@@ -858,12 +865,13 @@ If[
 	fermionPropU=Table[1/(u-i),{i,fermionMass}]//ListToMat;
 	
 (*Group invariants from vector diagrams*)
-	CVS=Contract[gTensorS[[1,2]],vectorPropS . gTensorF[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CVS=Contract[gTensorS[[1,2]], vectorPropS . gTensorF[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
 	
 (*Group invariants from Yukawa diagrams*)	
-	CYS=Contract[\[Lambda]3Tensor[[1,2]],scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; 
-	CYT=Contract[YTensor2[[1,3]] . fermionPropT,YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
-	CYU=Contract[YTensor2[[1,4]] . fermionPropU,YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+	CYS=Contract[\[Lambda]3Tensor[[1,2]], scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; 
+	CYT=Contract[YTensor2[[1,3]] . fermionPropT, YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+(*	CYU=Contract[YTensor2[[1,4]] . fermionPropU, YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;*)
+	CYU=Contract[YTensor2[[1,4]] . fermionPropU, YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
 
 (*Lorentz structures for vector exchanges*)
 (*
@@ -877,26 +885,44 @@ If[
 	TotRes=ASSY * TotalConj[CYS*Conjugate[CYS]];
 	
 	(*Squared Yukawa diagrams with fermion exchanges*)
-	TotRes+=+A * TotalConj[CYT*Conjugate[CYT]]; (*squared t-channel diagram*)
-	TotRes+=+A * TotalConj[CYU*Conjugate[CYU]]; (*squared u-channel diagram*)
-	TotRes+=-A * TotalConj[CYU*CYT+CYT*CYU]; (*mixed u & t-channel diagrams*)
+	TotRes+=+ flag[1] * A * TotalConj[CYT*Conjugate[CYT]]; (*squared t-channel diagram*)
+	TotRes+=+ flag[2] * A * TotalConj[CYU*Conjugate[CYU]]; (*squared u-channel diagram*)
+	TotRes+=- flag[3] * A * TotalConj[CYU*CYT+CYT*CYU]; (*mixed u & t-channel diagrams*)
 	
 	(*Squared s-channel diagram with a vector boson*)
-	TotRes+=4*A*TotalConj[CVS*Conjugate[CVS]]; 
+	TotRes+= flag[4] * 4*A*TotalConj[CVS*Conjugate[CVS]]; 
 	
 	(*Mix between vector- and fermion-exchange diagrams*)
-	TotRes+=-2*A*TotalConj[
-		-I(CYT+CYU)*Conjugate[CVS]
+(*	Print["SS->FF test"];
+	try=-2*A*Simplify[
+		-flag[1] I*(CYT+CYU)*Conjugate[CVS]
+		+flag[2] I*CVS*Conjugate[(CYT+CYU)]
+		];
+	Print[try//MatrixForm];*)
+(*	Print[CYT//Normal];
+	Print[CYU//Normal];
+	Print[CVS//Normal];*)
+(*	Print[CYU*CYT+CYT*CYU//Normal];*)
+(*	Print[Conjugate[CYT]*CVS//Normal];*)
+
+(* old implementation *)
+(*	TotRes+=-2*A*TotalConj[
+		-I*(CYT+CYU)*Conjugate[CVS]
 		+I*CVS*Conjugate[(CYT+CYU)]
-		]; 
+		]; *)
+
+	TotRes+=-2*A*TotalConj[
+		+I*(CYT-CYU)*Conjugate[CVS]
+		-I*CVS*Conjugate[(CYT-CYU)]
+		];
 
 (*The full result*)
-	Return[2*Refine[TotRes,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
+	Return[2*Refine[TotRes/.{flag[s_]->1},Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
 ]	
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1S1*)
 
 
@@ -944,7 +970,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1V1*)
 
 
@@ -1056,7 +1082,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toV1V2*)
 
 
@@ -1124,8 +1150,8 @@ If[
 	
 
 (*Group invariants from vector diagrams*)
-	CT=-Contract[gTensorS2[[1,3]] . scalarPropT,gTensorS2[[2,4]],{{3,6}}]//OrderArray[#,2,4,1,3]&;
-	CU=-Contract[gTensorS2[[1,4]] . scalarPropU,gTensorS2[[2,3]],{{3,6}}]//OrderArray[#,2,4,3,1]&;
+	CT=-Contract[gTensorS2[[1,3]] . scalarPropT, gTensorS2[[2,4]],{{3,6}}]//OrderArray[#,2,4,1,3]&;
+	CU=-Contract[gTensorS2[[1,4]] . scalarPropU, gTensorS2[[2,3]],{{3,6}}]//OrderArray[#,2,4,3,1]&;
 	CV=gTensorV[[3,4]] . vectorPropS . gTensorS[[1,2]]//OrderArray[#,3,4,1,2]&;
 
 (*Lorentz structures that appear*)
@@ -1151,7 +1177,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1V1toS1V1*)
 
 
@@ -1201,7 +1227,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3V1*)
 
 
