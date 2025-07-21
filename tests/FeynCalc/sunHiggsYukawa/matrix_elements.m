@@ -307,7 +307,7 @@ ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimpli
 (*Results*)
 
 
-(* squared summed matrix elements with a vector on leg 1 *)
+(* squared summed matrix elements with a scalar on leg 1 *)
 processes=makeProcesses[S[1]];
 processes//MatrixForm;
 scalar=DeleteCases[ 
@@ -330,7 +330,7 @@ vector=DeleteCases[
 	,_->0];
 
 
-(* squared summed matrix elements with a vector on leg 1 *)
+(* squared summed matrix elements with a fermion on leg 1 *)
 processes=makeProcesses[F[1]];
 fermion=DeleteCases[ 
 	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
