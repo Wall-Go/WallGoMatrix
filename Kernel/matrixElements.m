@@ -299,7 +299,7 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 (*Matrix elements*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*V1V2toV3V4*)
 
 
@@ -519,7 +519,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toV1V2*)
 
 
@@ -686,7 +686,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3S4*)
 
 
@@ -908,9 +908,15 @@ If[
 (*	try=(CYT-CYU)*Conjugate[CVS];
 	Print[Length[try["NonzeroValues"]]];*)
 (* old implementation *)
-	TotRes+=-2*A*TotalConj[
+(*	TotRes+=-2*A*TotalConj[
 		-I*(CYT+CYU)*Conjugate[CVS]
 		+I*CVS*Conjugate[(CYT+CYU)]
+		];*)
+	TotRes+=+2*A*TotalConj[
+		-flag1*I*(CYT+CYU)*CVS
+		+flag2*I*Conjugate[CVS*(CYT+CYU)]
+		-flag3*I*(CYT-CYU)*Conjugate[CVS]
+		+flag4*I*CVS*Conjugate[(CYT-CYU)]
 		]; 
 
 (*	TotRes+=-2*A*TotalConj[
@@ -962,17 +968,19 @@ If[ (
 	
 	(*The result for SF->SF is the same as  SS->FF if we do some renaming of the mandelstam variables*)
 	resTot=-CreateMatrixElement["S1S2toF1F2"][p1,p3,p2,p4,particleMass]/.{s->s1,t->t1,u->u1}; (*Minus sign as we reveresed the momentum of a fermion*)
-	resTot=resTot/.{s1->t,t1->s,u1->u}; 
+	resTot=resTot/.{s1->t,t1->s,u1->u};
 	
+(*	Print[VarAsum];
+	Print[Refine[resTot,Assumptions->VarAsum];*)
 	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t1,u->u1}/.{t1->u,u1->t};];
-	Return[resTot]
+	Return[Refine[resTot,Assumptions->VarAsum]]
 ,
 	Return[0]
 ]	
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1S1toF1V1*)
 
 
@@ -1229,7 +1237,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toS3V1*)
 
 

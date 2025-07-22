@@ -196,6 +196,14 @@ test["WallGo"][process]=testWallGo[
 	{"PsiL","PsiR"},
 	{"Phi"}
 ]
+Refine[%,Assumptions->VarAsum]
+
+
+	VarAsum={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u}//Flatten (*All variables are assumed to be real*)
+
+
+
+VarAsum
 
 
 -4 g^2 y^2+(4 g^2 t y^2)/u+(4 g^2 u y^2)/t//symmetriseTUnew
@@ -476,7 +484,7 @@ test["WallGo"][process]=testWallGo[
 	{"Phi"},
 	{"PsiL","PsiR"},
 	{"PsiL","PsiR"}
-]
+]/.{flag1->1,flag2->1,flag3->1,flag4->1}
 test["FeynCalc"][process]=testFeynCalc[
 	{"Phi","Phibar"},
 	{"Phi","Phibar"},
@@ -503,7 +511,7 @@ test["WallGo"][process]=testWallGo[
 	{"Phi"},
 	{"PsiL","PsiR"},
 	{"Phi"}
-]
+](*//Simplify[#,{t\[Element]Reals,u\[Element]Reals,y\[Element]Reals}]&//Expand*)/.{flag1->1,flag2->1,flag3->1,flag4->1}
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
 	{"Phi","Phibar"},
@@ -518,19 +526,19 @@ AppendTo[testList,
 
 
 process="SS->F1F1_flippingRule"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=-testWallGo[
 	{"Phi"},
 	{"Phi"},
 	{"PsiL","PsiR"},
 	{"PsiL","PsiR"}
-]/.{s->s1,t->t1,u->uu1}/.{s1->t,t1->s,uu1->u}/.{t->t1,u->uu1}/.{t1->u,uu1->t}//fixConvention[#]&
+]/.{flag1->1,flag2->1,flag3->1,flag4->1}/.{s->s1,t->t1,u->uu1}/.{s1->t,t1->s,uu1->u}/.{t->t1,u->uu1}/.{t1->u,uu1->t}//fixConvention[#]&
 process="F1S->F1S_flippingRule"
 test["WallGo"][process]=testWallGo[
 	{"PsiL","PsiR"},
 	{"Phi"},
 	{"PsiL","PsiR"},
 	{"Phi"}
-]
+]/.{flag1->1,flag2->1,flag3->1,flag4->1}
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"]["SS->F1F1_flippingRule"]//Evaluate,

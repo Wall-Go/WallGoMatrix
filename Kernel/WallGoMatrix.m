@@ -848,8 +848,8 @@ Block[
 		};
 		
 (*Creates an assumption rule for simplifying Conjugate[....] terms*)
-	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u}; (*All variables are assumed to be real*)
-	
+	VarAsum={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u}//Flatten; (*All variables are assumed to be real*)
+		
 (*Allocates one element for each species mass to avoid errors*)
 	Table[
 		If[particleMasses[[i]]=={},particleMasses[[i]]={msq}],
