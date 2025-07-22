@@ -38,10 +38,8 @@ Frame->All,FrameStyle->LightGray]
 
 
 Rep1={{{1},0},"L"};
-Rep2={{{1},0},"R"};
-Rep3={{{0},0},"L"};
-Rep4={{{0},0},"R"};
-RepFermion={Rep1,Rep2,Rep3,Rep4};
+Rep2={{{0},0},"R"};
+RepFermion={Rep1,Rep2};
 
 
 (* ::Text:: *)
@@ -71,19 +69,20 @@ VQuartic=\[Lambda]*QuarticTerm1;
 
 
 (* y \[Phi]^*(Subscript[\[Psi], L]Subscript[\[Xi], R]^++Subscript[\[Psi], R]Subscript[\[Xi], L]^+)*)
-InputInv={{1,1,4},{False,False,True}};
+(*one fermion*)
+InputInv={{1,1,2},{False,False,True}};
+(*InputInv={{1,1,2},{True,True,False}};*)
 Yukawa1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-InputInv={{1,2,3},{False,False,True}};
-Yukawa2=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-InputInv={{1,4,1},{True,False,True}};
+InputInv={{1,2,1},{True,False,True}};
 Yukawa1HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
-InputInv={{1,3,2},{True,False,True}};
-Yukawa2HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 
 
-Ysff=-y*GradYukawa[Yukawa1+Yukawa2];
-YsffC=-y*GradYukawa[Yukawa1HC+Yukawa2HC];
+Ysff=-y*GradYukawa[Yukawa1];
+YsffC=-y*GradYukawa[Yukawa1HC];
 YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{y>0}]];
+
+
+Ysff//MatrixForm
 
 
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
@@ -117,8 +116,9 @@ rep 1-2 are fermions,
 RepPhi=CreateParticle[{{1,1},{1,2}},"S",ms2,"Phi"]
 
 (* left-handed fermion *)
-RepPsi=CreateParticle[{1,2},"F",mf2,"Psi"]
-RepXi=CreateParticle[{3,4},"F",mf2,"Xi"]
+RepPsiL=CreateParticle[{{1,1}},"F",mf2,"PsiL"]
+RepPsiR=CreateParticle[{{1,2}},"F",mf2,"PsiR"]
+RepXi=CreateParticle[{2},"F",mf2,"Xi"]
 
 (*Vector bosons*)
 RepA=CreateParticle[{1},"V",mv2,"VectorSU2"]
@@ -128,7 +128,7 @@ RepB=CreateParticle[{2},"V",mv2,"VectorU1"]
 (*
 These particles do not necessarily have to be out of equilibrium
 *)
-ParticleList={RepPhi,RepPsi,RepXi,RepA,RepB};
+ParticleList={RepPhi,RepPsiL,RepPsiR,RepXi,RepA,RepB};
 LightParticleList={};
 
 
@@ -270,10 +270,10 @@ AppendTo[testList,
 
 process="F1F1->F1F1"
 test["WallGo"][process]=testWallGo[
-	{"Psi"},
-	{"Psi"},
-	{"Psi"},
-	{"Psi"}
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"}
 ]
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
@@ -311,9 +311,9 @@ AppendTo[testList,
 
 process="F1F2->F1F2"
 test["WallGo"][process]=testWallGo[
-	{"Psi"},
+	{"PsiL","PsiR"},
 	{"Xi"},
-	{"Psi"},
+	{"PsiL","PsiR"},
 	{"Xi"}
 ]
 test["FeynCalc"][process]=testFeynCalc[
@@ -331,8 +331,8 @@ AppendTo[testList,
 
 process="F1F1->F2F2"
 test["WallGo"][process]=testWallGo[
-	{"Psi"},
-	{"Psi"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"},
 	{"Xi"},
 	{"Xi"}
 ]
@@ -355,8 +355,8 @@ AppendTo[testList,
 
 process="F1F1->VV"
 test["WallGo"][process]=testWallGo[
-	{"Psi"},
-	{"Psi"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"},
 	{"VectorSU2"},
 	{"VectorSU2"}
 ]
@@ -379,9 +379,9 @@ AppendTo[testList,
 
 process="F1V->F1V"
 test["WallGo"][process]=testWallGo[
-	{"Psi"},
+	{"PsiL","PsiR"},
 	{"VectorSU2"},
-	{"Psi"},
+	{"PsiL","PsiR"},
 	{"VectorSU2"}
 ]
 test["FeynCalc"][process]=testFeynCalc[
@@ -421,7 +421,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*SStoFF*)
 
 
@@ -429,8 +429,8 @@ process="SS->F1F1"
 test["WallGo"][process]=testWallGo[
 	{"Phi"},
 	{"Phi"},
-	{"Psi"},
-	{"Psi"}
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"}
 ]
 test["FeynCalc"][process]=testFeynCalc[
 	{"Phi","Phibar"},
@@ -445,15 +445,18 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+2*3*8/40*4/3
+
+
+(* ::Subsubsection:: *)
 (*FStoFS*)
 
 
 process="F1S->F1S"
 test["WallGo"][process]=testWallGo[
-	{"Psi"},
+	{"PsiL","PsiR"},
 	{"Phi"},
-	{"Psi"},
+	{"PsiL","PsiR"},
 	{"Phi"}
 ]
 test["FeynCalc"][process]=testFeynCalc[
@@ -475,9 +478,9 @@ AppendTo[testList,
 
 process="F1S->F1V"
 test["WallGo"][process]=testWallGo[
-	{"Psi"},
+	{"PsiL","PsiR"},
 	{"Phi"},
-	{"Psi"},
+	{"PsiL","PsiR"},
 	{"VectorSU2"}
 ]
 test["FeynCalc"][process]=testFeynCalc[
@@ -499,8 +502,8 @@ AppendTo[testList,
 
 process="F1F1->SV"
 test["WallGo"][process]=testWallGo[
-	{"Psi"},
-	{"Psi"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"},
 	{"Phi"},
 	{"VectorSU2"}
 ]

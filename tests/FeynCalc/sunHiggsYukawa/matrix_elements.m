@@ -25,7 +25,7 @@ $KeepLogDivergentScalelessIntegrals=True;
 FCDisableTraditionalFormOutput[]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Choosing model*)
 
 
@@ -102,7 +102,7 @@ processesByHand={
 	};
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Automating steps*)
 
 
@@ -279,7 +279,7 @@ externalSignature={S[1],S[1]}->{S[1],S[1]};
 ampSq[S]=makeAmplitudeSquared[{S[1],S[1]}->{S[1],S[1]},All,True]//Contract//SUNSimplify
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*FF->FF*)
 
 
@@ -303,7 +303,41 @@ ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimpli
 %/.{mPhi->0,mPsi->0,CA->2,CF->3/4}
 
 
-(* ::Section:: *)
+(* ::Subsection:: *)
+(*SS->FF*)
+
+
+externalSignature={S[1],-S[1]}->{F[2],-F[2]};
+externalSignature={S[1],-S[1]}->{-F[2],F[2]};
+externalSignature={-S[1],S[1]}->{F[2],-F[2]};
+externalSignature={-S[1],S[1]}->{-F[1],F[1]};
+
+
+ampSq["SS->FF"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify//SpinorChainEvaluate;
+(*%//FullForm;*)
+%//Contract//Expand;
+%/.{mPhi->0,mPsi->0,mChi->0,CA->2,CF->3/4}
+
+
+signatures={
+	{S[1],-S[1]}->{F[1],-F[1]},
+	{S[1],-S[1]}->{-F[1],F[1]},
+	{-S[1],S[1]}->{F[1],-F[1]},
+	{-S[1],S[1]}->{-F[1],F[1]}	
+};
+
+ampSq["SS->FF"]=
+Table[
+	makeAmplitudeSquared[sig,All,True]//Contract//SUNSimplify//SpinorChainEvaluate,
+	{sig,signatures}];
+(*%//FullForm;*)
+%//Contract//Expand;
+%/.{mPhi->0,mPsi->0,mChi->0,CA->2,CF->3/4}
+%//Total//Simplify
+fixConvention[%]
+
+
+(* ::Section::Closed:: *)
 (*Results*)
 
 
@@ -347,7 +381,7 @@ results=Flatten[{scalar,antiscalar,vector,fermion,antifermion},1];
 feynAssociation=Association[results];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Exporting to ascii for C++*)
 
 
