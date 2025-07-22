@@ -912,6 +912,7 @@ If[
 		-I*(CYT+CYU)*Conjugate[CVS]
 		+I*CVS*Conjugate[(CYT+CYU)]
 		];*)
+		
 	TotRes+=+2*A*TotalConj[
 		-flag1*I*(CYT+CYU)*CVS
 		+flag2*I*Conjugate[CVS*(CYT+CYU)]
