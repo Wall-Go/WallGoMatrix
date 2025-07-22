@@ -518,6 +518,27 @@ AppendTo[testList,
 
 
 process="SS->F1F1_flippingRule"
+test["WallGo"][process]=testWallGo[
+	{"Phi"},
+	{"Phi"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"}
+]/.{s->s1,t->t1,u->uu1}/.{s1->t,t1->s,uu1->u}/.{t->t1,u->uu1}/.{t1->u,uu1->t}//fixConvention[#]&
+process="F1S->F1S_flippingRule"
+test["WallGo"][process]=testWallGo[
+	{"PsiL","PsiR"},
+	{"Phi"},
+	{"PsiL","PsiR"},
+	{"Phi"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"]["SS->F1F1_flippingRule"]//Evaluate,
+		test["WallGo"]["F1S->F1S_flippingRule"],
+		TestID->"WallGo vs WallGo: "<>process]];
+
+
+process="SS->F1F1_flippingRule"
 test["FeynCalc"][process]=-testFeynCalc[
 	{"Phi","Phibar"},
 	{"Phi","Phibar"},
@@ -535,7 +556,7 @@ AppendTo[testList,
 	TestCreate[
 		test["FeynCalc"]["SS->F1F1_flippingRule"]//Evaluate,
 		test["FeynCalc"]["F1S->F1S_flippingRule"],
-		TestID->"WallGo vs FeynCalc: "<>process]];
+		TestID->"FeynCalc vs FeynCalc: "<>process]];
 
 
 (* ::Subsubsection::Closed:: *)
