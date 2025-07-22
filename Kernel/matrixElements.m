@@ -905,17 +905,19 @@ If[
 (*	Print[CYU*CYT+CYT*CYU//Normal];*)
 (*	Print[Conjugate[CYT]*CVS//Normal];*)
 
+(*	try=(CYT-CYU)*Conjugate[CVS];
+	Print[Length[try["NonzeroValues"]]];*)
 (* old implementation *)
-(*	TotRes+=-2*A*TotalConj[
+	TotRes+=-2*A*TotalConj[
 		-I*(CYT+CYU)*Conjugate[CVS]
 		+I*CVS*Conjugate[(CYT+CYU)]
-		]; *)
+		]; 
 
-	TotRes+=-2*A*TotalConj[
+(*	TotRes+=-2*A*TotalConj[
 		+I*(CYT-CYU)*Conjugate[CVS]
 		-I*CVS*Conjugate[(CYT-CYU)]
 		];
-
+*)
 (*The full result*)
 	Return[2*Refine[TotRes/.{flag[s_]->1},Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
 ]	

@@ -167,7 +167,7 @@ MatrixElements;
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["sun-higgs-yukawa.test.json"];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Comparison tests*)
 
 
