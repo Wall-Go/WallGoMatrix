@@ -159,6 +159,51 @@ M[0,0,1,1]/.MatrixElements
 fixConvention[%]
 
 
+M[0,0,1,1]/.MatrixElements//Simplify;
+-%/.{s->s1,t->t1,u->uu1}/.{s1->t,t1->s,uu1->u};
+fixConvention[%]
+
+
+M[2,0,2,0]/.MatrixElements//Simplify;
+fixConvention[%]
+
+
+fixConvention[arg_]:=symmetriseTU[
+	arg/.customCouplings/.{s->(-t-u)}/.insertCouplings/.Thread[UserMasses->0]
+	]//(*Expand//*)Simplify//Expand
+fixConvention2[arg_]:=symmetriseTU[
+	arg/.customCouplings/.{s->(-t-u)}/.insertCouplings/.Thread[UserMasses->0]
+	]//(*Expand//*)Simplify//Expand
+
+testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements(*//removeMissing*)//fixConvention;
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]//testsRulesWallGo
+
+
+test["WallGo"][process]=testWallGo[
+	{"Phi"},
+	{"Phi"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"}
+]
+-%/.{s->s1,t->t1,u->uu1}/.{s1->t,t1->s,uu1->u}/.{t->t1,u->uu1}/.{t1->u,uu1->t}
+fixConvention[%]
+
+test["WallGo"][process]=testWallGo[
+	{"PsiL","PsiR"},
+	{"Phi"},
+	{"PsiL","PsiR"},
+	{"Phi"}
+]
+
+
+-4 g^2 y^2+(4 g^2 t y^2)/u+(4 g^2 u y^2)/t//symmetriseTUnew
+
+
+symmetriseTUnew[arg_]:=1/2 (arg)+1/2 (arg/.{1/t->1/tt,1/u->1/uu}/.{t->(-s-u),u->(-s-t)}/.{1/uu->1/tt, 1/tt->1/uu})
+
+
 (* ::Section:: *)
 (*Tests*)
 
@@ -469,6 +514,27 @@ AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
 		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+process="SS->F1F1_flippingRule"
+test["FeynCalc"][process]=-testFeynCalc[
+	{"Phi","Phibar"},
+	{"Phi","Phibar"},
+	{"Psi","Psibar"},
+	{"Psi","Psibar"}
+]/.{s->s1,t->t1,u->uu1}/.{s1->t,t1->s,uu1->u}/.{t->t1,u->uu1}/.{t1->u,uu1->t}//fixConvention[#]&
+process="F1S->F1S_flippingRule"
+test["FeynCalc"][process]=testFeynCalc[
+	{"Psi","Psibar"},
+	{"Phi","Phibar"},
+	{"Psi","Psibar"},
+	{"Phi","Phibar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["FeynCalc"]["SS->F1F1_flippingRule"]//Evaluate,
+		test["FeynCalc"]["F1S->F1S_flippingRule"],
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
