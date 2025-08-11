@@ -4,7 +4,7 @@
 (*Matrix elements*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Help functions*)
 
 
@@ -519,7 +519,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toV1V2*)
 
 
@@ -635,7 +635,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1V1toF1V1*)
 
 
@@ -686,7 +686,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toS3S4*)
 
 
@@ -769,6 +769,7 @@ If[
 
 CreateMatrixElement["S1S2toF1F2"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
 Block[{
+	types,
 	s,t,u,gTensor,gTensorT,gTensorC,gTensorCT,gTensorVF,gTensorVFC,gTensorVS,
 	Res,CTT,CUU,ATT,AUU,p1,p2,p3,p4,gTensorS,gTensorF,YTensor,YTensorC,particleNull,
 	\[Lambda]3Tensor,YTensor2,YTensor2C,
@@ -780,42 +781,26 @@ Block[{
 	This module returns the squared matrix element of SS->FF summed over all quantum numbers of the incoming particles.
 	If the incoming particles are not of the form SS->FF the routine returns 0.
 *)
-If[
-	(
-		particle1[[2]]!="S"||
-		particle2[[2]]!="S"||
-		particle3[[2]]!="F"||
-		particle4[[2]]!="F")&&
-	(
-		particle1[[2]]!="F"||
-		particle2[[2]]!="F"||
-		particle3[[2]]!="S"||
-		particle4[[2]]!="S"
-	),
-	Return[0];
-,
-	p1=particle1[[1]];
-	p2=particle2[[1]];
-	p3=particle3[[1]];
-	p4=particle4[[1]];
-If[
-	particle1[[2]]=="F"&&
-	particle2[[2]]=="F"&&
-	particle3[[2]]=="S"&&
-	particle4[[2]]=="S",
-(*Just changing the order of the particles so that it is always SS->FF. Undoubtably this choice of ordering has a deep origin.*)	
-		temp=p1;
-		p1=p3;
-		p3=temp;
-		
-		temp=p2;
-		p2=p4;
-		p4=temp;
+	types = #[[2]] & /@ {particle1, particle2, particle3, particle4};
+	{p1, p2, p3, p4} = #[[1]] & /@ {particle1, particle2, particle3, particle4};
+  
+	If[!(
+		types === {"S", "S", "F", "F"} ||
+	    types === {"F", "F", "S", "S"}),
+		Return[0];
 	];
+
+	(* Change the order of the particles so that it is always SS->FF. *)	
+	If[types === {"F", "F", "S", "S"},
+		{p1, p3} = {p3, p1};
+		{p2, p4} = {p4, p2};
+	];
+
 (*	Print[particle1,particle2,particle3,particle4];*)
 	
-	particleNull={}; (*Just a trick to make the ordering of particles simpler for the benefit of my brain*)
-(*Coupling constants that we will need*)
+	particleNull={};
+	(*Simplify the ordering of particles*)
+	(*Coupling constants that we will need*)
 	gTensorS=Table[gvss[[;;,Particle1,Particle2]],
 		{Particle1,{p1,p2,particleNull,particleNull}},
 		{Particle2,{p1,p2,particleNull,particleNull}}];
@@ -867,11 +852,35 @@ If[
 (*Group invariants from vector diagrams*)
 	CVS=Contract[gTensorS[[1,2]], vectorPropS . gTensorF[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
 	
-(*Group invariants from Yukawa diagrams*)	
+(*Group invariants from Yukawa diagrams*)
+	Print["hello1"];
 	CYS=Contract[\[Lambda]3Tensor[[1,2]], scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; 
-	CYT=Contract[YTensor2[[1,3]] . fermionPropT, YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
-(*	CYU=Contract[YTensor2[[1,4]] . fermionPropU, YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;*)
-	CYU=Contract[YTensor2[[1,4]] . fermionPropU, YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+	CYT=Contract[YTensor2[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+	CYU=Contract[YTensor2[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+	
+	
+(*	CYT=Contract[YTensor2[[1,3]], fermionPropT . YTensor2C[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
+	CYU=Contract[YTensor2[[1,4]], fermionPropU . YTensor2C[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;*)
+
+	Print["hello"];
+(*
+(*Group invariants from vector diagrams*)
+	CS=Contract[gTensor[[1,2]],vectorPropS . gTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CT=Contract[gTensor[[1,3]],vectorPropT . gTensor[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
+	CU=Contract[gTensor[[1,4]],vectorPropU . gTensor[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
+	
+	CTrS=Contract[gTensor[[2,1]],vectorPropS . gTensor[[4,3]],{{1,4}}]//OrderArray[#,2,1,4,3]&;
+	CTrT=Contract[gTensor[[3,1]],vectorPropT . gTensor[[4,2]],{{1,4}}]//OrderArray[#,2,4,1,3]&;
+	CTrU=Contract[gTensor[[4,1]],vectorPropU . gTensor[[3,2]],{{1,4}}]//OrderArray[#,2,4,3,1]&;
+
+	CSC=Contract[gTensor[[1,2]],vectorPropS . gTensor[[4,3]],{{1,4}}]//OrderArray[#,1,2,4,3]&;
+	CTC=Contract[gTensor[[1,3]],vectorPropT . gTensor[[4,2]],{{1,4}}]//OrderArray[#,1,4,2,3]&;
+	CUC=Contract[gTensor[[1,4]],vectorPropU . gTensor[[3,2]],{{1,4}}]//OrderArray[#,1,4,3,2]&;
+	
+	CSCC=Contract[gTensor[[2,1]],vectorPropS . gTensor[[3,4]],{{1,4}}]//OrderArray[#,2,1,3,4]&;
+	CTCC=Contract[gTensor[[3,1]],vectorPropT . gTensor[[2,4]],{{1,4}}]//OrderArray[#,2,3,1,4]&;
+	CUCC=Contract[gTensor[[4,1]],vectorPropU . gTensor[[2,3]],{{1,4}}]//OrderArray[#,2,3,4,1]&;
+*)
 
 (*Lorentz structures for vector exchanges*)
 (*
@@ -914,10 +923,14 @@ If[
 		];*)
 		
 	TotRes+=+2*A*TotalConj[
+(*		-flag11*I*CYT*CVS
+		-flag12*I*CYU*CVS
+		+flag21*I*Conjugate[CVS*CYT]
+		+flag22*I*Conjugate[CVS*CYU]*)
 		-flag1*I*(CYT+CYU)*CVS
-		+flag2*I*Conjugate[CVS*(CYT+CYU)]
-		-flag3*I*(CYT-CYU)*Conjugate[CVS]
-		+flag4*I*CVS*Conjugate[(CYT-CYU)]
+		-flag2*I*CVS*(CYT+CYU)
+		-flag3*I*(CYT+fsign*CYU)*Conjugate[CVS]
+		+flag4*I*CVS*Conjugate[(CYT+fsign*CYU)]
 		]; 
 
 (*	TotRes+=-2*A*TotalConj[
@@ -927,7 +940,6 @@ If[
 *)
 (*The full result*)
 	Return[2*Refine[TotRes/.{flag[s_]->1},Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
-]	
 ];
 
 
@@ -936,7 +948,7 @@ If[
 
 
 CreateMatrixElement["F1S1toF1S1"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
-Block[{s,t,u,p1,p2,p3,p4,temp,resTot,u1,s1,t1,kinFlip},
+Block[{s,t,u,partInt,temp,resTot,u1,s1,t1,kinFlip},
 (*
 	This module returns the squared matrix element of FV->FV summed over all quantum numbers of the incoming particles.
 	If the incoming particles are not of the form FV->FV the routine returns 0.
@@ -949,26 +961,30 @@ If[ (
 	(particle3[[2]]=="F"&&particle4[[2]]=="S")||
 	(particle3[[2]]=="S"&&particle4[[2]]=="F")),
 
-	p1=particle1;
-	p2=particle2;
-	p3=particle3;
-	p4=particle4;
-(*Changing the order of the particles so that it is always SF->SF. Incidentally the opposite ordering as given in the name of the routine.*)	
+	partInt[1]=particle1;
+	partInt[2]=particle2;
+	partInt[3]=particle3;
+	partInt[4]=particle4;
+(*
+	Changing the order of the particles so that it is always SF->SF.
+	Incidentally the opposite ordering as given in the name of the routine.
+*)	
 	If[particle1[[2]]=="S"&&particle2[[2]]=="F",
-		temp=p1;
-		p1=p2;
-		p2=temp;
+		temp=partInt[1];
+		partInt[1]=partInt[2];
+		partInt[2]=temp;
 		kinFlip+=1;
 	];
 	If[particle3[[2]]=="S"&&particle4[[2]]=="F",
-		temp=p3;
-		p3=p4;
-		p4=temp;
+		temp=partInt[3];
+		partInt[3]=partInt[4];
+		partInt[4]=temp;
 		kinFlip+=1;
 	];
 	
 	(*The result for SF->SF is the same as  SS->FF if we do some renaming of the mandelstam variables*)
-	resTot=-CreateMatrixElement["S1S2toF1F2"][p1,p3,p2,p4,particleMass]/.{s->s1,t->t1,u->u1}; (*Minus sign as we reveresed the momentum of a fermion*)
+	(*Minus sign as we reveresed the momentum of a fermion*)
+	resTot=-CreateMatrixElement["S1S2toF1F2"][partInt[1],partInt[3],partInt[2],partInt[4],particleMass]/.{s->s1,t->t1,u->u1};
 	resTot=resTot/.{s1->t,t1->s,u1->u};
 	
 (*	Print[VarAsum];
@@ -1188,7 +1204,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1V1toS1V1*)
 
 
