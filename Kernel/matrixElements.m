@@ -855,8 +855,15 @@ Block[{
 (*Group invariants from Yukawa diagrams*)
 	Print["hello1"];
 	CYS=Contract[\[Lambda]3Tensor[[1,2]], scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; 
-	CYT=Contract[YTensor2[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
-	CYU=Contract[YTensor2[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+	
+	CYT=Contract[YTensor2[[1,3]] . fermionPropT , YTensor2[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+	CYU=Contract[YTensor2[[1,4]] . fermionPropU , YTensor2[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+	
+	CYTC=Contract[YTensor2[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+	CYUC=Contract[YTensor2[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+	
+	CYTCC=Contract[YTensor2C[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+	CYUCC=Contract[YTensor2C[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
 	
 	
 (*	CYT=Contract[YTensor2[[1,3]], fermionPropT . YTensor2C[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
@@ -864,6 +871,19 @@ Block[{
 
 	Print["hello"];
 (*
+(*Group invariants from scalar diagrams*)
+	CSy=Contract[YTensor[[1,2]],scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CTy=Contract[YTensor[[1,3]],scalarPropT . YTensor[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
+	CUy=Contract[YTensor[[1,4]],scalarPropU . YTensor[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
+	
+	CSyC=Contract[YTensor[[1,2]],scalarPropS . YTensorC[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CTyC=Contract[YTensor[[1,3]],scalarPropT . YTensorC[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
+	CUyC=Contract[YTensor[[1,4]],scalarPropU . YTensorC[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
+
+	CSyCC=Contract[YTensorC[[1,2]],scalarPropS . YTensorC[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CTyCC=Contract[YTensorC[[1,3]],scalarPropT . YTensorC[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
+	CUyCC=Contract[YTensorC[[1,4]],scalarPropU . YTensorC[[2,3]],{{1,4}}]//OrderArray[#,1,3,4,2]&;
+	
 (*Group invariants from vector diagrams*)
 	CS=Contract[gTensor[[1,2]],vectorPropS . gTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
 	CT=Contract[gTensor[[1,3]],vectorPropT . gTensor[[2,4]],{{1,4}}]//OrderArray[#,1,3,2,4]&;
@@ -922,7 +942,7 @@ Block[{
 		+I*CVS*Conjugate[(CYT+CYU)]
 		];*)
 		
-	TotRes+=+2*A*TotalConj[
+(*	TotRes+=+2*A*TotalConj[
 (*		-flag11*I*CYT*CVS
 		-flag12*I*CYU*CVS
 		+flag21*I*Conjugate[CVS*CYT]
@@ -931,13 +951,27 @@ Block[{
 		-flag2*I*CVS*(CYT+CYU)
 		-flag3*I*(CYT+fsign*CYU)*Conjugate[CVS]
 		+flag4*I*CVS*Conjugate[(CYT+fsign*CYU)]
-		]; 
+		]; *)
 
 (*	TotRes+=-2*A*TotalConj[
 		+I*(CYT-CYU)*Conjugate[CVS]
 		-I*CVS*Conjugate[(CYT-CYU)]
 		];
 *)
+
+	TotRes+=+4*s*t*I*TotalConj[CVS*Conjuage[CYTC] + CYTC*Conjugate[CVS]];
+(*	TotRes+=+flag2*2*s*u*I*TotalConj[CVS*Conjuage[CYUC] + CYUC*Conjugate[CVS]];*)
+
+(*	
+	totRes+=1/2*s*t*TotalConj[CS*Conjugate[CTyC] +CTyC*Conjugate[CS]];
+	totRes+=1/2*u*t*TotalConj[CU*Conjugate[CTyC] +CTyC*Conjugate[CU]];
+
+	totRes+=1/2*s*u*TotalConj[CS*Conjugate[CUyC] +CUyC*Conjugate[CS]];
+	totRes+=1/2*u*t*TotalConj[CT*Conjugate[CUyC] +CUyC*Conjugate[CT]];
+
+	totRes+=1/2*s*t*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
+	totRes+=1/2*u*s*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];	*)
+
 (*The full result*)
 	Return[2*Refine[TotRes/.{flag[s_]->1},Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
 ];
