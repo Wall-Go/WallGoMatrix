@@ -985,7 +985,8 @@ Block[{
 	s,t,u,gTensor,gTensorC,gTensorVFC,gTensorVF,gTensorVS,SortHelp,
 	fermionMass,
 	fermionPropS,particleNull,gTensorF,YTensor,CS,resTot,
-	YTensor2,gTensorF2,fermionPropU,CU,kinFlip,t2,u2
+	YTensor2,gTensorF2,fermionPropU,CU,kinFlip,t2,u2,
+	flag
 },
 (*
 	This module returns the squared matrix element of FS->FV summed over all quantum numbers of the incoming particles.
@@ -1030,10 +1031,13 @@ If[ (
 	CS=Contract[YTensor . fermionPropS ,gTensorF,{{3,6}}]//OrderArray[#,2,1,4,3]&;
 	CU=Contract[YTensor2 . fermionPropU ,gTensorF2,{{3,6}}]//OrderArray[#,4,1,2,3]&;
 
-(*Collecting the final result*)		
-	resTot=+flag1*2*s*u* TotalConj[CS*Conjugate[CS]]; (*Squared s-channel*)
-	resTot+=+flag2*2*s*u* TotalConj[CU*Conjugate[CU]]; (*Squared u-channel*)
-	resTot+=-flag3*2*s*u* TotalConj[CS*Conjugate[CU]+CU*Conjugate[CS]]; (*Mixed s & u channel*)
+(*Collecting the final result*)
+	flag[1] = 1;
+	flag[2] = 1;	
+	flag[3] = 1/2;	
+	resTot=+flag[1]*2*s*u* TotalConj[CS*Conjugate[CS]]; (*Squared s-channel*)
+	resTot+=+flag[2]*2*s*u* TotalConj[CU*Conjugate[CU]]; (*Squared u-channel*)
+	resTot+=-flag[3]*2*s*u* TotalConj[CS*Conjugate[CU]+CU*Conjugate[CS]]; (*Mixed s & u channel*)
 	
 	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t2,u->u2}/.{t2->u,u2->t};];
 	

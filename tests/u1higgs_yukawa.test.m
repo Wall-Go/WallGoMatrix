@@ -459,6 +459,26 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
+process="S1S1->F2F2"
+test["WallGo"][process]=testWallGo[
+	{"Phi"},
+	{"Phi"},
+	{"Xi"},
+	{"Xi"}
+]/.{flag1->1,flag2->1,flag3->1,flag4->1}
+test["FeynCalc"][process]=testFeynCalc[
+	{"Phi","Phibar"},
+	{"Phi","Phibar"},
+	{"Xi","Xibar"},
+	{"Xi","Xibar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
 (* ::Subsubsection::Closed:: *)
 (*FStoFS*)
 
@@ -549,18 +569,38 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-process="F1S->F1V"
+process="F1S->F2V"
 test["WallGo"][process]=testWallGo[
 	{"Psi"},
 	{"Phi"},
 	{"Xi"},
 	{"VectorU1"}
-]
+]/.{(*flag[x_]->1*)}
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
 	{"Phi","Phibar"},
 	{"Xi","Xibar"},
 	{"A"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+process="VS->F2F1"
+test["WallGo"][process]=testWallGo[
+	{"VectorU1"},
+	{"Phi"},
+	{"Xi"},
+	{"Psi"}
+]/.{(*flag[x_]->1*)}
+test["FeynCalc"][process]=testFeynCalc[
+	{"A"},
+	{"Phi","Phibar"},
+	{"Xi","Xibar"},
+	{"Psi","Psibar"}	
 ]
 AppendTo[testList,
 	TestCreate[
@@ -641,7 +681,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoSV*)
 
 
@@ -691,6 +731,29 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+(* ::Section:: *)
+(*Test g^2 y^2*)
+
+
+particles
+particlesFeyn
+
+
+expandNumber[expr_, num_, repl_List] := 
+  expr /. M[args__] :> Module[{lst = ({args} /. num -> repl)},
+    lst = Map[If[ListQ[#], #, {#}] &, lst]; (* ensure each slot is a list *)
+    Total[M @@@ Tuples[lst]]
+  ];
+
+elements=Select[MatrixElements//Expand, ! FreeQ[#, g1^2 y^2] &][[All,1]]
+test1=elements/.MatrixElements//fixConvention;
+test2=elements/.{1->2,2->3,3->5,4->7};
+test2=test2//expandNumber[#, 0, {0, 1}]&//expandNumber[#, 3, {3, 4}]&//expandNumber[#, 5, {5, 6}]&;
+test2=test2/.MatrixElementsFeyn//removeMissing//fixConvention;
+
+((s1*test1-s2*test2)//Simplify)/.(s1-s2)->0
 
 
 (* ::Section:: *)
@@ -992,10 +1055,6 @@ totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.FeynMatrixElements//r
 totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.MatrixElementsFeyn//removeMissing//fixConvention;
 
 
-M[1,3,7,5]/.MatrixElementsFeyn//InputForm
-M[1,3,7,5]/.FeynMatrixElements
-
-
 Collect[totalFeyn,{g,y,a1,a2,b3,b4,lam}];
 
 
@@ -1015,7 +1074,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 
