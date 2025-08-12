@@ -763,7 +763,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toF1F2*)
 
 
@@ -904,7 +904,7 @@ Block[{
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1S1toF1S1*)
 
 
@@ -958,7 +958,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1V1*)
 
 
@@ -1031,9 +1031,9 @@ If[ (
 	CU=Contract[YTensor2 . fermionPropU ,gTensorF2,{{3,6}}]//OrderArray[#,4,1,2,3]&;
 
 (*Collecting the final result*)		
-	resTot=+2*s*u* TotalConj[CS*Conjugate[CS]]; (*Squared s-channel*)
-	resTot+=+2*s*u* TotalConj[CU*Conjugate[CU]]; (*Squared u-channel*)
-	resTot+=-2*s*u* TotalConj[CS*Conjugate[CU]+CU*Conjugate[CS]]; (*Mixed s & u channel*)
+	resTot=+flag1*2*s*u* TotalConj[CS*Conjugate[CS]]; (*Squared s-channel*)
+	resTot+=+flag2*2*s*u* TotalConj[CU*Conjugate[CU]]; (*Squared u-channel*)
+	resTot+=-flag3*2*s*u* TotalConj[CS*Conjugate[CU]+CU*Conjugate[CS]]; (*Mixed s & u channel*)
 	
 	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t2,u->u2}/.{t2->u,u2->t};];
 	
@@ -1165,7 +1165,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1V1toS1V1*)
 
 
@@ -1266,8 +1266,9 @@ If[ (
 		kinFlip+=1;
 	];
 	
-	particleNull={{}}; (*Just a trick to not confuse the ordering of particles*)
-(*Coupling constants that we will need*)
+	particleNull={{}};
+	(*Just a trick to not confuse the ordering of particles*)
+	(*Coupling constants that we will need*)
 	
 	gTensor=Table[gvss[[p4[[1]],Particle1[[1]],;;]],
 		{Particle1,{p1,p2,p3,particleNull}}];
