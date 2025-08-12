@@ -174,7 +174,7 @@ MatrixElements
 (*Comparison tests*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Translate input*)
 
 
@@ -262,7 +262,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(*(* F2F2->F2F2 *)
+(* F2F2->F2F2 *)
 process="F2F2->F2F2"
 test["WallGo"][process]=testWallGo[
 	{"Xi"},
@@ -271,19 +271,19 @@ test["WallGo"][process]=testWallGo[
 	{"Xi"}
 ]
 test["FeynCalc"][process]=testFeynCalc[
-	{"Chi","Chibar"},
-	{"Chi","Chibar"},
-	{"Chi","Chibar"},
-	{"Chi","Chibar"}
+	{"Xi","Xibar"},
+	{"Xi","Xibar"},
+	{"Xi","Xibar"},
+	{"Xi","Xibar"}
 ]
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
 		test["FeynCalc"][process],
-		TestID->"WallGo vs FeynCalc: "<>process]];*)
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(*process="F1F2->F1F2"
+process="F1F2->F1F2"
 test["WallGo"][process]=testWallGo[
 	{"Psi"},
 	{"Xi"},
@@ -292,18 +292,18 @@ test["WallGo"][process]=testWallGo[
 ]
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
-	{"Chi","Chibar"},
+	{"Xi","Xibar"},
 	{"Psi","Psibar"},
-	{"Chi","Chibar"}
+	{"Xi","Xibar"}
 ]
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
 		test["FeynCalc"][process],
-		TestID->"WallGo vs FeynCalc: "<>process]];*)
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(*process="F1F1->F2F2"
+process="F1F1->F2F2"
 test["WallGo"][process]=testWallGo[
 	{"Psi"},
 	{"Psi"},
@@ -313,14 +313,14 @@ test["WallGo"][process]=testWallGo[
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
 	{"Psi","Psibar"},
-	{"Chi","Chibar"},
-	{"Chi","Chibar"}
+	{"Xi","Xibar"},
+	{"Xi","Xibar"}
 ]
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
 		test["FeynCalc"][process],
-		TestID->"WallGo vs FeynCalc: "<>process]];*)
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
 (* ::Subsubsection::Closed:: *)
@@ -371,7 +371,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*SStoSS*)
 
 
@@ -395,7 +395,47 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+process="S2S2->S2S2"
+test["WallGo"][process]=testWallGo[
+	{"Chi"},
+	{"Chi"},
+	{"Chi"},
+	{"Chi"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"Chi"},
+	{"Chi"},
+	{"Chi"},
+	{"Chi"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+process="S1S1->S2S2"
+test["WallGo"][process]=testWallGo[
+	{"Psi"},
+	{"Psi"},
+	{"Chi"},
+	{"Chi"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"Phi","Phibar"},
+	{"Phi","Phibar"},
+	{"Chi"},
+	{"Chi"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
 (*SStoFF*)
 
 
@@ -581,7 +621,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*SStoSV*)
 
 
@@ -595,6 +635,26 @@ test["WallGo"][process]=testWallGo[
 test["FeynCalc"][process]=testFeynCalc[
 	{"Phi","Phibar"},
 	{"Phi","Phibar"},
+	{"Phi","Phibar"},
+	{"A"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+process="SS->SV"
+test["WallGo"][process]=testWallGo[
+	{"Phi"},
+	{"Chi"},
+	{"Phi"},
+	{"VectorU1"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"Phi","Phibar"},
+	{"Chi"},
 	{"Phi","Phibar"},
 	{"A"}
 ]
@@ -909,17 +969,17 @@ totalDRalgo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements/.Thr
 totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.FeynMatrixElements//removeMissing//fixConvention;
 
 
-(*totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.MatrixElementsFeyn//removeMissing//fixConvention;*)
+totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.MatrixElementsFeyn//removeMissing//fixConvention;
 
 
-M[1,3,7,5]/.MatrixElementsFeyn//InputForm;
+M[1,3,7,5]/.MatrixElementsFeyn//InputForm
 M[1,3,7,5]/.FeynMatrixElements
 
 
 Collect[totalFeyn,{g,y,a1,a2,b3,b4,lam}];
 
 
-Collect[totalDRalgo-totalFeyn,{g,y,a1}]
+Collect[s1*totalDRalgo-s2*totalFeyn,{g,y,a1,a2,b3,b4,lam},Simplify[fixConvention[#]]&]/.{s1-s2->0}(*/.{s1->1,s2->1}*)
 
 
 testList={};
