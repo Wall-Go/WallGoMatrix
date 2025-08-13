@@ -184,7 +184,7 @@ testFeynCalc2[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 ]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Comparison tests*)
 
 
@@ -192,7 +192,7 @@ testFeynCalc2[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 (*Translate input*)
 
 
-insertCouplings={Global`g->g,\[Lambda]->lam,SUNN->3,gu1->0,mChi->0,mPhi->0};
+insertCouplings={Global`g->g,\[Lambda]->lam,SUNN->3,gu1->0,mChi->0,mPhi->0,mPsi->0};
 customCouplings={ms2->mPhi^2};
 
 
@@ -228,7 +228,7 @@ particlesFeyn
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*VVtoVV*)
 
 
@@ -380,6 +380,26 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
+process="F2F2->VV"
+test["WallGo"][process]=testWallGo[
+	{"Xi"},
+	{"Xi"},
+	{"VectorSU2"},
+	{"VectorSU2"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"Chi","Chibar"},
+	{"Chi","Chibar"},
+	{"A"},
+	{"A"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
 (* ::Subsubsection::Closed:: *)
 (*FVtoFV*)
 
@@ -428,7 +448,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoFF*)
 
 
@@ -438,7 +458,7 @@ test["WallGo"][process]=testWallGo[
 	{"Phi"},
 	{"PsiL","PsiR"},
 	{"PsiL","PsiR"}
-]
+](*/.{flag1->1,flag2->1,flag3->1,flag4->1}*)
 test["FeynCalc"][process]=testFeynCalc[
 	{"Phi","Phibar"},
 	{"Phi","Phibar"},
@@ -452,10 +472,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-2*3*8/40*4/3
-
-
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFS*)
 
 
@@ -465,7 +482,7 @@ test["WallGo"][process]=testWallGo[
 	{"Phi"},
 	{"PsiL","PsiR"},
 	{"Phi"}
-]
+](*/.{flag1->1,flag2->1,flag3->1,flag4->1}*)
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
 	{"Phi","Phibar"},
@@ -503,6 +520,26 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
+process="F1S->F2V"
+test["WallGo"][process]=testWallGo[
+	{"PsiL","PsiR"},
+	{"Phi"},
+	{"Xi"},
+	{"VectorSU2"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"Psi","Psibar"},
+	{"Phi","Phibar"},
+	{"Chi","Chibar"},
+	{"A"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
 (* ::Subsubsection::Closed:: *)
 (*FFtoSV*)
 
@@ -517,6 +554,26 @@ test["WallGo"][process]=testWallGo[
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
 	{"Psi","Psibar"},
+	{"Phi","Phibar"},
+	{"A"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+process="F1F2->SV"
+test["WallGo"][process]=testWallGo[
+	{"PsiL","PsiR"},
+	{"Xi"},
+	{"Phi"},
+	{"VectorSU2"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"Psi","Psibar"},
+	{"Chi","Chibar"},
 	{"Phi","Phibar"},
 	{"A"}
 ]
@@ -606,6 +663,34 @@ AppendTo[testList,
 report=TestReport[testList]
 report["ResultsDataset"]
 
+
+(* ::Section:: *)
+(*Test full*)
+
+
+totalWallGo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements/.Thread[UserMasses->0]//removeMissing//fixConvention;
+totalFeyn=Sum[M[a,b,c,d],{a,0,6},{b,0,6},{c,0,6},{d,0,6}]/.MatrixElementsFeyn//removeMissing//fixConvention;
+
+
+Collect[totalFeyn,{g,y,lam}];
+
+
+Collect[s1*totalWallGo-s2*totalFeyn,{g,y,lam},Simplify[fixConvention[#]]&]/.{s1-s2->0}(*/.{s1->1,s2->1}*)(*//Simplify*)
+
+
+testList={};
+
+
+(* everything *)
+AppendTo[testList,
+TestCreate[
+	totalWallGo,
+	totalFeyn
+]];
+
+
+report=TestReport[testList]
+report["ResultsDataset"]
 
 
 

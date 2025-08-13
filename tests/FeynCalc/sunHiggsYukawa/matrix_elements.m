@@ -102,7 +102,7 @@ processesByHand={
 	};
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Automating steps*)
 
 
@@ -213,14 +213,26 @@ ampSq[5]=DiracSimplify[ampSq[4]];
 (* SIMPLIFYING VECTOR INDICES *)
 For[i=1,i<=4,i++,
 	For[j=1,j<=4,j++,
-		If[j==i,Continue[]];
-		(* summing over polarizations *)
 		ampSq[i+5]=ampSq[i+4];
-		If[Not[FreeQ[process[[integerToParticleIndex[i]/.List->Sequence]],V[_]]]&&Not[FreeQ[process[[integerToParticleIndex[j]/.List->Sequence]],V[_]]],
-			If[dropUnphysicalPolarizations,
-				ampSq[i+5]=ampSq[i+4]//polsums[#,momenta[[i]],momenta[[j]],1]&,
-				ampSq[i+5]=ampSq[i+4]//polsums[#,momenta[[i]],0,1]&
+		(* summing over polarizations *)
+		If[j==i,
+			If[
+				Not[FreeQ[process[[integerToParticleIndex[i]/.List->Sequence]],V[_]]],
+				ampSq[i+5]=ampSq[i+4]//polsums[#,momenta[[i]],0,1]&;
+				Break[];
 			];
+			Continue[];
+		];
+		
+		If[
+			Not[FreeQ[process[[integerToParticleIndex[i]/.List->Sequence]],V[_]]]&&
+			Not[FreeQ[process[[integerToParticleIndex[j]/.List->Sequence]],V[_]]],
+			
+			ampSq[i+5]=ampSq[i+4]//
+				If[dropUnphysicalPolarizations,
+					polsums[#,momenta[[i]],momenta[[j]],1]&,
+					polsums[#,momenta[[i]],0,1]&
+				];
 			Break[];
 		];
 	];
@@ -279,7 +291,7 @@ externalSignature={S[1],S[1]}->{S[1],S[1]};
 ampSq[S]=makeAmplitudeSquared[{S[1],S[1]}->{S[1],S[1]},All,True]//Contract//SUNSimplify
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*FF->FF*)
 
 
@@ -337,62 +349,112 @@ Table[
 fixConvention[%]
 
 
-(* ::Section::Closed:: *)
+(* ::Subsection:: *)
+(*SF->VF*)
+
+
+externalSignature={-S[1],F[1]}->{V[1],F[2]};
+makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify
+(*%/.{Pair[x__]->0}*)
+
+(*DoPolarizationSums[%,momenta[[3]],0,ExtraFactor->1]//Contract//SUNSimplify
+SetMandelstam[s,t,u,p1,p2,-p3,-p4,masses/.List->Sequence];
+%%//Simplify*)
+
+
+
+(* ::Section:: *)
 (*Results*)
 
 
-(* squared summed matrix elements with a scalar on leg 1 *)
-processes=makeProcesses[S[1]];
-processes//MatrixForm;
-scalar=DeleteCases[ 
-	Table[
-		makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],
-		{process,processes}],_->0]/.{mPsi->0};
-(* squared summed matrix elements with a vector on leg 1 *)
-processes=makeProcesses[-S[1]];
-antiscalar=DeleteCases[
-	Table[
-		makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],
-		{process,processes}]
-	,_->0]/.{mPsi->0};
+removeIncomplete={Pair[x__]->0};
+removeIncomplete={ };
 
+
+particleList = {S[1],-S[1],V[1],F[1],-F[1],F[2],-F[2]};
 
 (* squared summed matrix elements with a vector on leg 1 *)
-processes=makeProcesses[V[1]];
-vector=DeleteCases[
-	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
-	,_->0];
+createProcesses[particle_]:=Module[{processes},
+	processes=makeProcesses[particle];
+	DeleteCases[
+	Table[
+		makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam}/.removeIncomplete,
+		{lam,g,y},Expand],
+	{process,processes}],_->0]
+];
 
 
-(* squared summed matrix elements with a fermion on leg 1 *)
-processes=makeProcesses[F[1]];
-fermion=DeleteCases[ 
-	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
-	,_->0]/.{mPsi->0}
-processes=makeProcesses[-F[1]];
-antifermion=DeleteCases[ 
-	Table[makeMName[process]->Collect[makeAmplitudeSquared[process,All]/.{\[Lambda]->lam},{lam,g,y},Expand],{process,processes}]
-	,_->0]/.{mPsi->0}
+(*scalar1=createProcesses[S[1]];
+antiScalar1=createProcesses[-S[1]];
+vector=createProcesses[V[1]];
+fermion1=createProcesses[F[1]];
+antiFermion1=createProcesses[-F[1]];
+fermion2=createProcesses[F[2]];
+antiFermion2=createProcesses[-F[2]];*)
+(*results=Flatten[{scalar1,antiScalar1,vector,fermion1,antiFermion1,fermion2,antiFermion2},1];*)
 
 
-results=Flatten[{scalar,antiscalar,vector,fermion,antifermion},1];
+results = Module[{i = 0, n = Length[particleList], results},
+  results = Monitor[
+    Table[
+      i++;
+      createProcesses[particle],
+      {particle, particleList}
+    ],
+    Row[{"Processing ", particleList[[i]], " which is particle ", i, " of ", n, " (", NumberForm[100. (i-1)/n, {3, 1}], "%) "}]
+  ] // Flatten[#, 1] &;
+  results
+];
 
 
 feynAssociation=Association[results];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Exporting to ascii for C++*)
 
 
 (* writing as JSON *)
-makeJsonObject[fields_,parameters_,results_]:=Module[{fieldsJson,matrixElementsJson,toString,getRelevantParameters,replaceSpecials},(*construct an object which can then be exported to JSON*)toString[arg_]:=If[StringQ[arg],arg,ToString[arg,InputForm]];
-	replaceSpecials[arg_]:=StringReplace[arg,{"Pi"->"_pi","s"->"_s","t"->"_t","u"->"_u"}];
-	getRelevantParameters[arg_]:=Select[parameters,Not[FreeQ[arg,#]]&];
-	fieldsJson=Table[{"index"->i-1,"name"->toString[fields[[i]]]},{i,1,Length[fields]}];
-	matrixElementsJson=Map[{"externalParticles"->#[[1]]/.M[a__]->List[a],"parameters"->Map[toString,getRelevantParameters[#[[2]]]],"expression"->replaceSpecials[toString[#[[2]]]]}&,results];
-	Return[{"particles"->fieldsJson,"matrixElements"->matrixElementsJson}]
+makeJsonObject[fields_, parameters_, results_] := 
+ Module[{toString, replaceSpecials, getRelevantParameters, fieldsJson, matrixElementsJson},
+
+  (* helpers *)
+  toString[arg_] := If[StringQ[arg], arg, ToString[arg, InputForm]];
+  replaceSpecials[arg_String] := 
+    StringReplace[arg, {
+    "mPsi" -> "mPsi",
+    "Pi" -> "_pi",
+    "s" -> "_s", "t" -> "_t", "u" -> "_u"}];
+  getRelevantParameters[arg_] := 
+    Select[parameters,Not[FreeQ[arg,#]]&];
+
+  (* particle entries *)
+  fieldsJson = Table[
+    {"index" -> i - 1, "name" -> toString[fields[[i]]]},
+    {i, Length[fields]}
+  ];
+
+  (* matrix element entries *)
+  matrixElementsJson = Map[
+    {
+      "externalParticles" -> (#[[1]] /. M[a__] :> {a}),
+     (* "parameters" -> Map[toString,getRelevantParameters[#[[2]]]],*)
+      "parameters" -> (toString /@ getRelevantParameters[#[[2]]] ),
+      "expression" -> replaceSpecials[toString[#[[2]]]]
+    } &,
+    results
+  ];
+
+  {
+  "particles" -> fieldsJson,
+  "matrixElements" -> matrixElementsJson
+  }
 ]
-(*here for the Yukawa model,where the matrix elements are stored in the object called MatrixElements*)
+
+
+(*
+	here for the Yukawa model,where the matrix elements are stored in
+	the object called MatrixElements
+*)
 toExportAsJSON=makeJsonObject[particleNames,Join[parameters,{SUNN}],results//SMPToSymbol];
-Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".json"]}],toExportAsJSON];
+Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".test.json"]}],toExportAsJSON];
