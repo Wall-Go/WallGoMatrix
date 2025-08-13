@@ -197,7 +197,9 @@ MatrixElements
 (*Importing results from FeynCalc*)
 
 
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["electroweak.bosons.unphysical.feyncalc.test.json"];
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["electroweak.bosons.feyncalc.test.json"];
+(*{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["electroweak.feyncalc.test.json"];*)
 
 
 (* ::Section:: *)
@@ -316,9 +318,8 @@ AppendTo[testList,
 		test["WallGo"][process]//Evaluate,
 		test["FeynCalc"][process],
 		TestID->"WallGo vs FeynCalc: "<>process]];
-
-
-test["WallGo"][process]-test["FeynCalc"][process]//Simplify//Expand
+		
+s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify
 
 
 process="{Higgs},{Higgs}->{W,Z,B,g},{W,Z,B,g}"
@@ -381,7 +382,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 (* doesn't cancel exactly, and the difference involves the Yukawa coupling *)
-test["WallGo"][process]-test["FeynCalc"][process]
+s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify
 
 
 process="{W,Z},{W,Z}->{W,Z},{W,Z}"
@@ -402,6 +403,8 @@ AppendTo[testList,
 		test["WallGo"][process]//Evaluate,
 		test["FeynCalc"][process],
 		TestID->"WallGo vs FeynCalc: "<>process]];
+		
+s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify
 
 
 process="{g},{g}->{g},{g}"
