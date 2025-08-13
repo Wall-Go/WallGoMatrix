@@ -188,6 +188,7 @@ L := Module[
     (* LYukawa = - y Psibar.Phi.Chi; *)
     (* LYukawa := - y Psibar[s1, k1] Chi[s1] Phi[k1] ; *)
     (* LYukawa := - y Phi[k1] PsiLbar[s1, k1] PsiR[s1]  ; *)
+    (* LYukawa := - y Phibar[k1] PsiLbar[s1, k1] ChiR[s1]  ; *)
     LYukawa := - y Phi[k1] PsiLbar[s1, k1] ChiR[s1]  ;
 
     LGauge + LGaugeFixing + LGhost + LHiggs + LPsiL + LChiR + LYukawa + HC[LYukawa]
