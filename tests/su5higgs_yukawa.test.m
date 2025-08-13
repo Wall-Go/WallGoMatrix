@@ -628,7 +628,7 @@ report["ResultsDataset"]
 
 
 (* ::Section:: *)
-(*Test full*)
+(*Full test*)
 
 
 totalWallGo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements/.Thread[UserMasses->0]//removeMissing//fixConvention;

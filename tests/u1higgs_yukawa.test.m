@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -82,10 +82,6 @@ Yukawa2HC=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simpl
 
 Ysff=y*GradYukawa[Yukawa1+Yukawa2];
 YsffC=y*GradYukawa[Yukawa1HC+Yukawa2HC];
-
-
-Ysff//MatrixForm
-YsffC//MatrixForm
 
 
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
@@ -545,7 +541,7 @@ AppendTo[testList,
 		TestID->"FeynCalc vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFV*)
 
 
@@ -589,7 +585,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoSV*)
 
 
@@ -761,7 +757,7 @@ test2=test2/.MatrixElementsFeyn//removeMissing//fixConvention;
 
 
 (* ::Subsection::Closed:: *)
-(*FeynMatrixElements hard copy*)
+(*FeynMatrixElements hard copy (old version)*)
 
 
 FeynMatrixElements={
@@ -1049,16 +1045,13 @@ removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
 totalDRalgo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements/.Thread[UserMasses->0]//removeMissing//fixConvention;
-totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.FeynMatrixElements//removeMissing//fixConvention;
-
-
 totalFeyn=Sum[M[a,b,c,d],{a,0,7},{b,0,7},{c,0,7},{d,0,7}]/.MatrixElementsFeyn//removeMissing//fixConvention;
 
 
 Collect[totalFeyn,{g,y,a1,a2,b3,b4,lam}];
 
 
-Collect[s1*totalDRalgo-s2*totalFeyn,{g,y,a1,a2,b3,b4,lam},Simplify[fixConvention[#]]&]/.{s1-s2->0}(*/.{s1->1,s2->1}*)(*//Simplify*)
+Collect[s1*totalDRalgo-s2*totalFeyn,{g,y,a1,a2,b3,b4,lam},Simplify[fixConvention[#]]&]/.{s1-s2->0}
 
 
 testList={};

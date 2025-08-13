@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -593,7 +593,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*FFtoSV*)
 
 
@@ -742,7 +742,7 @@ test2=test2/.MatrixElementsFeyn//removeMissing//fixConvention;
 
 
 (* ::Section:: *)
-(*Test full*)
+(*Full test*)
 
 
 totalWallGo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements/.Thread[UserMasses->0]//removeMissing//fixConvention;
@@ -752,7 +752,7 @@ totalFeyn=Sum[M[a,b,c,d],{a,0,6},{b,0,6},{c,0,6},{d,0,6}]/.MatrixElementsFeyn//r
 Collect[totalFeyn,{g,y,a1,a2,b3,b4,lam}];
 
 
-Collect[s1*totalWallGo-s2*totalFeyn,{g,y,a1,a2,b3,b4,lam},Simplify[fixConvention[#]]&]/.{s1-s2->0}(*/.{s1->1,s2->1}*)(*//Simplify*)
+Collect[s1*totalWallGo-s2*totalFeyn,{g,y,a1,a2,b3,b4,lam},Simplify[fixConvention[#]]&]/.{s1-s2->0}
 
 
 testList={};
