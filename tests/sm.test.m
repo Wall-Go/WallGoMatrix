@@ -238,155 +238,194 @@ particlesFeyn={"W"->0,"Wbar"->1,"Z"->2,"gamma"->3,"H"->4,"G0"->5,"Gp"->6,"Gpbar"
 testList={};
 
 
-(* {Higgs},{Higgs} -> {Higgs},{Higgs} *)
-test["WallGo"][1]=testWallGo[
+process="{Higgs},{Higgs}->{Higgs},{Higgs}"
+test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"Higgs"},
 	{"Higgs"},
 	{"Higgs"}
 ]
-test["FeynCalc"][1]=testFeynCalc[
+test["FeynCalc"][process]=testFeynCalc[
 	{"H"},
 	{"H"},
 	{"H"},
 	{"H"}
 ]
-AppendTo[testList,TestCreate[test["WallGo"][1],test["FeynCalc"][1]]];
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* {Higgs},{Higgs} -> {W,B},{W,B} *)
-test["WallGo"][2]=testWallGo[
+process="{Higgs},{Higgs}->{W,B},{W,B}"
+test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"Higgs"},
 	{"W","B"},
 	{"W","B"}
 ]
-test["FeynCalc"][2]=testFeynCalc[
+test["FeynCalc"][process]=testFeynCalc[
 	{"H"},
 	{"H"},
 	{"W","Wbar","Z","photon"},
 	{"W","Wbar","Z","photon"}
 ]
-AppendTo[testList,TestCreate[test["WallGo"][2],test["FeynCalc"][2]]];
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* {H},{W,B} -> {H},{W,B} *)
-test["WallGo"][3]=testWallGo[
+process="{H},{W,B}->{H},{W,B}"
+test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"W","B"},
 	{"Higgs"},
 	{"W","B"}
 ]
-test["FeynCalc"][3]=testFeynCalc[
+test["FeynCalc"][process]=testFeynCalc[
 	{"H"},
 	{"W","Wbar","Z","photon"},
 	{"H"},
 	{"W","Wbar","Z","photon"}
 ]
-AppendTo[testList,TestCreate[test["WallGo"][3],test["FeynCalc"][3]]];
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* {W,B},{W,B} -> {W,B},{W,B} *)
-test["WallGo"][4]=testWallGo[
+process="{W,B},{W,B}->{W,B},{W,B}"
+test["WallGo"][process]=testWallGo[
 	{"W","B"},
 	{"W","B"},
 	{"W","B"},
 	{"W","B"}
-]
-test["FeynCalc"][4]=testFeynCalc[
+]//Simplify//Expand
+test["FeynCalc"][process]=testFeynCalc[
 	{"W","Wbar","Z","photon"},
 	{"W","Wbar","Z","photon"},
 	{"W","Wbar","Z","photon"},
 	{"W","Wbar","Z","photon"}
-]
-AppendTo[testList,TestCreate[test["WallGo"][4],test["FeynCalc"][4]]];
+]//Simplify//Expand
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-test["WallGo"][3]-test["FeynCalc"][3]//Simplify//Expand
+test["WallGo"][process]-test["FeynCalc"][process]//Simplify//Expand
 
 
-(* {Higgs},{Higgs} -> {W,Z,B,g},{W,Z,B,g} *)
-test["WallGo"][2]=testWallGo[
+process="{Higgs},{Higgs}->{W,Z,B,g},{W,Z,B,g}"
+test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"Higgs"},
 	{"Gluon","W","B"},
 	{"Gluon","W","B"}
 ]
-test["FeynCalc"][2]=testFeynCalc[
+test["FeynCalc"][process]=testFeynCalc[
 	{"H"},
 	{"H"},
 	{"W","Wbar","Z","g"},
 	{"W","Wbar","Z","g"}
 ]
-AppendTo[testList,TestCreate[test["WallGo"][2],test["FeynCalc"][2]]];
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* {Higgs},{W,Z,B,g} -> {Higgs},{W,Z,B,g} *)
-test["WallGo"][3]=testWallGo[
+process="{Higgs},{W,Z,B,g}->{Higgs},{W,Z,B,g}"
+test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"Gluon","W","B"},
 	{"Higgs"},
 	{"Gluon","W","B"}
 ]
-test["FeynCalc"][3]=testFeynCalc[
+test["FeynCalc"][process]=testFeynCalc[
 	{"H"},
 	{"W","Wbar","Z","g"},
 	{"H"},
 	{"W","Wbar","Z","g"}
 ]
-AppendTo[testList,TestCreate[test["WallGo"][2],test["FeynCalc"][2]]];
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* {t, b} -> {t, b} *)
-test["WallGo"][4]=testWallGo[
+process="{t,b}->{t,b}"
+test["WallGo"][process]=testWallGo[
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"}
 ]
-test["FeynCalc"][4]=testFeynCalc[
+test["FeynCalc"][process]=testFeynCalc[
 	{"t","tbar","b","bbar"},
 	{"t","tbar","b","bbar"},
 	{"t","tbar","b","bbar"},
 	{"t","tbar","b","bbar"}
 ]
-AppendTo[testList,TestCreate[test["WallGo"][4],test["FeynCalc"][4]]];
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 (* doesn't cancel exactly, and the difference involves the Yukawa coupling *)
-test["WallGo"][4]-test["FeynCalc"][4]
+test["WallGo"][process]-test["FeynCalc"][process]
 
 
-(* {W,Z},{W,Z} -> {W,Z},{W,Z} *)
-test["WallGo"][5]=testWallGo[
+process="{W,Z},{W,Z}->{W,Z},{W,Z}"
+test["WallGo"][process]=testWallGo[
 	{"W"},
 	{"W"},
 	{"W"},
 	{"W"}
 ]
-test["FeynCalc"][5]=testFeynCalc[
+test["FeynCalc"][process]=testFeynCalc[
 	{"W","Wbar","Z"},
 	{"W","Wbar","Z"},
 	{"W","Wbar","Z"},
 	{"W","Wbar","Z"}
 ]
-AppendTo[testList,TestCreate[test["WallGo"][4],test["FeynCalc"][4]]];
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* {g},{g} -> {g},{g} *)
-test["WallGo"][6]=testWallGo[
+process="{g},{g}->{g},{g}"
+test["WallGo"][process]=testWallGo[
 	{"Gluon"},
 	{"Gluon"},
 	{"Gluon"},
 	{"Gluon"}
 ]
-test["FeynCalc"][6]=testFeynCalc[
+test["FeynCalc"][process]=testFeynCalc[
 	{"g"},
 	{"g"},
 	{"g"},
 	{"g"}
 ]
-AppendTo[testList,TestCreate[test["WallGo"][4],test["FeynCalc"][4]]];
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
