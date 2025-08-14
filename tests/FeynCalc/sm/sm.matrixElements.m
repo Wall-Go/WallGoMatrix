@@ -403,6 +403,7 @@ makeJsonObject[fields_, parameters_, results_] :=
   replaceSpecials[arg_String] := 
     StringReplace[arg, {
     "mPsi" -> "mPsi",
+    "gs" -> "gs", "yt" -> "yt",
     "Pi" -> "_pi",
     "s" -> "_s", "t" -> "_t", "u" -> "_u"}];
   getRelevantParameters[arg_] := 
@@ -631,3 +632,6 @@ exportParticles = "EWbosons";
 exportParameters = {gw,gs,yt,lam};
 toExportAsJSON=makeJsonObject[exportParticleNames,Join[exportParameters,{SUNN}],resultsExport//SMPToSymbol];
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
+
+
+
