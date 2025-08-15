@@ -299,7 +299,7 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 (*Matrix elements*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*V1V2toV3V4*)
 
 
@@ -370,7 +370,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
@@ -383,7 +383,8 @@ Block[{
 	Tensor,YTensorC,
 	vectorMass,scalarMass,
 	scalarPropT,scalarPropU,vectorPropU,vectorPropT,
-	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor
+	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor,
+	flag
 },
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
@@ -506,22 +507,27 @@ If[
 	Result for interfaces between vector and scalar diagrams---
 	Only cross terms between diagrams can contribute
 *)
+	flag[2] = 4;
+	flag[3] = 4;
+	flag[4] = 4;
 	
-	totRes+=1/2*s*t*TotalConj[CS*Conjugate[CTyC] +CTyC*Conjugate[CS]];
-	totRes+=1/2*u*t*TotalConj[CU*Conjugate[CTyC] +CTyC*Conjugate[CU]];
+	totRes+=flag[1]*1/2*s*t*TotalConj[CS*Conjugate[CTyC] +CTyC*Conjugate[CS]];
+	totRes+=flag[2]*1/2*u*t*TotalConj[CU*Conjugate[CTyC] +CTyC*Conjugate[CU]];
 
-	totRes+=1/2*s*u*TotalConj[CS*Conjugate[CUyC] +CUyC*Conjugate[CS]];
-	totRes+=1/2*u*t*TotalConj[CT*Conjugate[CUyC] +CUyC*Conjugate[CT]];
+	totRes+=flag[3]*1/2*s*u*TotalConj[CS*Conjugate[CUyC] +CUyC*Conjugate[CS]];
+	totRes+=flag[4]*1/2*u*t*TotalConj[CT*Conjugate[CUyC] +CUyC*Conjugate[CT]];
 
-	totRes+=1/2*s*t*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
-	totRes+=1/2*u*s*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];	
+	totRes+=flag[5]*1/2*s*t*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
+	totRes+=flag[6]*1/2*u*s*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];
+	
+	totRes = totRes/.{flag[x_]->1};
 	
 	Return[Refine[4*totRes,Assumptions->VarAsum]]
 ]
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toV1V2*)
 
 
@@ -929,7 +935,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1V1*)
 
 
@@ -1189,7 +1195,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toS3V1*)
 
 

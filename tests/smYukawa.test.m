@@ -193,12 +193,16 @@ particlesFeyn={"W"->0,"Wbar"->1,"Z"->2,"gamma"->3,"H"->4,"G0"->5,"Gp"->6,"Gpbar"
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsection:: *)
 (*Electroweak bosons sector*)
 
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.EWbosons.test.json"];
+
+
+(* ::Subsubsection::Closed:: *)
+(*SStoSS*)
 
 
 process="{Higgs},{Higgs}->{Higgs},{Higgs}"
@@ -221,6 +225,10 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
+(* ::Subsubsection::Closed:: *)
+(*SStoVV*)
+
+
 process="{Higgs},{Higgs}->{W,B},{W,B}"
 test["WallGo"][process]=testWallGo[
 	{"Higgs"},
@@ -241,48 +249,6 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-process="{H},{W,B}->{H},{W,B}"
-test["WallGo"][process]=testWallGo[
-	{"Higgs"},
-	{"W","B"},
-	{"Higgs"},
-	{"W","B"}
-]
-test["FeynCalc"][process]=testFeynCalc[
-	{"H"},
-	{"W","Wbar","Z","photon"},
-	{"H"},
-	{"W","Wbar","Z","photon"}
-]
-AppendTo[testList,
-	TestCreate[
-		test["WallGo"][process]//Evaluate,
-		test["FeynCalc"][process],
-		TestID->"WallGo vs FeynCalc: "<>process]];
-
-
-process="{W,B},{W,B}->{W,B},{W,B}"
-test["WallGo"][process]=testWallGo[
-	{"W","B"},
-	{"W","B"},
-	{"W","B"},
-	{"W","B"}
-]//Simplify//Expand
-test["FeynCalc"][process]=testFeynCalc[
-	{"W","Wbar","Z","photon"},
-	{"W","Wbar","Z","photon"},
-	{"W","Wbar","Z","photon"},
-	{"W","Wbar","Z","photon"}
-]//Simplify//Expand
-AppendTo[testList,
-	TestCreate[
-		test["WallGo"][process]//Evaluate,
-		test["FeynCalc"][process],
-		TestID->"WallGo vs FeynCalc: "<>process]];
-		
-(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
-
-
 process="{Higgs},{Higgs}->{W,Z,B,g},{W,Z,B,g}"
 test["WallGo"][process]=testWallGo[
 	{"Higgs"},
@@ -295,6 +261,30 @@ test["FeynCalc"][process]=testFeynCalc[
 	{"H"},
 	{"W","Wbar","Z","g"},
 	{"W","Wbar","Z","g"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*SVtoSV*)
+
+
+process="{H},{W,B}->{H},{W,B}"
+test["WallGo"][process]=testWallGo[
+	{"Higgs"},
+	{"W","B"},
+	{"Higgs"},
+	{"W","B"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"H"},
+	{"W","Wbar","Z","photon"},
+	{"H"},
+	{"W","Wbar","Z","photon"}
 ]
 AppendTo[testList,
 	TestCreate[
@@ -323,6 +313,32 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
+(* ::Subsubsection::Closed:: *)
+(*VVtoVV*)
+
+
+process="{W,B},{W,B}->{W,B},{W,B}"
+test["WallGo"][process]=testWallGo[
+	{"W","B"},
+	{"W","B"},
+	{"W","B"},
+	{"W","B"}
+]//Simplify//Expand
+test["FeynCalc"][process]=testFeynCalc[
+	{"W","Wbar","Z","photon"},
+	{"W","Wbar","Z","photon"},
+	{"W","Wbar","Z","photon"},
+	{"W","Wbar","Z","photon"}
+]//Simplify//Expand
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+		
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
 process="{W,Z},{W,Z}->{W,Z},{W,Z}"
 test["WallGo"][process]=testWallGo[
 	{"W"},
@@ -345,12 +361,16 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
-(* ::Subsubsection:: *)
+(* ::Subsection::Closed:: *)
 (*Higgs tau sector*)
 
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.HiggsTau.test.json"];
+
+
+(* ::Subsubsection::Closed:: *)
+(*SStoFF*)
 
 
 process="{H,H}->{tau,tau}"
@@ -373,12 +393,17 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsection:: *)
 (*Higgs top sector*)
 
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.HiggsTop.test.json"];
+particlesFeyn
+
+
+(* ::Subsubsection:: *)
+(*SStoFF*)
 
 
 process="{H,H}->{t,t}"
@@ -387,7 +412,7 @@ test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"TopL","BotL","TopR"},
 	{"TopL","BotL","TopR"}
-]
+]/.{yt->Sqrt[2]*yt}
 test["FeynCalc"][process]=testFeynCalc[
 	{"H"},
 	{"H"},
@@ -402,12 +427,157 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
+process="{H,H}->{t,t}"
+test["WallGo"][process]=testWallGo[
+	{"Goldstone"},
+	{"Goldstone"},
+	{"TopL","TopR"},
+	{"TopL","TopR"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"G0","Gp","Gbar"},
+	{"G0","Gp","Gbar"},
+	{"t","tbar"},
+	{"t","tbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
 (* ::Subsubsection:: *)
+(*FFtoSS*)
+
+
+process="{t,t}->{H,H}"
+test["WallGo"][process]=testWallGo[
+	{"TopL","BotL","TopR"},
+	{"TopL","BotL","TopR"},
+	{"Higgs"},
+	{"Higgs"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"t","tbar"},
+	{"t","tbar"},
+	{"H"},
+	{"H"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+(* ::Subsection:: *)
 (*Top bottom QCD sector *)
 
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.tbg.test.json"];
+particlesFeyn
+
+
+(* ::Subsubsection::Closed:: *)
+(*VVtoFF*)
+
+
+process="{g,g}->{t,t}"
+test["WallGo"][process]=testWallGo[
+	{"Gluon"},
+	{"Gluon"},
+	{"TopL","TopR","BotL","BotR"},
+	{"TopL","TopR","BotL","BotR"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"g"},
+	{"g"},
+	{"t","tbar","b","bbar"},
+	{"t","tbar","b","bbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*VFtoVF*)
+
+
+process="{g},{t,b}->{g},{t,b}"
+test["WallGo"][process]=testWallGo[
+	{"Gluon"},
+	{"TopL","TopR","BotL","BotR"},
+	{"Gluon"},
+	{"TopL","TopR","BotL","BotR"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"g"},
+	{"t","tbar","b","bbar"},
+	{"g"},
+	{"t","tbar","b","bbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+(* ::Subsubsection:: *)
+(*FFtoFF*)
+
+
+process="{t,t}->{t,t}"
+test["WallGo"][process]=testWallGo[
+	{"TopL","TopR"},
+	{"TopL","TopR"},
+	{"TopL","TopR"},
+	{"TopL","TopR"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"t","tbar"},
+	{"t","tbar"},
+	{"t","tbar"},
+	{"t","tbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+(* doesn't cancel exactly, and the difference involves the Yukawa coupling *)
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
+
+
+process="{b,b}->{b,b}"
+test["WallGo"][process]=testWallGo[
+	{"BotL","BotR"},
+	{"BotL","BotR"},
+	{"BotL","BotR"},
+	{"BotL","BotR"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"b","bbar"},
+	{"b","bbar"},
+	{"b","bbar"},
+	{"b","bbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+(* doesn't cancel exactly, and the difference involves the Yukawa coupling *)
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
 
 
 process="{t,b}->{t,b}"
@@ -416,7 +586,7 @@ test["WallGo"][process]=testWallGo[
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"}
-]
+]/.{yt->Sqrt[2]*yt}
 test["FeynCalc"][process]=testFeynCalc[
 	{"t","tbar","b","bbar"},
 	{"t","tbar","b","bbar"},
@@ -433,12 +603,17 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
 
 
-(* ::Subsubsection:: *)
+(* ::Subsection::Closed:: *)
 (*QCD sector*)
 
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.tbg.test.json"];
+particlesFeyn
+
+
+(* ::Subsubsection:: *)
+(*VVtoVV*)
 
 
 process="{g},{g}->{g},{g}"
@@ -463,7 +638,7 @@ AppendTo[testList,
 
 
 (* vector-vector scattering versus AMY *)
-process="AMY{g},{g}->{g},{g}"
+process="{g},{g}->{g},{g}"
 test["WallGo"][process]=testWallGo[
 	{"Gluon"},
 	{"Gluon"},
@@ -475,7 +650,11 @@ AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
 		test["AMY"][process],
-		TestID->"WallGo vs AMY:"<>process]];
+		TestID->"WallGo vs AMY: "<>process]];
+
+
+(* ::Subsection:: *)
+(*Test report*)
 
 
 report=TestReport[testList]
