@@ -166,7 +166,9 @@ symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 
 
 UserMasses={mq2,ml2,mg2,mW2,mB2,mH2,mG2};
-fixConvention[arg_]:=symmetriseTU[arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings/.v->0]//Expand//Simplify//Expand
+fixConvention[arg_]:=symmetriseTU[
+	arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings(*/.v->0*)
+	]//Expand//Simplify//Expand
 
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
@@ -452,7 +454,7 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
-process="{H,H}->{t,t}"
+process="{G0,Gp,Gbar},{G0,Gp,Gbar}->{t,t}"
 test["WallGo"][process]=testWallGo[
 	{"Goldstone"},
 	{"Goldstone"},
@@ -518,7 +520,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Top bottom QCD sector *)
 
 
@@ -576,7 +578,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*FFtoFF*)
 
 
@@ -586,7 +588,7 @@ test["WallGo"][process]=testWallGo[
 	{"TopL","TopR"},
 	{"TopL","TopR"},
 	{"TopL","TopR"}
-]/.{yt->Sqrt[2]*yt}
+](*/.{yt->Sqrt[2]*yt}*)
 test["FeynCalc"][process]=testFeynCalc[
 	{"t","tbar"},
 	{"t","tbar"},
@@ -601,6 +603,28 @@ AppendTo[testList,
 
 (* doesn't cancel exactly, and the difference involves the Yukawa coupling *)
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
+
+
+test["WallGo"][process]=testWallGo[
+	{"TopL"},
+	{"TopL"},
+	{"TopR"},
+	{"TopR"}
+]/.{yt->Sqrt[2]*yt}
+
+
+(3*t^2*yt1^4)/(mh2 - t)^2 + (3*u^2*yt1^4)/(mh2 - u)^2/.{mh2->0}//fixConvention
+
+
+test["WallGo"][process]=testWallGo[
+	{"TopL"},
+	{"TopL"},
+	{"TopL"},
+	{"TopL"}
+]/.{yt->Sqrt[2]*yt}//fixConvention
+
+
+((s^2 + t^2)*(9*gw^4*(mg2 - u)^2 + 32*g3^4*(mw2 - u)^2))/(12*(mg2 - u)^2*(mw2 - u)^2) + ((9*gw^4*(mg2 - t)^2 + 32*g3^4*(mw2 - t)^2)*(s^2 + u^2))/(12*(mg2 - t)^2*(mw2 - t)^2)/.{mh2->0,mw2->0}//fixConvention
 
 
 process="{b,b}->{b,b}"
@@ -669,7 +693,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*QCD sector*)
 
 
