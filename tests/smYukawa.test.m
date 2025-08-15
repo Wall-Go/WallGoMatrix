@@ -193,12 +193,14 @@ particlesFeyn={"W"->0,"Wbar"->1,"Z"->2,"gamma"->3,"H"->4,"G0"->5,"Gp"->6,"Gpbar"
 testList={};
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Electroweak bosons sector*)
 
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.EWbosons.test.json"];
+particlesFeyn
+particles
 
 
 (* ::Subsubsection::Closed:: *)
@@ -361,12 +363,34 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
+(* ::Subsubsection:: *)
+(*Full check*)
+
+
+expandNumber[expr_, num_, repl_List] := 
+  expr /. M[args__] :> Module[{lst = ({args} /. num -> repl)},
+    lst = Map[If[ListQ[#], #, {#}] &, lst]; (* ensure each slot is a list *)
+    Total[M @@@ Tuples[lst]]
+  ];
+
+elements=MatrixElementsFeyn[[All,1]];
+test1=elements/.{0->5,1->5,2->5,3->6,4->7,5->8,6->8,7->8}//DeleteDuplicates;
+test1=test1//Total;
+test1=test1/.MatrixElements/.{yt->yt*Sqrt[2]}//removeMissing//fixConvention;
+test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
+
+
+((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
+
+
 (* ::Subsection::Closed:: *)
 (*Higgs tau sector*)
 
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.HiggsTau.test.json"];
+particlesFeyn
+particles
 
 
 (* ::Subsubsection::Closed:: *)
@@ -393,16 +417,17 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Higgs top sector*)
 
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.HiggsTop.test.json"];
 particlesFeyn
+particles
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoFF*)
 
 
@@ -448,7 +473,7 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoSS*)
 
 
@@ -473,13 +498,34 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
-(* ::Subsection:: *)
+(* ::Subsubsection:: *)
+(*Full check*)
+
+
+expandNumber[expr_, num_, repl_List] := 
+  expr /. M[args__] :> Module[{lst = ({args} /. num -> repl)},
+    lst = Map[If[ListQ[#], #, {#}] &, lst]; (* ensure each slot is a list *)
+    Total[M @@@ Tuples[lst]]
+  ];
+
+elements=MatrixElementsFeyn[[All,1]];
+test1=elements/.{0->0,1->0,2->7,3->8,4->8,5->8}//DeleteDuplicates;
+test1=test1//expandNumber[#, 0, {0, 2}]&//Total;
+test1=test1/.MatrixElements/.{yt->yt*Sqrt[2]}//removeMissing//fixConvention;
+test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
+
+
+((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
+
+
+(* ::Subsection::Closed:: *)
 (*Top bottom QCD sector *)
 
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.tbg.test.json"];
 particlesFeyn
+particles
 
 
 (* ::Subsubsection::Closed:: *)
@@ -530,7 +576,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoFF*)
 
 
@@ -601,6 +647,26 @@ AppendTo[testList,
 
 (* doesn't cancel exactly, and the difference involves the Yukawa coupling *)
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
+
+
+(* ::Subsubsection:: *)
+(*Full check*)
+
+
+expandNumber[expr_, num_, repl_List] := 
+  expr /. M[args__] :> Module[{lst = ({args} /. num -> repl)},
+    lst = Map[If[ListQ[#], #, {#}] &, lst]; (* ensure each slot is a list *)
+    Total[M @@@ Tuples[lst]]
+  ];
+
+elements=MatrixElementsFeyn[[All,1]];
+test1=elements/.{0->0,1->0,2->1,3->1,4->4}//DeleteDuplicates;
+test1=test1//expandNumber[#, 0, {0, 2}]&//expandNumber[#, 1, {1, 3}]&//Total;
+test1=test1/.MatrixElements/.{yt->yt*Sqrt[2]}//removeMissing//fixConvention;
+test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
+
+
+((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
 (* ::Subsection::Closed:: *)
