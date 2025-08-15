@@ -172,9 +172,7 @@ MatrixElements
 (*Importing results from WallGo*)
 
 
-If[Not[ValueQ[MatrixElements]],
-{particleNames,parameters,MatrixElements}=ImportMatrixElements["yukawa.test.json"]
-];
+{particleNames,parameters,MatrixElements}=ImportMatrixElements["yukawa.test.json"];
 
 
 (* ::Section:: *)
@@ -189,73 +187,207 @@ file=FileNameJoin[{NotebookDirectory[],"yukawa.feyncalc.test.json"}];
 (*Comparison tests*)
 
 
+(* ::Subsection:: *)
+(*Translate input*)
+
+
 insertCouplings={\[Lambda]->lam,\[Gamma]->(g+lam v),y->y};
+customCouplings={ms2->mPhi^2};
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 
 
-UserMasses={ms,mf};
-fixConvention[arg_]:=symmetriseTU[arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings/.v->0]//Expand//Simplify//Expand
+fixConvention[arg_]:=symmetriseTU[
+	arg/.customCouplings/.Thread[UserMasses->0]/.insertCouplings/.v->0/.{s->(-t-u)}
+	]//Simplify//Expand
 
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
+
+
+testsRulesWallGo[arg_]:=arg/.Flatten[particleNames]/.MatrixElements//fixConvention//removeMissing;
+testsRulesFeynCalc[arg_]:=arg/.Flatten[particleNamesFeyn]/.MatrixElementsFeyn//fixConvention//removeMissing;
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]//testsRulesWallGo
+testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]//testsRulesFeynCalc
 
 
 (* ::Subsection:: *)
 (*Test hard*)
 
 
+particleNames
+particleNamesFeyn
+
+
 testList={};
 
 
+(* ::Subsubsection::Closed:: *)
+(*SStoSS*)
+
+
 (* scalar-scalar scattering*)
+process="SS->SS"
+test["WallGo"][process]=testWallGo[
+	{"Phi"},
+	{"Phi"},
+	{"Phi"},
+	{"Phi"}
+]//Simplify
+test["FeynCalc"][process]=testFeynCalc[
+	{"Phi","Phibar"},
+	{"Phi","Phibar"},
+	{"Phi","Phibar"},
+	{"Phi","Phibar"}
+]//Simplify
 AppendTo[testList,
-TestCreate[
-	M[0,0,0,0]/.MatrixElements//fixConvention//removeMissing,
-	M[0,0,0,0]/.MatrixElementsFeyn//fixConvention//removeMissing
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*SStoFF*)
 
 
 (* scalar to fermions *)
+process="SS->FF"
+test["WallGo"][process]=testWallGo[
+	{"Phi"},
+	{"Phi"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"Phi","Phibar"},
+	{"Phi","Phibar"},
+	{"Psi","Psibar"},
+	{"Psi","Psibar"}
+]
 AppendTo[testList,
-TestCreate[
-	Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[0,0,c,d],{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*FFtoSS*)
 
 
 (* fermions to scalar *)
+process="FF->SS"
+test["WallGo"][process]=testWallGo[
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"},
+	{"Phi"},
+	{"Phi"}
+]
+(* explicit 1/2 is due to average over leg 1 *)
+test["FeynCalc"][process]=1/2*testFeynCalc[
+	{"Psi","Psibar"},
+	{"Psi","Psibar"},
+	{"Phi","Phibar"},
+	{"Phi","Phibar"}
+]//Expand
 AppendTo[testList,
-TestCreate[
-	Sum[M[c,d,0,0],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[1/2 M[c,d,0,0],{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*SFtoSF*)
 
 
 (* scalar-fermion scattering *)
+process="SF->SF"
+test["WallGo"][process]=testWallGo[
+	{"Phi"},
+	{"PsiL","PsiR"},
+	{"Phi"},
+	{"PsiL","PsiR"}
+]
+test["FeynCalc"][process]=testFeynCalc[
+	{"Phi","Phibar"},
+	{"Psi","Psibar"},
+	{"Phi","Phibar"},
+	{"Psi","Psibar"}
+]//Expand
 AppendTo[testList,
-TestCreate[
-	Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[M[0,c,d,0]+M[0,c,0,d],{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*FStoFS*)
 
 
 (* fermion-scalar scattering *)
+process="FS->FS"
+test["WallGo"][process]=testWallGo[
+	{"PsiL","PsiR"},
+	{"Phi"},
+	{"PsiL","PsiR"},
+	{"Phi"}
+]
+(* explicit 1/2 is due to average over leg 1 *)
+test["FeynCalc"][process]=1/2*testFeynCalc[
+	{"Psi","Psibar"},
+	{"Phi","Phibar"},
+	{"Psi","Psibar"},
+	{"Phi","Phibar"}
+]//Expand
 AppendTo[testList,
-TestCreate[
-	Sum[M[c,0,d,0]+M[c,0,0,d],{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[1/2 (M[c,0,d,0]+M[c,0,0,d]),{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*FFtoFF*)
 
 
 (* fermion-fermion scattering*)
+process="F1F1->F1F1"
+test["WallGo"][process]=testWallGo[
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"},
+	{"PsiL","PsiR"}
+]
+(* explicit 1/2 is due to average over leg 1 *)
+test["FeynCalc"][process]=1/2*testFeynCalc[
+	{"Psi","Psibar"},
+	{"Psi","Psibar"},
+	{"Psi","Psibar"},
+	{"Psi","Psibar"}
+]
 AppendTo[testList,
-TestCreate[
-	Sum[M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElements//fixConvention//removeMissing,
-	Sum[1/2 M[a,b,c,d],{a,1,2},{b,1,2},{c,1,2},{d,1,2}]/.MatrixElementsFeyn//fixConvention//removeMissing (* explicit 1/2 is due to average over leg 1 *)
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+		
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
+
+
+(* ::Subsubsection::Closed:: *)
+(*Test report*)
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
