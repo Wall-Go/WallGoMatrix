@@ -15,8 +15,9 @@ Date -> "August 15th, 2025"
 ****************************)
 IndexRange[ Index[Fundamental1] ] = NoUnfold[ Range[3] ];
 IndexRange[ Index[Fundamental2] ] = NoUnfold[ Range[5] ];
-IndexRange[ Index[Adjoint1] ] = NoUnfold[ Range[24] ];
-IndexRange[ Index[Adjoint2] ] = NoUnfold[ Range[8] ];
+IndexRange[ Index[Adjoint1] ] = NoUnfold[ Range[8] ];
+IndexRange[ Index[Adjoint2] ] = NoUnfold[ Range[24] ];
+
 
 IndexStyle[ Fundamental1, k ];
 IndexStyle[ Fundamental2, l ];
@@ -29,18 +30,18 @@ IndexStyle[ Adjoint2, b ];
 M$GaugeGroups = {
     SU3 == {
         Abelian -> False,
-        GaugeBoson -> A,
-        StructureConstant -> f1,
-        Representations -> {T1, Fundamental1},
+        GaugeBoson -> A1,
+        StructureConstant -> SUNF1,
+        Representations -> {SUNTF1, Fundamental1},
         SymmetricTensor -> dSUN1,
         CouplingConstant -> g3
     },
     SU5 == {
         Abelian -> False,
-        GaugeBoson -> G,
-        StructureConstant -> f2,
-        Representations -> {T2, Fundamental2},
-        SymmetricTensor -> dSUN,
+        GaugeBoson -> A2,
+        StructureConstant -> SUNF2,
+        Representations -> {SUNTF2, Fundamental2},
+        SymmetricTensor -> dSUN2,
         CouplingConstant -> g5
     }
 };
@@ -58,31 +59,31 @@ M$ClassesDescription = {
     },
     (* vector *)
     V[1] == {
-        ClassName -> A,
+        ClassName -> A1,
         SelfConjugate -> True,
         Indices -> {Index[Adjoint1]},
         Mass -> 0
     },
     V[2] == {
-        ClassName -> G,
+        ClassName -> A2,
         SelfConjugate -> True,
         Indices -> {Index[Adjoint2]},
         Mass -> 0
     },
     (* ghost *)
     U[1] == {
-        ClassName -> ghostA,
+        ClassName -> ghostA1,
         SelfConjugate -> False,
         Indices -> {Index[Adjoint1]},
-        Ghost -> A,
+        Ghost -> A1,
         QuantumNumbers -> {GhostNumber -> 1},
         Mass -> 0
     },
     U[2] == {
-        ClassName -> ghostG,
+        ClassName -> ghostA2,
         SelfConjugate -> False,
         Indices -> {Index[Adjoint2]},
-        Ghost -> G,
+        Ghost -> A2,
         QuantumNumbers -> {GhostNumber -> 1},
         Mass -> 0
     },
@@ -152,10 +153,16 @@ M$Parameters = {
     },
 
     (* gauge parameters *)
-    g == {
+    g3 == {
         ParameterType -> External,
         ComplexParameter -> False,
-        Value -> g,
+        Value -> g3,
+        Description -> "Gauge coupling"
+    },
+    g5 == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> g5,
         Description -> "Gauge coupling"
     },
 
@@ -187,15 +194,24 @@ M$Parameters = {
 ****************************)
 L := Module[
     {
-        mu,nu,aa,k1,k2,
+        mu,nu,aa,bb,k1,k2,
         LGauge, LGaugeFixing, LGhost, LHiggs, THiggs, VHiggs, LPsiL, LPsiR, LPsi, LChi, LYukawa
     },
 
-    LGauge := -1/4 FS[A, mu, nu, aa] FS[A, mu, nu, aa];
+    LGauge := (
+        -1/4 FS[A1, mu, nu, aa] FS[A1, mu, nu, aa]
+        -1/4 FS[A2, mu, nu, bb] FS[A2, mu, nu, bb]
+        );
 
-    LGaugeFixing := -1/2 (del[A[mu, aa], mu]) (del[A[nu, aa], nu]);
+    LGaugeFixing := (
+        -1/2 (del[A1[mu, aa], mu]) (del[A1[nu, aa], nu])
+        -1/2 (del[A2[mu, bb], mu]) (del[A2[nu, bb], nu])
+        );
 
-    LGhost := del[ghostAbar[aa], mu].DC[ghostA[aa], mu];
+    LGhost := (
+        +del[ghostA1bar[aa], mu].DC[ghostA1[aa], mu]
+        +del[ghostA2bar[bb], mu].DC[ghostA2[bb], mu]
+        );
 
     THiggs := DC[Phibar[k1], mu] DC[Phi[k1], mu];
     VHiggs := (
