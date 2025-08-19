@@ -92,7 +92,7 @@ M$ClassesDescription = {
 		ClassName -> Psi,
         PropagatorArrow -> True,
 		SelfConjugate -> False,
-        Indices -> {Index[Fundamental2]},
+        Indices -> {Index[Fundamental1], Index[Fundamental2]},
 		Mass -> {mPsi, Internal}
     },
     (* neutral fermion *)
@@ -112,7 +112,7 @@ M$ClassesDescription = {
 		SelfConjugate -> False,
         Indices -> {Index[Fundamental1], Index[Fundamental2]},
 		Mass -> {mPsi, Internal},
-        Definitions -> { PsiL[sp1_,l1_] :> Module[{sp2}, ProjM[sp1,sp2] Psi[sp2,l1]] }
+        Definitions -> { PsiL[sp1_,k1_,l1_] :> Module[{sp2}, ProjM[sp1,sp2] Psi[sp2,k1,l1]] }
     },
     (* right-handed projection *)
     F[4] == {
@@ -122,7 +122,7 @@ M$ClassesDescription = {
         SelfConjugate -> False,
         Indices -> {Index[Fundamental2]},
         Mass -> {mPsi, Internal},
-        Definitions -> { PsiR[sp1_,l1_] :> Module[{sp2}, ProjP[sp1,sp2] Psi[sp2,l1]] }
+        Definitions -> { PsiR[sp1_,l1_] :> Module[{sp2}, ProjP[sp1,sp2] Chi[sp2,l1]] }
     }
 };
 

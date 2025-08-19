@@ -102,7 +102,7 @@ processesByHand={
 	};
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Automating steps*)
 
 
@@ -122,12 +122,42 @@ polsums[x_,vec_,aux_,spinfac_]:=
 	x//Collect2[#,Pair[_,Momentum[Polarization[vec,__]]]]&//Isolate[#,{Polarization[vec,__]}]&//DoPolarizationSums[#,vec,aux,ExtraFactor->spinfac]&//FixedPoint[ReleaseHold,#]&
 
 
-interstingParticles={S[1],-S[1],V[1],F[1],-F[1],F[2],-F[2]};
+interstingParticles={S[1],-S[1],V[1],V[2],F[1],-F[1],F[2],-F[2]};
 makeProcesses[firstParticle_]:=Flatten[Table[{firstParticle,a}->{b,c},
 	{a,interstingParticles},
 	{b,interstingParticles},
 	{c,interstingParticles}]
 	,2];
+
+
+?Isolate
+
+
+ContractMultipleSUN[expression_]:=Module[{exprI=expression},
+	exprI=exprI/.{
+					SUNFDelta[
+			SUNFIndex[Index[Fundamental1, s1_]],
+			SUNFIndex[Index[Fundamental1, s2_]]
+			] -> 
+		SUN1[SUNFDelta[
+			SUNFIndex[Index[Fundamental1, s1]],
+			SUNFIndex[Index[Fundamental1, s2]]
+			]],
+		SUNFDelta[
+			SUNFIndex[Index[Fundamental2, s1_]],
+			SUNFIndex[Index[Fundamental2, s2_]]
+			] -> 
+		SUN2[SUNFDelta[
+			SUNFIndex[Index[Fundamental2, s1]],
+			SUNFIndex[Index[Fundamental2, s2]]
+			]],
+		SUNF1[x__]->SUN1[SUNF[x]],
+		SUNTF1[x__]->SUN1[SUNTF[x]],
+		SUNF2[x__]->SUN2[SUNF[x]],
+		SUNTF2[x__]->SUN2[SUNTF[x]]
+	}//SUNSimplify;
+	exprI
+]
 
 
 ClearAll[makeAmplitude]
@@ -147,7 +177,7 @@ ampFA[1]=CreateFeynAmp[diags,PreFactor->1,
 		GaugeXi[V[___]]->1,
 		FAGaugeXi[S[___]]->1,
 		FAGaugeXi[V[___]]->1
-	}]; 
+	}];
 
 (* introducing FeynAmpDenominator, as required by FeynCalc (not sure why this is missing in the first place) *)
 ampFA[2]=ampFA[1]/.FAPropagatorDenominator[x_,y_]:>FAFeynAmpDenominator[PropagatorDenominator[x,y]];
@@ -178,8 +208,36 @@ ampFC[4]=ampFC[3](*/.Spinor[a__]Spinor[b__]->Spinor[a] . Spinor[b]*);
 ampFC[5]=ampFC[4](*/.{SUNF[a_,b_,c_,d_] -> SUNF[a,b,Index[Adjoint,5]] SUNF[Index[Adjoint,5],c,d]} *);
 (*/.{SUNT[SUNIndex[Index[Adjoint, a_]]] . SUNT[SUNIndex[Index[Fundamental, \[Beta]_]]] . SUNT[SUNIndex[Index[Fundamental, \[Gamma]_]]]->SUNTF[{SUNIndex[adj[a]]},SUNFIndex[fun[\[Beta]]],SUNFIndex[fun[\[Gamma]]]]} ;*)
 (*Print[ampFC[5]//Contract//Expand];*)
+
+ampFC[5]=ContractMultipleSUN[ampFC[5]];
+(*ampFC[5]=ampFC[5]/.{
+	SUNFDelta[
+		SUNFIndex[Index[Fundamental2, s1_]],
+		SUNFIndex[Index[Fundamental2, s2_]]
+		] -> 
+	SUN2[SUNFDelta[
+		SUNFIndex[Index[Fundamental2, s1]],
+		SUNFIndex[Index[Fundamental2, s2]]
+		]],
+	SUNFDelta[
+		SUNFIndex[Index[Fundamental1, s1_]],
+		SUNFIndex[Index[Fundamental1, s2_]]
+		] -> 
+	SUN1[SUNFDelta[
+		SUNFIndex[Index[Fundamental1, s1]],
+		SUNFIndex[Index[Fundamental1, s2]]
+		]],
+	SUNF1[x__]->SUN1[SUNF[x]],
+	SUNTF1[x__]->SUN1[SUNTF[x]],
+	SUNF2[x__]->SUN2[SUNF[x]],
+	SUNTF2[x__]->SUN2[SUNTF[x]]}//SUNSimplify;*)
+	
 Return[ampFC[5]//Contract]
 ]
+
+
+(* ::Subsubsection:: *)
+(*Amplitude squared*)
 
 
 ClearAll[makeAmplitudeSquared]
@@ -191,7 +249,8 @@ Module[
 (* assumes 2->2 topology *)
 masses={0,0,0,0};
 stu=Plus@@(masses^2);
-ampM[1]=makeAmplitude[process,channels]
+ampM[1]=makeAmplitude[process,channels];
+
 (*/.PropagatorDenominator[a_,b_]->PropagatorDenominator[a,0]*);
 (* making amplitude squared *)
 ampSq[1]=(*1/2*)(* 1/2 is a symmetry factor *)ComplexConjugate[ampM[1]]ampM[1];
@@ -240,7 +299,10 @@ For[i=1,i<=4,i++,
 (* SIMPLIFYING COLOUR INDICES *)
 ampSq[10]=ampSq[9];
 (*ampSq[11]=SUNSimplify[ampSq[10],SUNNToCACF->False](*/.SUNN->2*);*)
-ampSq[11]=ampSq[10];
+ampSq[11]=SUNSimplify[ampSq[10]/.{SUN1[x__]->x},SUNNToCACF->False]/.{SUNN->SUNN1,CA->CA1,CF->CF1};
+ampSq[11]=SUNSimplify[ampSq[11]/.{SUN2[x__]->x},SUNNToCACF->False]/.{SUNN->SUNN2,CA->CA2,CF->CF2};
+(*ampSq[11]=ContractMultipleSUN[ampSq[10]];*)
+(*ampSq[11]=ampSq[10];*)
 (*Print[ampSq[11]];*)
 (* FINAL SIMPLIFICATIONS *)
 ampMsq[1]=PropagatorDenominatorExplicit[ampSq[11]];
@@ -270,69 +332,79 @@ externalSignature={V[1],V[1]}->{V[1],V[1]};
 ampSq[1]=makeAmplitudeSquared[externalSignature,All,True];
 
 
-SUNF[Index[Adjoint1, 2], Index[Adjoint1, 3], Index[Adjoint1, 5]]^2//SUNSimplify
-SUNF[Index[Adjoint1, 1], Index[Adjoint1, 4], Ind924]^2//SUNSimplify
+ampSq[1]/.SUNF1->SUNF(*//InputForm*)//SUNSimplify
 
 
-ampSq[1]/.f1->SUNF//InputForm(*//SUNSimplify*)
-
-
-ampSq[1]/.{SUNN->2}//SUNSimplify
+ampSq[1]/.{SUNN1->2}//SUNSimplify
 
 
 resAMYSU3=16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->8,CA->3}
 resAMYSU2=16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->3,CA->2}
 
 
-fixConvention[ampSq[1]/.{SUNN->3}]
-fixConvention[ampSq[1]/.{SUNN->2}]
+fixConvention[ampSq[1]/.{SUNN1->3}]
+fixConvention[ampSq[1]/.{SUNN1->2}]
 
 
 (* should be zero - pure gauge amplitude unaffected by presence of scalars or fermions *)
-fixConvention[ampSq[1]-resAMYSU3/.{SUNN->3}]
-fixConvention[ampSq[1]-resAMYSU2/.{SUNN->2}]
+fixConvention[ampSq[1]-resAMYSU3/.{SUNN1->3,g3->g}]
+fixConvention[ampSq[1]-resAMYSU2/.{SUNN1->2,g3->g}]
 
 
 (* ::Subsection:: *)
 (*SS->SS*)
 
 
-?SUNTF
-?SUNT
+(*InsertFields[tops[[All]],externalSignature,InsertionLevel->{Classes},Model->modLoc,GenericModel->modLoc];
+CreateFeynAmp[%,PreFactor->1,Truncated->False,
+	GaugeRules->{GaugeXi[S[_]]->1,GaugeXi[V[_]]->1,FAGaugeXi[S[_]]->1,FAGaugeXi[V[_]]->1}]//InputForm*)
 
 
 externalSignature={S[1],S[1]}->{S[1],S[1]};
-ampSq[S]=makeAmplitudeSquared[{S[1],S[1]}->{S[1],S[1]},All,True](*//Contract//SUNSimplify;*);
-%(*/.{T1->SUNTF}//SUNSimplify*)
+ampSq[S]=makeAmplitudeSquared[externalSignature,All,True];
 
 
-?Genera
-
-
-SUNT[SequenceForm["Adj", 5],SequenceForm["Fun", 3],SequenceForm["Fun", 2]] SUNT[SequenceForm["Adj", 5],SequenceForm["Fun", 4],SequenceForm["Fun", 1]]//SUNSimplify
-
-
-ampSq[S]/.{T1->SUNT}
+ampSq[S]/.{SUNN1->3}
+ampSq[S]/.{SUNN1->5}
 
 
 (* ::Subsection:: *)
 (*FF->FF*)
 
 
-externalSignature={F[1],-F[1]}->{V[1],V[1]};
-externalSignature={F[1],-F[2]}->{F[1],-F[2]};
-externalSignature={F[1],-F[1]}->{F[1],-F[1]};
-(*externalSignature={S[1],S[1]}->{S[1],S[1]};*)
+externalSignature={F[3],-F[3]}->{F[3],-F[3]};
+externalSignature={F[3],F[3]}->{F[3],F[3]};
+externalSignature={F[2],-F[1]}->{-F[1],F[2]};
+(*externalSignature={F[1],-F[1]}->{-F[1],F[1]};*)
 
+(*InsertFields[tops[[All]],externalSignature,InsertionLevel->{Classes},Model->modLoc,GenericModel->modLoc];
+CreateFeynAmp[%,PreFactor->1,Truncated->False,
+	GaugeRules->{GaugeXi[S[_]]->1,GaugeXi[V[_]]->1,FAGaugeXi[S[_]]->1,FAGaugeXi[V[_]]->1}]*)
+
+
+(*makeAmplitude[externalSignature,All]*)
+
+
+ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SpinorChainEvaluate;
+(*%//FullForm;*)
+%//Contract//Expand;
+Collect[%/.{SUNN1->3,SUNN2->5},{g3,g5,y}]
+
+
+externalSignature={F[3],-F[4]}->{F[3],-F[4]};
 
 InsertFields[tops[[All]],externalSignature,InsertionLevel->{Classes},Model->modLoc,GenericModel->modLoc];
 CreateFeynAmp[%,PreFactor->1,Truncated->False,
 	GaugeRules->{GaugeXi[S[_]]->1,GaugeXi[V[_]]->1,FAGaugeXi[S[_]]->1,FAGaugeXi[V[_]]->1}]
 
 
-makeAmplitude[externalSignature,All]
+ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify//SpinorChainEvaluate
+(*%//FullForm;*)
+%//Contract//Expand
+(*%/.{mPhi->0,mPsi->0,CA->2,CF->3/4}*)
 
 
+externalSignature={F[2],-F[2]}->{F[2],-F[2]};
 ampSq["F"]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify//SpinorChainEvaluate
 (*%//FullForm;*)
 %//Contract//Expand
@@ -377,7 +449,7 @@ fixConvention[%]
 (*SF->VF*)
 
 
-externalSignature={-S[1],F[1]}->{V[1],F[2]};
+externalSignature={-S[1],F[1]}->{V[2],F[2]};
 makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify
 (*%/.{Pair[x__]->0}*)
 
@@ -395,7 +467,7 @@ removeIncomplete={Pair[x__]->0};
 removeIncomplete={ };
 
 
-particleList = {S[1],-S[1],V[1],F[1],-F[1],F[2],-F[2]};
+particleList = {S[1],-S[1],V[1],V[2],F[1],-F[1],F[3],-F[3]};
 
 (* squared summed matrix elements with a vector on leg 1 *)
 createProcesses[particle_]:=Module[{processes},
@@ -406,16 +478,6 @@ createProcesses[particle_]:=Module[{processes},
 		{lam,g,y},Expand],
 	{process,processes}],_->0]
 ];
-
-
-(*scalar1=createProcesses[S[1]];
-antiScalar1=createProcesses[-S[1]];
-vector=createProcesses[V[1]];
-fermion1=createProcesses[F[1]];
-antiFermion1=createProcesses[-F[1]];
-fermion2=createProcesses[F[2]];
-antiFermion2=createProcesses[-F[2]];*)
-(*results=Flatten[{scalar1,antiScalar1,vector,fermion1,antiFermion1,fermion2,antiFermion2},1];*)
 
 
 results = Module[{i = 0, n = Length[particleList], results},
@@ -480,5 +542,5 @@ makeJsonObject[fields_, parameters_, results_] :=
 	here for the Yukawa model,where the matrix elements are stored in
 	the object called MatrixElements
 *)
-toExportAsJSON=makeJsonObject[particleNames,Join[parameters,{SUNN}],results//SMPToSymbol];
+toExportAsJSON=makeJsonObject[particleNames,Join[parameters,{SUNN,SUNN1,SUNN2}],results//SMPToSymbol];
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".test.json"]}],toExportAsJSON];
