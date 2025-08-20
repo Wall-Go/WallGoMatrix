@@ -25,7 +25,7 @@ $KeepLogDivergentScalelessIntegrals=True;
 FCDisableTraditionalFormOutput[]
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Choosing model*)
 
 
@@ -109,7 +109,7 @@ processesByHand={
 	};
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Automating steps*)
 
 
@@ -260,7 +260,7 @@ symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 fixConvention[arg_]:=symmetriseTU[arg/.{s->(-t-u)}]//Expand//Simplify//Expand
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*SS->SS*)
 
 
@@ -276,7 +276,7 @@ externalSignature={S[2],S[2]}->{S[2],S[2]};
 ampSq[S]=makeAmplitudeSquared[externalSignature,All,True]//Contract//SUNSimplify
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*FF->FF*)
 
 
@@ -364,18 +364,17 @@ createProcesses[particle_]:=Module[{processes},
 ];
 
 
-(*scalar1=createProcesses[S[1]];
-antiScalar1=createProcesses[-S[1]];
-scalar2=createProcesses[S[2]];
-vector=createProcesses[V[1]];
-fermion1=createProcesses[F[1]];
-antiFermion1=createProcesses[-F[1]];
-fermion2=createProcesses[F[2]];
-antiFermion2=createProcesses[-F[2]];*)
-(*results=Flatten[{scalar1,antiScalar1,scalar2,vector,fermion1,antiFermion1,fermion2,antiFermion2},1];*)
-
-
-results=Table[createProcesses[particle],{particle,particleList}]//Flatten[#,1]&;
+results = Module[{i = 0, n = Length[particleList], results},
+  results = Monitor[
+    Table[
+      i++;
+      createProcesses[particle],
+      {particle, particleList}
+    ],
+    Row[{"Processing ", particleList[[i]], " which is particle ", i, " of ", n, " (", NumberForm[100. (i-1)/n, {3, 1}], "%) "}]
+  ] // Flatten[#, 1] &;
+  results
+];
 
 
 feynAssociation=Association[results];
