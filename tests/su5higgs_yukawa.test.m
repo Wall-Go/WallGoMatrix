@@ -210,11 +210,8 @@ particlesFeyn
 testList={};
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*VVtoVV*)
-
-
-test["WallGo"][1]
 
 
 process="VV->VV"
@@ -245,7 +242,7 @@ test["WallGo"][process]=testWallGo[
 	{"Vector1"},
 	{"Vector1"}
 ]
-test["AMY"][process]=fixConvention[16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->5^2-1,CA->5}]
+test["AMY"][process]=fixConvention[16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->CA^2-1}/.{CA->5}]
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
