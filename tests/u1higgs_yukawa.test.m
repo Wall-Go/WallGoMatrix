@@ -149,7 +149,7 @@ MatrixElements=ExportMatrixElements[
 		Format->{"json","txt"}}];
 
 
-MatrixElements
+MatrixElements;
 
 
 (* ::Section:: *)
@@ -234,7 +234,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*FFtoFF*)
 
 
@@ -541,7 +541,7 @@ AppendTo[testList,
 		TestID->"FeynCalc vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*FStoFV*)
 
 
@@ -1067,6 +1067,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
