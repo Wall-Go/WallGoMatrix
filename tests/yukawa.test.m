@@ -172,7 +172,7 @@ MatrixElements
 (*Importing results from WallGo*)
 
 
-{particleNames,parameters,MatrixElements}=ImportMatrixElements["yukawa.test.json"];
+{particleNames,parameters,MatrixElements}=ImportMatrixElements["output/yukawa.test.json"];
 
 
 (* ::Section:: *)
@@ -388,6 +388,4 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
