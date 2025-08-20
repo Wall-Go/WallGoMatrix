@@ -605,28 +605,6 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
 
 
-test["WallGo"][process]=testWallGo[
-	{"TopL"},
-	{"TopL"},
-	{"TopR"},
-	{"TopR"}
-]/.{yt->Sqrt[2]*yt}
-
-
-(3*t^2*yt1^4)/(mh2 - t)^2 + (3*u^2*yt1^4)/(mh2 - u)^2/.{mh2->0}//fixConvention
-
-
-test["WallGo"][process]=testWallGo[
-	{"TopL"},
-	{"TopL"},
-	{"TopL"},
-	{"TopL"}
-]/.{yt->Sqrt[2]*yt}//fixConvention
-
-
-((s^2 + t^2)*(9*gw^4*(mg2 - u)^2 + 32*g3^4*(mw2 - u)^2))/(12*(mg2 - u)^2*(mw2 - u)^2) + ((9*gw^4*(mg2 - t)^2 + 32*g3^4*(mw2 - t)^2)*(s^2 + u^2))/(12*(mg2 - t)^2*(mw2 - t)^2)/.{mh2->0,mw2->0}//fixConvention
-
-
 process="{b,b}->{b,b}"
 test["WallGo"][process]=testWallGo[
 	{"BotL","BotR"},
@@ -693,7 +671,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*QCD sector*)
 
 
