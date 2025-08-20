@@ -299,7 +299,7 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 (*Matrix elements*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*V1V2toV3V4*)
 
 
@@ -370,7 +370,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toF3F4*)
 
 
@@ -384,7 +384,7 @@ Block[{
 	vectorMass,scalarMass,
 	scalarPropT,scalarPropU,vectorPropU,vectorPropT,
 	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor,
-	flag
+	flag1
 },
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
@@ -507,20 +507,23 @@ If[
 	Result for interfaces between vector and scalar diagrams---
 	Only cross terms between diagrams can contribute
 *)
-	flag[2] = 4;
-	flag[3] = 4;
-	flag[4] = 4;
+	flag1[1] = 2;
+	flag1[2] = 0;
+	flag1[3] = 0;
+	flag1[4] = 0;
+	flag1[5] = 2;
+	flag1[6] = 2;
 	
-	totRes+=flag[1]*1/2*s*t*TotalConj[CS*Conjugate[CTyC] +CTyC*Conjugate[CS]];
-	totRes+=flag[2]*1/2*u*t*TotalConj[CU*Conjugate[CTyC] +CTyC*Conjugate[CU]];
+	totRes+=flag1[1]*1/2*s*t*TotalConj[CS*Conjugate[CTyC] +CTyC*Conjugate[CS]];
+	totRes+=flag1[2]*1/2*u*t*TotalConj[CU*Conjugate[CTyC] +CTyC*Conjugate[CU]];
 
-	totRes+=flag[3]*1/2*s*u*TotalConj[CS*Conjugate[CUyC] +CUyC*Conjugate[CS]];
-	totRes+=flag[4]*1/2*u*t*TotalConj[CT*Conjugate[CUyC] +CUyC*Conjugate[CT]];
+	totRes+=flag1[3]*1/2*s*u*TotalConj[CS*Conjugate[CUyC] +CUyC*Conjugate[CS]];
+	totRes+=flag1[4]*1/2*u*t*TotalConj[CT*Conjugate[CUyC] +CUyC*Conjugate[CT]];
 
-	totRes+=flag[5]*1/2*s*t*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
-	totRes+=flag[6]*1/2*u*s*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];
+	totRes+=flag1[5]*1/2*s*t*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
+	totRes+=flag1[6]*1/2*u*s*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];
 	
-	totRes = totRes/.{flag[x_]->1};
+	(*totRes = totRes/.{flag1[x_]->1};*)
 	
 	Return[Refine[4*totRes,Assumptions->VarAsum]]
 ]
@@ -966,7 +969,7 @@ Block[{
 	fermionMass,
 	fermionPropS,particleNull,gTensorF,YTensor,CS,resTot,
 	YTensor2,gTensorF2,fermionPropU,CU,kinFlip,t2,u2,
-	flag,partInt
+	flag2,partInt
 },
 (*
 	This module returns the squared matrix element of FS->FV summed over all quantum numbers of the incoming particles.
@@ -1010,15 +1013,24 @@ If[ (
 	CU=Contract[YTensor2 . fermionPropU ,gTensorF2,{{3,6}}]//OrderArray[#,4,1,2,3]&;
 
 (* === assembling the full result === *)
-	(*Squared s-channel*)
-	resTot=+2*s*u* TotalConj[CS*Conjugate[CS]];
-	(*Squared u-channel*)
-	resTot+=+2*s*u* TotalConj[CU*Conjugate[CU]];
-	(*Mixed s & u channel*)
-	flag[3] = 1/2;
-	resTot+=-flag[3]*2*s*u* TotalConj[CS*Conjugate[CU]+CU*Conjugate[CS]];
 	
-	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t2,u->u2}/.{t2->u,u2->t};];
+	flag2[1] = 1;
+	flag2[2] = 1;
+	flag2[3] = 1;
+	
+	(*Squared s-channel*)
+	resTot=+flag2[1]*2*s*u* TotalConj[CS*Conjugate[CS]];
+	(*Squared u-channel*)
+	resTot+=+flag2[2]*2*s*u* TotalConj[CU*Conjugate[CU]];
+	(*Mixed s & u channel*)
+	resTot+=-flag2[3]*2*s*u* TotalConj[CS*Conjugate[CU]+CU*Conjugate[CS]];
+	
+	If[
+		Mod[kinFlip,2]==1,
+		resTot=resTot/.{t->t2,u->u2}/.{t2->u,u2->t};
+	];
+	
+	(*	totRes = totRes/.{flag2[x_]->1};*)
 	
 	Return[-2*Refine[resTot,Assumptions->VarAsum]]
 ,
