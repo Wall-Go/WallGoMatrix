@@ -174,7 +174,7 @@ MatrixElements;
 (*Importing results from FeynCalc*)
 
 
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["sun-higgs-yukawa.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/sun-higgs-yukawa.test.json"];
 
 
 testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;

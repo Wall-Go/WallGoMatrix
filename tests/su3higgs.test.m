@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -17,7 +17,7 @@ Check[
 ]
 
 
-(* ::Chapter:: *)
+(* ::Title:: *)
 (*SU(3) Higgs*)
 
 
@@ -116,7 +116,7 @@ MatrixElements=ExportMatrixElements[
 ]
 
 
-(* ::Section:: *)
+(* ::Chapter:: *)
 (*Tests*)
 
 
@@ -131,7 +131,7 @@ MatrixElements=ExportMatrixElements[
 (*Importing results from FeynCalc*)
 
 
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["sunhiggs.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/sunhiggs.test.json"];
 
 
 (* ::Section:: *)
@@ -269,3 +269,6 @@ AppendTo[testList,TestCreate[test["WallGo"][6],test["FeynCalc"][6],TestID->"VV->
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+

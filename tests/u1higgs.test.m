@@ -121,7 +121,7 @@ MatrixElements=ExportMatrixElements[
 (*Tests*)
 
 
-file=FileNameJoin[{NotebookDirectory[],"u1higgs.test.json"}];
+file=FileNameJoin[{NotebookDirectory[],"testFiles/u1higgs.test.json"}];
 {particleNames,parameters,FeynMatrixElements}=ImportMatrixElements[file];
 
 
@@ -194,4 +194,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
 

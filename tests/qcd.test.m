@@ -163,7 +163,7 @@ report["ResultsDataset"]
 (*Test hard*)
 
 
-file=FileNameJoin[{NotebookDirectory[],"qcd.test.json"}];
+file=FileNameJoin[{NotebookDirectory[],"testFiles/qcd.test.json"}];
 {particleNames,parameters,FeynMatrixElements}=ImportMatrixElements[file];
 
 
@@ -212,3 +212,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+

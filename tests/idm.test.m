@@ -17,7 +17,7 @@ Check[
 ]
 
 
-(* ::Chapter:: *)
+(* ::Title:: *)
 (*2HDM*)
 
 

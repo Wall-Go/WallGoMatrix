@@ -17,7 +17,7 @@ Check[
 ]
 
 
-(* ::Chapter:: *)
+(* ::Title:: *)
 (*SU(2) Higgs*)
 
 
@@ -128,7 +128,7 @@ M[0,0,1,1]/.MatrixElements//Simplify
 2 g1^4 ((t (s+t))/(ms-t)^2+(u (s+u))/(ms-u)^2)
 
 
-(* ::Section:: *)
+(* ::Chapter:: *)
 (*Tests*)
 
 
@@ -143,7 +143,7 @@ M[0,0,1,1]/.MatrixElements//Simplify
 (*Importing results from FeynCalc*)
 
 
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["sunhiggs.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/sunhiggs.test.json"];
 
 
 (* ::Section:: *)

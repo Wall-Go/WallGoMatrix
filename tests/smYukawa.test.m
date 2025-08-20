@@ -131,7 +131,7 @@ LightParticleList={};
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.smYukawa.test";
+OutputFile="output/matrixElements.smYukawa.test";
 
 MatrixElements=ExportMatrixElements[
 	OutputFile,

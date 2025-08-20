@@ -17,7 +17,7 @@ Check[
 ]
 
 
-(* ::Chapter:: *)
+(* ::Title:: *)
 (*N scalar Model*)
 
 
@@ -110,7 +110,7 @@ UserMasses={ms,ms,mv};
 (*
 	output of matrix elements
 *)
-OutputFile="nscalar.test";
+OutputFile="output/nscalar.test";
 SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -135,7 +135,7 @@ MatrixElements
 
 
 If[Not[ValueQ[MatrixElements]],
-{particleNames,parameters,MatrixElements}=ImportMatrixElements["nscalars.test.json"]
+{particleNames,parameters,MatrixElements}=ImportMatrixElements["output/nscalars.test.json"]
 ];
 
 
@@ -143,7 +143,7 @@ If[Not[ValueQ[MatrixElements]],
 (*Importing results from FeynCalc*)
 
 
-file=FileNameJoin[{NotebookDirectory[],"nscalars.feyncalc.test.json"}];
+file=FileNameJoin[{NotebookDirectory[],"testFiles/nscalars.feyncalc.test.json"}];
 {particleNamesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements[file];
 
 
@@ -182,3 +182,6 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
