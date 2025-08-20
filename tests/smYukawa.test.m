@@ -152,7 +152,7 @@ MatrixElements=ExportMatrixElements[
 (*Importing results from WallGo*)
 
 
-{particles,parameters,MatrixElements}=ImportMatrixElements["matrixElements.smYukawa.test.json"];
+{particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.smYukawa.test.json"];
 
 
 (* ::Section:: *)
@@ -200,7 +200,7 @@ testList={};
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.EWbosons.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.EWbosons.test.json"];
 particlesFeyn
 particles
 
@@ -390,7 +390,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.HiggsTau.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.HiggsTau.test.json"];
 particlesFeyn
 particles
 
@@ -424,7 +424,7 @@ AppendTo[testList,
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.HiggsTop.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.HiggsTop.test.json"];
 particlesFeyn
 particles
 
@@ -520,12 +520,12 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Top bottom QCD sector *)
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.tbg.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.tbg.test.json"];
 particlesFeyn
 particles
 
@@ -676,7 +676,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.tbg.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.tbg.test.json"];
 particlesFeyn
 
 
@@ -727,6 +727,4 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
