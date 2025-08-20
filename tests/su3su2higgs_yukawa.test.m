@@ -289,7 +289,7 @@ AppendTo[testList,
 		TestID->"WallGo vs AMY:"<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoFF*)
 
 
@@ -299,7 +299,7 @@ test["WallGo"][process]=testWallGo[
 	{"PsiL","PsiR","XiL"},
 	{"PsiL","PsiR","XiL"},
 	{"PsiL","PsiR","XiL"}
-]/.{flag[1]->2,flag[2]->0,flag[3]->0,flag[4]->0,flag[5]->2,flag[6]->2}
+](*/.{flag1[1]->2,flag1[2]->0,flag1[3]->0,flag1[4]->0,flag1[5]->2,flag1[6]->2}*)
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar","Chi","Chibar"},
 	{"Psi","Psibar","Chi","Chibar"},
@@ -359,7 +359,7 @@ test["WallGo"][process]=testWallGo[
 	{"PsiR"},
 	{"PsiL","XiL"},
 	{"PsiR"}
-]/.{flag[1]->2,flag[2]->0,flag[3]->0,flag[4]->0,flag[5]->2,flag[6]->2}
+](*/.{flag1[1]->2,flag1[2]->0,flag1[3]->0,flag1[4]->0,flag1[5]->2,flag1[6]->2}*)
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
 	{"Chi","Chibar"},
@@ -379,7 +379,7 @@ test["WallGo"][process]=testWallGo[
 	{"PsiL","XiL"},
 	{"PsiR"},
 	{"PsiR"}
-]/.{flag[1]->2,flag[2]->0,flag[3]->0,flag[4]->0,flag[5]->2,flag[6]->2}
+](*/.{flag1[1]->2,flag1[2]->0,flag1[3]->0,flag1[4]->0,flag1[5]->2,flag1[6]->2}*)
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
 	{"Psi","Psibar"},
@@ -393,7 +393,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoVV*)
 
 
@@ -437,7 +437,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FVtoFV*)
 
 
@@ -461,7 +461,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoSS*)
 
 
@@ -485,7 +485,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoFF*)
 
 
@@ -529,7 +529,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFS*)
 
 
@@ -553,7 +553,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFV*)
 
 
@@ -617,7 +617,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoSV*)
 
 
@@ -666,7 +666,7 @@ test["WallGo"][process]=testWallGo[
 	{"PsiL","XiL"},
 	{"PsiR"},
 	{"Phi"},
-	{"Vector2"}
+	{"Vector1"}
 ](*/.{flag[1]->1,flag[2]->1,flag[3]->1}*)
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
@@ -701,7 +701,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoVV*)
 
 
@@ -725,7 +725,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SVtoSV*)
 
 
@@ -749,7 +749,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoSV*)
 
 
@@ -808,8 +808,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
 
 

@@ -210,7 +210,7 @@ particlesFeyn
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*VVtoVV*)
 
 
@@ -475,7 +475,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFV*)
 
 

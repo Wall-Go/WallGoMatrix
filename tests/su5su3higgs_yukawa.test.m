@@ -213,7 +213,7 @@ particlesFeyn
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*VVtoVV*)
 
 
@@ -289,7 +289,7 @@ AppendTo[testList,
 		TestID->"WallGo vs AMY:"<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoFF*)
 
 
@@ -393,7 +393,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoVV*)
 
 
@@ -437,7 +437,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FVtoFV*)
 
 
@@ -461,7 +461,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoSS*)
 
 
@@ -485,7 +485,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoFF*)
 
 
@@ -529,7 +529,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFS*)
 
 
@@ -553,7 +553,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFV*)
 
 
@@ -582,7 +582,7 @@ test["WallGo"][process]=testWallGo[
 	{"PsiL","XiL"},
 	{"Phi"},
 	{"PsiR"},
-	{"Vector2"}
+	{"Vector1"}
 ]
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
@@ -617,7 +617,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoSV*)
 
 
@@ -701,7 +701,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoVV*)
 
 
@@ -725,7 +725,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SVtoSV*)
 
 
@@ -749,7 +749,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoSV*)
 
 

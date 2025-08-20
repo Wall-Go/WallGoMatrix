@@ -725,14 +725,15 @@ expandNumber[expr_, num_, repl_List] :=
     Total[M @@@ Tuples[lst]]
   ];
 
-elements=Select[MatrixElements//Expand, ! FreeQ[#, g^2 y^2] &][[All,1]]
-test1=elements/.MatrixElements//fixConvention;
-test2=elements/.{1->3,2->5,3->2};
+elements=Select[MatrixElements//Expand, ! FreeQ[#, g^2 y^2] &][[All,1]];
+test1=elements/.{3->1}//expandNumber[#, 1, {3, 1}]&;
+test1=test1/.MatrixElements//fixConvention;
+test2=elements/.{1->3,2->5,3->3,4->2}
 test2=test2//expandNumber[#, 0, {0, 1}]&//expandNumber[#, 3, {3, 4}]&//expandNumber[#, 5, {5, 6}]&;
 
 test2=test2/.MatrixElementsFeyn//removeMissing//fixConvention;
 
-((s1*test1-s2*test2)//Simplify)/.(s1-s2)->0//Expand
+((s1*test1-s2*test2)//Simplify)/.(s1-s2)->0
 
 
 (* ::Section:: *)
