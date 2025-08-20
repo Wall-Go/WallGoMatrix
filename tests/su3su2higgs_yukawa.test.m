@@ -18,30 +18,30 @@ Check[
 
 
 (* ::Title:: *)
-(*SU(5) + SU(3) + Higgs Yukawa Model*)
+(*SU(3) + SU(2) + Higgs Yukawa Model*)
 
 
 (* ::Section:: *)
 (*Model*)
 
 
-Group={"SU5","SU3","U1"}; (* I've added the U1 field because without it the Higgs is only given 2 degrees of freedom *)
+Group={"SU3","SU2","U1"}; (* I've added the U1 field because without it the Higgs is only given 2 degrees of freedom *)
 CouplingName={g5,g3,gU1};
-RepAdjoint={{1,0,0,1},{1,1},0};
-Higgs1={{{0,0,0,0},{1,0},0},"C"}; (* fundamental *)
+RepAdjoint={{1,1},{2},0};
+Higgs1={{{0,0},{1},0},"C"}; (* fundamental *)
 RepScalar={Higgs1};
 
 
-su3Reps = RepsUpToDimN[SU3,3];
+su2Reps = RepsUpToDimN[SU2,3];
+Grid[Prepend[{#,RepName[SU2,#]}&/@ su2Reps,{"Dynkin coefficients","Name"}],
+Frame->All,FrameStyle->LightGray]
+su3Reps = RepsUpToDimN[SU3,8];
 Grid[Prepend[{#,RepName[SU3,#]}&/@ su3Reps,{"Dynkin coefficients","Name"}],
 Frame->All,FrameStyle->LightGray]
-su5Reps = RepsUpToDimN[SU5,25];
-Grid[Prepend[{#,RepName[SU5,#]}&/@ su5Reps,{"Dynkin coefficients","Name"}],
-Frame->All,FrameStyle->LightGray]
 
 
-Rep1={{{1,0,0,0},{1,0},0},"L"};
-Rep2={{{1,0,0,0},{0,0},0},"R"};
+Rep1={{{1,0},{1},0},"L"};
+Rep2={{{1,0},{0},0},"R"};
 RepFermion={Rep1,Rep2};
 
 
@@ -72,7 +72,7 @@ VQuartic=\[Lambda]*QuarticTerm1;
 
 
 (* y \[Phi]^*(Subscript[\[Psi], L]Subscript[\[Xi], R]^++Subscript[\[Psi], R]Subscript[\[Xi], L]^+)*)
-InputInv={{1,1,2},{True,False,True}};
+InputInv={{1,1,2},{False,False,True}};
 Yukawa1=CreateInvariantYukawa[Group,RepScalar,RepFermion,InputInv][[1]]//Simplify;
 
 
@@ -99,7 +99,7 @@ one right-handed fermion
 *)
 
 
-vev={0,0,0,0,0,v};
+vev={0,0,0,v};
 SymmetryBreaking[vev]
 
 
@@ -135,7 +135,7 @@ UserMasses={mv2,mf2,ms2};
 (*
 	output of matrix elements
 *)
-OutputFile="output/matrixElements.su5su3_higgs_yukawa";
+OutputFile="output/matrixElements.su3su2_higgs_yukawa";
 SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -159,7 +159,7 @@ MatrixElements;
 (*Importing results from WallGo*)
 
 
-{particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.su5su3_higgs_yukawa.json"];
+{particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.su3su2_higgs_yukawa.json"];
 
 
 (* ::Section:: *)
@@ -177,7 +177,7 @@ MatrixElements;
 (*Translate input*)
 
 
-insertCouplings={Global`g->g,\[Lambda]->lam,SUNN1->3,SUNN2->5,gu1->0,mChi->0,mPhi->0,mPsi->0};
+insertCouplings={Global`g->g,\[Lambda]->lam,SUNN1->2,SUNN2->3,gu1->0,mChi->0,mPhi->0,mPsi->0};
 customCouplings={ms2->mPhi^2};
 
 
@@ -213,7 +213,7 @@ particlesFeyn
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*VVtoVV*)
 
 
@@ -245,7 +245,7 @@ test["WallGo"][process]=testWallGo[
 	{"Vector1"},
 	{"Vector1"}
 ]
-test["AMY"][process]=fixConvention[16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->CA^2-1}/.{CA->3}/.{g->g3}]
+test["AMY"][process]=fixConvention[16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->CA^2-1}/.{CA->2}/.{g->g3}]
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -281,7 +281,7 @@ test["WallGo"][process]=testWallGo[
 	{"Vector2"},
 	{"Vector2"}
 ]
-test["AMY"][process]=fixConvention[16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->CA^2-1}/.{CA->5}/.{g->g5}]
+test["AMY"][process]=fixConvention[16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{dA->CA^2-1}/.{CA->3}/.{g->g5}]
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -582,7 +582,7 @@ test["WallGo"][process]=testWallGo[
 	{"PsiL","XiL"},
 	{"Phi"},
 	{"PsiR"},
-	{"Vector2"}
+	{"Vector1"}
 ]
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
@@ -666,7 +666,7 @@ test["WallGo"][process]=testWallGo[
 	{"PsiL","XiL"},
 	{"PsiR"},
 	{"Phi"},
-	{"Vector1"}
+	{"Vector2"}
 ](*/.{flag[1]->1,flag[2]->1,flag[3]->1}*)
 test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
@@ -808,6 +808,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
