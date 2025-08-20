@@ -87,7 +87,7 @@ M$ClassesDescription = {
 		Mass -> {mPsi, Internal},
         Definitions -> { PsiL[sp1_,k1_] :> Module[{sp2}, ProjM[sp1,sp2] Psi[sp2,k1]] }
     },
-    (* left-handed projection *)
+    (* right-handed projection *)
     F[4] == {
         ClassName -> ChiR,
         Chirality -> Right,
