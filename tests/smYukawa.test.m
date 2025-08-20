@@ -17,8 +17,8 @@ Check[
 ]
 
 
-(* ::Chapter:: *)
-(*Full Standard Model*)
+(* ::Title:: *)
+(*Standard Model Quark Yukawa sector *)
 
 
 (* ::Section:: *)
@@ -588,7 +588,7 @@ test["WallGo"][process]=testWallGo[
 	{"TopL","TopR"},
 	{"TopL","TopR"},
 	{"TopL","TopR"}
-](*/.{yt->Sqrt[2]*yt}*)
+]/.{yt->Sqrt[2]*yt}
 test["FeynCalc"][process]=testFeynCalc[
 	{"t","tbar"},
 	{"t","tbar"},
