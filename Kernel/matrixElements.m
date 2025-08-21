@@ -4,7 +4,7 @@
 (*Matrix elements*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Help functions*)
 
 
@@ -345,9 +345,9 @@ If[
 	vectorMass=particleMass[[1]];
 				
 (*Vector propagators*)
-	vectorPropT=Table[1/(t-i),{i,vectorMass}];
-	vectorPropU=Table[1/(u-i),{i,vectorMass}];
-	vectorPropS=Table[1/(s-i),{i,vectorMass}];
+	vectorPropT=Table[Prop[t,i],{i,vectorMass}];
+	vectorPropU=Table[Prop[u,i],{i,vectorMass}];
+	vectorPropS=Table[Prop[s,i],{i,vectorMass}];
 
 (*Lorentz structures that appear*)
 (*
@@ -402,14 +402,14 @@ If[
 	scalarMass=particleMass[[3]];
 
 (*Vector propagators*)
-	vectorPropT=Table[1/(t-i),{i,vectorMass}]//ListToMat;
-	vectorPropU=Table[1/(u-i),{i,vectorMass}]//ListToMat;
-	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
+	vectorPropT=Table[Prop[t,i],{i,vectorMass}]//ListToMat;
+	vectorPropU=Table[Prop[u,i],{i,vectorMass}]//ListToMat;
+	vectorPropS=Table[Prop[s,i],{i,vectorMass}]//ListToMat;
 
 (*Scalar propagators*)
-	scalarPropT=Table[1/(t-i),{i,scalarMass}]//ListToMat;
-	scalarPropU=Table[1/(u-i),{i,scalarMass}]//ListToMat;
-	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
+	scalarPropT=Table[Prop[t,i],{i,scalarMass}]//ListToMat;
+	scalarPropU=Table[Prop[u,i],{i,scalarMass}]//ListToMat;
+	scalarPropS=Table[Prop[s,i],{i,scalarMass}]//ListToMat;
 	
 (*Coupling constants that we will need*)
 	gTensor=Table[gvff[[;;,Particle1[[1]],Particle2[[1]]]],
@@ -530,7 +530,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toV1V2*)
 
 
@@ -584,11 +584,11 @@ If[
 	fermionMass=particleMass[[2]];
 		
 (*Fermion propagators*)
-	fermionPropU=Table[1/(u-i),{i,fermionMass}];
-	fermionPropT=Table[1/(t-i),{i,fermionMass}];
+	fermionPropU=Table[Prop[u,i],{i,fermionMass}];
+	fermionPropT=Table[Prop[t,i],{i,fermionMass}];
 	
 (*Vector propagators*)
-	vectorPropS=Table[1/(s-i),{i,vectorMass}];
+	vectorPropS=Table[Prop[s,i],{i,vectorMass}];
 	
 	fermionIdentity=Table[1,{i,fermionMass}]; 
 
@@ -684,7 +684,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3S4*)
 
 
@@ -727,14 +727,14 @@ If[
 	scalarMass=particleMass[[3]];		
 
 (*Vector propagators*)
-	vectorPropT=Table[1/(t-i),{i,vectorMass}]//ListToMat;
-	vectorPropU=Table[1/(u-i),{i,vectorMass}]//ListToMat;
-	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
+	vectorPropT=Table[Prop[t,i],{i,vectorMass}]//ListToMat;
+	vectorPropU=Table[Prop[u,i],{i,vectorMass}]//ListToMat;
+	vectorPropS=Table[Prop[s,i],{i,vectorMass}]//ListToMat;
 
 (*Scalar propagators*)
-	scalarPropT=Table[1/(t-i),{i,scalarMass}]//ListToMat;
-	scalarPropU=Table[1/(u-i),{i,scalarMass}]//ListToMat;
-	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
+	scalarPropT=Table[Prop[t,i],{i,scalarMass}]//ListToMat;
+	scalarPropU=Table[Prop[u,i],{i,scalarMass}]//ListToMat;
+	scalarPropS=Table[Prop[s,i],{i,scalarMass}]//ListToMat;
 
 (*Lorentz structures for vector exchanges*)
 	AS=(t-u); (* s-channel diagram*)
@@ -761,7 +761,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -832,14 +832,14 @@ Block[{
 	scalarMass=particleMass[[3]];
 
 (*Vector propagators*)
-	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
+	vectorPropS=Table[Prop[s,i],{i,vectorMass}]//ListToMat;
 
 (*Scalar propagators*)
-	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
+	scalarPropS=Table[Prop[s,i],{i,scalarMass}]//ListToMat;
 
 (*Fermion propagators*)
-	fermionPropT=Table[1/(t-i),{i,fermionMass}]//ListToMat;
-	fermionPropU=Table[1/(u-i),{i,fermionMass}]//ListToMat;
+	fermionPropT=Table[Prop[t,i],{i,fermionMass}]//ListToMat;
+	fermionPropU=Table[Prop[u,i],{i,fermionMass}]//ListToMat;
 	
 (*Group invariants from vector diagrams*)
 	CVS=Contract[gTensorS[[1,2]], vectorPropS . gTensorF[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
@@ -1005,8 +1005,8 @@ If[ (
 	fermionMass=particleMass[[2]];
 	
 (*Fermion propagators*)
-	fermionPropS=Table[1/(s-i),{i,fermionMass}]//ListToMat;
-	fermionPropU=Table[1/(u-i),{i,fermionMass}]//ListToMat;
+	fermionPropS=Table[Prop[s,i],{i,fermionMass}]//ListToMat;
+	fermionPropU=Table[Prop[u,i],{i,fermionMass}]//ListToMat;
 
 (*Group structures*)
 	CS=Contract[YTensor . fermionPropS ,gTensorF,{{3,6}}]//OrderArray[#,2,1,4,3]&;
@@ -1066,7 +1066,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toV1V2*)
 
 
@@ -1118,11 +1118,11 @@ If[
 	scalarMass=particleMass[[3]];
 
 (*Vector propagators*)
-	vectorPropS=Table[1/(s-i),{i,vectorMass}]//ListToMat;
+	vectorPropS=Table[Prop[s,i],{i,vectorMass}]//ListToMat;
 
 (*Scalar propagators*)
-	scalarPropT=Table[1/(t-i),{i,scalarMass}]//ListToMat;
-	scalarPropU=Table[1/(u-i),{i,scalarMass}]//ListToMat;
+	scalarPropT=Table[Prop[t,i],{i,scalarMass}]//ListToMat;
+	scalarPropU=Table[Prop[u,i],{i,scalarMass}]//ListToMat;
 	
 
 (* === group invariants from vector diagrams === *)
@@ -1207,7 +1207,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3V1*)
 
 
@@ -1264,9 +1264,9 @@ If[ (
 	scalarMass=particleMass[[3]];
 
 (*Scalar propagators*)
-	scalarPropT=Table[1/(t-i),{i,scalarMass}]//ListToMat;
-	scalarPropU=Table[1/(u-i),{i,scalarMass}]//ListToMat;
-	scalarPropS=Table[1/(s-i),{i,scalarMass}]//ListToMat;
+	scalarPropT=Table[Prop[t,i],{i,scalarMass}]//ListToMat;
+	scalarPropU=Table[Prop[u,i],{i,scalarMass}]//ListToMat;
+	scalarPropS=Table[Prop[s,i],{i,scalarMass}]//ListToMat;
 
 (*Lorentz structures that appear.*)
 	A=4 t u /s;

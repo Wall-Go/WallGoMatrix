@@ -218,8 +218,8 @@ MatrixElements=ExportMatrixElements[
 TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 
 	MatrixElementsF=MatrixElements/.Flatten[Map[{
-			Power[+#[[1]] + msq_, n_?Negative]->#[[2]]^(-n)*Power[+#[[1]] + msq, n],
-			Power[-#[[1]] + msq_, n_?Negative]->#[[2]]^(-n)*Power[-#[[1]] + msq, n]
+			Prop[#[[1]],msq_]]->#[[2]]*Power[Prop[#[[1]],msq],](*,
+			Power[Prop[#[[1]],msq_], 1]->#[[2]]^(1)*Power[Prop[#[[1]],msq], 1]*)
 		}&,{{s,S},{t,T},{u,U}}]];
 	
 	Print[MatrixElementsF];
@@ -240,7 +240,17 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 ]
 
 
-elems={{M[0,1,0,1]/.MatrixElements,{0,1,0,1}}}
+Conjugate[Prop[s,mGm2]^2] Prop[s,mGm2]^5/.Flatten[Map[{
+			Prop[#[[1]],msq_]->#[[2]]*Prop[#[[1]],msq]
+		}&,{{s,S},{t,T},{u,U}}]]
+Simplify[%,{S>0}]
+
+
+assumpt={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,UserMasses,s,t,u,fsign,Prop}//Flatten
+
+
+elems={{M[0,1,0,1]/.MatrixElements,{0,1,0,1}}}(*/.Prop[x_,y_]->HoldForm[1/(x-y)]*)//Expand;
+(*Simplify[%(*//ReleaseHold*),assumpt]*)
 
 
 TruncateAtLeadingLogarithm[elems]
@@ -767,6 +777,7 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
