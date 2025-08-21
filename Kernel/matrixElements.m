@@ -1470,6 +1470,32 @@ Block[{Elements},
 ];
 
 
+TruncateAtLeadingLogarithm::usage =
+"TruncateAtLeadingLogarithm[MatrixElements] truncates a list of 2-to-2 \
+scattering matrix elements at the level of their leading logarithmic \
+contribution in the high-energy limit.
+
+ \[Bullet] Input: a list of elements of the form {amplitudeExpression, {i,j,k,l}}, \
+   where the second entry encodes external state indices.
+
+ \[Bullet] The function performs the following steps:
+   - Normalizes propagator denominators by introducing auxiliary scaling \
+     variables S, T, U for (s+msq), (t+msq), (u+msq).
+   - Expands each amplitude in the asymptotic large-energy limit using \
+     SeriesCoefficient[\[Ellipsis], {xLarge, \[Infinity], \[Ellipsis]}].
+   - Keeps only the terms generating leading logarithmic growth. If the \
+     external indices coincide, two terms are retained; otherwise only the \
+     leading term.
+   - Discards cross-channel interference terms (S T \[RightArrow] 0, S U \[RightArrow] 0, T U \[RightArrow] 0).
+   - Collects and simplifies expressions in {S, T, U}, then replaces them \
+     by 1.
+   - Removes vanishing entries.
+
+ \[Bullet] Output: a cleaned list of the form \
+   {{leadingLogContribution1, {i,j,k,l}}, \[Ellipsis]}.
+";
+
+
 TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 
 	MatrixElementsF=MatrixElements/.Flatten[Map[{
