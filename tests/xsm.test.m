@@ -215,14 +215,18 @@ MatrixElements=ExportMatrixElements[
 		Format->{"json","txt"}}];
 
 
+assumpt={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,UserMasses,s,t,u,fsign,Prop}//Flatten
+
+
 TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 
 	MatrixElementsF=MatrixElements/.Flatten[Map[{
-			Prop[#[[1]],msq_]]->#[[2]]*Power[Prop[#[[1]],msq],](*,
-			Power[Prop[#[[1]],msq_], 1]->#[[2]]^(1)*Power[Prop[#[[1]],msq], 1]*)
+			Prop[#[[1]],msq_]->#[[2]]*Prop[#[[1]],msq]
 		}&,{{s,S},{t,T},{u,U}}]];
 	
-	Print[MatrixElementsF];
+	MatrixElementsF=MatrixElementsF//Simplify[#,Thread[{S,T,U}>0]]&;
+	
+	(*Print[MatrixElementsF];*)
 	MatrixElementsF=Map[{
 		Plus@@Table[
 		+SeriesCoefficient[#[[1]]/.{T->xLarge*T,U->xLarge*U},{xLarge,Infinity,-i}]
@@ -230,11 +234,14 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 		{i,If[#[[2]][[3]]==#[[2]][[4]],2,1],2}],
 		#[[2]]}&,
 		MatrixElementsF];
-	Print[MatrixElementsF];
+	(*Print[MatrixElementsF];*)
 
 	MatrixElementsF=Expand[MatrixElementsF]/.{S*T->0,S*U->0,T*U->0};
 	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.Thread[{T,U,S}->1];
 	MatrixElementsF=DeleteCases[MatrixElementsF, {0,{a__}}];
+	
+	MatrixElementsF=MatrixElementsF/.Prop[x_,y_]->1/(x-y);
+	MatrixElementsF=Simplify[MatrixElementsF,Assumptions->assumpt];
 	
 	Return[MatrixElementsF];
 ]
@@ -244,9 +251,6 @@ Conjugate[Prop[s,mGm2]^2] Prop[s,mGm2]^5/.Flatten[Map[{
 			Prop[#[[1]],msq_]->#[[2]]*Prop[#[[1]],msq]
 		}&,{{s,S},{t,T},{u,U}}]]
 Simplify[%,{S>0}]
-
-
-assumpt={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,UserMasses,s,t,u,fsign,Prop}//Flatten
 
 
 elems={{M[0,1,0,1]/.MatrixElements,{0,1,0,1}}}(*/.Prop[x_,y_]->HoldForm[1/(x-y)]*)//Expand;
@@ -777,7 +781,5 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
 
