@@ -4,7 +4,7 @@
 (*Matrix elements*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Help functions*)
 
 
@@ -60,7 +60,7 @@ CreateHelpTensors[]:=Module[{},
 ];
 
 
-(*Sums all the elements of a tensors and simplifies with the assumption that all variables are real*)
+(*Sums all the elements of a tensor and simplifies with the assumption that all variables are real*)
 TotalConj[s_] := Simplify[Total[s,-1],Assumptions->VarAsum] 
 
 
