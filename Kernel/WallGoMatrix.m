@@ -793,7 +793,11 @@ Block[{
 
 PrintNonPrivate[PrivateExpression_]:=ToExpression[StringReplace[
 	ToString[StandardForm[PrivateExpression]],
-	{"WallGoMatrix`Private`"->"","WallGo`"->""}]];
+	{
+		"WallGoMatrix`Private`"->"",
+		"WallGo`"->"",
+		"Global`"->""
+	}]];
 ReplaceMandelStam[Expression_]:=StringReplace[ToString[Expression],{"s"->"_s","t"->"_t","u"->"_u"}];
 
 
@@ -836,7 +840,8 @@ Block[
 	particleIndex,
 	RepMasses,RepCouplings,
 	FormatOptions,userFormat,MatrixElementsList,userParameters,
-	privFile=file,commandLineArgs
+	privFile=file,
+	commandLineArgs
 },
 	
 	(* Render output verbose again *)
@@ -883,7 +888,9 @@ Block[
 		};
 		
 (*Creates an assumption rule for simplifying Conjugate[....] terms*)
-	VarAsum={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u,fsign}//Flatten; (*All variables are assumed to be real*)
+	(*All variables are assumed to be real*)
+	VarAsum={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u,fsign}//Flatten;
+
 		
 (*Allocates one element for each species mass to avoid errors*)
 	Table[
