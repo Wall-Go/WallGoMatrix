@@ -520,7 +520,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Top bottom QCD sector *)
 
 
@@ -647,7 +647,6 @@ AppendTo[testList,
 		test["FeynCalc"][process],
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
-(* doesn't cancel exactly, and the difference involves the Yukawa coupling *)
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
 
 

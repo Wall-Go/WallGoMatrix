@@ -17,7 +17,7 @@ Check[
 ]
 
 
-(* ::Chapter:: *)
+(* ::Title:: *)
 (*Full Standard Model*)
 
 
@@ -153,7 +153,7 @@ LightParticleList={};
 (*
 	output of matrix elements
 *)
-OutputFile="matrixElements.sm.test";
+OutputFile="output/matrixElements.sm.test";
 
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -177,7 +177,7 @@ MatrixElements
 (*Importing results from WallGo*)
 
 
-{particles,parameters,MatrixElements}=ImportMatrixElements["matrixElements.sm.test.json"];
+{particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.sm.test.json"];
 
 
 (* ::Section:: *)
@@ -223,7 +223,7 @@ testList={};
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.EWbosons.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.EWbosons.test.json"];
 
 
 process="{Higgs},{Higgs}->{Higgs},{Higgs}"
@@ -305,7 +305,7 @@ AppendTo[testList,
 		test["FeynCalc"][process],
 		TestID->"WallGo vs FeynCalc: "<>process]];
 		
-s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
 process="{Higgs},{Higgs}->{W,Z,B,g},{W,Z,B,g}"
@@ -375,7 +375,7 @@ AppendTo[testList,
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.HiggsTau.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.HiggsTau.test.json"];
 
 
 process="{H,H}->{tau,tau}"
@@ -398,12 +398,12 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Higgs top sector*)
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.HiggsTop.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.HiggsTop.test.json"];
 
 
 process="{H,H}->{t,t}"
@@ -412,7 +412,7 @@ test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"TopL","BotL","TopR"},
 	{"TopL","BotL","TopR"}
-]
+]/.{yt->Sqrt[2]*yt}
 test["FeynCalc"][process]=testFeynCalc[
 	{"H"},
 	{"H"},
@@ -432,7 +432,7 @@ AppendTo[testList,
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.tbg.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.tbg.test.json"];
 
 
 process="{t,b}->{t,b}"
@@ -441,7 +441,7 @@ test["WallGo"][process]=testWallGo[
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"}
-]
+]/.{yt->Sqrt[2]*yt}
 test["FeynCalc"][process]=testFeynCalc[
 	{"t","tbar","b","bbar"},
 	{"t","tbar","b","bbar"},
@@ -454,8 +454,7 @@ AppendTo[testList,
 		test["FeynCalc"][process],
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
-(* doesn't cancel exactly, and the difference involves the Yukawa coupling *)
-(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
 (* ::Subsubsection:: *)
@@ -463,7 +462,7 @@ AppendTo[testList,
 
 
 (*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["SMQCD.tbg.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.tbg.test.json"];
 
 
 process="{g},{g}->{g},{g}"
@@ -505,6 +504,7 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
