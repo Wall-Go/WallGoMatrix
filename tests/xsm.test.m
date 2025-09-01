@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -338,7 +338,7 @@ T^2*S/. { S^a_. T^b_. :> 0 /; a > 0 && b > 0,
 (*Translate input*)
 
 
-insertCouplings={Global`g->g,\[Lambda]->lam,gu1->0,mChi->0,mPhi->0,mPsi->0};
+insertCouplings={g->g,\[Lambda]->lam,gu1->0,mChi->0,mPhi->0,mPsi->0};
 customCouplings={ms2->mPhi^2};
 
 

@@ -112,8 +112,15 @@ MatrixElements=ExportMatrixElements[
 	OutputFile,
 	ParticleList,
 	LightParticleList,
-	{TruncateAtLeadingLog->False,Format->{"json","txt"},NormalizeWithDOF->False}
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"},
+		NormalizeWithDOF->False
+	}
 ]
+
+
+MatrixElements
 
 
 (* ::Chapter:: *)
@@ -138,7 +145,7 @@ MatrixElements=ExportMatrixElements[
 (*Comparison tests*)
 
 
-insertCouplings={Global`g->g,\[Lambda]->lam,SUNN->3};
+insertCouplings={g->g,\[Lambda]->lam,SUNN->3};
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
@@ -269,6 +276,7 @@ AppendTo[testList,TestCreate[test["WallGo"][6],test["FeynCalc"][6],TestID->"VV->
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

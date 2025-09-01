@@ -165,7 +165,7 @@ MatrixElements;
 (*Importing results from FeynCalc*)
 
 
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["u1-higgs-yukawa.test.json"];
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/u1-higgs-yukawa.test.json"];
 
 
 (* ::Section:: *)
@@ -176,7 +176,7 @@ MatrixElements;
 (*Translate input*)
 
 
-insertCouplings={Global`g1->g,\[Lambda]->lam,SUNN->2,gu1->0,mChi->0,mPhi->0};
+insertCouplings={g1->g,\[Lambda]->lam,SUNN->2,gu1->0,mChi->0,mPhi->0};
 customCouplings={ms2->mPhi^2};
 
 
@@ -473,7 +473,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoFF*)
 
 
@@ -517,7 +517,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFS*)
 
 
@@ -583,7 +583,7 @@ AppendTo[testList,
 		TestID->"FeynCalc vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFV*)
 
 
@@ -627,7 +627,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoSV*)
 
 
@@ -671,7 +671,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoVV*)
 
 
@@ -787,8 +787,8 @@ expandNumber[expr_, num_, repl_List] :=
 
 elements=Select[MatrixElements//Expand, ! FreeQ[#, g1^2 y^2] &][[All,1]]
 test1=elements/.MatrixElements//fixConvention;
-test2=elements/.{1->2,2->3,3->5,4->7};
-test2=test2//expandNumber[#, 0, {0, 1}]&//expandNumber[#, 3, {3, 4}]&//expandNumber[#, 5, {5, 6}]&;
+test2=elements/.{1->2,2->4,3->6,4->3};
+test2=test2//expandNumber[#, 0, {0, 1}]&//expandNumber[#, 4, {4, 5}]&//expandNumber[#, 6, {6, 7}]&;
 test2=test2/.MatrixElementsFeyn//removeMissing//fixConvention;
 
 ((s1*test1-s2*test2)//Simplify)/.(s1-s2)->0
@@ -1094,7 +1094,6 @@ Collect[totalFeyn,{g,y,a1,a2,b3,b4,lam}];
 
 
 Collect[s1*totalDRalgo-s2*totalFeyn,{g,y,a1,a2,b3,b4,lam},Simplify[fixConvention[#]]&]/.{s1-s2->0}
-%/.{flag2[1]->1,flag2[2]->1,flag2[3]->1}//Simplify
 
 
 testList={};
@@ -1110,7 +1109,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 
