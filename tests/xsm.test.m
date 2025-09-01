@@ -209,10 +209,12 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		Verbose->True,
-		TruncateAtLeadingLog->False,
+		TruncateAtLeadingLog->True,
 		Replacements->{gw->0,g1->0},
 		NormalizeWithDOF->False,
-		Format->{"json","txt"}}];
+		Format->{"json","txt"}
+	}
+];
 
 
 TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
@@ -767,6 +769,4 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
