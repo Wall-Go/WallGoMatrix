@@ -798,7 +798,9 @@ PrintNonPrivate[PrivateExpression_]:=ToExpression[StringReplace[
 		"WallGo`"->"",
 		"Global`"->""
 	}]];
-ReplaceMandelStam[Expression_]:=StringReplace[ToString[Expression],{"s"->"_s","t"->"_t","u"->"_u"}];
+ReplaceMandelStam[Expression_]:=StringReplace[
+	ToString[Expression],{"s"->"_s","t"->"_t","u"->"_u"}
+	];
 
 
 Options[ExportMatrixElements]={

@@ -275,7 +275,7 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 				count=0;
 				Do[
 					count++;
-					Print[{i,count},":   ",particle[[2]] ];
+					Print[{i,count},":   ", PrintNonPrivate[particle[[2]]] ];
 					,{particle,MassiveReps[Field][[i]]}]
 			]
 		,{i,1,Length[FieldPosition[Field]]}];
