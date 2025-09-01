@@ -6,13 +6,13 @@
 
 (*
 		This software is covered by the GNU General Public License 3.
-		Copyright (C) 2024-2024 Andreas Ekstedt
-		Copyright (C) 2024-2024 Oliver Gould
-		Copyright (C) 2024-2024 Joonas Hirvonen
-		Copyright (C) 2024-2024 Benoit Laurent
-		Copyright (C) 2024-2024 Lauri Niemi
-		Copyright (C) 2024-2024 Philipp Schicho
-		Copyright (C) 2024-2024 Jorinde van de Vis
+		Copyright (C) 2024-2025 Andreas Ekstedt
+		Copyright (C) 2024-2025 Oliver Gould
+		Copyright (C) 2024-2025 Joonas Hirvonen
+		Copyright (C) 2024-2025 Benoit Laurent
+		Copyright (C) 2024-2025 Lauri Niemi
+		Copyright (C) 2024-2025 Philipp Schicho
+		Copyright (C) 2024-2025 Jorinde van de Vis
 *)
 
 (* :Summary:	WallGoMatrix constructs matrix elements for generic models at
