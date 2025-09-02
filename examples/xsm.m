@@ -11,6 +11,7 @@ If[$InputFileName=="",
 WallGo`WallGoMatrix`$GroupMathMultipleModels=True;
 Check[
     Get["WallGo`WallGoMatrix`"],
+    (*Get["../Kernel/WallGoMatrix.m"],*)
     Message[Get::noopen, "WallGo`WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -203,7 +204,9 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		Replacements->{gw->0,g1->0},
-		Format->{"json","txt"}}];
+		Format->{"json","txt"}
+	}
+];
 
 
 (* ::Subsection:: *)
@@ -259,7 +262,9 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		Replacements->{gw->0,g1->0},
-		Format->{"json","txt"}}];
+		Format->{"json","txt"}
+	}
+];
 
 
 MatrixElements//Expand

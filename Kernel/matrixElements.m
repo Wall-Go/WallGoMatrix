@@ -60,7 +60,7 @@ CreateHelpTensors[]:=Module[{},
 ];
 
 
-(*Sums all the elements of a tensors and simplifies with the assumption that all variables are real*)
+(*Sums all the elements of a tensor and simplifies with the assumption that all variables are real*)
 TotalConj[s_] := Simplify[Total[s,-1],Assumptions->VarAsum] 
 
 
@@ -275,7 +275,7 @@ SymmetryBreaking[vev_,OptionsPattern[]]:=Module[
 				count=0;
 				Do[
 					count++;
-					Print[{i,count},":   ",particle[[2]] ];
+					Print[{i,count},":   ", PrintNonPrivate[particle[[2]]] ];
 					,{particle,MassiveReps[Field][[i]]}]
 			]
 		,{i,1,Length[FieldPosition[Field]]}];

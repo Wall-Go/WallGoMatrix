@@ -150,7 +150,7 @@ UserMasses={ms,mf};
 (*
 	output of matrix elements
 *)
-OutputFile="yukawa.test";
+OutputFile="output/yukawa.test";
 SetDirectory[NotebookDirectory[]];
 MatrixElements=ExportMatrixElements[
 	OutputFile,
@@ -179,7 +179,7 @@ MatrixElements
 (*Importing results from FeynCalc*)
 
 
-file=FileNameJoin[{NotebookDirectory[],"yukawa.feyncalc.test.json"}];
+file=FileNameJoin[{NotebookDirectory[],"testFiles/yukawa.feyncalc.test.json"}];
 {particleNamesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements[file];
 
 
@@ -382,10 +382,12 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Test report*)
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
 

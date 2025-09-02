@@ -24,7 +24,13 @@ perl -pe '
   s/IndexDelta\[\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/SDF[$1, $2]/g;
   s/SUNF\[\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/SUNF[$1, $2, Adjoint\$1] SUNF[Adjoint\$1, $3, $4]/g;
   s/SUNT\[\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/SUNTF[{$1}, $2, $3]/g;
+  s/SUNTF1\[\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/SUNTF1[{$1}, $2, $3]/g;
+  s/SUNTF2\[\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/SUNTF2[{$1}, $2, $3]/g;
   s/IndexSum\[\s*(.*?),\s*\{Fundamental\$1,\s*1,\s*3\}\s*\]/$1/g;
+  s/IndexSum\[\s*(.*?),\s*\{Fundamental1\$1,\s*1,\s*3\}\s*\]/$1/g;
+  s/IndexSum\[\s*(.*?),\s*\{Fundamental2\$1,\s*1,\s*5\}\s*\]/$1/g;
+  s/IndexSum\[\s*(.*?),\s*\{Adjoint1\$1,\s*1,\s*8\}\s*\]/$1/g;
+  s/IndexSum\[\s*(.*?),\s*\{Adjoint2\$1,\s*1,\s*24\}\s*\]/$1/g;
   s/ScalarProduct/FAScalarProduct/g;
   s/MetricTensor/FAMetricTensor/g;
   s/FourVector/FAFourVector/g;

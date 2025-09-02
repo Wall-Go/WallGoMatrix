@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -209,10 +209,12 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		Verbose->True,
-		TruncateAtLeadingLog->False,
+		TruncateAtLeadingLog->True,
 		Replacements->{gw->0,g1->0},
 		NormalizeWithDOF->False,
-		Format->{"json","txt"}}];
+		Format->{"json","txt"}
+	}
+];
 
 
 assumpt={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,UserMasses,s,t,u,fsign,Prop}//Flatten
@@ -352,7 +354,7 @@ T^2*S/. { S^a_. T^b_. :> 0 /; a > 0 && b > 0,
 (*Translate input*)
 
 
-insertCouplings={Global`g->g,\[Lambda]->lam,gu1->0,mChi->0,mPhi->0,mPsi->0};
+insertCouplings={g->g,\[Lambda]->lam,gu1->0,mChi->0,mPhi->0,mPsi->0};
 customCouplings={ms2->mPhi^2};
 
 
@@ -388,7 +390,7 @@ particles
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(g3^4)*)
 
 
@@ -560,7 +562,7 @@ AppendTo[testList,
 		TestID->"WallGo vs reference: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(yt^4)*)
 
 

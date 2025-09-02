@@ -9,6 +9,7 @@ If[$InputFileName=="",
 ];
 Check[
     Get["WallGo`WallGoMatrix`"],
+    (*Get["../Kernel/WallGoMatrix.m"],*)
     Message[Get::noopen, "WallGo`WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -179,5 +180,7 @@ MatrixElements=ExportMatrixElements[
 		TruncateAtLeadingLog->True,
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
-		NormalizeWithDOF->False}];
+		NormalizeWithDOF->False
+	}
+];
 

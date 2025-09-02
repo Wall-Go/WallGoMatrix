@@ -12,7 +12,7 @@ $FeynRulesPath=DirectoryName[FindFile["FeynRules`"]];
 
 
 (* load model file *)
-model="sum-sun-higgs-yukawa";
+model="u1-higgs-yukawa";
 modelFile =FileNameJoin[{ NotebookDirectory[],model<>".fr"}];
 LoadModel[modelFile]
 
@@ -30,5 +30,8 @@ DeleteDirectory[outputFiles]
 
 SetDirectory[NotebookDirectory[]]
 Directory[]
-RunProcess[{"bash", "../replaceFeynCalc.sh", "sum-sun-higgs-yukawa.mod"}]
-RunProcess[{"bash", "../replaceFeynCalc.sh", "sum-sun-higgs-yukawa.gen"}]
+RunProcess[{"bash", "../replaceFeynCalc.sh", "u1-higgs-yukawa.mod"}]
+RunProcess[{"bash", "../replaceFeynCalc.sh", "u1-higgs-yukawa.gen"}]
+
+
+

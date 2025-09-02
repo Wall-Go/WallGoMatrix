@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -150,7 +150,7 @@ M[0,0,1,1]/.MatrixElements//Simplify
 (*Comparison tests*)
 
 
-insertCouplings={Global`g->g,\[Lambda]->lam,SUNN->2,gu1->0};
+insertCouplings={g->g,\[Lambda]->lam,SUNN->2,gu1->0};
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
@@ -300,6 +300,7 @@ AppendTo[testList,TestCreate[test["WallGo"][6],test["AMY"][6],TestID->"WallGo vs
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 

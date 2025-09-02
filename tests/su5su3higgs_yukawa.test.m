@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -177,7 +177,7 @@ MatrixElements;
 (*Translate input*)
 
 
-insertCouplings={Global`g->g,\[Lambda]->lam,SUNN1->3,SUNN2->5,gu1->0,mChi->0,mPhi->0,mPsi->0};
+insertCouplings={g->g,\[Lambda]->lam,SUNN1->3,SUNN2->5,gu1->0,mChi->0,mPhi->0,mPsi->0};
 customCouplings={ms2->mPhi^2};
 
 
@@ -808,7 +808,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 
