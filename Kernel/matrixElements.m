@@ -692,7 +692,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3S4*)
 
 
@@ -769,7 +769,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -899,7 +899,7 @@ Block[{
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1S1*)
 
 
@@ -946,7 +946,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1V1*)
 
 
@@ -1074,7 +1074,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toV1V2*)
 
 
@@ -1372,33 +1372,36 @@ If[Length[Elements]==0,
 
 
 ExtractOutOfEqElement[particleListAll_,particleListOutOfEq_,ParticleMasses_]:=
-Block[{
-	CollEll,collisions,CollEllTotal
-},
-(*incomingParticle is the particle associated with the momentum p_1*)
-(*deltaFparticle is the particles whos deltaF contributions we want*)
-(*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
-
-(*particleList is the complete list of particles*)
-(*First we extract the result for all subprocesses*)
-collisions = {
-	"F1F2toF3F4",
-	"F1V1toF1V1", "F1F2toV1V2", "V1V2toV3V4", "S1S2toS3S4", 
-	"S1S2toF1F2", "F1S1toF1S1", "F1S1toF1V1",
-	"F1F2toS1V1", "S1S2toV1V2", "S1V1toS1V1", "S1S2toS3V1"
-};
-
-CollEllTotal = 
-  Map[(If[bVerbose,Print[#]];
-   ExtractOutOfEqElement[#][particleListAll, particleListOutOfEq, ParticleMasses])&, 
-   collisions
-  ]//Flatten[#,1]&;
-
-If[bTruncateAtLeadingLog,
-	CollEllTotal=TruncateAtLeadingLogarithm[CollEllTotal];
+	Block[{
+		collisionElements, collisionElementsTotal
+	},
+	(*incomingParticle is the particle associated with the momentum p_1*)
+	(*deltaFparticle is the particles whos deltaF contributions we want*)
+	(*Essentially this is generates the elements going into Sum_deltaFparticle \[Delta]C[incomingParticle,deltaFparticle]*deltaF[deltaFparticle]*)
+	
+	(*particleList is the complete list of particles*)
+	(*First we extract the result for all subprocesses*)
+	collisionElements = {
+		"F1F2toF3F4",
+		"F1V1toF1V1", "F1F2toV1V2", "V1V2toV3V4", "S1S2toS3S4", 
+		"S1S2toF1F2", "F1S1toF1S1", "F1S1toF1V1",
+		"F1F2toS1V1", "S1S2toV1V2", "S1V1toS1V1", "S1S2toS3V1"
+	};
+	
+	collisionElementsTotal = 
+	  Map[(If[bVerbose,Print[#]];
+	   ExtractOutOfEqElement[#][particleListAll, particleListOutOfEq, ParticleMasses])&, 
+	   collisionElements
+	  ]//Flatten[#,1]&;
+	
+	If[bTruncateAtLeadingLog,
+		collisionElementsTotal=TruncateAtLeadingLogarithm[collisionElementsTotal];
 	];
-
-Return[CollEllTotal]
+	
+	collisionElementsTotal=collisionElementsTotal/.Prop[x_,y_]->1/(x-y);
+	collisionElementsTotal=Simplify[collisionElementsTotal,Assumptions->VarAsum];
+	
+	Return[collisionElementsTotal];
 
 ];
 
@@ -1504,7 +1507,51 @@ contribution in the high-energy limit.
 ";
 
 
-TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
+SimplifyConjugates[expr_, assumptions_List] :=
+  expr //. Conjugate[x_] :> FullSimplify[
+     Conjugate[x],
+     Assumptions -> assumptions
+     ];
+
+
+TruncateAtLeadingLogarithm[MatrixElements_]:=Module[
+	{
+		MatrixElementsF,S,T,U, localAssumptions
+	},
+
+	MatrixElementsF=MatrixElements/.Flatten[Map[{
+			Prop[#[[1]],msq_]->#[[2]]*Prop[#[[1]],msq]
+		}&,{{s,S},{t,T},{u,U}}]];
+	
+	localAssumptions = {Thread[{S,T,U}>0],VarAsum}//Flatten;
+	Prop /: Conjugate[Prop[x__]] := Prop[x];
+	
+	MatrixElementsF=SimplifyConjugates[
+			MatrixElementsF,
+			localAssumptions
+		]//Expand;
+		
+	UpValues[Prop] = DeleteCases[UpValues[Prop], HoldPattern[(Conjugate[Prop[_]]) :> _]];
+	
+	MatrixElementsF=Map[{
+		Plus@@Table[
+			+ SeriesCoefficient[#[[1]]/.{T->xLarge*T,U->xLarge*U},{xLarge,Infinity,-i}]
+			,
+			{i,If[#[[2]][[3]]==#[[2]][[4]],2,1],2}],
+			#[[2]]}&,
+			MatrixElementsF
+		];
+		
+
+	MatrixElementsF=Expand[MatrixElementsF]/.{S*T->0,S*U->0,T*U->0};
+	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.Thread[{T,U,S}->1];
+	MatrixElementsF=DeleteCases[MatrixElementsF, {0,{a__}}];
+	
+	Return[MatrixElementsF];
+]
+
+
+TruncateAtLeadingLogarithmOld[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
 
 	MatrixElementsF=MatrixElements/.Flatten[Map[{
 			Power[+#[[1]] + msq_, n_?Negative]->#[[2]]^(-n)*Power[+#[[1]] + msq, n],
