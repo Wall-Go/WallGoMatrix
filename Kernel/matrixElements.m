@@ -370,7 +370,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
@@ -507,21 +507,29 @@ If[
 	Result for interfaces between vector and scalar diagrams---
 	Only cross terms between diagrams can contribute
 *)
-	flag1[1] = 2;
+(*	flag1[1] = 2;
 	flag1[2] = 0;
 	flag1[3] = 0;
 	flag1[4] = 0;
 	flag1[5] = 2;
-	flag1[6] = 2;
+	flag1[6] = 2;*)
 	
-	totRes+=flag1[1]*1/2*s*t*TotalConj[CS*Conjugate[CTyC] +CTyC*Conjugate[CS]];
-	totRes+=flag1[2]*1/2*u*t*TotalConj[CU*Conjugate[CTyC] +CTyC*Conjugate[CU]];
+	flag1[1] = -2*t*t;
+	flag1[2] = -8*t*t;
+	flag1[3] = -8*u*u;
+	flag1[4] = -8*u*u;
+	flag1[5] = -2*s*s;
+	flag1[6] = -2*s*s;
+	
+	totRes+=flag1[1]*1/2*TotalConj[CS*Conjugate[CTyC] +CTyC*Conjugate[CS]];
+	totRes+=flag1[2]*1/2*TotalConj[CU*Conjugate[CTyC] +CTyC*Conjugate[CU]];
 
-	totRes+=flag1[3]*1/2*s*u*TotalConj[CS*Conjugate[CUyC] +CUyC*Conjugate[CS]];
-	totRes+=flag1[4]*1/2*u*t*TotalConj[CT*Conjugate[CUyC] +CUyC*Conjugate[CT]];
+	totRes+=flag1[3]*1/2*TotalConj[CS*Conjugate[CUyC] +CUyC*Conjugate[CS]];
+	totRes+=flag1[4]*1/2*TotalConj[CT*Conjugate[CUyC] +CUyC*Conjugate[CT]];
 
-	totRes+=flag1[5]*1/2*s*t*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
-	totRes+=flag1[6]*1/2*u*s*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];
+	totRes+=flag1[5]*1/2*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
+	totRes+=flag1[6]*1/2*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];
+	
 	
 	(*totRes = totRes/.{flag1[x_]->1};*)
 	
