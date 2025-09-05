@@ -102,7 +102,7 @@ RepToIndices[ListI_]:=Block[{},
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*CreateParticle*)
 
 
@@ -129,7 +129,7 @@ CreateParticle[Indices_,Type_,Mass_,Name_]:=Block[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SymmetryBreaking*)
 
 
@@ -370,7 +370,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toF3F4*)
 
 
@@ -384,7 +384,7 @@ Block[{
 	vectorMass,scalarMass,
 	scalarPropT,scalarPropU,vectorPropU,vectorPropT,
 	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor,
-	flag,flag1
+	flag
 },
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
@@ -507,47 +507,22 @@ If[
 	Result for interfaces between vector and scalar diagrams---
 	Only cross terms between diagrams can contribute
 *)
-(*	flag1[1] = 2*s*t;
-	flag1[2] = 0*u*t;
-	flag1[3] = 0*s*u;
-	flag1[4] = 0*t*u;
-	flag1[5] = 2*t*s;
-	flag1[6] = 2*u*s;*)
 	
-(*	flag1[1] = -2*t*t;
-	flag1[2] = -8*t*t;
-	flag1[3] = -8*u*u;
-	flag1[4] = -8*u*u;
-	flag1[5] = -2*s*s;
-	flag1[6] = -2*s*s;*)
+	flag[1] = 2*t*t;
+	flag[2] = 2*t*t;
+	flag[3] = 2*u*u;
+	flag[4] = 2*u*u;
+	flag[5] = 2*s*s;
+	flag[6] = 2*s*s;
 	
-	flag[1] = 2*t*t*flag1[1];
-	flag[2] = 2*t*t*flag1[2];
-	flag[3] = 2*u*u*flag1[3];
-	flag[4] = 2*u*u*flag1[4];
-	flag[5] = 2*s*s*flag1[5];
-	flag[6] = 2*s*s*flag1[6];
-	
-	totRes+=flag[1]*f1*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
-	(*totRes+=flag[1]*f2*1/2*TotalConj[CSC*Conjugate[CTyC] + CTyC*Conjugate[CSC]];*)
-	
-	(*totRes+=flag[2]*f1*1/2*TotalConj[CU*Conjugate[CTyC] + CTyC*Conjugate[CU]];*)
-	totRes+=flag[2]*f2*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
+	totRes+=flag[1]*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
+	totRes+=flag[2]*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
 
-	(*totRes+=flag[3]*f1*1/2*TotalConj[CS*Conjugate[CUyC] + CUyC*Conjugate[CS]];*)
-	totRes+=flag[3]*f2*1/2*TotalConj[CSC*Conjugate[CUyC] + CUyC*Conjugate[CSC]];
-	
-	(*totRes+=flag[4]*f1*1/2*TotalConj[CT*Conjugate[CUyC] + CUyC*Conjugate[CT]];*)
-	totRes+=flag[4]*f2*1/2*TotalConj[CTC*Conjugate[CUyC] + CUyC*Conjugate[CTC]];
+	totRes+=flag[3]*1/2*TotalConj[CSC*Conjugate[CUyC] + CUyC*Conjugate[CSC]];
+	totRes+=flag[4]*1/2*TotalConj[CTC*Conjugate[CUyC] + CUyC*Conjugate[CTC]];
 
-	totRes+=flag[5]*f1*1/2*TotalConj[CT*Conjugate[CSyC] + CSyC*Conjugate[CT]];
-	(*totRes+=flag[5]*f2*1/2*TotalConj[CTC*Conjugate[CSyC] + CSyC*Conjugate[CTC]];*)
-	
-	totRes+=flag[6]*f1*1/2*TotalConj[CU*Conjugate[CSyC] + CSyC*Conjugate[CU]];
-	(*totRes+=flag[6]*f2*1/2*TotalConj[CUC*Conjugate[CSyC] + CSyC*Conjugate[CUC]];*)
-	
-	totRes = totRes/.Thread[{f1,f2}->-1];
-	totRes = totRes/.{flag1[x_]->1};
+	totRes+=flag[5]*1/2*TotalConj[CT*Conjugate[CSyC] + CSyC*Conjugate[CT]];
+	totRes+=flag[6]*1/2*TotalConj[CU*Conjugate[CSyC] + CSyC*Conjugate[CU]];
 	
 	Return[Refine[4*totRes,Assumptions->VarAsum]]
 ]
@@ -903,20 +878,8 @@ Block[{
 	TotRes+= 4*A*TotalConj[CSV*Conjugate[CSV]]; 
 	
 	(*Mix between vector- and fermion-exchange diagrams*)
-
-(* AE implementation *)
-(*	TotRes+=-2*A*TotalConj[
-		-I*(CYTC+CYUC)*Conjugate[CVS]
-		+I*CVS*Conjugate[(CYTC+CYUC)]
-		];*)
-(*PS old *)
-	(*TotRes+=-2*s*t*I*TotalConj[CSV*Conjugate[CTyC] - CTyC*Conjugate[CSV]];*)
-
-(*latest working line*)
-	TotRes+=+flag3[1]*2*t*u*I*TotalConj[CSV*Conjugate[CTyC] - CTyC*Conjugate[CSV]];
-	TotRes+=+flag3[2]*2*t*u*I*TotalConj[CSVC*Conjugate[CUyC] - CUyC*Conjugate[CSVC]];
-	
-	TotRes = TotRes/.{flag3[x_]->1};
+	TotRes+=+2*t*u*I*TotalConj[CSV*Conjugate[CTyC] - CTyC*Conjugate[CSV]];
+	TotRes+=+2*t*u*I*TotalConj[CSVC*Conjugate[CUyC] - CUyC*Conjugate[CSVC]];
 
 (*The full result*)
 	Return[2*Refine[TotRes,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
@@ -970,7 +933,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1S1toF1V1*)
 
 
@@ -1062,8 +1025,6 @@ If[ (
 		Mod[kinFlip,2]==1,
 		resTot=resTot/.{t->t2,u->u2}/.{t2->u,u2->t};
 	];
-	
-	(*	totRes = totRes/.{flag2[x_]->1};*)
 	
 	Return[-2*Refine[resTot,Assumptions->VarAsum]]
 ,
@@ -1448,6 +1409,7 @@ ExtractOutOfEqElement[particleListAll_,particleListOutOfEq_,ParticleMasses_]:=
 (*Generating matrix elements*)
 
 
+(* function not in use any more *)
 ExtractLightParticles[outOfEqParticleList_,lightParticleList_,particleListAll_]:=
 Block[{
 	position,nonEqParticles,lightParticles,
