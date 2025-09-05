@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 If[$InputFileName=="",
@@ -217,72 +217,11 @@ MatrixElements=ExportMatrixElements[
 ];
 
 
-assumpt={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,UserMasses,s,t,u,fsign,Prop}//Flatten
-
-
-TruncateAtLeadingLogarithm[MatrixElements_]:=Module[{MatrixElementsF,U,S,T},
-
-	MatrixElementsF=MatrixElements/.Flatten[Map[{
-			Prop[#[[1]],msq_]->#[[2]]*Prop[#[[1]],msq]
-		}&,{{s,S},{t,T},{u,U}}]];
-	
-	MatrixElementsF=MatrixElementsF//Simplify[#,Thread[{S,T,U}>0]]&;
-	
-	(*Print[MatrixElementsF];*)
-	MatrixElementsF=Map[{
-		Plus@@Table[
-		+SeriesCoefficient[#[[1]]/.{T->xLarge*T,U->xLarge*U},{xLarge,Infinity,-i}]
-		,
-		{i,If[#[[2]][[3]]==#[[2]][[4]],2,1],2}],
-		#[[2]]}&,
-		MatrixElementsF];
-	(*Print[MatrixElementsF];*)
-
-	MatrixElementsF=Expand[MatrixElementsF]/.{S*T->0,S*U->0,T*U->0};
-	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.Thread[{T,U,S}->1];
-	MatrixElementsF=DeleteCases[MatrixElementsF, {0,{a__}}];
-	
-	MatrixElementsF=MatrixElementsF/.Prop[x_,y_]->1/(x-y);
-	MatrixElementsF=Simplify[MatrixElementsF,Assumptions->assumpt];
-	
-	Return[MatrixElementsF];
-]
-
-
-Conjugate[Prop[s,mGm2]^2] Prop[s,mGm2]^5/.Flatten[Map[{
-			Prop[#[[1]],msq_]->#[[2]]*Prop[#[[1]],msq]
-		}&,{{s,S},{t,T},{u,U}}]]
-Simplify[%,{S>0}]
-
-
-elems={{M[0,1,0,1]/.MatrixElements,{0,1,0,1}}}(*/.Prop[x_,y_]->HoldForm[1/(x-y)]*)//Expand;
-(*Simplify[%(*//ReleaseHold*),assumpt]*)
-
-
-TruncateAtLeadingLogarithm[elems]
-
-
-dropMixedMonomials[expr_] := 
-  Collect[expr, {S, T, U},
-    Function[term,
-      If[Length[Intersection[{S, T, U}, Variables[term]]] > 1,
-        0,
-        term
-      ]
-    ]
-  ];
-
-
-T^2*S/. { S^a_. T^b_. :> 0 /; a > 0 && b > 0,
-     S^a_. U^b_. :> 0 /; a > 0 && b > 0,
-     T^a_. U^b_. :> 0 /; a > 0 && b > 0 }
-
-
 (* ::Section:: *)
 (*Tests try*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(g3^4)*)
 
 
@@ -390,7 +329,7 @@ particles
 testList={};
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*O(g3^4)*)
 
 
@@ -783,5 +722,6 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
