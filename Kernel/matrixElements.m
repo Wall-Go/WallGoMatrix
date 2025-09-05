@@ -370,7 +370,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
@@ -508,12 +508,12 @@ If[
 	Only cross terms between diagrams can contribute
 *)
 	
-	flag[1] = 2*t*t;
-	flag[2] = 2*t*t;
-	flag[3] = 2*u*u;
-	flag[4] = 2*u*u;
-	flag[5] = 2*s*s;
-	flag[6] = 2*s*s;
+	flag[1] = -2*t*t;
+	flag[2] = -2*t*t;
+	flag[3] = -2*u*u;
+	flag[4] = -2*u*u;
+	flag[5] = -2*s*s;
+	flag[6] = -2*s*s;
 	
 	totRes+=flag[1]*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
 	totRes+=flag[2]*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
