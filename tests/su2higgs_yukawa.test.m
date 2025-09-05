@@ -200,29 +200,37 @@ MatrixElements;
 (*Translate input*)
 
 
-insertCouplings={g->g,\[Lambda]->lam,SUNN->2,gu1->0,mChi->0,mPhi->0,mPsi->0};
-customCouplings={ms2->mPhi^2};
+groupFactors={SUNN->2};
+customParameters={ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam};
+setMassesToZero={Thread[UserMasses->0],Thread[{mChi,mPhi,mPsi}->0]}//Flatten;
+comparisonReplacements={
+	groupFactors,
+	customParameters,
+	setMassesToZero
+	}//Flatten;
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 
-
 fixConvention[arg_]:=symmetriseTU[
-	arg/.customCouplings/.Thread[UserMasses->0]/.insertCouplings/.{s->(-t-u)}
+	arg/.comparisonReplacements/.{s->(-t-u)}
 	]//Expand//Simplify//Expand
-
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
-testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;
-testsRulesFeynCalc[arg_]:=arg/.Flatten[particlesFeyn]/.MatrixElementsFeyn//fixConvention//removeMissing
-testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesWallGo
-testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing;
+
+generateFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesFeynCalc
+]/.Flatten[particlesFeyn]/.MatrixElementsFeyn/.groupFactors//removeMissing;
+
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
+testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
 (* ::Subsection:: *)
@@ -470,6 +478,26 @@ test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar"},
 	{"Psi","Psibar"}
 ]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+process="SS->F1F1massive"
+test["WallGo"][process]=generateWallGo[
+	{"Phi"},
+	{"Phi"},
+	{"PsiL","XiL"},
+	{"PsiL","XiL"}
+]/.{mv2->0}//Simplify//ApartSquareFree
+test["FeynCalc"][process]=generateFeynCalc[
+	{"Phi","Phibar"},
+	{"Phi","Phibar"},
+	{"Psi","Psibar"},
+	{"Psi","Psibar"}
+]//Simplify//ApartSquareFree
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -728,12 +756,12 @@ expandNumber[expr_, num_, repl_List] :=
 elements=Select[MatrixElements//Expand, ! FreeQ[#, g^2 y^2] &][[All,1]];
 test1=elements/.{3->1}//expandNumber[#, 1, {3, 1}]&;
 test1=test1/.MatrixElements//fixConvention;
-test2=elements/.{1->3,2->5,3->3,4->2}
+test2=elements/.{1->3,2->5,3->3,4->2};
 test2=test2//expandNumber[#, 0, {0, 1}]&//expandNumber[#, 3, {3, 4}]&//expandNumber[#, 5, {5, 6}]&;
 
 test2=test2/.MatrixElementsFeyn//removeMissing//fixConvention;
 
-((s1*test1-s2*test2)//Simplify)/.(s1-s2)->0
+((s1*test1-s2*test2)/.setMassesToZero//Simplify)/.(s1-s2)->0
 
 
 (* ::Section:: *)
@@ -763,6 +791,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
