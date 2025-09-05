@@ -370,7 +370,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toF3F4*)
 
 
@@ -933,7 +933,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1V1*)
 
 
@@ -964,7 +964,7 @@ Block[{
 	fermionMass,
 	fermionPropS,particleNull,gTensorF,YTensor,CS,resTot,
 	YTensor2,gTensorF2,fermionPropU,CU,kinFlip,t2,u2,
-	flag2,partInt
+	partInt
 },
 (*
 	This module returns the squared matrix element of FS->FV summed over all quantum numbers of the incoming particles.
@@ -1010,16 +1010,12 @@ If[ (
 
 (* === assembling the full result === *)
 	
-	flag2[1] = 1;
-	flag2[2] = 1;
-	flag2[3] = 1;
-	
 	(*Squared s-channel*)
-	resTot=+flag2[1]*2*s*u* TotalConj[CS*Conjugate[CS]];
+	resTot=+2*s*u* TotalConj[CS*Conjugate[CS]];
 	(*Squared u-channel*)
-	resTot+=+flag2[2]*2*s*u* TotalConj[CU*Conjugate[CU]];
+	resTot+=+2*s*u* TotalConj[CU*Conjugate[CU]];
 	(*Mixed s & u channel*)
-	resTot+=-flag2[3]*2*s*u* TotalConj[CS*Conjugate[CU]+CU*Conjugate[CS]];
+	resTot+=-2*s*u* TotalConj[CS*Conjugate[CU]+CU*Conjugate[CS]];
 	
 	If[
 		Mod[kinFlip,2]==1,
