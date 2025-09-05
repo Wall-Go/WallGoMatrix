@@ -1091,7 +1091,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toV1V2*)
 
 
@@ -1388,6 +1388,13 @@ If[Length[Elements]==0,
 ];
 
 
+SimplifyConjugates[expr_, assumptions_List] :=
+  expr //. Conjugate[x_] :> FullSimplify[
+     Conjugate[x],
+     Assumptions -> assumptions
+     ];
+
+
 ExtractOutOfEqElement[particleListAll_,particleListOutOfEq_,ParticleMasses_]:=
 	Block[{
 		collisionElements, collisionElementsTotal
@@ -1411,14 +1418,20 @@ ExtractOutOfEqElement[particleListAll_,particleListOutOfEq_,ParticleMasses_]:=
 	   collisionElements
 	  ]//Flatten[#,1]&;
 	
+	Prop /: Conjugate[Prop[x__]] := Prop[x];
+	collisionElementsTotal=SimplifyConjugates[
+			collisionElementsTotal,
+			VarAsum
+		]//Expand;	
+	UpValues[Prop] = DeleteCases[UpValues[Prop], HoldPattern[(Conjugate[Prop[_]]) :> _]];
+	
 	If[bTruncateAtLeadingLog,
 		collisionElementsTotal=TruncateAtLeadingLogarithm[collisionElementsTotal];
 	];
 	
 	collisionElementsTotal=collisionElementsTotal/.Prop[x_,y_]->1/(x-y);
-	collisionElementsTotal=Simplify[collisionElementsTotal,Assumptions->VarAsum];
 	
-	Return[collisionElementsTotal];
+	Return[collisionElementsTotal//Expand];
 
 ];
 
@@ -1524,13 +1537,6 @@ contribution in the high-energy limit.
 ";
 
 
-SimplifyConjugates[expr_, assumptions_List] :=
-  expr //. Conjugate[x_] :> FullSimplify[
-     Conjugate[x],
-     Assumptions -> assumptions
-     ];
-
-
 TruncateAtLeadingLogarithm[MatrixElements_]:=Module[
 	{
 		MatrixElementsF,S,T,U, localAssumptions
@@ -1539,17 +1545,7 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[
 	MatrixElementsF=MatrixElements/.Flatten[Map[{
 			Prop[#[[1]],msq_]->#[[2]]*Prop[#[[1]],msq]
 		}&,{{s,S},{t,T},{u,U}}]];
-	
-	localAssumptions = {Thread[{S,T,U}>0],VarAsum}//Flatten;
-	Prop /: Conjugate[Prop[x__]] := Prop[x];
-	
-	MatrixElementsF=SimplifyConjugates[
-			MatrixElementsF,
-			localAssumptions
-		]//Expand;
 		
-	UpValues[Prop] = DeleteCases[UpValues[Prop], HoldPattern[(Conjugate[Prop[_]]) :> _]];
-	
 	MatrixElementsF=Map[{
 		Plus@@Table[
 			+ SeriesCoefficient[#[[1]]/.{T->xLarge*T,U->xLarge*U},{xLarge,Infinity,-i}]
