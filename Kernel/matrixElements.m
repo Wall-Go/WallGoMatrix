@@ -785,7 +785,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -797,9 +797,10 @@ Block[{
 	\[Lambda]3Tensor,YTensor2,YTensor2C,
 	vectorMass,fermionMass,scalarMass,
 	vectorPropS,scalarPropS,fermionPropT,fermionPropU,
-	CSV,
+	CSV,CSVC,
 	CSy,CTy,CUy,CTyC,CUyC,CTyCC,CUyCC,
-	ASSY,A,TotRes,temp
+	ASSY,A,TotRes,temp,
+	flag3
 },
 (*
 	This module returns the squared matrix element of SS->FF summed over all quantum numbers of the incoming particles.
@@ -868,6 +869,7 @@ Block[{
 	
 (*Group invariants from vector diagrams*)
 	CSV=Contract[gTensorS[[1,2]], vectorPropS . gTensorF[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CSVC=Contract[gTensorS[[1,2]], vectorPropS . gTensorF[[4,3]],{{1,4}}]//OrderArray[#,1,2,4,3]&;
 	
 (*Group invariants from Yukawa diagrams*)
 	CSy=Contract[\[Lambda]3Tensor[[1,2]], scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; 
@@ -902,14 +904,19 @@ Block[{
 	
 	(*Mix between vector- and fermion-exchange diagrams*)
 
-(* old implementation *)
+(* AE implementation *)
 (*	TotRes+=-2*A*TotalConj[
 		-I*(CYTC+CYUC)*Conjugate[CVS]
 		+I*CVS*Conjugate[(CYTC+CYUC)]
 		];*)
+(*PS old *)
+	(*TotRes+=-2*s*t*I*TotalConj[CSV*Conjugate[CTyC] - CTyC*Conjugate[CSV]];*)
 
-	TotRes+=-2*s*t*I*TotalConj[CSV*Conjugate[CTyC] - CTyC*Conjugate[CSV]];
-(*	TotRes+=+2*flag2*s*u*I*TotalConj[CVS*Conjugate[CYUC] - CYUC*Conjugate[CVS]];*)
+(*latest working line*)
+	TotRes+=+flag3[1]*2*t*u*I*TotalConj[CSV*Conjugate[CTyC] - CTyC*Conjugate[CSV]];
+	TotRes+=+flag3[2]*2*t*u*I*TotalConj[CSVC*Conjugate[CUyC] - CUyC*Conjugate[CSVC]];
+	
+	TotRes = TotRes/.{flag3[x_]->1};
 
 (*The full result*)
 	Return[2*Refine[TotRes,Assumptions->VarAsum]] (*factor of 2 from anti-particles*)
@@ -1091,7 +1098,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toV1V2*)
 
 
