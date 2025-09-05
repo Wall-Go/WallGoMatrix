@@ -130,12 +130,9 @@ makeProcesses[firstParticle_]:=Flatten[Table[{firstParticle,a}->{b,c},
 	,2];
 
 
-?Isolate
-
-
 ContractMultipleSUN[expression_]:=Module[{exprI=expression},
 	exprI=exprI/.{
-					SUNFDelta[
+		SUNFDelta[
 			SUNFIndex[Index[Fundamental1, s1_]],
 			SUNFIndex[Index[Fundamental1, s2_]]
 			] -> 
