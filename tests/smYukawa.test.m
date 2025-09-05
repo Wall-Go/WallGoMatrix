@@ -21,7 +21,7 @@ Check[
 (*Standard Model Quark Yukawa sector *)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -159,29 +159,67 @@ MatrixElements=ExportMatrixElements[
 (*Comparison tests*)
 
 
-insertCouplings={lam1H->lam,gY->0 (* TEMPORARILY TURNING OFF U(1)*),gw->gW,gs->gs};
+(*insertCouplings={lam1H->lam,gY->0 (* TEMPORARILY TURNING OFF U(1)*),gw->gW,gs->gs};*)
 
 
-symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
+(*symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})*)
 
 
-UserMasses={mq2,ml2,mg2,mW2,mB2,mH2,mG2};
+(*UserMasses={mq2,ml2,mg2,mW2,mB2,mH2,mG2};
 fixConvention[arg_]:=symmetriseTU[
 	arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings(*/.v->0*)
-	]//Expand//Simplify//Expand
+	]//Expand//Simplify//Expand*)
 
 
-removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
+(*removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0*)
 
 
-testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;
+(*testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;
 testsRulesFeynCalc[arg_]:=arg/.Flatten[particlesFeyn]/.MatrixElementsFeyn//fixConvention//removeMissing
 testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
 ]//testsRulesWallGo
 testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesFeynCalc
+]//testsRulesFeynCalc*)
+
+
+(* ::Subsection:: *)
+(*Translate input*)
+
+
+groupFactors={};
+customParameters={lam1H->lam,gY->0 (* TEMPORARILY TURNING OFF U(1)*),gw->gW,gs->gs};
+UserMasses={mq2,ml2,mg2,mW2,mB2,mH2,mG2}
+setMassesToZero={Thread[UserMasses->0],Thread[{mChi,mPhi,mPsi}->0]}//Flatten;
+comparisonReplacements={
+	groupFactors,
+	customParameters,
+	setMassesToZero
+	}//Flatten;
+
+
+symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
+
+fixConvention[arg_]:=symmetriseTU[
+	arg/.comparisonReplacements/.{s->(-t-u)}
+	]//Expand//Simplify//Expand
+
+removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
+
+
+generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing;
+
+generateFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]/.Flatten[particlesFeyn]/.MatrixElementsFeyn/.groupFactors//removeMissing;
+
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
+testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
 (* ::Subsection:: *)
@@ -634,7 +672,7 @@ test["WallGo"][process]=testWallGo[
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"}
-]/.{yt->Sqrt[2]*yt}
+]/.{yt->Sqrt[2]*yt}//Simplify//Expand
 test["FeynCalc"][process]=testFeynCalc[
 	{"t","tbar","b","bbar"},
 	{"t","tbar","b","bbar"},
