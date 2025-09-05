@@ -785,7 +785,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toF1F2*)
 
 
@@ -970,7 +970,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1V1*)
 
 
@@ -1041,8 +1041,9 @@ If[ (
 	fermionPropU=Table[Prop[u,i],{i,fermionMass}]//ListToMat;
 
 (*Group structures*)
-	CS=Contract[YTensor . fermionPropS ,gTensorF,{{3,6}}]//OrderArray[#,2,1,4,3]&;
-	CU=Contract[YTensor2 . fermionPropU ,gTensorF2,{{3,6}}]//OrderArray[#,4,1,2,3]&;
+	CS=Contract[YTensor . fermionPropS, gTensorF,{{3,6}}]//OrderArray[#,2,1,4,3]&;
+	CU=Contract[YTensor2 . fermionPropU, gTensorF2,{{3,6}}]//OrderArray[#,4,1,2,3]&;
+	(* TODO include scalar exchange in t-channel. *)
 
 (* === assembling the full result === *)
 	
