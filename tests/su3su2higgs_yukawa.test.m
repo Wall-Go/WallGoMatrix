@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 If[$InputFileName=="",
@@ -21,7 +21,7 @@ Check[
 (*SU(3) + SU(2) + Higgs Yukawa Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -132,6 +132,37 @@ LightParticleList={};
 UserMasses={mv2,mf2,ms2};
 
 
+Clear[ConjExpand]
+ConjExpand[e_, ass_:True] :=
+  Assuming[ass,
+    Refine @ Distribute[Conjugate[e], Plus, Conjugate, Plus]
+  ];
+
+
+Element[{T$1888411,U$1888411,s,t,u,mv2},Reals]
+
+
+SimplifyConjugates[expr_, assumptions_List] :=
+  expr //. Conjugate[x_] :> FullSimplify[Conjugate[x],
+     Assumptions -> assumptions];
+
+
+Prop /: Conjugate[Prop[x__]] := Prop[x]
+(*UpValues[Prop] = {};*)
+expr=a+ b + c + Conjugate[T$1888411 (s-u) Prop[t,mv2]+(s-t) U$1888411 Prop[u,mv2]]
+SimplifyConjugates[%,Thread[{T$1888411,U$1888411,s,t,u,mv2}>0]]
+(*%/.Conjugate[x_]:>FullSimplify[Conjugate[x],Thread[{T$1888411,U$1888411,s,t,u,mv2}>0](*,Element[{T$1888411,U$1888411,s,t,u,mv2},Reals]*)]
+*)(*Refine[%,Assumptions->{s \[Element] Reals, t \[Element] Reals, u \[Element] Reals, mv2 \[Element] Reals,
+   T$1888411 \[Element] Reals, U$1888411 \[Element] Reals}]*)
+
+
+(*expr+b*expr/.Conjugate[x_]:>ConjExpand[x,{s \[Element] Reals, t \[Element] Reals, u \[Element] Reals, mv2 \[Element] Reals,
+   T$1888411 \[Element] Reals, U$1888411 \[Element] Reals}]*)
+
+
+(*ConjExpand[x + y, (*{x \[Element] Ima, y \[Element] Reals}*)]*)
+
+
 (*
 	output of matrix elements
 *)
@@ -177,29 +208,37 @@ MatrixElements;
 (*Translate input*)
 
 
-insertCouplings={g->g,\[Lambda]->lam,SUNN1->2,SUNN2->3,gu1->0,mChi->0,mPhi->0,mPsi->0};
-customCouplings={ms2->mPhi^2};
+groupFactors={SUNN1->2,SUNN2->3};
+customParameters={ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam};
+setMassesToZero={Thread[UserMasses->0],Thread[{mChi,mPhi,mPsi}->0]}//Flatten;
+comparisonReplacements={
+	groupFactors,
+	customParameters,
+	setMassesToZero
+	}//Flatten;
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 
-
 fixConvention[arg_]:=symmetriseTU[
-	arg/.customCouplings/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings
+	arg/.comparisonReplacements/.{s->(-t-u)}
 	]//Expand//Simplify//Expand
-
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
-testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;
-testsRulesFeynCalc[arg_]:=arg/.Flatten[particlesFeyn]/.MatrixElementsFeyn//fixConvention//removeMissing
-testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesWallGo
-testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing;
+
+generateFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesFeynCalc
+]/.Flatten[particlesFeyn]/.MatrixElementsFeyn/.groupFactors//removeMissing;
+
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
+testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
 (* ::Subsection:: *)
@@ -306,6 +345,26 @@ test["FeynCalc"][process]=testFeynCalc[
 	{"Psi","Psibar","Chi","Chibar"},
 	{"Psi","Psibar","Chi","Chibar"}
 ]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+process="F1F1->F1F1massive"
+test["WallGo"][process]=generateWallGo[
+	{"PsiL","PsiR","XiL"},
+	{"PsiL","PsiR","XiL"},
+	{"PsiL","PsiR","XiL"},
+	{"PsiL","PsiR","XiL"}
+]/.{mv2->0}//FullSimplify//Collect[#,{g5,g3,y},Expand]&//Expand//Simplify//Expand
+test["FeynCalc"][process]=generateFeynCalc[
+	{"Psi","Psibar","Chi","Chibar"},
+	{"Psi","Psibar","Chi","Chibar"},
+	{"Psi","Psibar","Chi","Chibar"},
+	{"Psi","Psibar","Chi","Chibar"}
+]//FullSimplify//Collect[#,{g5,g3,y},Expand]&//Expand//Simplify//Expand
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -509,6 +568,26 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
+process="SS->F1F1massive"
+test["WallGo"][process]=generateWallGo[
+	{"Phi"},
+	{"Phi"},
+	{"PsiL","XiL"},
+	{"PsiL","XiL"}
+]/.{mv2->0}//Simplify//ApartSquareFree
+test["FeynCalc"][process]=generateFeynCalc[
+	{"Phi","Phibar"},
+	{"Phi","Phibar"},
+	{"Psi","Psibar"},
+	{"Psi","Psibar"}
+]//Simplify//ApartSquareFree
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
 process="SS->F1F1"
 test["WallGo"][process]=testWallGo[
 	{"Phi"},
@@ -597,7 +676,27 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-process="F1S->F2V"
+(*process="F1S->F2V1massive"
+test["WallGo"][process]=generateWallGo[
+	{"PsiL","XiL"},
+	{"Phi"},
+	{"PsiR"},
+	{"Vector1"}
+]//Simplify
+test["FeynCalc"][process]=generateFeynCalc[
+	{"Psi","Psibar"},
+	{"Phi","Phibar"},
+	{"Chi","Chibar"},
+	{"A1"}
+](*//FullSimplify*)
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];*)
+
+
+process="F1S->F2V2"
 test["WallGo"][process]=testWallGo[
 	{"PsiL","XiL"},
 	{"Phi"},
@@ -808,7 +907,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 
