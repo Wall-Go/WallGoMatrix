@@ -384,7 +384,7 @@ Block[{
 	vectorMass,scalarMass,
 	scalarPropT,scalarPropU,vectorPropU,vectorPropT,
 	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor,
-	flag1
+	flag,flag1
 },
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
@@ -507,31 +507,47 @@ If[
 	Result for interfaces between vector and scalar diagrams---
 	Only cross terms between diagrams can contribute
 *)
-(*	flag1[1] = 2;
-	flag1[2] = 0;
-	flag1[3] = 0;
-	flag1[4] = 0;
-	flag1[5] = 2;
-	flag1[6] = 2;*)
+(*	flag1[1] = 2*s*t;
+	flag1[2] = 0*u*t;
+	flag1[3] = 0*s*u;
+	flag1[4] = 0*t*u;
+	flag1[5] = 2*t*s;
+	flag1[6] = 2*u*s;*)
 	
-	flag1[1] = -2*t*t;
+(*	flag1[1] = -2*t*t;
 	flag1[2] = -8*t*t;
 	flag1[3] = -8*u*u;
 	flag1[4] = -8*u*u;
 	flag1[5] = -2*s*s;
-	flag1[6] = -2*s*s;
+	flag1[6] = -2*s*s;*)
 	
-	totRes+=flag1[1]*1/2*TotalConj[CS*Conjugate[CTyC] +CTyC*Conjugate[CS]];
-	totRes+=flag1[2]*1/2*TotalConj[CU*Conjugate[CTyC] +CTyC*Conjugate[CU]];
+	flag[1] = 2*t*t*flag1[1];
+	flag[2] = 2*t*t*flag1[2];
+	flag[3] = 2*u*u*flag1[3];
+	flag[4] = 2*u*u*flag1[4];
+	flag[5] = 2*s*s*flag1[5];
+	flag[6] = 2*s*s*flag1[6];
+	
+	totRes+=flag[1]*f1*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
+	(*totRes+=flag[1]*f2*1/2*TotalConj[CSC*Conjugate[CTyC] + CTyC*Conjugate[CSC]];*)
+	
+	(*totRes+=flag[2]*f1*1/2*TotalConj[CU*Conjugate[CTyC] + CTyC*Conjugate[CU]];*)
+	totRes+=flag[2]*f2*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
 
-	totRes+=flag1[3]*1/2*TotalConj[CS*Conjugate[CUyC] +CUyC*Conjugate[CS]];
-	totRes+=flag1[4]*1/2*TotalConj[CT*Conjugate[CUyC] +CUyC*Conjugate[CT]];
+	(*totRes+=flag[3]*f1*1/2*TotalConj[CS*Conjugate[CUyC] + CUyC*Conjugate[CS]];*)
+	totRes+=flag[3]*f2*1/2*TotalConj[CSC*Conjugate[CUyC] + CUyC*Conjugate[CSC]];
+	
+	(*totRes+=flag[4]*f1*1/2*TotalConj[CT*Conjugate[CUyC] + CUyC*Conjugate[CT]];*)
+	totRes+=flag[4]*f2*1/2*TotalConj[CTC*Conjugate[CUyC] + CUyC*Conjugate[CTC]];
 
-	totRes+=flag1[5]*1/2*TotalConj[CT*Conjugate[CSyC] +CSyC*Conjugate[CT]];
-	totRes+=flag1[6]*1/2*TotalConj[CU*Conjugate[CSyC] +CSyC*Conjugate[CU]];
+	totRes+=flag[5]*f1*1/2*TotalConj[CT*Conjugate[CSyC] + CSyC*Conjugate[CT]];
+	(*totRes+=flag[5]*f2*1/2*TotalConj[CTC*Conjugate[CSyC] + CSyC*Conjugate[CTC]];*)
 	
+	totRes+=flag[6]*f1*1/2*TotalConj[CU*Conjugate[CSyC] + CSyC*Conjugate[CU]];
+	(*totRes+=flag[6]*f2*1/2*TotalConj[CUC*Conjugate[CSyC] + CSyC*Conjugate[CUC]];*)
 	
-	(*totRes = totRes/.{flag1[x_]->1};*)
+	totRes = totRes/.Thread[{f1,f2}->-1];
+	totRes = totRes/.{flag1[x_]->1};
 	
 	Return[Refine[4*totRes,Assumptions->VarAsum]]
 ]
@@ -692,7 +708,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toS3S4*)
 
 
@@ -769,7 +785,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toF1F2*)
 
 
@@ -780,8 +796,9 @@ Block[{
 	Res,CTT,CUU,ATT,AUU,p1,p2,p3,p4,gTensorS,gTensorF,YTensor,YTensorC,particleNull,
 	\[Lambda]3Tensor,YTensor2,YTensor2C,
 	vectorMass,fermionMass,scalarMass,
-	vectorPropS,scalarPropS,fermionPropT,fermionPropU,CVS,
-	CYS,CYT,CYU,CYTC,CYUC,CYTCC,CYUCC,
+	vectorPropS,scalarPropS,fermionPropT,fermionPropU,
+	CSV,
+	CSy,CTy,CUy,CTyC,CUyC,CTyCC,CUyCC,
 	ASSY,A,TotRes,temp
 },
 (*
@@ -850,19 +867,19 @@ Block[{
 	fermionPropU=Table[Prop[u,i],{i,fermionMass}]//ListToMat;
 	
 (*Group invariants from vector diagrams*)
-	CVS=Contract[gTensorS[[1,2]], vectorPropS . gTensorF[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+	CSV=Contract[gTensorS[[1,2]], vectorPropS . gTensorF[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
 	
 (*Group invariants from Yukawa diagrams*)
-	CYS=Contract[\[Lambda]3Tensor[[1,2]], scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; 
+	CSy=Contract[\[Lambda]3Tensor[[1,2]], scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; 
 	
-	CYT=Contract[YTensor2[[1,3]] . fermionPropT , YTensor2[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
-	CYU=Contract[YTensor2[[1,4]] . fermionPropU , YTensor2[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+	CTy=Contract[YTensor2[[1,3]] . fermionPropT , YTensor2[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+	CUy=Contract[YTensor2[[1,4]] . fermionPropU , YTensor2[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
 	
-	CYTC=Contract[YTensor2[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
-	CYUC=Contract[YTensor2[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+	CTyC=Contract[YTensor2[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+	CUyC=Contract[YTensor2[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
 	
-	CYTCC=Contract[YTensor2C[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
-	CYUCC=Contract[YTensor2C[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+	CTyCC=Contract[YTensor2C[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+	CUyCC=Contract[YTensor2C[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
 
 (*Lorentz structures for vector exchanges*)
 (*
@@ -873,15 +890,15 @@ Block[{
 	
 (* === assembling the full result === *)
 	(*SS->S->FF squared*)
-	TotRes=ASSY * TotalConj[CYS*Conjugate[CYS]];
+	TotRes=ASSY * TotalConj[CSy*Conjugate[CSy]];
 	
 	(*Squared Yukawa diagrams with fermion exchanges*)
-	TotRes+=+ A * TotalConj[CYT*Conjugate[CYT]]; (*squared t-channel diagram*)
-	TotRes+=+ A * TotalConj[CYU*Conjugate[CYU]]; (*squared u-channel diagram*)
-	TotRes+=- A * TotalConj[CYU*CYT+CYT*CYU]; (*mixed u & t-channel diagrams*)
+	TotRes+=+ A * TotalConj[CTy*Conjugate[CTy]]; (*squared t-channel diagram*)
+	TotRes+=+ A * TotalConj[CUy*Conjugate[CUy]]; (*squared u-channel diagram*)
+	TotRes+=- A * TotalConj[CUy*CTy+CTy*CUy]; (*mixed u & t-channel diagrams*)
 	
 	(*Squared s-channel diagram with a vector boson*)
-	TotRes+= 4*A*TotalConj[CVS*Conjugate[CVS]]; 
+	TotRes+= 4*A*TotalConj[CSV*Conjugate[CSV]]; 
 	
 	(*Mix between vector- and fermion-exchange diagrams*)
 
@@ -891,7 +908,7 @@ Block[{
 		+I*CVS*Conjugate[(CYTC+CYUC)]
 		];*)
 
-	TotRes+=-2*s*t*I*TotalConj[CVS*Conjugate[CYTC] - CYTC*Conjugate[CVS]];
+	TotRes+=-2*s*t*I*TotalConj[CSV*Conjugate[CTyC] - CTyC*Conjugate[CSV]];
 (*	TotRes+=+2*flag2*s*u*I*TotalConj[CVS*Conjugate[CYUC] - CYUC*Conjugate[CVS]];*)
 
 (*The full result*)
@@ -899,7 +916,7 @@ Block[{
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1S1toF1S1*)
 
 
@@ -946,7 +963,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1S1toF1V1*)
 
 
@@ -1074,7 +1091,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toV1V2*)
 
 
