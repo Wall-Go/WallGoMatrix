@@ -27,7 +27,7 @@ Check[
 
 (* number of scalars *)
 (* try different n != 3, FeynCalc .json files are loaded automatically *)
-n=4;
+n=3;
 
 
 Group={"U1"};
@@ -62,7 +62,7 @@ VQuartic=Sum[1/4! lam[Sort[{i,j,k,l}]/.List->Sequence]CreateInvariant[Group,RepS
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*User Input*)
 
 
