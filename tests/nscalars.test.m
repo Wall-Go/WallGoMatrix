@@ -26,6 +26,7 @@ Check[
 
 
 (* number of scalars *)
+(* for n > 3, FeynCalc model generation needs to be run at different n *)
 n=3;
 
 
@@ -134,8 +135,9 @@ MatrixElements
 (*Importing results from WallGo*)
 
 
-If[Not[ValueQ[MatrixElements]],
-{particleNames,parameters,MatrixElements}=ImportMatrixElements["output/nscalars.test.json"]
+If[
+	Not[ValueQ[MatrixElements]],
+	{particleNames,parameters,MatrixElements}=ImportMatrixElements["output/nscalars.test.json"]
 ];
 
 
@@ -143,7 +145,7 @@ If[Not[ValueQ[MatrixElements]],
 (*Importing results from FeynCalc*)
 
 
-file=FileNameJoin[{NotebookDirectory[],"testFiles/nscalars.feyncalc.test.json"}];
+file=FileNameJoin[{NotebookDirectory[],"testFiles/"<>ToString[n]<>"scalars.feyncalc.test.json"}];
 {particleNamesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements[file];
 
 

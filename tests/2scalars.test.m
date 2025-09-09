@@ -18,7 +18,7 @@ Check[
 
 
 (* ::Chapter:: *)
-(*2HDM*)
+(*2scalar test*)
 
 
 (*Pure scalar sector of 2211.13142*)
