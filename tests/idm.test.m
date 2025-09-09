@@ -292,7 +292,7 @@ test["WallGo"][process]=testWallGo[
 	{"LightQuarks","BotL","BotR","TopL","TopR"}
 ]
 test["Reference"][process]=(
-		-72*g3^2*gw^2*s/(t-mq2)
+		-72*g3^2*gw^2*s*t/(t-mq2)^2
 	)/.setMassesToZero//fixConvention
 AppendTo[testList,
 	TestCreate[
