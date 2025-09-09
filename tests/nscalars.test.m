@@ -26,8 +26,8 @@ Check[
 
 
 (* number of scalars *)
-(* for n > 3, FeynCalc model generation needs to be run at different n *)
-n=3;
+(* try different n != 3, FeynCalc .json files are loaded automatically *)
+n=4;
 
 
 Group={"U1"};
@@ -62,7 +62,7 @@ VQuartic=Sum[1/4! lam[Sort[{i,j,k,l}]/.List->Sequence]CreateInvariant[Group,RepS
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*User Input*)
 
 
@@ -180,7 +180,7 @@ testList={};
 (* the whole thing scattering*)
 test["WallGo"]=Sum[M[a,b,c,d]/.MatrixElements//fixConvention//removeMissing,{a,0,n-1},{b,0,n-1},{c,0,n-1},{d,0,n-1}]
 test["FeynCalc"]=Sum[M[a,b,c,d]/.MatrixElementsFeyn//fixConvention//removeMissing,{a,0,n-1},{b,0,n-1},{c,0,n-1},{d,0,n-1}]
-Simplify[test["WallGo"]-test["FeynCalc"]]
+(*Simplify[test["WallGo"]-test["FeynCalc"]]*)
 AppendTo[testList,
 	TestCreate[test["WallGo"],test["FeynCalc"]]
 ];
