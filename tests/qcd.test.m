@@ -104,7 +104,7 @@ fixConvention[arg_]:=symmetriseTU[arg/.{s->(-t-u)}]//Expand//Simplify//Expand
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Test with [hep-ph/0209353]*)
 
 
@@ -155,12 +155,16 @@ TestCreate[
 ]];
 
 
+(* ::Subsection:: *)
+(*Test report*)
+
+
 report=TestReport[testList]
 report["ResultsDataset"]
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Test against FeynCalc*)
 
 
 file=FileNameJoin[{NotebookDirectory[],"testFiles/qcd.test.json"}];
@@ -208,6 +212,10 @@ TestCreate[
 	1/2*(M[1,1,1,1])/.MatrixElements//fixConvention//removeMissing,
 	1/2*(M[1,1,1,1])/.FeynMatrixElements//fixConvention//removeMissing
 ]];
+
+
+(* ::Subsection:: *)
+(*Test report*)
 
 
 report=TestReport[testList]

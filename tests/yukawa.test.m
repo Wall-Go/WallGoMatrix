@@ -187,7 +187,7 @@ file=FileNameJoin[{NotebookDirectory[],"testFiles/yukawa.feyncalc.test.json"}];
 (*Comparison tests*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Translate input*)
 
 
@@ -216,8 +216,8 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 ]//testsRulesFeynCalc
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 particleNames
@@ -382,7 +382,7 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
 
 
-(* ::Subsubsection:: *)
+(* ::Subsection:: *)
 (*Test report*)
 
 

@@ -151,6 +151,10 @@ file=FileNameJoin[{NotebookDirectory[],"testFiles/nscalars.feyncalc.test.json"}]
 (*Comparison tests*)
 
 
+(* ::Subsection::Closed:: *)
+(*Translate input*)
+
+
 insertCouplings={};
 
 
@@ -165,7 +169,7 @@ removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
 (* ::Subsection:: *)
-(*Test hard*)
+(*Initialize tests*)
 
 
 testList={};
@@ -173,11 +177,15 @@ testList={};
 
 (* the whole thing scattering*)
 test["WallGo"]=Sum[M[a,b,c,d]/.MatrixElements//fixConvention//removeMissing,{a,0,n-1},{b,0,n-1},{c,0,n-1},{d,0,n-1}]
-test["Feyn"]=Sum[M[a,b,c,d]/.MatrixElementsFeyn//fixConvention//removeMissing,{a,0,n-1},{b,0,n-1},{c,0,n-1},{d,0,n-1}];
-Simplify[test["WallGo"]-test["Feyn"]]
+test["FeynCalc"]=Sum[M[a,b,c,d]/.MatrixElementsFeyn//fixConvention//removeMissing,{a,0,n-1},{b,0,n-1},{c,0,n-1},{d,0,n-1}]
+Simplify[test["WallGo"]-test["FeynCalc"]]
 AppendTo[testList,
-	TestCreate[test["WallGo"],test["Feyn"]]
+	TestCreate[test["WallGo"],test["FeynCalc"]]
 ];
+
+
+(* ::Subsection:: *)
+(*Test report*)
 
 
 report=TestReport[testList]

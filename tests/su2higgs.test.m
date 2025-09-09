@@ -150,6 +150,10 @@ M[0,0,1,1]/.MatrixElements//Simplify
 (*Comparison tests*)
 
 
+(* ::Subsection::Closed:: *)
+(*Translate input*)
+
+
 insertCouplings={g->g,\[Lambda]->lam,SUNN->2,gu1->0};
 
 
@@ -172,8 +176,8 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 ]//testsRulesFeynCalc
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 particles
@@ -298,9 +302,12 @@ test["AMY"][6]=fixConvention[16 dA CA^2 g^4 (3-(s u)/t^2-(s t)/u^2-(t u)/s^2)/.{
 AppendTo[testList,TestCreate[test["WallGo"][6],test["AMY"][6],TestID->"WallGo vs AMY: VV->VV"]];
 
 
+(* ::Subsection:: *)
+(*Test report*)
+
+
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 

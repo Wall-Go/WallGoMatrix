@@ -21,7 +21,7 @@ Check[
 (*Abelian-Higgs-Yukawa Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -172,7 +172,7 @@ MatrixElements;
 (*Comparison tests*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Translate input*)
 
 
@@ -209,8 +209,8 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 particles
@@ -791,7 +791,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsection:: *)
 (*Test report*)
 
 
@@ -1091,8 +1091,8 @@ FeynMatrixElements={
  M[7, 7, 6, 5] -> (64*g^4*(5*t^2 + 6*t*u + 5*u^2 + 3*s*(t + u)))/(t*u)};
 
 
-(* ::Subsection:: *)
-(*Helper functions*)
+(* ::Subsection::Closed:: *)
+(*Translate input*)
 
 
 feynAssociation=Association[feynResults];
@@ -1110,8 +1110,8 @@ fixConvention[arg_]:=symmetriseTU[arg/.insertCouplings/.{s->(-t-u)}]//Expand//Si
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 totalDRalgo=Sum[M[a,b,c,d],{a,0,4},{b,0,4},{c,0,4},{d,0,4}]/.MatrixElements/.Thread[UserMasses->0]//removeMissing//fixConvention;
@@ -1135,9 +1135,12 @@ TestCreate[
 ]];
 
 
+(* ::Subsection:: *)
+(*Test report*)
+
+
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 

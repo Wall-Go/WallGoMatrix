@@ -204,7 +204,7 @@ MatrixElements;
 (*Comparison tests*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Translate input*)
 
 
@@ -241,8 +241,8 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 particles
@@ -872,7 +872,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsection:: *)
 (*Test report*)
 
 
@@ -882,6 +882,10 @@ report["ResultsDataset"]
 
 (* ::Section:: *)
 (*Full test*)
+
+
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 totalWallGo=Sum[M[a,b,c,d],{a,0,6},{b,0,6},{c,0,6},{d,0,6}]/.MatrixElements/.Thread[UserMasses->0]//removeMissing//fixConvention;
@@ -905,8 +909,9 @@ TestCreate[
 ]];
 
 
+(* ::Subsection:: *)
+(*Test report*)
+
+
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
-

@@ -145,6 +145,10 @@ MatrixElements
 (*Comparison tests*)
 
 
+(* ::Subsection::Closed:: *)
+(*Translate input*)
+
+
 insertCouplings={g->g,\[Lambda]->lam,SUNN->3};
 
 
@@ -167,8 +171,8 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 ]//testsRulesFeynCalc
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 particles
@@ -274,9 +278,12 @@ test["FeynCalc"][6]=testFeynCalc[
 AppendTo[testList,TestCreate[test["WallGo"][6],test["FeynCalc"][6],TestID->"VV->VV"]];
 
 
+(* ::Subsection:: *)
+(*Test report*)
+
+
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 

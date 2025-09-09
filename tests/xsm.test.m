@@ -289,7 +289,7 @@ MatrixElements=ExportMatrixElements[
 {particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.xsm.json"];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Translate input*)
 
 
@@ -318,7 +318,7 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 ]//testsRulesFeynCalc
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Test with table 1 of  https://arxiv.org/pdf/1506.04741*)
 (*Note that there are no internal Higgs fields propagating*)
 
@@ -329,7 +329,7 @@ particles
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(g3^4)*)
 
 
@@ -717,7 +717,7 @@ AppendTo[testList,
 
 
 (* ::Subsection:: *)
-(*Report*)
+(*Test report*)
 
 
 report=TestReport[testList]
