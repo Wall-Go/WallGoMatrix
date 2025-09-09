@@ -21,7 +21,7 @@ Check[
 (*Full Standard Model*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -86,7 +86,7 @@ YsffC=SparseArray[Simplify[Conjugate[Ysff]//Normal,Assumptions->{yt>0}]];
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*SM quarks + gauge bosons*)
 
 
@@ -184,31 +184,46 @@ MatrixElements
 (*Comparison tests*)
 
 
-insertCouplings={lam1H->lam,gY->0 (* TEMPORARILY TURNING OFF U(1)*),gw->gW,gs->gs};
+(* ::Subsection::Closed:: *)
+(*Translate input*)
+
+
+groupFactors={};
+customParameters={lam1H->lam,gY->0 (* TEMPORARILY TURNING OFF U(1)*),gw->gW,gs->gs};
+UserMasses={mq2,ml2,mg2,mW2,mB2,mH2,mG2}
+setMassesToZero={Thread[UserMasses->0],Thread[{mChi,mPhi,mPsi}->0]}//Flatten;
+comparisonReplacements={
+	groupFactors,
+	customParameters,
+	setMassesToZero
+	}//Flatten;
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 
-
-UserMasses={mq2,ml2,mg2,mW2,mB2,mH2,mG2};
-fixConvention[arg_]:=symmetriseTU[arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings/.v->0]//Expand//Simplify//Expand
-
+fixConvention[arg_]:=symmetriseTU[
+	arg/.comparisonReplacements/.{s->(-t-u)}
+	]//Expand//Simplify//Expand
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
-testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;
-testsRulesFeynCalc[arg_]:=arg/.Flatten[particlesFeyn]/.MatrixElementsFeyn//fixConvention//removeMissing
-testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesWallGo
-testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing;
+
+generateFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesFeynCalc
+]/.Flatten[particlesFeyn]/.MatrixElementsFeyn/.groupFactors//removeMissing;
+
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
+testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 particles
@@ -218,7 +233,7 @@ particlesFeyn={"W"->0,"Wbar"->1,"Z"->2,"gamma"->3,"H"->4,"G0"->5,"Gp"->6,"Gpbar"
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Electroweak bosons sector*)
 
 
@@ -370,7 +385,7 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Higgs tau sector*)
 
 
@@ -427,7 +442,7 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Top bottom QCD sector *)
 
 
@@ -441,7 +456,7 @@ test["WallGo"][process]=testWallGo[
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"},
 	{"TopL","TopR","BotL","BotR"}
-]/.{yt->Sqrt[2]*yt}
+]/.{yt->Sqrt[2]*yt}//Simplify//Expand
 test["FeynCalc"][process]=testFeynCalc[
 	{"t","tbar","b","bbar"},
 	{"t","tbar","b","bbar"},
@@ -457,7 +472,7 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*QCD sector*)
 
 
@@ -502,9 +517,12 @@ AppendTo[testList,
 		TestID->"WallGo vs AMY:"<>process]];
 
 
+(* ::Subsection::Closed:: *)
+(*Test report*)
+
+
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 

@@ -159,32 +159,7 @@ MatrixElements=ExportMatrixElements[
 (*Comparison tests*)
 
 
-(*insertCouplings={lam1H->lam,gY->0 (* TEMPORARILY TURNING OFF U(1)*),gw->gW,gs->gs};*)
-
-
-(*symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})*)
-
-
-(*UserMasses={mq2,ml2,mg2,mW2,mB2,mH2,mG2};
-fixConvention[arg_]:=symmetriseTU[
-	arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings(*/.v->0*)
-	]//Expand//Simplify//Expand*)
-
-
-(*removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0*)
-
-
-(*testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;
-testsRulesFeynCalc[arg_]:=arg/.Flatten[particlesFeyn]/.MatrixElementsFeyn//fixConvention//removeMissing
-testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
-	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesWallGo
-testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
-	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]//testsRulesFeynCalc*)
-
-
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Translate input*)
 
 
@@ -222,8 +197,8 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 particles
@@ -423,7 +398,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsubsection::Closed:: *)
 (*Higgs tau sector*)
 
 
@@ -558,7 +533,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Top bottom QCD sector *)
 
 
@@ -616,7 +591,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoFF*)
 
 
@@ -688,7 +663,7 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Full check*)
 
 
@@ -758,12 +733,9 @@ AppendTo[testList,
 		TestID->"WallGo vs AMY: "<>process]];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Test report*)
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
-
