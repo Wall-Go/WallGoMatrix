@@ -18,7 +18,7 @@ Check[
 
 
 (* ::Title:: *)
-(*2HDM*)
+(*IDM*)
 
 
 (*See 2211.13142 for implementation details*)
@@ -135,6 +135,7 @@ SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-de
 ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
 RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"];
 ReptR=CreateParticle[{{2,1}},"F",mq2,"TopR"];
+RepbR=CreateParticle[{{3,1}},"F",mq2,"BotR"];
 
 
 (*Vector bosons*)
@@ -148,19 +149,26 @@ RepGoldstoneGpR={{1},"S",mG2,"GoldstoneGpR"}; (*real charged Goldstone*)
 RepGoldstoneGpI={{3},"S",mG2,"GoldstoneGpI"}; (*imag charged Golstone*)
 RepGoldstoneGp0={{4},"S",mG2,"GoldstoneG0"}; (*neutral Goldstone*)
 RepHiggsH=CreateParticle[{{2,2}},"S",mH2,"H"]; (*CP-even inert scalar*)
-RepGoldstoneA=CreateParticle[{{2,3},{2,1}},"S",mA2,"A"]; (*CP-odd inert and charged scalars *)
+RepGoldstoneA=CreateParticle[{{2,3}},"S",mA2,"A"]; (*CP-odd inert and charged scalars *)
+RepGoldstoneHpR={{5},"S",mHp,"RepGoldstoneHpR"}; (*real charged inert scalar*)
+RepGoldstoneHpI={{7},"S",mHp,"RepGoldstoneHpI"}; (*imag charged inert scalar*)
 
 
 (*Light fermions*)
-LightFermions=CreateParticle[{3,4,5,6,7,8,9,10,11,12,13,14,15},"F",mq2,"LightFermions"];
+LightQuarks=CreateParticle[{6,7,8,11,12,13},"F",mq2,"LightQuarks"];
+LightLeptons=CreateParticle[{4,5,9,10,14,15},"F",ml2,"LightLeptons"];
 
 
 ParticleList={
-	ReptL,RepbL,ReptR,
+	ReptL,RepbL,ReptR,RepbR,
 	RepGluon,RepW,
 	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
-	RepHiggsH,RepGoldstoneA};
-LightParticleList={LightFermions};
+	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI
+	};
+LightParticleList={
+	LightQuarks,
+	LightLeptons
+	};
 
 
 (*
@@ -176,5 +184,376 @@ MatrixElements=ExportMatrixElements[
 		TruncateAtLeadingLog->True,
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
-		NormalizeWithDOF->False}];
+		NormalizeWithDOF->False
+	}
+];
+
+
+(* ::Chapter:: *)
+(*Tests*)
+
+
+(* ::Section:: *)
+(*Importing results from WallGo*)
+
+
+{particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.idm.json"];
+
+
+(* ::Section:: *)
+(*Comparison tests*)
+
+
+(* ::Subsection:: *)
+(*Translate input*)
+
+
+groupFactors={ };
+UserMasses={mq2,ml2,mg2,mw2};
+customParameters={ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam};
+setMassesToZero={Thread[UserMasses->0],Thread[{mChi,mPhi,mPsi}->0]}//Flatten;
+comparisonReplacements={
+	groupFactors,
+	customParameters,
+	setMassesToZero
+	}//Flatten;
+
+
+symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
+
+fixConvention[arg_]:=symmetriseTU[
+	arg/.comparisonReplacements/.{s->(-t-u)}
+	]//Expand//Simplify//Expand
+
+removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
+
+
+generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing;
+
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
+
+
+(* ::Subsection:: *)
+(*Initialize tests*)
+
+
+particles
+
+
+testList={};
+
+
+(* ::Subsubsection:: *)
+(*FFtoVV*)
+
+
+process="tt->gg"
+test["WallGo"][process]=testWallGo[
+	{"TopL"},
+	{"TopL"},
+	{"Gluon"},
+	{"Gluon"}
+]
+test["Reference"][process]=(
+		128/3*g3^4(u/(t-mq2^2)+t/(u-mq2^2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="tq->tq"
+test["WallGo"][process]=testWallGo[
+	{"TopL"},
+	{"LightQuarks","BotL","BotR"},
+	{"TopL"},
+	{"LightQuarks","BotL","BotR"}
+]/.{gw->0,yt1->0}
+test["Reference"][process]=(
+		+160*g3^4*(s^2+u^2)/(t-mq2^2)^2
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="Wg->qq"
+test["WallGo"][process]=testWallGo[
+	{"W"},
+	{"Gluon"},
+	{"LightQuarks","BotL","BotR","TopL","TopR"},
+	{"LightQuarks","BotL","BotR","TopL","TopR"}
+]
+test["Reference"][process]=(
+		-72*g3^2*gw^2*s/(t-mq2)
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="WW->ff"
+test["WallGo"][process]=testWallGo[
+	{"W"},
+	{"W"},
+	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"},
+	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"}
+]
+test["Reference"][process]=(
+		-27/2*gw^4*(3*s/(t-mq2)+s/(t-mq2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+(* ::Subsubsection:: *)
+(*FVtoFV*)
+
+
+process="tg->tg"
+test["WallGo"][process]=testWallGo[
+	{"TopL"},
+	{"Gluon"},
+	{"TopL"},
+	{"Gluon"}
+]
+test["Reference"][process]=(
+		-128/3*g3^4*(s*u/(u-mg2^2)^2)
+		+96*g3^4*(s^2+u^2)/(t-mq2^2)^2
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="Wq->qg"
+test["WallGo"][process]=testWallGo[
+	{"W"},
+	{"LightQuarks","BotL","BotR","TopL","TopR"},
+	{"LightQuarks","BotL","BotR","TopL","TopR"},
+	{"Gluon"}
+]
+test["Reference"][process]=2*(
+		-72*g3^2*gw^2*s/(t-mq2)
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="fW->fW"
+test["WallGo"][process]=testWallGo[
+	{"W"},
+	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"},
+	{"W"},
+	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"}
+]
+test["Reference"][process]=(
+		+360*gw^4*u^2/(t-mw2)^2
+		-27/2*gw^4*(3*s/(u-mq2)+s/(u-ml2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*FFtoSV*)
+
+
+process="tt->gh"
+test["WallGo"][process]=testWallGo[
+	{"TopL"},
+	{"TopR"},
+	{"Gluon"},
+	{"Higgs"}
+]
+test["Reference"][process]=(
+		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="tt->g G0"
+test["WallGo"][process]=testWallGo[
+	{"TopL"},
+	{"TopR"},
+	{"Gluon"},
+	{"GoldstoneG0"}
+]
+test["Reference"][process]=(
+		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*FVtoFS*)
+
+
+process="tg->th"
+test["WallGo"][process]=testWallGo[
+	{"TopL"},
+	{"Gluon"},
+	{"TopR"},
+	{"Higgs"}
+]
+test["Reference"][process]=(
+		-8*yt1^2*g3^2(s/(t-mq2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="tg->tG0"
+test["WallGo"][process]=testWallGo[
+	{"TopL"},
+	{"Gluon"},
+	{"TopR"},
+	{"GoldstoneG0"}
+]
+test["Reference"][process]=(
+		-8*yt1^2*g3^2(s/(t-mq2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="tg->tG+"
+test["WallGo"][process]=testWallGo[
+	{"TopL","TopR"},
+	{"Gluon"},
+	{"BotL"},
+	{"GoldstoneGpR"}
+]
+test["Reference"][process]=(
+		-8*yt1^2*g3^2(s/(t-mq2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*FStoFV*)
+
+
+process="tG-->bg"
+test["WallGo"][process]=testWallGo[
+	{"TopL","TopR"},
+	{"GoldstoneGpI"},
+	{"BotL"},
+	{"Gluon"}
+]
+test["Reference"][process]=(
+		-8*yt1^2*g3^2(s/(t-mq2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+(* ::Subsubsection:: *)
+(*FFtoSS*)
+
+
+process="tb->h,G+"
+test["WallGo"][process]=testWallGo[
+	{"TopL","TopR"},
+	{"BotL","BotR"},
+	{"Higgs"},
+	{"GoldstoneGpR","GoldstoneGpI"}
+]
+test["Reference"][process]=(
+		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+(* ::Subsubsection::Closed:: *)
+(*SStoSS*)
+
+
+process="HH->AA"
+test["WallGo"][process]=testWallGo[
+	{"Higgs"},
+	{"Higgs"},
+	{"A"},
+	{"A"}
+]
+test["Reference"][process]=2*(
+		lam3H^4*v^4/2*(1/(t-mA2)^2+1/(u-mA2)^2)
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="AH->HA"
+test["WallGo"][process]=testWallGo[
+	{"A"},
+	{"Higgs"},
+	{"Higgs"},
+	{"A"}
+]/.{lam1H->0,v^2->0}
+test["Reference"][process]=2*(
+		lam3H^4*v^4/2*(1/(t-mA2)^2)
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+(* ::Subsection:: *)
+(*Test report*)
+
+
+report=TestReport[testList]
+report["ResultsDataset"]
+
+
 
