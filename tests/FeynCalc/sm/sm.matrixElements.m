@@ -107,7 +107,7 @@ removeExplicitWeinbergAngle[arg_]:=arg/.{SMP["e"]->SMP["g'_W"]SMP["cos_W"]}/.{SM
 
 
 (* sub out vev *)
-removeVev[arg_]:=arg/.vev->0(*MH/Sqrt[2lam]*);
+removeVev[arg_]:=arg/.v->0(*MH/Sqrt[2lam]*);
 
 
 (* remove hypercharge *)
@@ -155,11 +155,11 @@ insertCouplingsForMasses={
 	SMP["m_d"]->0,
 	SMP["m_c"]->0,
 	SMP["m_s"]->0,
-	SMP["m_t"]->yt vev,
+	SMP["m_t"]->yt v,
 	SMP["m_b"]->0,
-	SMP["m_H"]->Sqrt[2 lam]vev,
-	SMP["m_W"]->1/2 SMP["g_W"]vev,
-	SMP["m_Z"]->1/2 Sqrt[SMP["g_W"]^2+SMP["g'_W"]^2]vev
+	SMP["m_H"]->Sqrt[2 lam]v,
+	SMP["m_W"]->1/2 SMP["g_W"]v,
+	SMP["m_Z"]->1/2 Sqrt[SMP["g_W"]^2+SMP["g'_W"]^2]v
 };
 
 
@@ -632,6 +632,4 @@ exportParticles = "EWbosons";
 exportParameters = {gw,gs,yt,lam};
 toExportAsJSON=makeJsonObject[exportParticleNames,Join[exportParameters,{SUNN}],resultsExport//SMPToSymbol];
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
-
-
 

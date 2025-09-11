@@ -20,7 +20,7 @@ FR$GoldstoneList={};
 
 (*     Declared indices    *)
 
-IndexRange[ Index[Flavour] ] = Range[ 3 ]
+IndexRange[ Index[Flavour] ] = Range[ 5 ]
 
 (*     Declared particles    *)
 
@@ -44,6 +44,8 @@ MassPhi[ ___ ] := MassPhi;
 TheLabel[ S[1, {1}] ] := "Phi[1]"
 TheLabel[ S[1, {2}] ] := "Phi[2]"
 TheLabel[ S[1, {3}] ] := "Phi[3]"
+TheLabel[ S[1, {4}] ] := "Phi[4]"
+TheLabel[ S[1, {5}] ] := "Phi[5]"
 
 
 (*      Couplings (calculated by FeynRules)      *)

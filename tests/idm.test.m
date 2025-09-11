@@ -524,6 +524,20 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
+resWG=testWallGo[
+	{"TopL","TopR"},
+	{"BotL","BotR"},
+	{"Higgs"},
+	{"GoldstoneGpR","GoldstoneGpI"}
+]
+
+
+resFC=(3*u*(gw^2*t + 2*s*yt^2)^2)/(2*s^2*t)
+
+
+resWG-resFC/.{yt->yt1,lam1H->0}//fixConvention
+
+
 (* ::Subsubsection:: *)
 (*SStoSS*)
 
