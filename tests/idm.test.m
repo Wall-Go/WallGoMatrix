@@ -538,7 +538,9 @@ resFC=(3*u*(gw^2*t + 2*s*yt^2)^2)/(2*s^2*t)
 %//fixConvention//truncateAtLeadingLog
 
 
-s1 resWG- s2 resFC/.{yt->yt1,lam1H->0}//fixConvention//truncateAtLeadingLog
+(*there is a difference in putting factors before or after LL trunction *)
+s1 resWG- s2 resFC/.{yt->yt1,lam1H->0}
+//fixConvention//truncateAtLeadingLog
 %/.{s1->2s2}
 
 
