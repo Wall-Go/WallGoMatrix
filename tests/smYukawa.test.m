@@ -398,7 +398,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsection::Closed:: *)
 (*Higgs tau sector*)
 
 
