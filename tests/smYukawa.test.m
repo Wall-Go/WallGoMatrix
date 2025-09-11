@@ -543,7 +543,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Higgs Top Bottom sector*)
 
 
@@ -553,7 +553,7 @@ particlesFeyn
 particles
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoFF*)
 
 
@@ -770,7 +770,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Top Bottom QCD sector *)
 
 
