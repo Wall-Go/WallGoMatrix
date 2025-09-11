@@ -113,14 +113,24 @@ RepW=CreateParticle[{{2,1}},"V",mW2,"W"]; (*SU2 gauge bosons*)
 RepB=CreateParticle[{3},"V",mB2,"B"]; (*U1 gauge boson*)
 
 
-(*Scalars bosons*)
+CreateParticle[{{1,1}},"S",mG2,"Goldstone"]
+
+
+(*(*Scalars bosons*)
 RepHiggs=CreateParticle[{{1,2}},"S",mH2,"Higgs"];
-RepGoldstone=CreateParticle[{{1,1}},"S",mG2,"Goldstone"];
+RepGoldstone=CreateParticle[{{1,1}},"S",mG2,"Goldstone"];*)
+
+(*Scalars bosons*)
+RepHiggsh=CreateParticle[{{1,2}},"S",mH2,"Higgs"]; (*Higgs*)
+RepGoldstoneGpR={{1},"S",mG2,"GoldstoneGpR"}; (*real charged Goldstone*)
+RepGoldstoneGpI={{3},"S",mG2,"GoldstoneGpI"}; (*imag charged Golstone*)
+RepGoldstoneGp0={{4},"S",mG2,"GoldstoneGp0"}; (*neutral Goldstone*)
 
 
 ParticleList={
 	ReptL,RepbL,ReptR,RepbR,
-	RepGluon,RepW,RepB,RepHiggs,RepGoldstone
+	RepGluon,RepW,RepB,
+	RepHiggs,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI
 	};
 (*
 Light particles are never incoming particles 
@@ -197,7 +207,7 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Initialize tests*)
 
 
@@ -389,8 +399,8 @@ expandNumber[expr_, num_, repl_List] :=
   ];
 
 elements=MatrixElementsFeyn[[All,1]];
-test1=elements/.{0->5,1->5,2->5,3->6,4->7,5->8,6->8,7->8}//DeleteDuplicates;
-test1=test1//Total;
+test1=elements/.{0->5,1->5,2->5,3->6,4->7,5->8,6->9,7->9}//DeleteDuplicates;
+test1=test1//expandNumber[#, 9, {9, 10}]&//Total;
 test1=test1/.MatrixElements/.{yt->yt*Sqrt[2]}//removeMissing//fixConvention;
 test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 
@@ -399,7 +409,7 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 
 
 (* ::Subsection::Closed:: *)
-(*Higgs tau sector*)
+(*Higgs Tau sector*)
 
 
 (*Importing results from FeynCalc*)
@@ -408,7 +418,7 @@ particlesFeyn
 particles
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*SStoFF*)
 
 
@@ -433,7 +443,7 @@ AppendTo[testList,
 
 
 (* ::Subsection::Closed:: *)
-(*Higgs top sector*)
+(*Higgs Top sector*)
 
 
 (*Importing results from FeynCalc*)
@@ -469,8 +479,8 @@ AppendTo[testList,
 
 process="{G0,Gp,Gbar},{G0,Gp,Gbar}->{t,t}"
 test["WallGo"][process]=testWallGo[
-	{"Goldstone"},
-	{"Goldstone"},
+	{"GoldstoneGp0","GoldstoneGpR","GoldstoneGpI"},
+	{"GoldstoneGp0","GoldstoneGpR","GoldstoneGpI"},
 	{"TopL","TopR"},
 	{"TopL","TopR"}
 ]/.{yt->Sqrt[2]*yt}
@@ -524,8 +534,8 @@ expandNumber[expr_, num_, repl_List] :=
   ];
 
 elements=MatrixElementsFeyn[[All,1]];
-test1=elements/.{0->0,1->0,2->7,3->8,4->8,5->8}//DeleteDuplicates;
-test1=test1//expandNumber[#, 0, {0, 2}]&//Total;
+test1=elements/.{0->0,1->0,2->7,3->8,4->9,5->9}//DeleteDuplicates;
+test1=test1//expandNumber[#, 0, {0, 2}]&//expandNumber[#, 9, {9, 10}]&//Total;
 test1=test1/.MatrixElements/.{yt->yt*Sqrt[2]}//removeMissing//fixConvention;
 test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 
@@ -533,8 +543,235 @@ test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
 ((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
 
 
-(* ::Subsection::Closed:: *)
-(*Top bottom QCD sector *)
+(* ::Subsection:: *)
+(*Higgs Top Bottom sector*)
+
+
+(*Importing results from FeynCalc*)
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.HiggsTopBottom.test.json"];
+particlesFeyn
+particles
+
+
+(* ::Subsubsection:: *)
+(*SStoFF*)
+
+
+process="{H,H}->{t,b}"
+test["WallGo"][process]=testWallGo[
+	{"Higgs"},
+	{"Higgs"},
+	{"TopL","TopR"},
+	{"BotL","BotR"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"H"},
+	{"H"},
+	{"t","tbar"},
+	{"b","bbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+process="{G0,Gp,Gbar},{G0,Gp,Gbar}->{t,b}"
+test["WallGo"][process]=testWallGo[
+	{"GoldstoneGp0","GoldstoneGpR","GoldstoneGpI"},
+	{"GoldstoneGp0","GoldstoneGpR","GoldstoneGpI"},
+	{"TopL","TopR"},
+	{"BotL","BotR"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"G0","Gp","Gpbar"},
+	{"G0","Gp","Gpbar"},
+	{"t","tbar"},
+	{"b","bbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+process="{H},{G0,Gp,Gbar}->{t,b}"
+test["WallGo"][process]=testWallGo[
+	{"Higgs"},
+	{"GoldstoneGp0","GoldstoneGpR","GoldstoneGpI"},
+	{"TopL","TopR"},
+	{"BotL","BotR"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"H"},
+	{"G0","Gp","Gpbar"},
+	{"t","tbar"},
+	{"b","bbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+process="{H},{Gp,Gbar}->{t,b}"
+test["WallGo"][process]=testWallGo[
+	{"Higgs"},
+	{"GoldstoneGpR","GoldstoneGpI"},
+	{"TopL","TopR"},
+	{"BotL","BotR"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"H"},
+	{"Gp","Gpbar"},
+	{"t","tbar"},
+	{"b","bbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+(* ::Subsubsection::Closed:: *)
+(*FFtoSS*)
+
+
+process="{t,t}->{H,H}"
+test["WallGo"][process]=testWallGo[
+	{"TopL","TopR"},
+	{"TopL","TopR"},
+	{"Higgs"},
+	{"Higgs"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"t","tbar"},
+	{"t","tbar"},
+	{"H"},
+	{"H"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+process="{t,b}->{H,H}"
+test["WallGo"][process]=testWallGo[
+	{"TopL","TopR"},
+	{"BotL","BotR"},
+	{"Higgs"},
+	{"Higgs"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"t","tbar"},
+	{"b","bbar"},
+	{"H"},
+	{"H"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+process="{t,b}->{G0,Gp,Gbar},{G0,Gp,Gbar}"
+test["WallGo"][process]=testWallGo[
+	{"TopL","TopR"},
+	{"BotL","BotR"},
+	{"GoldstoneGp0","GoldstoneGpR","GoldstoneGpI"},
+	{"GoldstoneGp0","GoldstoneGpR","GoldstoneGpI"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"t","tbar"},
+	{"b","bbar"},
+	{"G0","Gp","Gpbar"},
+	{"G0","Gp","Gpbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+process="{t,b}->{H,G}"
+test["WallGo"][process]=testWallGo[
+	{"TopL","TopR"},
+	{"BotL","BotR"},
+	{"Higgs"},
+	{"GoldstoneGp0","GoldstoneGpR","GoldstoneGpI"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"t","tbar"},
+	{"b","bbar"},
+	{"H"},
+	{"G0","Gp","Gpbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+process="{t,b}->{H,G+}"
+test["WallGo"][process]=testWallGo[
+	{"TopL","TopR"},
+	{"BotL","BotR"},
+	{"Higgs"},
+	{"GoldstoneGpR","GoldstoneGpI"}
+]/.{yt->Sqrt[2]*yt}
+test["FeynCalc"][process]=testFeynCalc[
+	{"t","tbar"},
+	{"b","bbar"},
+	{"H"},
+	{"Gp","Gpbar"}
+]
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+(s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}
+
+
+(* ::Subsubsection:: *)
+(*Full check*)
+
+
+expandNumber[expr_, num_, repl_List] := 
+  expr /. M[args__] :> Module[{lst = ({args} /. num -> repl)},
+    lst = Map[If[ListQ[#], #, {#}] &, lst]; (* ensure each slot is a list *)
+    Total[M @@@ Tuples[lst]]
+  ];
+
+elements=MatrixElementsFeyn[[All,1]];
+test1=elements/.{0->0,1->0,2->1,3->1,4->7,5->8,6->9,7->9}//DeleteDuplicates;
+test1=test1//expandNumber[#, 0, {0, 2}]&//expandNumber[#, 1, {1, 3}]&//expandNumber[#, 9, {9, 10}]&//Total;
+test1=test1/.MatrixElements/.{yt->yt*Sqrt[2]}//removeMissing//fixConvention;
+test2=elements/.MatrixElementsFeyn//removeMissing//fixConvention//Total;
+
+
+((s1*test1-s2*test2)//Simplify)/.{(s1-s2)->0}//Expand//Simplify
+
+
+(* ::Subsection:: *)
+(*Top Bottom QCD sector *)
 
 
 (*Importing results from FeynCalc*)
@@ -663,7 +900,7 @@ AppendTo[testList,
 (s1*test["WallGo"][process]-s2*test["FeynCalc"][process]//Simplify)/.{s1-s2->0}//fixConvention//Simplify
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Full check*)
 
 
@@ -733,9 +970,12 @@ AppendTo[testList,
 		TestID->"WallGo vs AMY: "<>process]];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Test report*)
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
