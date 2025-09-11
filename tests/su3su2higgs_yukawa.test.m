@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -87,7 +87,7 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*User Input*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*UserInput*)
 
 
@@ -915,3 +915,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+
