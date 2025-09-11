@@ -184,7 +184,8 @@ MatrixElements=ExportMatrixElements[
 		TruncateAtLeadingLog->False,
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
-		NormalizeWithDOF->False
+		NormalizeWithDOF->False,
+		Verbose->True
 	}
 ];
 
@@ -482,7 +483,7 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FStoFV*)
 
 
@@ -530,12 +531,15 @@ resWG=testWallGo[
 	{"Higgs"},
 	{"GoldstoneGpR","GoldstoneGpI"}
 ]
+%//fixConvention//truncateAtLeadingLog
 
 
 resFC=(3*u*(gw^2*t + 2*s*yt^2)^2)/(2*s^2*t)
+%//fixConvention//truncateAtLeadingLog
 
 
-resWG-resFC/.{yt->yt1,lam1H->0}//fixConvention
+s1 resWG- s2 resFC/.{yt->yt1,lam1H->0}//fixConvention//truncateAtLeadingLog
+%/.{s1->2s2}
 
 
 (* ::Subsubsection:: *)
