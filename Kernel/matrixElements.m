@@ -529,7 +529,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toV1V2*)
 
 
@@ -632,12 +632,14 @@ If[
 	Res3+=-8*t^2 C4;
 	Res3+=-8*u^2 C5;
 	
+	Print[Res3];
+	
 	Return[2*(Res1+Res2+Res3)](*Factor of 2 from anti-particles*)
 ]	
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1V1toF1V1*)
 
 

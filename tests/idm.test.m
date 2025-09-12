@@ -29,7 +29,7 @@ Check[
 
 
 Group={"SU3","SU2"};
-RepAdjoint={{1,1},{2},0};
+RepAdjoint={{1,1},{2}};
 HiggsDoublet1={{{0,0},{1}},"C"};
 HiggsDoublet2={{{0,0},{1}},"C"};
 RepScalar={HiggsDoublet1,HiggsDoublet2};
@@ -190,6 +190,9 @@ MatrixElements=ExportMatrixElements[
 ];
 
 
+M[5,14,5,14]/.MatrixElements
+
+
 (* ::Chapter:: *)
 (*Tests*)
 
@@ -230,6 +233,7 @@ removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 truncateAtLeadingLog[arg_]:=Module[{res,tterms,uterms,crossterms},
 res[1]=fixConvention[arg];
+(*res[1]=arg;*)
 tterms=Normal[Series[res[1],{t,0,-1}]];
 uterms=Normal[Series[res[1],{u,0,-1}]];
 crossterms=(1/(t u))SeriesCoefficient[res[1],{t,0,-1},{u,0,-1}];
@@ -249,6 +253,16 @@ generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 
 testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
+
+
+result=(s1 (128s^2)/(t s)+s2 (128t^2
+ )/(s t)+s3 (128s^2
+ )/(u s)+s4 (128t^2
+ )/(u t)+s5 (128u^2
+ )/(s u)+s6 (128u^2 )/(t u)
+ )
+ result(*//fixConvention*)//truncateAtLeadingLog
+ %(*/.Thread[{s1,s2,s3,s4,s5,s6}->1]*)//symmetriseTU
 
 
 (* ::Subsection:: *)
@@ -320,8 +334,8 @@ process="WW->ff"
 test["WallGo"][process]=testWallGo[
 	{"W"},
 	{"W"},
-	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"},
-	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"}
+	{"LightLeptons","LightQuarks","BotL","TopL"},
+	{"LightLeptons","LightQuarks","BotL","TopL"}
 ]//truncateAtLeadingLog
 test["Reference"][process]=(
 		-27/2*gw^4*(3*s/(t-mq2)+s/(t-mq2))
@@ -331,6 +345,9 @@ AppendTo[testList,
 		test["WallGo"][process]//Evaluate,
 		test["Reference"][process],
 		TestID->"WallGo vs Reference: "<>process]];
+
+
+((24 gW^4 t (t^2 + u^2))/(s^2 u) + (24 gW^4 u (t^2 + u^2))/(s^2 t))//truncateAtLeadingLog
 
 
 (* ::Subsubsection:: *)
@@ -372,22 +389,37 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
+test["WallGo"][process]=generateWallGo[
+	{"W"},
+	{"W"},
+	{"LightLeptons","LightQuarks","BotL","TopL"},
+	{"LightLeptons","LightQuarks","BotL","TopL"}
+]
+
+
 process="fW->fW"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=generateWallGo[
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"},
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"}
-]//truncateAtLeadingLog
+](*/.setMassesToZero//fixConvention//truncateAtLeadingLog*)
 test["Reference"][process]=(
-		+360*gw^4*u^2/(t-mw2)^2
-		-27/2*gw^4*(3*s/(u-mq2)+s/(u-ml2))
-	)/.setMassesToZero//fixConvention//truncateAtLeadingLog
+		+s1*288*gw^4*(s^2+u^2)/(t-mw2)^2
+		-s2*27/2*gw^4*(3*s/(u-mq2)+s/(u-ml2))
+	)/.{s1->1,s2->2}/.setMassesToZero//fixConvention//truncateAtLeadingLog
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
 		test["Reference"][process],
 		TestID->"WallGo vs Reference: "<>process]];
+
+
+s1 (288 gw^4 s^2)/(-mg2+t)^2-(27 gw^4 s u)/(-ml2+s)^2 s2-(81 gw^4 s u)/(-mq2+s)^2 s2+s1 (288 gw^4 u^2)/(-mg2+t)^2-(27 gw^4 s u)/(-ml2+u)^2 s3-(81 gw^4 s u)/(-mq2+u)^2 s3//fixConvention//truncateAtLeadingLog
+
+
+-((24 gW^4 s (s^2 + u^2))/(t^2 u)) - (24 gW^4 u (s^2 + u^2))/(s t^2)//fixConvention//truncateAtLeadingLog
+24*%//Expand
 
 
 (* ::Subsubsection:: *)
@@ -540,8 +572,8 @@ resFC=(3*u*(gw^2*t + 2*s*yt^2)^2)/(2*s^2*t)
 
 (*there is a difference in putting factors before or after LL trunction *)
 s1 resWG- s2 resFC/.{yt->yt1,lam1H->0}
-//fixConvention//truncateAtLeadingLog
-%/.{s1->2s2}
+(%//fixConvention//truncateAtLeadingLog)/.{s1->2s2}
+%%/.{s1->2s2}//fixConvention//truncateAtLeadingLog
 
 
 (* ::Subsubsection:: *)
