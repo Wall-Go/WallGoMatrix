@@ -231,13 +231,15 @@ fixConvention[arg_]:=symmetriseTU[
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
-truncateAtLeadingLog[arg_]:=Module[{res,tterms,uterms,crossterms},
+truncateAtLeadingLog[arg_]:=Module[{res,tterms,uterms,crossterms,constterms},
 res[1]=fixConvention[arg];
 (*res[1]=arg;*)
 tterms=Normal[Series[res[1],{t,0,-1}]];
 uterms=Normal[Series[res[1],{u,0,-1}]];
 crossterms=(1/(t u))SeriesCoefficient[res[1],{t,0,-1},{u,0,-1}];
-res[2]=tterms+uterms-crossterms
+res[2]=tterms+uterms-crossterms;
+constterms=SeriesCoefficient[res[2],{t,0,0},{u,0,0}];
+res[3]=res[2]-constterms
 ];
 
 dropTUCrossTerm[arg_]:=Module[{res},
@@ -570,10 +572,10 @@ resFC=(3*u*(gw^2*t + 2*s*yt^2)^2)/(2*s^2*t)
 %//fixConvention//truncateAtLeadingLog
 
 
-(*there is a difference in putting factors before or after LL trunction *)
-s1 resWG- s2 resFC/.{yt->yt1,lam1H->0}
-(%//fixConvention//truncateAtLeadingLog)/.{s1->2s2}
-%%/.{s1->2s2}//fixConvention//truncateAtLeadingLog
+(*there is no more difference in putting factors before or after LL trunction *)
+s1 resWG- s2 resFC/.{yt->yt1,lam1H->0}//fixConvention//truncateAtLeadingLog
+%/.{s1->2,s2->1}
+s1 resWG- s2 resFC/.{s1->2,s2->1}/.{yt->yt1,lam1H->0}//fixConvention//truncateAtLeadingLog
 
 
 (* ::Subsubsection:: *)
