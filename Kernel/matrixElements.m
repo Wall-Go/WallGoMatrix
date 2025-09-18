@@ -72,7 +72,8 @@ DiagonalTensor2[s_SparseArray,a_Integer,b_Integer] := With[
     ]
 
 
-OrderArray[s_SparseArray,a_Integer,b_Integer,c_Integer,d_Integer] := Flatten[s,{{a},{b},{c},{d}}] (*Permutes a rank 4 tensor via: Subscript[T, i1 i2 i3 i4]->Subscript[T, a b c d]*)
+(*Permutes a rank 4 tensor via: Subscript[T, i1 i2 i3 i4]->Subscript[T, a b c d]*)
+OrderArray[s_SparseArray,a_Integer,b_Integer,c_Integer,d_Integer] := Flatten[s,{{a},{b},{c},{d}}]
 
 
 Contract[tensor1_,tensor2_,indices_]:=Activate @ TensorContract[
@@ -370,7 +371,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
@@ -535,6 +536,125 @@ If[
 
 CreateMatrixElement["F1F2toV1V2"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
 Block[{
+	s,t,u,gTensorV,gTensorF,gTensorF2,
+	vectorMass,fermionMass,
+	particleNull,
+	vectorPropS,fermionPropU,fermionPropT,
+	CS,CTrS,
+	CSV,CTF,CUF,
+	fermionIdentity,
+	C1,C2,C3,C4,C5,C6,partInt,
+	A1,A2,A3,
+	Res1,Res2,Res3,Res4
+},
+(*
+	This module returns the squared matrix element of FF->VV summed over all quantum numbers of the incoming particles.
+	If the incoming particles are not of the form FF->VV the routine returns 0.
+*)
+
+If[
+	(particle1[[2]]!="F"||particle2[[2]]!="F"||particle3[[2]]!="V"||particle4[[2]]!="V")&&
+	(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="F"||particle4[[2]]!="F"),
+	Return[0];
+,
+	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i,1]], {i,1,4}];
+If[
+	particle1[[2]]=="V"&&
+	particle2[[2]]=="V"&&
+	particle3[[2]]=="F"&&
+	particle4[[2]]=="F",
+	
+(*Just changing the order of the particles so that it is always FF->VV*)
+	{partInt[1],partInt[3]} = {partInt[3],partInt[1]};
+	{partInt[2],partInt[4]} = {partInt[4],partInt[2]};
+];
+
+	particleNull={};
+	(*Simplify the ordering of particles*)
+	(*Coupling constants that we will need*)
+	gTensorV=Table[gvvv[[;;,Particle1,Particle2]],
+		{Particle1,{particleNull,particleNull,partInt[3],partInt[4]}},
+		{Particle2,{particleNull,particleNull,partInt[3],partInt[4]}}
+		];
+	
+	gTensorF=Table[gvff[[;;,Particle1,Particle2]],
+		{Particle1,{partInt[1],partInt[2],particleNull,particleNull}},
+		{Particle2,{partInt[1],partInt[2],particleNull,particleNull}}
+		];
+		
+	gTensorF2=Table[gvff[[Particle1,Particle2,;;]],
+		{Particle1,{partInt[3],partInt[4],particleNull,particleNull}},
+		{Particle2,{particleNull,particleNull,partInt[1],partInt[2]}}
+		];
+				
+(*	\[Lambda]3Tensor=Table[\[Lambda]3[[;;,Particle1,Particle2]],
+		{Particle1,{p3,p4,particleNull,particleNull}},
+		{Particle2,{p3,p4,particleNull,particleNull}}];*)
+
+(*	Print[gTensorV//MatrixForm];
+	Print[gTensorF//MatrixForm];*)
+
+(*(*Coupling constants that we will need*)
+	gTensor[1,3]=gvff[[partInt[3],partInt[1],;;]];
+	gTensor[3,1]=gvff[[partInt[3],;;,partInt[1]]];
+	
+	gTensor[2,4]=gvff[[partInt[4],partInt[2],;;]];
+	gTensor[4,2]=gvff[[partInt[4],;;,partInt[2]]];
+
+	gTensor[1,4]=gvff[[partInt[4],partInt[1],;;]];
+	gTensor[4,1]=gvff[[partInt[4],;;,partInt[1]]];
+	
+	gTensor[2,3]=gvff[[partInt[3],partInt[2],;;]];
+	gTensor[3,2]=gvff[[partInt[3],;;,partInt[2]]];*)
+	
+(*Propagator masses*)
+	vectorMass=particleMass[[1]];
+	fermionMass=particleMass[[2]];
+		
+(*Fermion propagators*)
+	fermionPropU=Table[Prop[u,i],{i,fermionMass}]//ListToMat;
+	fermionPropT=Table[Prop[t,i],{i,fermionMass}]//ListToMat;
+	
+(*Vector propagators*)
+	vectorPropS=Table[Prop[s,i],{i,vectorMass}]//ListToMat;
+	
+	fermionIdentity=Table[1,{i,fermionMass}]; 
+	
+(*	Print[gTensorF[[1,2]]//MatrixForm];
+	Print[gTensorV[[3,4]]//MatrixForm];*)
+	
+(*Group invariants from vector diagrams*)
+	CSV=Contract[gTensorF[[1,2]], vectorPropS . gTensorV[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
+(*	CSVC=Contract[gTensorF[[1,2]], vectorPropS . gTensorV[[4,3]],{{1,4}}]//OrderArray[#,1,2,4,3]&;*)
+	
+(*Group invariants from Fermion diagrams*)
+	(*CSy=Contract[\[Lambda]3Tensor[[1,2]], scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; *)
+	
+	CTF=Contract[gTensorF2[[1,3]] . fermionPropT , gTensorF2[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
+	CUF=Contract[gTensorF2[[1,4]] . fermionPropU , gTensorF2[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
+
+(*Since there are two diagrams there can be 3 Lorentz structures after squaring and summing over spins,
+	so naturally the final result contains 4 Lorentz structures for consistency.*)
+	A1=4*t*u; (*squared t-channel diagram*)
+	A2=4*t*u; (*squared u-channel diagram*)
+	A3=4*(t^2+u^2); (*squared s-channel diagram*)
+
+(* === assembling the full result === *)
+	Res1=A1*TotalConj[CTF*Conjugate[CTF]];
+	Res2=A2*TotalConj[CUF*Conjugate[CUF]];
+	Res3=A3*TotalConj[CSV*Conjugate[CSV]];
+(*	Res3+=-8*t^2 C4;
+	Res3+=-8*u^2 C5;*)
+	
+	(*Print[Res3];*)
+	
+	Return[2*(Res1+Res2+Res3)](*Factor of 2 from anti-particles*)
+]	
+];
+
+
+CreateMatrixElementOld["F1F2toV1V2"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
+Block[{
 	s,t,u,gTensor,gTensorT,
 	vectorMass,fermionMass,
 	vectorPropS,gVTensor,fermionPropU,fermionPropT,CS,CTrS,
@@ -639,7 +759,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1V1toF1V1*)
 
 
@@ -762,7 +882,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -935,7 +1055,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1S1toF1V1*)
 
 
@@ -1199,7 +1319,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3V1*)
 
 
