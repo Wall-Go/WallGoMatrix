@@ -545,7 +545,8 @@ Block[{
 	fermionIdentity,
 	C1,C2,C3,C4,C5,C6,partInt,
 	A1,A2,A3,
-	Res1,Res2,Res3,Res4
+	Res1,Res2,Res3,Res4,
+	flagFFVV
 },
 (*
 	This module returns the squared matrix element of FF->VV summed over all quantum numbers of the incoming particles.
@@ -640,9 +641,9 @@ If[
 	A3=4*(t^2+u^2); (*squared s-channel diagram*)
 
 (* === assembling the full result === *)
-	Res1=A1*TotalConj[CTF*Conjugate[CTF]];
-	Res2=A2*TotalConj[CUF*Conjugate[CUF]];
-	Res3=A3*TotalConj[CSV*Conjugate[CSV]];
+	Res1=+A1*TotalConj[CTF*Conjugate[CTF]];
+	Res2=+A2*TotalConj[CUF*Conjugate[CUF]];
+	Res3=-A3*(*flagFFVV[3]**)TotalConj[CSV*Conjugate[CSV]];
 (*	Res3+=-8*t^2 C4;
 	Res3+=-8*u^2 C5;*)
 	
@@ -1326,7 +1327,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toS3V1*)
 
 

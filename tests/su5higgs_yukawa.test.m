@@ -86,7 +86,7 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*User Input*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*UserInput*)
 
 
@@ -128,6 +128,10 @@ LightParticleList={};
 
 (*Defining various masses and couplings*)
 UserMasses={mv2,mf2,ms2};
+
+
+(* ::Subsection:: *)
+(*Output*)
 
 
 (*
@@ -365,6 +369,9 @@ AppendTo[testList,
 		test["WallGo"][process]//Evaluate,
 		test["FeynCalc"][process],
 		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
+
 
 
 process="F2F2->VV"
@@ -746,3 +753,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+

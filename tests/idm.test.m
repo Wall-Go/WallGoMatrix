@@ -24,7 +24,7 @@ Check[
 (*See 2211.13142 for implementation details*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -171,29 +171,8 @@ LightParticleList={
 	};
 
 
-(*
-	output of matrix elements
-*)
-OutputFile="output/matrixElements.idm";
-
-MatrixElements=ExportMatrixElements[
-	OutputFile,
-	ParticleList,
-	LightParticleList,
-	{
-		TruncateAtLeadingLog->False,
-		Replacements->{lam4H->0,lam5H->0},
-		Format->{"json","txt"},
-		NormalizeWithDOF->False,
-		Verbose->True
-	}
-];
-
-
-M[5,14,5,14]/.MatrixElements
-
-
-
+(* ::Subsection::Closed:: *)
+(*Shorter Test*)
 
 
 ParticleListTesting={
@@ -224,6 +203,35 @@ MatrixElements=ExportMatrixElements[
 		Verbose->True
 	}
 ];
+
+
+M[0,14,0,14]/.MatrixElements
+
+
+(* ::Subsection:: *)
+(*Full Test*)
+
+
+(*
+	output of matrix elements
+*)
+OutputFile="output/matrixElements.idm";
+
+MatrixElements=ExportMatrixElements[
+	OutputFile,
+	ParticleList,
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->False,
+		Replacements->{lam4H->0,lam5H->0},
+		Format->{"json","txt"},
+		NormalizeWithDOF->False,
+		Verbose->True
+	}
+];
+
+
+M[5,14,5,14]/.MatrixElements
 
 
 (* ::Chapter:: *)
@@ -660,4 +668,4 @@ report["ResultsDataset"]
 
 
 
-.
+

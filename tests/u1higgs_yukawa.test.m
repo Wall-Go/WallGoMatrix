@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
@@ -89,7 +89,7 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*User Input*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*UserInput*)
 
 
@@ -213,7 +213,7 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Initialize tests*)
 
 
@@ -333,7 +333,7 @@ AppendTo[testList,
 		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*FFtoVV*)
 
 
@@ -1145,7 +1145,6 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
 
 
 
