@@ -193,6 +193,39 @@ MatrixElements=ExportMatrixElements[
 M[5,14,5,14]/.MatrixElements
 
 
+
+
+
+ParticleListTesting={
+	RepW
+	};
+LightParticleListTesting={
+	ReptL,RepbL,ReptR,RepbR,
+	RepGluon,
+	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
+	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI,
+	LightQuarks,
+	LightLeptons
+	};
+
+
+(*Allow only W on the first entry for speed*)
+OutputFileTesting="output/matrixElementsTesting.idm";
+
+MatrixElements=ExportMatrixElements[
+	OutputFileTesting,
+	ParticleListTesting,
+	LightParticleListTesting,
+	{
+		TruncateAtLeadingLog->False,
+		Replacements->{lam4H->0,lam5H->0},
+		Format->{"json","txt"},
+		NormalizeWithDOF->False,
+		Verbose->True
+	}
+];
+
+
 (* ::Chapter:: *)
 (*Tests*)
 
