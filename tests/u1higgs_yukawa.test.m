@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*Quit[];*)
+Quit[];
 
 
 If[$InputFileName=="",
@@ -130,6 +130,10 @@ LightParticleList={};
 
 (*Defining various masses and couplings*)
 UserMasses={mv,mf,ms};
+
+
+(* ::Subsection:: *)
+(*Output*)
 
 
 (*
@@ -1141,6 +1145,7 @@ TestCreate[
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
