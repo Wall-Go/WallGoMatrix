@@ -632,7 +632,14 @@ If[
 	Res3+=-8*t^2 C4;
 	Res3+=-8*u^2 C5;
 	
+	If[
+	(Length[gTensor[1,3]]== 3 && Length[gTensor[4,2]]==3) && (Length[gTensor[1,4]]==3 && Length[gTensor[3,2]]==3),
+	Print[{particleMass,vectorMass,vectorPropS}];
+	Print["Lengths gTensor ([1,3],[4,2],[1,4],[3,2]) ", Length[gTensor[1,3]],Length[gTensor[4,2]],Length[gTensor[1,4]],Length[gTensor[3,2]]];
 	Print[Res3];
+	];
+
+	
 	
 	Return[2*(Res1+Res2+Res3)](*Factor of 2 from anti-particles*)
 ]	
