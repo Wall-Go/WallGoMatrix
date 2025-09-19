@@ -371,7 +371,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toF3F4*)
 
 
@@ -1502,7 +1502,7 @@ ExtractOutOfEqElement[particleListAll_,particleListOutOfEq_,ParticleMasses_]:=
 	(*First we extract the result for all subprocesses*)
 	collisionElements = {
 		"F1F2toF3F4",
-		"F1V1toF1V1", "F1F2toV1V2", "V1V2toV3V4", "S1S2toS3S4", 
+		"F1F2toV1V2", "F1V1toF1V1", "V1V2toV3V4", "S1S2toS3S4", 
 		"S1S2toF1F2", "F1S1toF1S1", "F1S1toF1V1",
 		"F1F2toS1V1", "S1S2toV1V2", "S1V1toS1V1", "S1S2toS3V1"
 	};

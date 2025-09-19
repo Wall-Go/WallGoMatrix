@@ -121,7 +121,7 @@ RepHiggs=CreateParticle[{{1,2}},"S",mH2,"Higgs"];
 RepGoldstone=CreateParticle[{{1,1}},"S",mG2,"Goldstone"];*)
 
 (*Scalars bosons*)
-RepHiggsh=CreateParticle[{{1,2}},"S",mH2,"Higgs"]; (*Higgs*)
+RepHiggs=CreateParticle[{{1,2}},"S",mH2,"Higgs"]; (*Higgs*)
 RepGoldstoneGpR={{1},"S",mG2,"GoldstoneGpR"}; (*real charged Goldstone*)
 RepGoldstoneGpI={{3},"S",mG2,"GoldstoneGpI"}; (*imag charged Golstone*)
 RepGoldstoneGp0={{4},"S",mG2,"GoldstoneGp0"}; (*neutral Goldstone*)
@@ -976,6 +976,7 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
+
 
 
 
