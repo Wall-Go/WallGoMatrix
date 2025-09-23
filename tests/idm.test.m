@@ -318,7 +318,7 @@ particles
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoVV*)
 
 
@@ -393,7 +393,7 @@ AppendTo[testList,
 ((24 gW^4 t (t^2 + u^2))/(s^2 u) + (24 gW^4 u (t^2 + u^2))/(s^2 t))//truncateAtLeadingLog
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FVtoFV*)
 
 
@@ -669,3 +669,41 @@ report["ResultsDataset"]
 
 
 
+(* ::Section:: *)
+(*Test if the propagator mass is correct*)
+
+
+fermions = {{"TopL"},{"BotL"},{"TopR"},{"BotR"},{"LightQuarks"},{"LightLeptons"}};
+vectors = {{"Gluon"},{"W"}};
+
+
+(* ::Subsection:: *)
+(*FF -> VV*)
+
+
+testList = {};
+For[l = 1, l<= Length[vectors], l++,
+	For[k = 1, k <= Length[vectors],k++,
+		For[j = 1, j<= Length[fermions],j++,
+			For[i = 1, i<= Length[fermions],i++,
+				matrixElement = generateWallGo[fermions[[i]],fermions[[j]],vectors[[k]],vectors[[l]]];
+				(*If the external vectors are identical, there can be an s-channel gauge boson exchange, or t- or u-channel quark exchange*)
+				If[vectors[[k]]=={"Gluon"}&&vectors[[l]]=={"Gluon"},
+					AppendTo[testList,matrixElement -(SeriesCoefficient[matrixElement, {1/(-mg2+s)^2,0,1}]/(-mg2+s)^2+SeriesCoefficient[matrixElement, {1/(-mq2+t)^2,0,1}]/(-mq2+t)^2+SeriesCoefficient[matrixElement, {1/(-mq2+u)^2,0,1}]/(-mq2+u)^2)//FullSimplify ]
+				];
+				(*If the external vectors are different, there can only be t- or u-channel quark exchange*)
+				If[(vectors[[k]]=={"Gluon"}&&vectors[[l]]=={"W"}) || (vectors[[k]]=={"W"} && vectors[[l]]=={"Gluon"}),
+					AppendTo[testList,matrixElement -(SeriesCoefficient[matrixElement, {1/(-mq2+t)^2,0,1}]/(-mq2+t)^2+SeriesCoefficient[matrixElement, {1/(-mq2+u)^2,0,1}]/(-mq2+u)^2)//FullSimplify ]
+				];
+				(*If the external vectors are identical, there can be an s-channel gauge boson exchange, or t- or u-channel quark exchange*)
+				If[vectors[[k]]=={"W"}&&vectors[[l]]=={"W"},
+					AppendTo[testList,matrixElement -(SeriesCoefficient[matrixElement, {1/(-mW2+s)^2,0,1}]/(-mW2+s)^2+SeriesCoefficient[matrixElement, {1/(-mq2+t)^2,0,1}]/(-mq2+t)^2+SeriesCoefficient[matrixElement, {1/(-mq2+u)^2,0,1}]/(-mq2+u)^2)//FullSimplify ]
+				];
+
+
+				]
+		]
+	]
+];
+testmasses=TestCreate[Total[testList - Table[0,{i,Length[testList]}]]==0];
+TestEvaluate[testmasses]
