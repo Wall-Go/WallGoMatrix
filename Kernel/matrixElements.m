@@ -1639,23 +1639,45 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[
 	},
 
 	MatrixElementsF=MatrixElements/.Flatten[Map[{
-			Prop[#[[1]],msq_]->#[[2]]*Prop[#[[1]],msq]
+			Prop[#[[1]],msq_]->#[[2]]^(-1)*Prop[#[[1]],msq]
 		}&,{{s,S},{t,T},{u,U}}]];
 		
+	MatrixElementsF=MatrixElementsF/.{Prop[x__]->Prop[x],s->s*S,t->t*T,u->u*U};
+	
 	MatrixElementsF=Map[{
+			If[#[[2]][[1]]==#[[2]][[3]]&&#[[2]][[2]]==#[[2]][[4]],
+				#[[1]]/.{1/U^2->powDiv/U^2,1/T^2->logDiv/T^2,1/U->logDiv/U},
+				If[#[[2]][[1]]==#[[2]][[4]]&&#[[2]][[2]]==#[[2]][[3]],
+					#[[1]]/.{1/T^2->powDiv/T^2,1/U^2->logDiv/U^2,1/T->logDiv/T},
+					#[[1]]/.{1/U^2->powDiv/U^2,1/T^2->powDiv/T^2,1/U->logDiv/U,1/T->logDiv/T}
+				]
+			],
+		#[[2]]}&,
+			MatrixElementsF
+		];
+		
+	MatrixElementsF=Map[{
+			+ powDiv*SeriesCoefficient[#[[1]],{powDiv,0,1}]
+			+ logDiv*SeriesCoefficient[#[[1]],{logDiv,0,1}]
+			,
+			#[[2]]}&,
+			MatrixElementsF
+		];
+		
+(*	MatrixElementsF=Map[{
 		Plus@@Table[
 			+ SeriesCoefficient[#[[1]]/.{T->xLarge*T,U->xLarge*U},{xLarge,Infinity,-i}]
 			,
 			{i,If[#[[2]][[3]]==#[[2]][[4]],2,1],2}],
 			#[[2]]}&,
 			MatrixElementsF
-		];
+		];*)
 		
 
 	MatrixElementsF=Expand[MatrixElementsF]/.{S*T->0,S*U->0,T*U->0};
 	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.Thread[{T,U,S}->1];
 	MatrixElementsF=DeleteCases[MatrixElementsF, {0,{a__}}];
-	
+	Print[Hello];
 	Return[MatrixElementsF];
 ]
 
