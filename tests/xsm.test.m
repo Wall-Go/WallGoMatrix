@@ -210,6 +210,7 @@ MatrixElements=ExportMatrixElements[
 	{
 		Verbose->True,
 		TruncateAtLeadingLog->True,
+		TagLeadingLog->False,
 		Replacements->{gw->0,g1->0},
 		NormalizeWithDOF->False,
 		Format->{"json","txt"}
@@ -221,13 +222,16 @@ MatrixElements=ExportMatrixElements[
 (*Tests try*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*O(g3^4)*)
 
 
 1/2*M[0,0,2,2]/.MatrixElements/.{mq2->0}//Expand
 1/2*M[0,2,0,2]/.MatrixElements/.{mq2->0}//Expand
 1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{mq2->0(*,mGm2->0,mGp2->0*)}/.{(*,yt->0*)}//Expand
+
+
+M[0,1,0,1]/.MatrixElements/.{mq2->0(*,mGm2->0,mGp2->0*)}/.{(*,yt->0*)}//Expand
 
 
 (* ::Subsubsection::Closed:: *)
@@ -722,6 +726,4 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 

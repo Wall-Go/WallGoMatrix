@@ -222,8 +222,8 @@ MatrixElements=ExportMatrixElements[
 	ParticleList,
 	LightParticleList,
 	{
-		TruncateAtLeadingLog->False,
-		TagLeadingLog->True,
+		TruncateAtLeadingLog->True,
+		TagLeadingLog->False,
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False,
@@ -572,14 +572,15 @@ AppendTo[testList,
 process="tb->h,G+"
 (* here we have only u/t but not t/u contribution but there should be both such
 that for similar particles between 12 and 34, the result is correct *)
-test["WallGo"][process]=generateWallGo[
+test["WallGo"][process]=testWallGo[
 	{"TopL","TopR"},
 	{"BotL","BotR"},
 	{"Higgs"},
 	{"GoldstoneGpR","GoldstoneGpI"}
-]
-test["Reference"][process]=(
-		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
+]//Coefficient[#,logDiv]&//Simplify//Expand
+test["Reference"][process]=1/2*(
+		+6 u/t yt1^4
+		(*8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2)*)
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
 AppendTo[testList,
 	TestCreate[
@@ -589,7 +590,7 @@ AppendTo[testList,
 
 
 (*this is the Feyncalc result and it shows that only the yt^4 contribution is LL *)
-resFC=(3*u*(gw^2*t + 2*s*yt^2)^2)/(2*s^2*t)
+resFC=(3*u*(gw^2*t + 2*s*yt^2)^2)/(2*s^2*t)//Expand
 %//fixConvention(*//truncateAtLeadingLog*)
 
 

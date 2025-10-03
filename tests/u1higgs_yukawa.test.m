@@ -85,11 +85,11 @@ YsffC//MatrixForm
 ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]IJ,\[Mu]IJC,Ysff,YsffC,Verbose->False];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*User Input*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*UserInput*)
 
 
@@ -132,7 +132,7 @@ LightParticleList={};
 UserMasses={mv,mf,ms};
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Output*)
 
 
