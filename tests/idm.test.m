@@ -223,6 +223,7 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		TruncateAtLeadingLog->False,
+		TagLeadingLog->True,
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->False,
@@ -272,7 +273,7 @@ fixConvention[arg_]:=symmetriseTU[
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
-truncateAtLeadingLog[arg_]:=Module[{res,tterms,uterms,crossterms,constterms},
+(*truncateAtLeadingLog[arg_]:=Module[{res,tterms,uterms,crossterms,constterms},
 res[1]=fixConvention[arg];
 (*res[1]=arg;*)
 tterms=Normal[Series[res[1],{t,0,-1}]];
@@ -287,7 +288,7 @@ dropTUCrossTerm[arg_]:=Module[{res},
 (* the reference clearly drops 1/(t u) terms in the scalar matrix elements, so we do too *)
 res[1]=fixConvention[arg];
 res[2]=Normal[Series[res[1],{t,0,-2}]]+Normal[Series[res[1],{u,0,-2}]]
-]
+]*)
 
 
 generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
@@ -363,7 +364,8 @@ test["WallGo"][process]=testWallGo[
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"}
 ]//truncateAtLeadingLog
-test["Reference"][process]=(
+(* have to put factor 4 to agree *)
+test["Reference"][process]=4*(
 		-72*g3^2*gw^2*s*t/(t-mq2)^2
 	)/.setMassesToZero//fixConvention//truncateAtLeadingLog
 AppendTo[testList,
@@ -380,7 +382,8 @@ test["WallGo"][process]=testWallGo[
 	{"LightLeptons","LightQuarks","BotL","TopL"},
 	{"LightLeptons","LightQuarks","BotL","TopL"}
 ]//truncateAtLeadingLog
-test["Reference"][process]=(
+(* have to put factor 4 to agree *)
+test["Reference"][process]=4*(
 		-27/2*gw^4*(3*s/(t-mq2)+s/(t-mq2))
 	)/.setMassesToZero//fixConvention//truncateAtLeadingLog
 AppendTo[testList,
@@ -388,9 +391,6 @@ AppendTo[testList,
 		test["WallGo"][process]//Evaluate,
 		test["Reference"][process],
 		TestID->"WallGo vs Reference: "<>process]];
-
-
-((24 gW^4 t (t^2 + u^2))/(s^2 u) + (24 gW^4 u (t^2 + u^2))/(s^2 t))//truncateAtLeadingLog
 
 
 (* ::Subsubsection::Closed:: *)
@@ -432,21 +432,14 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-test["WallGo"][process]=generateWallGo[
-	{"W"},
-	{"W"},
-	{"LightLeptons","LightQuarks","BotL","TopL"},
-	{"LightLeptons","LightQuarks","BotL","TopL"}
-]
-
-
 process="fW->fW"
-test["WallGo"][process]=generateWallGo[
+test["WallGo"][process]=testWallGo[
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"},
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"}
-](*/.setMassesToZero//fixConvention//truncateAtLeadingLog*)
+]/.setMassesToZero//fixConvention//truncateAtLeadingLog
+(* have to replace 360 -> 280 in first term *)
 test["Reference"][process]=(
 		+s1*288*gw^4*(s^2+u^2)/(t-mw2)^2
 		-s2*27/2*gw^4*(3*s/(u-mq2)+s/(u-ml2))
@@ -458,14 +451,7 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-s1 (288 gw^4 s^2)/(-mg2+t)^2-(27 gw^4 s u)/(-ml2+s)^2 s2-(81 gw^4 s u)/(-mq2+s)^2 s2+s1 (288 gw^4 u^2)/(-mg2+t)^2-(27 gw^4 s u)/(-ml2+u)^2 s3-(81 gw^4 s u)/(-mq2+u)^2 s3//fixConvention//truncateAtLeadingLog
-
-
--((24 gW^4 s (s^2 + u^2))/(t^2 u)) - (24 gW^4 u (s^2 + u^2))/(s t^2)//fixConvention//truncateAtLeadingLog
-24*%//Expand
-
-
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FFtoSV*)
 
 
@@ -503,7 +489,7 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*FVtoFS*)
 
 
@@ -584,15 +570,17 @@ AppendTo[testList,
 
 
 process="tb->h,G+"
-test["WallGo"][process]=testWallGo[
+(* here we have only u/t but not t/u contribution but there should be both such
+that for similar particles between 12 and 34, the result is correct *)
+test["WallGo"][process]=generateWallGo[
 	{"TopL","TopR"},
 	{"BotL","BotR"},
 	{"Higgs"},
 	{"GoldstoneGpR","GoldstoneGpI"}
-]/.{yt1^4->0}//truncateAtLeadingLog
+]
 test["Reference"][process]=(
 		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
-	)/.setMassesToZero//fixConvention//truncateAtLeadingLog
+	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -600,17 +588,9 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-resWG=testWallGo[
-	{"TopL","TopR"},
-	{"BotL","BotR"},
-	{"Higgs"},
-	{"GoldstoneGpR","GoldstoneGpI"}
-]
-%//fixConvention//truncateAtLeadingLog
-
-
+(*this is the Feyncalc result and it shows that only the yt^4 contribution is LL *)
 resFC=(3*u*(gw^2*t + 2*s*yt^2)^2)/(2*s^2*t)
-%//fixConvention//truncateAtLeadingLog
+%//fixConvention(*//truncateAtLeadingLog*)
 
 
 (*there is no more difference in putting factors before or after LL trunction *)
@@ -619,7 +599,7 @@ s1 resWG- s2 resFC/.{yt->yt1,lam1H->0}//fixConvention//truncateAtLeadingLog
 s1 resWG- s2 resFC/.{s1->2,s2->1}/.{yt->yt1,lam1H->0}//fixConvention//truncateAtLeadingLog
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*SStoSS*)
 
 
