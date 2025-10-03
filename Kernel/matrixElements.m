@@ -1520,13 +1520,17 @@ ExtractOutOfEqElement[particleListAll_,particleListOutOfEq_,ParticleMasses_]:=
 		]//Expand;	
 	UpValues[Prop] = DeleteCases[UpValues[Prop], HoldPattern[(Conjugate[Prop[_]]) :> _]];
 	
-	If[bTruncateAtLeadingLog,
-		collisionElementsTotal=TruncateAtLeadingLogarithm[collisionElementsTotal];
-	];
-	
-	If[!bTagLeadingLog,
-		collisionElementsTotal=collisionElementsTotal/.{logDiv->1,powDiv->1};
-	];
+	collisionElementsTotal =
+	  Which[
+	    bTruncateAtLeadingLog && !bTagLeadingLog,
+	      TruncateAtLeadingLogarithm[collisionElementsTotal] /. {logDiv -> 1, powDiv -> 1},
+	    bTruncateAtLeadingLog && bTagLeadingLog,
+	      TruncateAtLeadingLogarithm[collisionElementsTotal],
+	    bTagLeadingLog,
+	      TagLeadingLogarithm[collisionElementsTotal],
+	    True,
+	      collisionElementsTotal
+	  ];	
 	
 	collisionElementsTotal=collisionElementsTotal/.Prop[x_,y_]->1/(x-y);
 	
@@ -1637,9 +1641,9 @@ contribution in the high-energy limit.
 ";
 
 
-TruncateAtLeadingLogarithm[MatrixElements_]:=Module[
+TagLeadingLogarithm[MatrixElements_]:=Module[
 	{
-		MatrixElementsF,S,T,U, localAssumptions
+		MatrixElementsF,S,T,U
 	},
 
 	MatrixElementsF=MatrixElements/.Flatten[Map[{
@@ -1679,6 +1683,18 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[
 		Abort[];
 	];
 		
+	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.Thread[{T,U,S}->1];
+	Return[MatrixElementsF];
+]
+
+
+TruncateAtLeadingLogarithm[MatrixElements_]:=Module[
+	{
+		MatrixElementsF
+	},
+
+	MatrixElementsF=TagLeadingLogarithm[MatrixElements];
+		
 	MatrixElementsF=Map[{
 			+ powDiv*SeriesCoefficient[#[[1]],{powDiv,0,1}]
 			+ logDiv*SeriesCoefficient[#[[1]],{logDiv,0,1}]
@@ -1687,7 +1703,6 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[
 			MatrixElementsF
 		];
 		
-	MatrixElementsF=Collect[MatrixElementsF,{S,T,U},Simplify]/.Thread[{T,U,S}->1];
 	MatrixElementsF=DeleteCases[MatrixElementsF, {0,{a__}}];
 	Return[MatrixElementsF];
 ]
