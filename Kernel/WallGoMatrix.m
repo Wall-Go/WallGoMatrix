@@ -807,6 +807,7 @@ Options[ExportMatrixElements]={
 	Replacements->{},
 	NormalizeWithDOF->True,
 	TruncateAtLeadingLog->True,
+	TagLeadingLog->False,
 	Verbose->False,
 	Format->"none"};
 
@@ -864,6 +865,7 @@ Block[
 	
 (*Specifies if only leading log terms are taken into account or not*)
 	bTruncateAtLeadingLog = OptionValue[TruncateAtLeadingLog];
+	bTagLeadingLog = OptionValue[TagLeadingLog];
 	
 (*Specifies if Output should be verbose*)
 	bVerbose = OptionValue[Verbose];
