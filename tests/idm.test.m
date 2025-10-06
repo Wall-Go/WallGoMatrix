@@ -171,8 +171,8 @@ LightParticleList={
 	};
 
 
-(* ::Subsection::Closed:: *)
-(*Shorter Test*)
+(* ::Subsection:: *)
+(*Test W out of equilibrium only*)
 
 
 ParticleListTesting={
@@ -209,6 +209,44 @@ M[0,14,0,14]/.MatrixElements
 
 
 (* ::Subsection:: *)
+(*Test t out of equilibrium only*)
+
+
+ParticleListTesting={
+	ReptL
+	};
+LightParticleListTesting={
+	RepbL,ReptR,RepbR,
+	RepGluon,RepW,
+	RepHiggsh,RepGoldstoneGp0,RepGoldstoneGpR,RepGoldstoneGpI,
+	RepHiggsH,RepGoldstoneA,RepGoldstoneHpR,RepGoldstoneHpI,
+	LightQuarks,
+	LightLeptons
+	};
+
+
+(*Allow only W on the first entry for speed*)
+OutputFileTesting="output/matrixElementsTesting.idm";
+
+MatrixElements=ExportMatrixElements[
+	OutputFileTesting,
+	ParticleListTesting,
+	LightParticleListTesting,
+	{
+		TruncateAtLeadingLog->True,
+		TagLeadingLog->True,
+		Replacements->{lam4H->0,lam5H->0},
+		Format->{"json","txt"},
+		NormalizeWithDOF->False,
+		Verbose->True
+	}
+];
+
+
+M[0,1,0,1]/.MatrixElements
+
+
+(* ::Subsection::Closed:: *)
 (*Full Test*)
 
 
@@ -238,6 +276,9 @@ M[5,14,5,14]/.MatrixElements
 (*Show power divergences at variaous places that not only involves cubic scalar coupling*)
 powDivEntries=Select[MatrixElements, ! FreeQ[#[[2]], powDiv] &]
 Length[powDivEntries]
+
+
+powDivEntries[[1]]
 
 
 (* ::Chapter:: *)
