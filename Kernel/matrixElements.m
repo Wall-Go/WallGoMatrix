@@ -4,7 +4,7 @@
 (*Matrix elements*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Help functions*)
 
 
@@ -1653,11 +1653,17 @@ TagLeadingLogarithm[MatrixElements_]:=Module[
 	
 	MatrixElementsF=Map[{
 		If[#[[2]][[1]]==#[[2]][[3]]&&#[[2]][[2]]==#[[2]][[4]],
-			#[[1]]/.{
-				1/U^2->powDiv/U^2,
-				1/T^2->logDiv/T^2,
-				1/U->logDiv/U
-				},
+			If[#[[2]][[1]]==#[[2]][[4]],
+				#[[1]]/.{
+					1/U^2->logDiv/U^2,
+					1/T^2->logDiv/T^2
+					},
+				#[[1]]/.{
+					1/U^2->powDiv/U^2,
+					1/T^2->logDiv/T^2,
+					1/U->logDiv/U
+					}
+			],
 			If[#[[2]][[1]]==#[[2]][[4]]&&#[[2]][[2]]==#[[2]][[3]],
 				#[[1]]/.{
 					1/T^2->powDiv/T^2,
