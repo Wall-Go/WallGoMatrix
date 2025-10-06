@@ -24,7 +24,7 @@ Check[
 (*See 2211.13142 for implementation details*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -132,8 +132,8 @@ SymmetryBreaking[vev,VevDependentCouplings->True] (*uncomment if you want vev-de
 
 
 (*Third generation of fermions*)
-ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
-RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"];
+ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"]
+RepbL=CreateParticle[{{1,2}},"F",mq2,"BotL"]
 ReptR=CreateParticle[{{2,1}},"F",mq2,"TopR"];
 RepbR=CreateParticle[{{3,1}},"F",mq2,"BotR"];
 
@@ -171,7 +171,7 @@ LightParticleList={
 	};
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Test W out of equilibrium only*)
 
 
@@ -233,7 +233,7 @@ MatrixElements=ExportMatrixElements[
 	ParticleListTesting,
 	LightParticleListTesting,
 	{
-		TruncateAtLeadingLog->True,
+		TruncateAtLeadingLog->False,
 		TagLeadingLog->True,
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
@@ -243,7 +243,21 @@ MatrixElements=ExportMatrixElements[
 ];
 
 
+(* Due to the mixing between up and down-type quarks via W bosons we get power divergences *)
 M[0,1,0,1]/.MatrixElements
+
+
+testtensor=Table[gvff[[;;,Particle1,Particle2]],
+		{Particle1,{{1,3,5},{2,4,6},{1,3,5},{2,4,6}}},
+		{Particle2,{{1,3,5},{2,4,6},{1,3,5},{2,4,6}}}];
+
+
+(* off diagonal entries can be seen here *)
+gvff[[9]]//MatrixForm
+
+
+(* or here *)
+testtensor[[1,2]]//MatrixForm
 
 
 (* ::Subsection::Closed:: *)

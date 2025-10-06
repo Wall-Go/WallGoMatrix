@@ -479,7 +479,7 @@ If[
 (* === assembling the full result === *)		
 (*Result for squared vector-exchange diagrams*)
 	totRes=A1*Total[CT CTrT,-1]; 
-	totRes+=A2*flag1[1]*Total[CU CTrU,-1]; 
+	totRes+=A2*Total[CU CTrU,-1]; 
 	totRes+=1/2A3*Total[CT CTrU+CU CTrT,-1];
 	totRes+=A4*Total[CS CTrS,-1]; 
 	totRes+=1/2*A5 Total[(vectorPropS . C5 . vectorPropT),-1];
