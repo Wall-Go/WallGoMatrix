@@ -260,7 +260,7 @@ gvff[[9]]//MatrixForm
 testtensor[[1,2]]//MatrixForm
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Full Test*)
 
 
@@ -274,7 +274,7 @@ MatrixElements=ExportMatrixElements[
 	ParticleList,
 	LightParticleList,
 	{
-		TruncateAtLeadingLog->True,
+		TruncateAtLeadingLog->False,
 		TagLeadingLog->True,
 		Replacements->{lam4H->0,lam5H->0},
 		Format->{"json","txt"},
@@ -287,12 +287,26 @@ MatrixElements=ExportMatrixElements[
 M[5,14,5,14]/.MatrixElements
 
 
+(*
+	encounter power divergences when particles are seen as individual
+	even though they should have the same distribution.
+	GoldStones have the same vacuum mass.
+*)
+M[7,12,8,11]/.MatrixElements
+
+
 (*Show power divergences at variaous places that not only involves cubic scalar coupling*)
 powDivEntries=Select[MatrixElements, ! FreeQ[#[[2]], powDiv] &]
 Length[powDivEntries]
 
 
-powDivEntries[[1]]
+exprDivOnly[expr_] := 
+  (*Coefficient[expr, powDiv, 1]*powDiv + Coefficient[expr, logDiv, 1]*logDiv*)
+  Collect[expr, {powDiv,logDiv}]
+powDivEntries[[100]]/. Rule[a_, expr_] :> (a -> exprDivOnly[expr])
+
+
+particles
 
 
 (* ::Chapter:: *)
