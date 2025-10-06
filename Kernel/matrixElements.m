@@ -371,13 +371,14 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
 CreateMatrixElement["F1F2toF3F4"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
 Block[{
 	s,t,u,gTensor,
+	partInt,
 	CSy,CTy,CUy,CSyC,CTyC,CUyC,CSyCC,CTyCC,CUyCC,
 	CS,CT,CU,CSC,CTC,CUC,CSCC,CTCC,CUCC,
 	CTrS,CTrT,CTrU,A3,A4,A5,A6,
@@ -385,7 +386,7 @@ Block[{
 	vectorMass,scalarMass,
 	scalarPropT,scalarPropU,vectorPropU,vectorPropT,
 	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor,
-	flag
+	flag,flag1
 },
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
@@ -398,6 +399,8 @@ If[
 	particle4[[2]]!="F",
 	Return[0];
 ,
+	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i,1]], {i,1,4}];
+
 (*Propagator masses*)
 	vectorMass=particleMass[[1]];
 	scalarMass=particleMass[[3]];
@@ -413,17 +416,17 @@ If[
 	scalarPropS=Table[Prop[s,i],{i,scalarMass}]//ListToMat;
 	
 (*Coupling constants that we will need*)
-	gTensor=Table[gvff[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}}];
+	gTensor=Table[gvff[[;;,Particle1,Particle2]],
+		{Particle1,{partInt[1],partInt[2],partInt[3],partInt[4]}},
+		{Particle2,{partInt[1],partInt[2],partInt[3],partInt[4]}}];
 		
-	YTensor=Table[Ysff[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}}];
+	YTensor=Table[Ysff[[;;,Particle1,Particle2]],
+		{Particle1,{partInt[1],partInt[2],partInt[3],partInt[4]}},
+		{Particle2,{partInt[1],partInt[2],partInt[3],partInt[4]}}];
 		
-	YTensorC=Table[YsffC[[;;,Particle1[[1]],Particle2[[1]]]],
-		{Particle1,{particle1,particle2,particle3,particle4}},
-		{Particle2,{particle1,particle2,particle3,particle4}}];	
+	YTensorC=Table[YsffC[[;;,Particle1,Particle2]],
+		{Particle1,{partInt[1],partInt[2],partInt[3],partInt[4]}},
+		{Particle2,{partInt[1],partInt[2],partInt[3],partInt[4]}}];
 	
 	
 (*Group invariants from scalar diagrams*)
@@ -476,7 +479,7 @@ If[
 (* === assembling the full result === *)		
 (*Result for squared vector-exchange diagrams*)
 	totRes=A1*Total[CT CTrT,-1]; 
-	totRes+=A2*Total[CU CTrU,-1]; 
+	totRes+=A2*flag1[1]*Total[CU CTrU,-1]; 
 	totRes+=1/2A3*Total[CT CTrU+CU CTrT,-1];
 	totRes+=A4*Total[CS CTrS,-1]; 
 	totRes+=1/2*A5 Total[(vectorPropS . C5 . vectorPropT),-1];
