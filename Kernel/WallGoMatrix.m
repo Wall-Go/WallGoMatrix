@@ -247,6 +247,64 @@ StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regu
 This function is useful for grouping particles into one collective representation based on their properties and type.";
 
 
+(*GenerateMatrixElementsData::usage = 
+"Computes all 2\[RightArrow]2 scattering matrix elements for the given sets of \
+out-of-equilibrium and light particles. It returns an association containing \
+the symbolic matrix elements, coupling tensors, particle information, and \
+mass parameters, which can be exported later using ExportMatrixElements.
+
+Usage:
+GenerateMatrixElementsData[\!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), OptionsPattern[]]
+
+Arguments:
+- \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list specifying the external particles for matrix element generation, formatted as{{\!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},\!\(\*
+StyleBox[\" \",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) = {\"V\", \"F\", \"S\"}, \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \"\!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"}, where:
+    - \!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Indices of the fields involved.
+    - \!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Type of particle representation (Vector Boson, Fermion, Scalar).
+    - \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Mass parameter of the particle.
+    - \!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the particle.
+- \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of light particles involved in the calculations, formatted similarly to \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\).
+
+The returned association includes the following keys:
+  \"Cij\" \[RightArrow] coupling tensor representation
+  \"MatrixElementsList\" \[RightArrow] list of computed matrix elements (after replacements)
+  \"particleListAll\" \[RightArrow] combined particle list
+  \"particleNames\" \[RightArrow] particle names
+  \"userCouplings\" \[RightArrow] coupling symbols appearing in the matrix elements
+  \"particleMasses\" \[RightArrow] particle masses grouped by spin type
+
+Options:
+- Verbose (Boolean, default \[RightArrow] False):
+	If True, lists channels that are currently being computed (default is False).
+- TruncateAtLeadingLog (Boolean, default \[RightArrow] True):
+	If True, truncates the matrix elements at the leading logarithmic order (default is True).
+- TagLeadingLog (Boolean, default \[RightArrow] False):
+	tag leading-log terms in the output being either power divergent (powDiv or logarithmically divergent (logDiv).
+- NormalizeWithDOF (Boolean, default \[RightArrow] True):
+	If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
+- Replacements (List, default \[RightArrow] { }):
+	list of replacement rules applied to the generated elements.
+
+Example:
+  data = GenerateMatrixElementsData[outOfEqParticles, lightParticles, 
+           NormalizeWithDOF \[RightArrow] True, Verbose \[RightArrow] True];
+  data[\"MatrixElementsList\"]
+";*)
+
+
 ExportMatrixElements::usage = 
 "Generates all possible matrix elements with the external particles specified in particleList, and exports the results to file.
 
@@ -287,7 +345,9 @@ Options:
     - \"none\": Does not export to a file (default)
 - Verbose (Boolean): If True, lists channels that are currently being computed (default is False).
 - TruncateAtLeadingLog (Boolean): If True, truncates the matrix elements at the leading logarithmic order (default is True).
+- TagLeadingLog (Boolean): tag leading-log terms in the output being either power divergent (powDiv or logarithmically divergent (logDiv).
 - NormalizeWithDOF (Boolean): If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
+- Replacements (List): list of replacement rules applied to the generated elements.
 
 Explanation:
 - Choosing \"all\" exports the result in all possible formats, while choosing \"none\" skips exporting.
@@ -803,13 +863,17 @@ ReplaceMandelStam[Expression_]:=StringReplace[
 	];
 
 
-Options[ExportMatrixElements]={
+Options[GenerateMatrixElementsData]={
 	Replacements->{},
 	NormalizeWithDOF->True,
 	TruncateAtLeadingLog->True,
 	TagLeadingLog->False,
-	Verbose->False,
-	Format->"none"};
+	Verbose->False};
+
+
+Options[ExportMatrixElements]={
+	Options[GenerateMatrixElementsData],
+	Format->"none"}//Flatten;
 
 
 extractParticleMasses[particleList_, type_, length_] := 
@@ -829,114 +893,149 @@ extractParticleMasses[particleList_, type_, length_] :=
   ];
 
 
-ExportMatrixElements[file_,outOfEqParticleList_,lightParticleList_,OptionsPattern[]]:=
+GenerateMatrixElementsData[outOfEqParticleList_, lightParticleList_, OptionsPattern[]] :=
 Block[
-{
-	particleMasses,
-	userCouplings,
-	particleNames,
-	particlesAll,particlesOutOfEq,
-	particleListAll,
-	ExportTXT,ExportH5,
-	Cij,ParticleInfo,particleListFull,
-	CouplingInfo,MatrixElements,
-	particleIndex,
-	RepMasses,RepCouplings,
-	FormatOptions,userFormat,MatrixElementsList,userParameters,
-	privFile=file,
-	commandLineArgs
-},
-	
-	(* Render output verbose again *)
-	$Output = $WallGoMatrixOutput;
-	
-	commandLineArgs = $ScriptCommandLine;
+  {
+    particleMasses,
+    userCouplings,
+    particleNames,
+    particlesAll, particlesOutOfEq,
+    particleListAll,
+    Cij, MatrixElements,
+    MatrixElementsList,
+    VarAsum,
+    RepMasses, RepCouplings
+  },
+  
+  (* Read options *)
+  bNormalizeWithDOF = OptionValue[NormalizeWithDOF];
+  bTruncateAtLeadingLog = OptionValue[TruncateAtLeadingLog];
+  bTagLeadingLog = OptionValue[TagLeadingLog];
+  bVerbose = OptionValue[Verbose];
+  
+  (* Split particles into out-of-eq and light *)
+  ExtractLightParticles[outOfEqParticleList, lightParticleList, particleListAll];
+  
+  (* Separate names and particles *)
+  particleNames = particleListAll[[All, 4]];
+  particlesOutOfEq = outOfEqParticleList[[All, 1 ;; 2]];
+  particlesAll = particleListAll[[All, 1 ;; 2]];
+  
+  (* Collect user couplings *)
+  userCouplings = Variables@Normal@{Ysff, gvss, gvff, gvvv, \[Lambda]4, \[Lambda]3} // DeleteDuplicates;
+  
+  (* Construct particle mass vectors *)
+  particleMasses = {
+    extractParticleMasses[particleListAll, "V", Length[gvff]],
+    extractParticleMasses[particleListAll, "F", Length[gvff[[1]]]],
+    extractParticleMasses[particleListAll, "S", Length[gvss[[1]]]]
+  };
+  
+  (* Real variable assumptions *)
+  VarAsum = {# > 0} & /@ 
+    Variables@Normal@{Ysff, gvss, gvff, gvvv, \[Lambda]4, \[Lambda]3, particleMasses, s, t, u, fsign} //
+    Flatten;
+  
+  (* Ensure particle masses non-empty *)
+  Table[
+    If[particleMasses[[i]] == {}, particleMasses[[i]] = {msq}],
+    {i, 1, 3}
+  ];
+  
+  (* Generate the matrix elements *)
+  GenerateMatrixElements[MatrixElements, Cij, particlesAll, particlesOutOfEq, particleMasses];
+  
+  (* Create replacement list and shift indices *)
+  MatrixElementsList = Table[MatrixElemToC@i //. OptionValue[Replacements], {i, MatrixElements}];
+  MatrixElementsList = DeleteCases[MatrixElementsList, a_ -> 0];
+  
+  <|
+    "Cij" -> Cij,
+    "MatrixElementsList" -> MatrixElementsList,
+    "particleListAll" -> particleListAll,
+    "particleNames" -> particleNames,
+    "userCouplings" -> userCouplings,
+    "particleMasses" -> particleMasses
+  |>
+];
 
-	(*Loop over command line input to overrule output file name for command line usage*)
-	Do[
-		If[
-			commandLineArgs[[i]] == "--outputFile",
-			privFile = commandLineArgs[[i + 1]]], (* Get the value after the flag *)
-		{i, 2, Length[commandLineArgs] - 1} (* Start from 2 and go up to the second-to-last element *)
-	];
 
-(*Specifies if the first particle should be normalized by the number of degrees of freedom*)
-	bNormalizeWithDOF = OptionValue[NormalizeWithDOF];
-	
-(*Specifies if only leading log terms are taken into account or not*)
-	bTruncateAtLeadingLog = OptionValue[TruncateAtLeadingLog];
-	bTagLeadingLog = OptionValue[TagLeadingLog];
-	
-(*Specifies if Output should be verbose*)
-	bVerbose = OptionValue[Verbose];
-
-(*All particles*)
-	(*particleListAll=Join[particleList,lightParticleList];*)
-
-(*Splits ParticleList into out-of-eq and light particles*)
-	ExtractLightParticles[outOfEqParticleList,lightParticleList,particleListAll];
-
-(*Separate names and particles*)
-	particleNames=particleListAll[[All,4]];
-	particlesOutOfEq=outOfEqParticleList[[All,1;;2]];
-	particlesAll=particleListAll[[All,1;;2]];
-
-(*Collects all the UserCouplings*)
-	userCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
-	
-(*Make particle masses vector*)
-	particleMasses={
-		extractParticleMasses[particleListAll, "V", Length[gvff]],
-		extractParticleMasses[particleListAll, "F", Length[gvff[[1]]]],
-		extractParticleMasses[particleListAll, "S", Length[gvss[[1]]]]
-		};
-		
-(*Creates an assumption rule for simplifying Conjugate[....] terms*)
-	(*All variables are assumed to be real*)
-	VarAsum={#>0(*,#\[Element]Reals*)}&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u,fsign}//Flatten;
-
-		
-(*Allocates one element for each species mass to avoid errors*)
-	Table[
-		If[particleMasses[[i]]=={},particleMasses[[i]]={msq}],
-		{i,1,3}];
-
-(*Extracting all matrix elements*)	
-	GenerateMatrixElements[MatrixElements,Cij,particlesAll,particlesOutOfEq,particleMasses];
-	
-(*Creates a replacement list and shifts the indices to start at 0.*)
-	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}];
-	MatrixElementsList=DeleteCases[MatrixElementsList, a_->0];
-
-(*Exporting the matrix elements to the choosen format*)
-	FormatOptions = {"txt", "json", "hdf5", "all", "none"};
-	userFormat = OptionValue[Format];
-	
-	(* Convert userFormat to a list if it's a single value *)
-	userFormatsList = If[ListQ[userFormat], userFormat, {userFormat}];
-	
-	(* Replace "all" with all formats if it is present *)
-	If[MemberQ[userFormatsList, "all"], userFormatsList = {"txt", "json", "hdf5"}];
-	
-	(* Check if all formats in the list are valid *)
-	If[AllTrue[userFormatsList, MemberQ[FormatOptions, #] &],
-	   (* Iterate over each format and perform the export *)
-	   Do[
-	     Switch[fmt,
-	       "txt",
-	       ExportTo["txt"][MatrixElementsList, particleListAll, userCouplings, privFile],
-	       "hdf5",
-	       ExportTo["hdf5"][Cij, outOfEqParticleList, particleNames, userCouplings, privFile],
-	       "json",
-	       userParameters = Flatten[Join[userCouplings, particleMasses]] // DeleteDuplicates;
-	       ExportTo["json"][MatrixElementsList, particleNames, userParameters, privFile]
-	     ],
-	     {fmt, userFormatsList}
-	   ],
-	   Message[WallGoMatrix::failWarning, "The currently allowed formats are: txt, hdf5, and json. Please choose a valid format."];
-	];
-	
-	Return[PrintNonPrivate[MatrixElementsList]]
+ExportMatrixElements[file_: None, outOfEqParticleList_, lightParticleList_, OptionsPattern[]] :=
+Block[
+  {
+    data,
+    userFormat, userFormatsList,
+    FormatOptions,
+    privFile = file,
+    commandLineArgs, userParameters
+  },
+  
+  (* Restore normal output *)
+  $Output = $WallGoMatrixOutput;
+  commandLineArgs = $ScriptCommandLine;
+  
+  (* Allow overriding file name from command line *)
+  Do[
+    If[commandLineArgs[[i]] == "--outputFile", privFile = commandLineArgs[[i + 1]]],
+    {i, 2, Length[commandLineArgs] - 1}
+  ];
+  
+  (* Always generate matrix elements *)
+  data = GenerateMatrixElementsData[
+    outOfEqParticleList, lightParticleList,
+    NormalizeWithDOF   -> OptionValue[NormalizeWithDOF],
+    TruncateAtLeadingLog -> OptionValue[TruncateAtLeadingLog],
+    TagLeadingLog      -> OptionValue[TagLeadingLog],
+    Verbose            -> OptionValue[Verbose],
+    Replacements       -> OptionValue[Replacements]
+  ];
+  
+  (* Export only if file name provided *)
+  If[privFile =!= None && StringQ[privFile] && StringLength[privFile] > 0,
+    Print["hello"];
+    
+    FormatOptions = {"txt", "json", "hdf5", "all", "none"};
+    userFormat = OptionValue[Format];
+    userFormatsList = If[ListQ[userFormat], userFormat, {userFormat}];
+    If[MemberQ[userFormatsList, "all"], userFormatsList = {"txt", "json", "hdf5"}];
+    
+    If[
+      AllTrue[userFormatsList, MemberQ[FormatOptions, #] &],
+      Do[
+        Switch[fmt,
+          "txt",
+            ExportTo["txt"][
+              data["MatrixElementsList"],
+              data["particleListAll"],
+              data["userCouplings"],
+              privFile],
+          "hdf5",
+            ExportTo["hdf5"][
+              data["Cij"],
+              outOfEqParticleList,
+              data["particleNames"],
+              data["userCouplings"],
+              privFile],
+          "json",
+            userParameters = Flatten[Join[data["userCouplings"], data["particleMasses"]]] // DeleteDuplicates;
+            ExportTo["json"][
+              data["MatrixElementsList"],
+              data["particleNames"],
+              userParameters,
+              privFile]
+        ],
+        {fmt, userFormatsList}
+      ],
+      Message[WallGoMatrix::failWarning, 
+        "Allowed export formats are: txt, hdf5, and json."]
+    ];
+  ,
+    If[OptionValue[Verbose],
+      Print["No file name provided \[LongDash] skipping export, returning generated data only."]
+    ];
+  ];
+  
+  Return[PrintNonPrivate[data["MatrixElementsList"]]]
 ];
 
 

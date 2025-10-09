@@ -171,7 +171,7 @@ LightParticleList={
 	};
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Test W out of equilibrium only*)
 
 
@@ -192,14 +192,15 @@ LightParticleListTesting={
 OutputFileTesting="output/matrixElementsTesting.idm";
 
 MatrixElements=ExportMatrixElements[
-	OutputFileTesting,
+	None,
 	ParticleListTesting,
 	LightParticleListTesting,
 	{
 		TruncateAtLeadingLog->False,
+		TagLeadingLog->True,
 		Replacements->{lam4H->0,lam5H->0},
-		Format->{"json","txt"},
 		NormalizeWithDOF->False,
+		Format->{"json","txt"},
 		Verbose->True
 	}
 ];
@@ -306,6 +307,12 @@ exprDivOnly[expr_] :=
 powDivEntries[[100]]/. Rule[a_, expr_] :> (a -> exprDivOnly[expr])
 
 
+powDivEntries[[All,2]]
+
+
+Coefficient[powDivEntries[[All,2]],powDiv]/.{gw->0,v->0}
+
+
 particles
 
 
@@ -330,13 +337,17 @@ particles
 
 groupFactors={ };
 UserMasses={mq2,ml2,mg2,mw2};
-customParameters={ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam,logDiv->1,powDiv->1};
+customParameters={ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam(*,logDiv->1,powDiv->1*)};
 setMassesToZero={Thread[UserMasses->0],Thread[{mChi,mPhi,mPsi}->0],Thread[{mA2,mW2,mG2,mh2}->0]}//Flatten;
 comparisonReplacements={
 	groupFactors,
 	customParameters,
 	setMassesToZero
 	}//Flatten;
+
+
+exprDivOnly[expr_] := 
+  Coefficient[expr, powDiv, 1] + Coefficient[expr, logDiv, 1]
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
@@ -367,7 +378,7 @@ res[2]=Normal[Series[res[1],{t,0,-2}]]+Normal[Series[res[1],{u,0,-2}]]
 
 generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing;
+]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing//exprDivOnly;
 
 testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
@@ -467,7 +478,7 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*FVtoFV*)
 
 
@@ -512,12 +523,12 @@ test["WallGo"][process]=testWallGo[
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"},
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"}
-]/.setMassesToZero//fixConvention//truncateAtLeadingLog
+](*/.setMassesToZero//fixConvention//truncateAtLeadingLog*)
 (* have to replace 360 -> 280 in first term *)
 test["Reference"][process]=(
 		+s1*288*gw^4*(s^2+u^2)/(t-mw2)^2
 		-s2*27/2*gw^4*(3*s/(u-mq2)+s/(u-ml2))
-	)/.{s1->1,s2->2}/.setMassesToZero//fixConvention//truncateAtLeadingLog
+	)/.{s1->1,s2->2}/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -678,7 +689,7 @@ s1 resWG- s2 resFC/.{s1->2,s2->1}/.{yt->yt1,lam1H->0}//fixConvention//truncateAt
 (*SStoSS*)
 
 
-process="HH->AA"
+process="hh->AA"
 test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"Higgs"},
@@ -696,7 +707,7 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-process="AH->HA"
+process="Ah->hA"
 test["WallGo"][process]=testWallGo[
 	{"A"},
 	{"Higgs"},
