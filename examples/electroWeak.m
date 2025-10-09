@@ -62,6 +62,15 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*SM quarks + gauge bosons*)
 
 
+(* ::Text:: *)
+(*We are interested in the matrix elements for top quarks, weak gauge bosons, and the heavy scalars A and H^+-.*)
+(*We thus give the top quark its own representation, and group all other quarks together.*)
+(*The Higgs and Goldstone bosons are not allowed out of equilibrium, and since they have the same *)
+(*thermal mass, they are grouped together in one representation.*)
+(**)
+(*Since we neglect U(1), we treat the W and Z as identical, and group them into one single representation.*)
+
+
 (* ::Subsection:: *)
 (*SymmetryBreaking*)
 
