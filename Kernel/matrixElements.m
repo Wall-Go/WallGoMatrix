@@ -385,8 +385,7 @@ Block[{
 	Tensor,YTensorC,
 	vectorMass,scalarMass,
 	scalarPropT,scalarPropU,vectorPropU,vectorPropT,
-	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor,
-	flag,flag1
+	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor
 },
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
@@ -510,23 +509,15 @@ If[
 (*
 	Result for interfaces between vector and scalar diagrams---
 	Only cross terms between diagrams can contribute
-*)
-	
-	flag[1] = -2*t*t;
-	flag[2] = -2*t*t;
-	flag[3] = -2*u*u;
-	flag[4] = -2*u*u;
-	flag[5] = -2*s*s;
-	flag[6] = -2*s*s;
-	
-	totRes+=flag[1]*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
-	totRes+=flag[2]*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
+*)	
+	totRes+=(-2*t*t)*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
+	totRes+=(-2*t*t)*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
 
-	totRes+=flag[3]*1/2*TotalConj[CSC*Conjugate[CUyC] + CUyC*Conjugate[CSC]];
-	totRes+=flag[4]*1/2*TotalConj[CTC*Conjugate[CUyC] + CUyC*Conjugate[CTC]];
+	totRes+=(-2*u*u)*1/2*TotalConj[CSC*Conjugate[CUyC] + CUyC*Conjugate[CSC]];
+	totRes+=(-2*u*u)*1/2*TotalConj[CTC*Conjugate[CUyC] + CUyC*Conjugate[CTC]];
 
-	totRes+=flag[5]*1/2*TotalConj[CT*Conjugate[CSyC] + CSyC*Conjugate[CT]];
-	totRes+=flag[6]*1/2*TotalConj[CU*Conjugate[CSyC] + CSyC*Conjugate[CU]];
+	totRes+=(-2*s*s)*1/2*TotalConj[CT*Conjugate[CSyC] + CSyC*Conjugate[CT]];
+	totRes+=(-2*s*s)*1/2*TotalConj[CU*Conjugate[CSyC] + CSyC*Conjugate[CU]];
 	
 	Return[Refine[4*totRes,Assumptions->VarAsum]]
 ]
