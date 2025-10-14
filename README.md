@@ -37,6 +37,8 @@ routines are taken from DRalgo and involve constructing coupling tensors.
 The WallGoMatrix routines then contract these coupling tensors with
 the appropriate kinematic factors to yield the 2-to-2 scattering matrix elements.
 
+> Note: By default, WallGoMatrix simplifies expressions under the assumption that all variables (couplings, masses) are real.
+
 ## Installation
 
 ### Paclet Installation

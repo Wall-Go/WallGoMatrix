@@ -371,7 +371,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toF3F4*)
 
 
@@ -385,8 +385,7 @@ Block[{
 	Tensor,YTensorC,
 	vectorMass,scalarMass,
 	scalarPropT,scalarPropU,vectorPropU,vectorPropT,
-	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor,
-	flag,flag1
+	C5,C1Y,C2Y,A1,A2,vectorPropS,totRes,scalarPropS,YTensor
 },
 (*
 	This module returns the squared matrix element of FF->FF summed over all quantum numbers of the incoming particles.
@@ -510,30 +509,22 @@ If[
 (*
 	Result for interfaces between vector and scalar diagrams---
 	Only cross terms between diagrams can contribute
-*)
-	
-	flag[1] = -2*t*t;
-	flag[2] = -2*t*t;
-	flag[3] = -2*u*u;
-	flag[4] = -2*u*u;
-	flag[5] = -2*s*s;
-	flag[6] = -2*s*s;
-	
-	totRes+=flag[1]*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
-	totRes+=flag[2]*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
+*)	
+	totRes+=(-2*t*t)*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
+	totRes+=(-2*t*t)*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
 
-	totRes+=flag[3]*1/2*TotalConj[CSC*Conjugate[CUyC] + CUyC*Conjugate[CSC]];
-	totRes+=flag[4]*1/2*TotalConj[CTC*Conjugate[CUyC] + CUyC*Conjugate[CTC]];
+	totRes+=(-2*u*u)*1/2*TotalConj[CSC*Conjugate[CUyC] + CUyC*Conjugate[CSC]];
+	totRes+=(-2*u*u)*1/2*TotalConj[CTC*Conjugate[CUyC] + CUyC*Conjugate[CTC]];
 
-	totRes+=flag[5]*1/2*TotalConj[CT*Conjugate[CSyC] + CSyC*Conjugate[CT]];
-	totRes+=flag[6]*1/2*TotalConj[CU*Conjugate[CSyC] + CSyC*Conjugate[CU]];
+	totRes+=(-2*s*s)*1/2*TotalConj[CT*Conjugate[CSyC] + CSyC*Conjugate[CT]];
+	totRes+=(-2*s*s)*1/2*TotalConj[CU*Conjugate[CSyC] + CSyC*Conjugate[CU]];
 	
 	Return[Refine[4*totRes,Assumptions->VarAsum]]
 ]
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toV1V2*)
 
 
@@ -548,8 +539,7 @@ Block[{
 	fermionIdentity,
 	C1,C2,C3,C4,C5,C6,partInt,
 	A1,A2,A3,
-	Res1,Res2,Res3,Res4,
-	flagFFVV
+	Res1,Res2,Res3,Res4
 },
 (*
 	This module returns the squared matrix element of FF->VV summed over all quantum numbers of the incoming particles.
@@ -590,26 +580,6 @@ If[
 		{Particle1,{partInt[3],partInt[4],particleNull,particleNull}},
 		{Particle2,{particleNull,particleNull,partInt[1],partInt[2]}}
 		];
-				
-(*	\[Lambda]3Tensor=Table[\[Lambda]3[[;;,Particle1,Particle2]],
-		{Particle1,{p3,p4,particleNull,particleNull}},
-		{Particle2,{p3,p4,particleNull,particleNull}}];*)
-
-(*	Print[gTensorV//MatrixForm];
-	Print[gTensorF//MatrixForm];*)
-
-(*(*Coupling constants that we will need*)
-	gTensor[1,3]=gvff[[partInt[3],partInt[1],;;]];
-	gTensor[3,1]=gvff[[partInt[3],;;,partInt[1]]];
-	
-	gTensor[2,4]=gvff[[partInt[4],partInt[2],;;]];
-	gTensor[4,2]=gvff[[partInt[4],;;,partInt[2]]];
-
-	gTensor[1,4]=gvff[[partInt[4],partInt[1],;;]];
-	gTensor[4,1]=gvff[[partInt[4],;;,partInt[1]]];
-	
-	gTensor[2,3]=gvff[[partInt[3],partInt[2],;;]];
-	gTensor[3,2]=gvff[[partInt[3],;;,partInt[2]]];*)
 	
 (*Propagator masses*)
 	vectorMass=particleMass[[1]];
@@ -629,11 +599,8 @@ If[
 	
 (*Group invariants from vector diagrams*)
 	CSV=Contract[gTensorF[[1,2]], vectorPropS . gTensorV[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&;
-(*	CSVC=Contract[gTensorF[[1,2]], vectorPropS . gTensorV[[4,3]],{{1,4}}]//OrderArray[#,1,2,4,3]&;*)
 	
-(*Group invariants from Fermion diagrams*)
-	(*CSy=Contract[\[Lambda]3Tensor[[1,2]], scalarPropS . YTensor[[3,4]],{{1,4}}]//OrderArray[#,1,2,3,4]&; *)
-	
+(*Group invariants from Fermion diagrams*)	
 	CTF=Contract[gTensorF2[[1,3]] . fermionPropT , gTensorF2[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
 	CUF=Contract[gTensorF2[[1,4]] . fermionPropU , gTensorF2[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
 
@@ -646,11 +613,7 @@ If[
 (* === assembling the full result === *)
 	Res1=+A1*TotalConj[CTF*Conjugate[CTF]];
 	Res2=+A2*TotalConj[CUF*Conjugate[CUF]];
-	Res3=-A3*(*flagFFVV[3]**)TotalConj[CSV*Conjugate[CSV]];
-(*	Res3+=-8*t^2 C4;
-	Res3+=-8*u^2 C5;*)
-	
-	(*Print[Res3];*)
+	Res3=-A3*TotalConj[CSV*Conjugate[CSV]];
 	
 	Return[2*(Res1+Res2+Res3)](*Factor of 2 from anti-particles*)
 ]	
@@ -893,7 +856,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toF1F2*)
 
 
@@ -907,8 +870,7 @@ Block[{
 	vectorPropS,scalarPropS,fermionPropT,fermionPropU,
 	CSV,CSVC,
 	CSy,CTy,CUy,CTyC,CUyC,CTyCC,CUyCC,
-	ASSY,A,TotRes,temp,
-	flag3
+	ASSY,A,TotRes,temp
 },
 (*
 	This module returns the squared matrix element of SS->FF summed over all quantum numbers of the incoming particles.
@@ -1056,8 +1018,6 @@ If[ (
 	resTot=-CreateMatrixElement["S1S2toF1F2"][partInt[1],partInt[3],partInt[2],partInt[4],particleMass]/.{s->s1,t->t1,u->u1};
 	resTot=resTot/.{s1->t,t1->s,u1->u};
 	
-(*	Print[VarAsum];
-	Print[Refine[resTot,Assumptions->VarAsum];*)
 	If[Mod[kinFlip,2]==1,resTot=resTot/.{t->t1,u->u1}/.{t1->u,u1->t};];
 	Return[Refine[resTot,Assumptions->VarAsum]]
 ,
@@ -1263,8 +1223,6 @@ If[
 	The coefficients here are the kinematic factors multiplying the 
 	group invariants. These are simplified from more general forms 
 *)
-(* ASS=-1/2(t^2+30*t*u+u^2);*)
-(* ASS=-1/2(att*t^2+atu*32*t*u-auu*u^2);*)
 	ASS=-1/2(32*t*u);
 	A=4*s;
 	ASU=+4*s(t+2*u);
@@ -1330,7 +1288,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3V1*)
 
 
@@ -1392,7 +1350,7 @@ If[ (
 	scalarPropS=Table[Prop[s,i],{i,scalarMass}]//ListToMat;
 
 (*Lorentz structures that appear.*)
-	A=4 t u /s;
+	A=4*t*u/s;
 	
 (*Group structures that are used*)
 	CS=Contract[scalarPropS . \[Lambda]3Tensor[[1,2]], gTensor[[3]],{{1,6}}]//OrderArray[#,1,2,4,3]&;

@@ -992,7 +992,6 @@ Block[
   
   (* Export only if file name provided *)
   If[privFile =!= None && StringQ[privFile] && StringLength[privFile] > 0,
-    Print["hello"];
     
     FormatOptions = {"txt", "json", "hdf5", "all", "none"};
     userFormat = OptionValue[Format];

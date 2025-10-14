@@ -1,36 +1,59 @@
 # Matrix Element Computation with `FeynRules`, `FeynArts`, and `FeynCalc`
 
-This document describes an alternative approach for computing matrix elements, used to cross-check results from the `WallGoMatrix` Elements package.
+This directory provides a lightweight workflow to cross-check matrix elements computed by the WallGoMatrix Elements package using Mathematica-based tools:
+
+- `FeynRules`: model and Feynman rule generation
+- `FeynArts`: diagram generation and amplitudes
+- `FeynCalc`: algebra, simplification, and squared matrix elements
 
 ## Prerequisites
 
-The calculations require the following `Mathematica` packages:
-
+- [Mathematica](https://www.wolfram.com/mathematica/) (use `14.2` or earlier; `FeynRules` `fr-2.3.49` is not compatible with newer versions)
 - [FeynRules](https://feynrules.irmp.ucl.ac.be/)
 - [FeynArts](https://feynarts.de/)
 - [FeynCalc](https://feyncalc.github.io/)
 
-Refer to each package's documentation for installation and usage details.
+Refer to each package’s documentation for installation and setup.
 
-## Workflow Overview
+## Directory layout
 
-The computation proceeds in several steps. As an example, consider the Yukawa model in the `yukawa` directory:
+As an example, see the Yukawa model under `tests/FeynCalc/yukawa`:
+- `yukawa.fr`: FeynRules model file
+- `feynRules.m`: generates FeynArts files (`.mod`, `.gen`) and parameters (`.pars`)
+- `yukawa.matrixElements.m`: builds diagrams (FeynArts) and computes squared MEs (FeynCalc)
 
-1. **Model Definition**  
-    Create a plain text `FeynRules` model file (e.g., `yukawa.fr`).
+## Quick start
 
-2. **Feynman Rule Generation**  
-    Run `feynRules.m` in `Mathematica` to generate Feynman rules and export files for `FeynArts` (`yukawa.mod`, `yukawa.gen`). Model parameters are saved in `yukawa.pars`.
+1. Open `feynRules.m` in Mathematica and evaluate it to generate:
+   - `<model>.mod`, `<model>.gen` (FeynArts model files, e.g., `u1-higgs-yukawa.mod`)
+   - `<model>.pars` (model parameters)
+2. Restart the Mathematica kernel before proceeding (avoids stale symbol/context issues).
+3. Convert the FeynRules output to the conventions expected by this repo using the helper script (run it on `.mod` or `.gen` files, not on directories):
+   - macOS Terminal (from the repository root):
+     - `chmod +x tests/FeynCalc/replaceFeynCalc.sh`
+     - `tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/yukawa/u1-higgs-yukawa.mod`
+     - Optionally also run on the corresponding `.gen`:
+       - `tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/yukawa/u1-higgs-yukawa.gen`
+   - Notes:
+     - The script updates files in place; consider backing up originals.
+     - See the script header for usage details and optional arguments.
+4. Open and run `yukawa.matrixElements.m` in Mathematica to generate diagrams (FeynArts) and compute/simplify squared matrix elements (FeynCalc).
 
-3. **Matrix Element Calculation**  
-    Execute `yukawa.matrixElements.m` to construct diagrams and amplitudes with `FeynArts`, then compute and simplify squared matrix elements using `FeynCalc`.
+## Helper: replaceFeynCalc.sh
 
-**Note:**  
-After running `feynRules.m`, restart the `Mathematica` kernel before proceeding to matrix element calculations.
+Path: `tests/FeynCalc/replaceFeynCalc.sh`
+
+Purpose: Post-processes FeynRules `.mod`/`.gen` exports so they load cleanly in our FeynArts/FeynCalc workflow (file naming and symbol/convention adjustments expected by the scripts in this directory).
+
+Typical usage:
+- From repo root:
+  - `tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/<model-dir>/<model>.mod`
+  - `tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/<model-dir>/<model>.gen`
+- From within the model directory:
+  - `../../replaceFeynCalc.sh <model>.mod`
 
 ## Compatibility
 
-As of now, `FeynRules` `fr-2.3.49` is not compatible with `Mathematica` versions newer than `14.2`. Use `Mathematica` `14.2` or earlier for reliable results.
+FeynRules `fr-2.3.49` is not compatible with Mathematica versions newer than `14.2`. Use Mathematica `14.2` or earlier.
 
----
 For further details, consult the documentation of the respective packages.
