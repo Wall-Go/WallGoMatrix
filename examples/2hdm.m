@@ -24,7 +24,7 @@ Check[
 (*See 2211.13142 for implementation details*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -122,7 +122,12 @@ one right-handed fermoon
 
 
 (* ::Subsection:: *)
-(*TopL, TopR*)
+(*Grouping representations*)
+
+
+(* ::Text:: *)
+(*We separate the quarks into a left-handed top quark, right-handed top quark, left-handed bottom quark, and all the other quarks are put in one representation.*)
+(*The gluon, W and B are treated as separate representations. The Higgs and Goldstones and the scalars of the second doublet are all put in separate representations. Note that this choice may lead to additional power divergences, that are absent when they are grouped together. *)
 
 
 vev={0,v,0,0,0,0,0,0};

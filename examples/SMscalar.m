@@ -88,7 +88,7 @@ SymmetryBreaking[vev]
 
 
 (* ::Subsection:: *)
-(*UserInput*)
+(*Grouping Representations*)
 
 
 (*

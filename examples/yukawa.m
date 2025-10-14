@@ -114,7 +114,7 @@ SymmetryBreaking[vev]
 
 
 (* ::Subsection:: *)
-(*UserInput*)
+(*Grouping representations*)
 
 
 (* ::Text:: *)
@@ -174,7 +174,7 @@ MatrixElements
 
 
 (* ::Subsection:: *)
-(*Comparison with implementation with left-handed and right-handed fermion in one implementation*)
+(*Comparison with implementation with left-handed and right-handed fermion in one representation*)
 
 
 (* ::Text:: *)
@@ -234,6 +234,4 @@ M[2,1,1,2]+
 M[2,1,2,1]/.MatrixElementsLeftRightReps 
 
 M[1,1,1,1]/.MatrixElementsLeftRightTogether
-
-
 

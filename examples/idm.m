@@ -114,6 +114,19 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*MatrixElements*)
 
 
+(* ::Subsection:: *)
+(*SymmetryBreaking*)
+
+
+vev={0,v,0,0,0,0,0,0};
+SymmetryBreaking[vev,VevDependentCouplings->True]
+(*SymmetryBreaking[vev]*)
+
+
+(* ::Subsection:: *)
+(*Grouping representations*)
+
+
 (* ::Text:: *)
 (*We are interested in the matrix elements for top quarks, weak gauge bosons, and the heavy scalars A and H^+-.*)
 (**)
@@ -126,19 +139,6 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*The second Higgs field is split into a representation for the heavy scalars, A, H^+-, which we treat as identical,*)
 (*since we assume lambda4 = lambda5. *)
 (*The CP-even scalar H will not be allowed out-of-equilibrium and  is grouped in its own representation.*)
-
-
-(* ::Subsection:: *)
-(*SymmetryBreaking*)
-
-
-vev={0,v,0,0,0,0,0,0};
-SymmetryBreaking[vev,VevDependentCouplings->True]
-(*SymmetryBreaking[vev]*)
-
-
-(* ::Subsection:: *)
-(*Grouping representations*)
 
 
 (*

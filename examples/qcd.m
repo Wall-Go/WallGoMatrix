@@ -76,14 +76,14 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 (*A model with 6 quarks and 1 gluon*)
 
 
+(* ::Subsection:: *)
+(*Grouping representations*)
+
+
 (* ::Text:: *)
 (*We are interested in the matrix elements for quarks and gluons with strong interactions only.*)
 (*Since the top quark will be treated as out-of-equilibrium, and the other quarks are kept in equilibrium,*)
 (*we group the top quark in its own representation, and we group all the other quarks together. *)
-
-
-(* ::Subsection:: *)
-(*UserInput*)
 
 
 (* ::Text:: *)
@@ -138,3 +138,15 @@ MatrixElements=ExportMatrixElements[
 		TruncateAtLeadingLog->True,
 		Format->{"json","txt"}}];
 
+
+
+MatrixElements=ExportMatrixElements[
+	"output/matrixElementsBLL.qcd",
+	ParticleList,
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"}}];
+
+
+MatrixElements

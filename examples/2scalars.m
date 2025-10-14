@@ -18,7 +18,7 @@ Check[
 
 
 (* ::Chapter:: *)
-(*2HDM*)
+(*Scalar sector of the 2HDM*)
 
 
 (*Pure scalar sector of 2211.13142*)
@@ -99,7 +99,11 @@ one right-handed fermoon
 
 
 (* ::Subsection:: *)
-(*TopL, TopR*)
+(*Grouping representations*)
+
+
+(* ::Text:: *)
+(*The Higgs and Goldstones and the scalars of the second doublet are all put in separate representations. Note that this choice may lead to additional power divergences, that are absent when they are grouped together. *)
 
 
 vev={0,v,0,0,0,0,0,0};

@@ -21,7 +21,7 @@ Check[
 (*Full Standard Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -99,7 +99,13 @@ SymmetryBreaking[vev]
 
 
 (* ::Subsection:: *)
-(*UserInput*)
+(*Grouping representations*)
+
+
+(* ::Text:: *)
+(*We treat all the Standard Model particles as separate particles, and put them into their own representations.*)
+(*Left- and right-handed particles are treated separately. *)
+(*Only the 3 Goldstones are grouped together.*)
 
 
 (*Third generation of fermions*)
