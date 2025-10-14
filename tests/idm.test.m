@@ -171,7 +171,7 @@ LightParticleList={
 	};
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Test W out of equilibrium only*)
 
 
