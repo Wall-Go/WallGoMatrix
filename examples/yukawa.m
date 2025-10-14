@@ -117,6 +117,11 @@ SymmetryBreaking[vev]
 (*UserInput*)
 
 
+(* ::Text:: *)
+(*We treat the scalar, left-handed fermions and right-handed fermion and vector boson all as different particles, and thus put them all in a separate representation.*)
+(*This corresponds to the implementation of the Yukawa model in the WallGo model folder.*)
+
+
 (*
 In DRalgo fermions are Weyl.
 So to create one Dirac we need
@@ -166,3 +171,69 @@ MatrixElements=ExportMatrixElements[
 
 
 MatrixElements
+
+
+(* ::Subsection:: *)
+(*Comparison with implementation with left-handed and right-handed fermion in one implementation*)
+
+
+(* ::Text:: *)
+(*It is also possible to put the left-handed and right-handed fermion in the same representation, similarly to the left-handed and right-handed top quark if we consider QCD interactions only.*)
+(*We compare the two implementations here, and we see that terms that are tagged as log-divergent if the left-handed and right-handed fermions are in different representations, are finite if the particles are put in the same representation.*)
+
+
+MatrixElementsLeftRightReps=ExportMatrixElements[
+	None,
+	ParticleList,
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->False,
+		TagLeadingLog->True,
+		Format->{"json","txt"}
+	}
+];
+
+
+RepFermionTogether = CreateParticle[{1,2},"F",mf2,"Psi"];
+ParticleListTogether={RepScalar,RepFermionTogether};
+
+
+MatrixElementsLeftRightTogether=ExportMatrixElements[
+	None,
+	ParticleListTogether,
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->False,
+		TagLeadingLog->True,
+		Format->{"json","txt"}
+	}
+];
+
+
+(* ::Text:: *)
+(*First we see that when we add up all the matrix elements for the case with separate left- and right-handed particles, we get the same result as for four-fermion scattering in the case where the fermions are grouped together.*)
+
+
+FullSimplify[((M[1,1,2,2]+
+M[1,2,2,1]+
+M[1,2,1,2]+
+M[2,2,1,1]+
+M[2,1,1,2]+
+M[2,1,2,1])/.MatrixElementsLeftRightReps/.logDiv->1)- (2M[1,1,1,1]/.MatrixElementsLeftRightTogether)]
+
+
+(* ::Text:: *)
+(*The result with the separate left- and right-handed representation has a log divergence, whereas the result with only one fermion representation does not*)
+
+
+M[1,1,2,2]+
+M[1,2,2,1]+
+M[1,2,1,2]+
+M[2,2,1,1]+
+M[2,1,1,2]+
+M[2,1,2,1]/.MatrixElementsLeftRightReps 
+
+M[1,1,1,1]/.MatrixElementsLeftRightTogether
+
+
+

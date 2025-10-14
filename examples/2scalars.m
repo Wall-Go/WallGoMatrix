@@ -7,6 +7,8 @@ If[$InputFileName=="",
 	SetDirectory[NotebookDirectory[]],
 	SetDirectory[DirectoryName[$InputFileName]]
 ];
+(*Put this if you want to create multiple model-files with the same kernel*)
+WallGo`WallGoMatrix`$GroupMathMultipleModels=True;
 Check[
     Get["WallGo`WallGoMatrix`"],
     (*Get["../Kernel/WallGoMatrix.m"],*)
@@ -146,6 +148,4 @@ MatrixElements=ExportMatrixElements[
 		NormalizeWithDOF->False
 	}
 ];
-
-
 
