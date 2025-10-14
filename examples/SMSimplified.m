@@ -91,6 +91,16 @@ SymmetryBreaking[vev]
 (*Grouping Representations*)
 
 
+(* ::Text:: *)
+(*This is a simplified Standard Model, with only quarks and strong and weak interactions.*)
+(**)
+(*We group the left-handed and right-handed tops in separate representations, and all other quarks are grouped in the same representation (LightFermions).*)
+(**)
+(*We have separate representations for the gluons and W-bosons. *)
+(**)
+(*The Higgs and Goldstone bosons are grouped together. *)
+
+
 (*
 	Reps 1-4 are quarks,
 	reps 5,6 are vector bosons
@@ -101,9 +111,6 @@ ReptL=CreateParticle[{{1,1}},"F",mq2,"TopL"];
 (*right-handed top-quark*)
 ReptR=CreateParticle[{2},"F",mq2,"TopR"];
 
-(*right-handed bottom-quark*)
-RepbR=CreateParticle[{3},"F",mq2,"BotR"];
-
 (*Vector bosons*)
 RepGluon=CreateParticle[{1},"V",mg2,"Gluon"];
 RepW=CreateParticle[{{2,1}},"V",mW2,"W"];
@@ -112,7 +119,7 @@ RepW=CreateParticle[{{2,1}},"V",mW2,"W"];
 RepHiggs=CreateParticle[{1},"S",ms2,"Higgs"];
 
 (*Light particles*)
-LightFermions=CreateParticle[{{1,2},4,5,6,7,8,9},"F",mq2,"LightFermions"];
+LightFermions=CreateParticle[{{1,2},3,4,5,6,7,8,9},"F",mq2,"LightFermions"];
 
 
 (*
