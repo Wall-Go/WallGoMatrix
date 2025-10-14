@@ -602,6 +602,44 @@ Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".
 
 
 (* ::Subsection:: *)
+(*Higgs-top-bottom sector (Subscript[y, top]!=0, Subscript[y, bottom]=0)*)
+
+
+particleTypes = {
+	F[3,{3}](* t-quark *),
+	-F[3,{3}](* anti-t-quark *),
+	F[4,{3}](* b-quark *),
+	-F[4,{3}](* anti-b-quark *),
+	(*F[2,{3}](* tauon *),
+	-F[2,{3}](* anti-tauon *),*)
+	(*F[1,{3}](* tau-neutrino *),
+	-F[1,{3}](* anti-tau-neutrino *),*)
+	S[1](* physical Higgs *),
+	S[2](* uncharged Goldstone *),
+	S[3](* charged Goldstone*),
+	-S[3](* charged anti-Goldstone*)
+};
+
+results = runProccesses[particleTypes];
+
+
+resultsExport=results/.{SMP["g_W"]->gw,SMP["g_s"]->gs,SMP["y_t"]->yt};
+feynAssociation=Association[resultsExport];
+
+
+(*
+	here for the Yukawa model,where the matrix elements are stored in
+	the object called MatrixElements
+*)
+particleNames=mapParticleToName[particleTypes];
+particleNames=(* by hand *){"t","tbar","b","bbar","H","G0","Gp","Gpbar"}
+exportParticles = "HiggsTopBottom";
+exportParameters = {gw,gs,yt,lam};
+toExportAsJSON=makeJsonObject[particleNames,Join[exportParameters,{SUNN}],resultsExport//SMPToSymbol];
+Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
+
+
+(* ::Subsection:: *)
 (*Electroweak bosons sector*)
 
 
