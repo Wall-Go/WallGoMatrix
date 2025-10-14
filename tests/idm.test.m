@@ -171,7 +171,7 @@ LightParticleList={
 	};
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Test W out of equilibrium only*)
 
 
@@ -248,19 +248,6 @@ MatrixElements=ExportMatrixElements[
 M[0,1,0,1]/.MatrixElements
 
 
-testtensor=Table[gvff[[;;,Particle1,Particle2]],
-		{Particle1,{{1,3,5},{2,4,6},{1,3,5},{2,4,6}}},
-		{Particle2,{{1,3,5},{2,4,6},{1,3,5},{2,4,6}}}];
-
-
-(* off diagonal entries can be seen here *)
-gvff[[9]]//MatrixForm
-
-
-(* or here *)
-testtensor[[1,2]]//MatrixForm
-
-
 (* ::Subsection:: *)
 (*Full Test*)
 
@@ -307,15 +294,6 @@ exprDivOnly[expr_] :=
 powDivEntries[[100]]/. Rule[a_, expr_] :> (a -> exprDivOnly[expr])
 
 
-powDivEntries[[All,2]]
-
-
-Coefficient[powDivEntries[[All,2]],powDiv]/.{gw->0,v->0}
-
-
-particles
-
-
 (* ::Chapter:: *)
 (*Tests*)
 
@@ -347,7 +325,7 @@ comparisonReplacements={
 
 
 exprDivOnly[expr_] := 
-  Coefficient[expr, powDiv, 1] + Coefficient[expr, logDiv, 1]
+  Coefficient[expr, powDiv, 1]*powDiv + Coefficient[expr, logDiv, 1]*logDiv
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
@@ -414,7 +392,7 @@ test["WallGo"][process]=testWallGo[
 	{"TopL"},
 	{"Gluon"},
 	{"Gluon"}
-](*//truncateAtLeadingLog*)
+]/.{logDiv->1,powDiv->1}
 test["Reference"][process]=(
 		128/3*g3^4(u/(t-mq2^2)+t/(u-mq2^2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -431,7 +409,7 @@ test["WallGo"][process]=testWallGo[
 	{"LightQuarks","BotL","BotR"},
 	{"TopL"},
 	{"LightQuarks","BotL","BotR"}
-]/.{gw->0,yt1->0}(*//truncateAtLeadingLog*)
+]/.{gw->0,yt1->0}/.{logDiv->1,powDiv->1}
 test["Reference"][process]=(
 		+160*g3^4*(s^2+u^2)/(t-mq2^2)^2
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -448,9 +426,9 @@ test["WallGo"][process]=testWallGo[
 	{"Gluon"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"}
-](*//truncateAtLeadingLog*)
-(* have to put factor 4 to agree *)
-test["Reference"][process]=4*(
+]/.{logDiv->1,powDiv->1}
+(* missing factor 4 *)
+test["Reference"][process]=(
 		-72*g3^2*gw^2*s*t/(t-mq2)^2
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
 AppendTo[testList,
@@ -466,9 +444,9 @@ test["WallGo"][process]=testWallGo[
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","TopL"},
 	{"LightLeptons","LightQuarks","BotL","TopL"}
-](*//truncateAtLeadingLog*)
-(* have to put factor 4 to agree *)
-test["Reference"][process]=4*(
+]/.{logDiv->1,powDiv->1}
+(* missing factor 4 *)
+test["Reference"][process]=(
 		-27/2*gw^4*(3*s/(t-mq2)+s/(t-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
 AppendTo[testList,
@@ -488,7 +466,7 @@ test["WallGo"][process]=testWallGo[
 	{"Gluon"},
 	{"TopL"},
 	{"Gluon"}
-](*//truncateAtLeadingLog*)
+]/.{logDiv->1,powDiv->1}
 test["Reference"][process]=(
 		-128/3*g3^4*(s*u/(u-mg2^2)^2)
 		+96*g3^4*(s^2+u^2)/(t-mq2^2)^2
@@ -506,10 +484,11 @@ test["WallGo"][process]=testWallGo[
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"Gluon"}
-]//truncateAtLeadingLog
-test["Reference"][process]=2*(
+](*//truncateAtLeadingLog*)
+(*missing factor 2*)
+test["Reference"][process]=(
 		-72*g3^2*gw^2*s/(t-mq2)
-	)/.setMassesToZero//fixConvention//truncateAtLeadingLog
+	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -523,12 +502,12 @@ test["WallGo"][process]=testWallGo[
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"},
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"}
-](*/.setMassesToZero//fixConvention//truncateAtLeadingLog*)
-(* have to replace 360 -> 280 in first term *)
+]/.{logDiv->1,powDiv->1}
+(* have to replace 360 -> 288 in first term and add factor 2 on second term *)
 test["Reference"][process]=(
-		+s1*288*gw^4*(s^2+u^2)/(t-mw2)^2
+		+s1*360*gw^4*(s^2+u^2)/(t-mw2)^2
 		-s2*27/2*gw^4*(3*s/(u-mq2)+s/(u-ml2))
-	)/.{s1->1,s2->2}/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
+	)(*/.{s1->1,s2->2}*)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -536,7 +515,7 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*FFtoSV*)
 
 
@@ -546,7 +525,7 @@ test["WallGo"][process]=testWallGo[
 	{"TopR"},
 	{"Gluon"},
 	{"Higgs"}
-](*//truncateAtLeadingLog*)
+]/.{logDiv->1,powDiv->1}
 test["Reference"][process]=(
 		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -563,7 +542,7 @@ test["WallGo"][process]=testWallGo[
 	{"TopR"},
 	{"Gluon"},
 	{"GoldstoneG0"}
-](*//truncateAtLeadingLog*)
+]/.{logDiv->1,powDiv->1}
 test["Reference"][process]=(
 		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -574,7 +553,7 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*FVtoFS*)
 
 
@@ -584,7 +563,7 @@ test["WallGo"][process]=testWallGo[
 	{"Gluon"},
 	{"TopR"},
 	{"Higgs"}
-](*//truncateAtLeadingLog*)
+]/.{logDiv->1,powDiv->1}
 test["Reference"][process]=(
 		-8*yt1^2*g3^2(s/(t-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -601,10 +580,10 @@ test["WallGo"][process]=testWallGo[
 	{"Gluon"},
 	{"TopR"},
 	{"GoldstoneG0"}
-]//truncateAtLeadingLog
+]/.{logDiv->1,powDiv->1}
 test["Reference"][process]=(
 		-8*yt1^2*g3^2(s/(t-mq2))
-	)/.setMassesToZero//fixConvention//truncateAtLeadingLog
+	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -618,10 +597,10 @@ test["WallGo"][process]=testWallGo[
 	{"Gluon"},
 	{"BotL"},
 	{"GoldstoneGpR"}
-]//truncateAtLeadingLog
+]/.{logDiv->1,powDiv->1}
 test["Reference"][process]=(
 		-8*yt1^2*g3^2(s/(t-mq2))
-	)/.setMassesToZero//fixConvention//truncateAtLeadingLog
+	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -629,7 +608,7 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*FStoFV*)
 
 
@@ -639,7 +618,7 @@ test["WallGo"][process]=testWallGo[
 	{"GoldstoneGpI"},
 	{"BotL"},
 	{"Gluon"}
-](*//truncateAtLeadingLog*)
+]/.{logDiv->1,powDiv->1}
 test["Reference"][process]=(
 		-8*yt1^2*g3^2(s/(t-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -662,7 +641,7 @@ test["WallGo"][process]=testWallGo[
 	{"BotL","BotR"},
 	{"Higgs"},
 	{"GoldstoneGpR","GoldstoneGpI"}
-](*//Coefficient[#,logDiv]&//Simplify//Expand*)
+]/.{logDiv->1,powDiv->1}
 test["Reference"][process]=1/2*(
 		+6 u/t yt1^4
 		(*8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2)*)
@@ -695,7 +674,7 @@ test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"A"},
 	{"A"}
-](*//truncateAtLeadingLog//dropTUCrossTerm*)
+]/.{lam1H->0}/.{logDiv->1,powDiv->1}
 (* the Reference result drops the 1/(t u) cross term here *)
 test["Reference"][process]=2*(
 		lam3H^4*v^4/2*(1/(t-mA2)^2+1/(u-mA2)^2)
@@ -713,7 +692,7 @@ test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"Higgs"},
 	{"A"}
-]/.{lam1H->0}(*//truncateAtLeadingLog//dropTUCrossTerm*)
+]/.{lam1H->0}/.{logDiv->1,powDiv->1}
 (* the Reference result drops the 1/(t u) cross term here *)
 test["Reference"][process]=2*(
 		lam3H^4*v^4/2*(1/(t-mA2)^2)
@@ -731,8 +710,6 @@ AppendTo[testList,
 
 report=TestReport[testList]
 report["ResultsDataset"]
-
-
 
 
 (* ::Section:: *)
