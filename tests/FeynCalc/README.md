@@ -30,10 +30,13 @@ As an example, see the Yukawa model under `tests/FeynCalc/yukawa`:
 2. Restart the Mathematica kernel before proceeding (avoids stale symbol/context issues).
 3. Convert the FeynRules output to the conventions expected by this repo using the helper script (run it on `.mod` or `.gen` files, not on directories):
    - macOS Terminal (from the repository root):
-     - `chmod +x tests/FeynCalc/replaceFeynCalc.sh`
-     - `tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/yukawa/u1-higgs-yukawa.mod`
+     ```
+     sh tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/yukawa/u1-higgs-yukawa.mod
+     ```
      - Optionally also run on the corresponding `.gen`:
-       - `tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/yukawa/u1-higgs-yukawa.gen`
+       ```
+       sh tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/yukawa/u1-higgs-yukawa.gen
+       ```
    - Notes:
      - The script updates files in place; consider backing up originals.
      - See the script header for usage details and optional arguments.
@@ -47,10 +50,15 @@ Purpose: Post-processes FeynRules `.mod`/`.gen` exports so they load cleanly in 
 
 Typical usage:
 - From repo root:
-  - `tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/<model-dir>/<model>.mod`
-  - `tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/<model-dir>/<model>.gen`
+  ```
+  sh tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/<model-dir>/<model>.mod
+
+  sh tests/FeynCalc/replaceFeynCalc.sh tests/FeynCalc/<model-dir>/<model>.gen
+  ```
 - From within the model directory:
-  - `../../replaceFeynCalc.sh <model>.mod`
+  ```
+  sh ../../replaceFeynCalc.sh <model>.mod
+  ```
 
 ## Compatibility
 
