@@ -819,7 +819,7 @@ otherParticles={
 allParticleTypes={firstParticle,otherParticles}//Flatten;
 
 
-results=runProccessesMixed[firstParticle,allParticleTypes]
+results=runProccessesMixed[firstParticle,allParticleTypes];
 
 
 resultsExport=results/.{SMP["g_W"]->gw,SMP["g_s"]->gs,SMP["y_t"]->yt};
