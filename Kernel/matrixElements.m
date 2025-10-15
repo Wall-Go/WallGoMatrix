@@ -1586,8 +1586,6 @@ TagLeadingLogarithm[MatrixElements_]:=Module[
 			#[[1]]->#[[1]]*#[[2]]
 		}&,{{s,S},{t,T},{u,U}}]];
 	
-	Print[MatrixElementsF];
-	
 	MatrixElementsF=Map[{
 		If[#[[2]][[1]]==#[[2]][[3]]&&#[[2]][[2]]==#[[2]][[4]],
 			If[#[[2]][[1]]==#[[2]][[4]],

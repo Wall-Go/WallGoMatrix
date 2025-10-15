@@ -72,7 +72,62 @@ particleTypes={
 	-S[3](* charged anti-Goldstone*)
 };
 
-particleNames=Map[ToString[TheLabel[#]]<>If[Head[#]===Times,"bar",""]&,particleTypes]
+
+particleTypes={
+	F[3,{3}](* t-quark *),
+	-F[3,{3}](* anti-t-quark *),
+	F[4,{3}](* b-quark *),
+	-F[4,{3}](* anti-b-quark *),
+	F[2,{3}](* tauon *),
+	-F[2,{3}](* anti-tauon *),
+	F[1,{3}](* tau-neutrino *),
+	-F[1,{3}](* anti-tau-neutrino *),
+	F[3,{2}](* charm *),
+	-F[3,{2}](* anti-charm *),
+	F[4,{2}](* strange *),
+	-F[4,{2}](* anti-strange *),
+	F[2,{2}](* muon *),
+	-F[2,{2}](* anti-muon *),
+	F[1,{2}](* mu-neutrino *),
+	-F[1,{2}](* anti-mu-neutrino *),
+	F[3,{1}](* up *),
+	-F[3,{1}](* anti-up *),
+	F[4,{1}](* down *),
+	-F[4,{1}](* anti-down *),
+	F[2,{1}](* electron *),
+	-F[2,{1}](* anti-electron *),
+	F[1,{1}](* electron-neutrino *),
+	-F[1,{1}](* anti-electron-neutrino *),
+	V[5](* g *),
+	V[3](* W- *),
+	-V[3](* W+ *),
+	V[2](* Z *),
+	V[1](* photon *),
+	S[1](* physical Higgs *),
+	S[2](* uncharged Goldstone *),
+	S[3](* charged Goldstone*),
+	-S[3](* charged anti-Goldstone*)
+};
+
+
+(*particleNames=Map[ToString[TheLabel[#]]<>If[Head[#]===Times,"bar",""]&,particleTypes]*)
+particleNames = 
+  Map[
+    StringReplace[
+      ToString[TheLabel[#]] <> If[Head[#] === Times, "bar", ""] ,
+      {
+      "\\tau" -> "tau",
+      "ComposedChar[G, Null, 0]"->"G0",
+      "\\gamma" -> "gamma",
+      "\\mu" -> "mu",
+      "ComposedChar[\\nu, \\tau]"->"nuTau",
+      "ComposedChar[\\nu, \\mu]"->"nuMu",
+      "ComposedChar[\\nu, e]"->"nuE"
+      }
+    ] &,
+    particleTypes
+  ]
+
 makeProcesses[firstParticle_,particles_]:=DeleteDuplicates[Flatten[Table[{firstParticle,a}->{b,c},{a,particles},{b,particles},{c,particles}],2]];
 
 
@@ -721,6 +776,21 @@ makeAmplitudeSquared[%,All,True]
 
 
 results=runProccessesMixed[firstParticle,allParticleTypes]
+
+
+resultsExport=results/.{SMP["g_W"]->gw,SMP["g_s"]->gs,SMP["y_t"]->yt};
+feynAssociation=Association[resultsExport];
+
+
+resultsExport[[100]]
+
+
+replaceReverse=Thread[Thread[Reverse /@ List @@@ mapParticleToInteger]//#[[1]]->#[[2]]&]
+
+
+resultsExport=results/.{SMP["g_W"]->gw,SMP["g_s"]->gs,SMP["y_t"]->yt};
+resultsExport[[All,1]]=resultsExport[[All,1]]/.replaceReverse//.mapParticleToInteger;
+feynAssociation=Association[resultsExport];
 
 
 (*

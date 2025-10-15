@@ -24,7 +24,7 @@ Check[
 (*See 2211.13142 for implementation details*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Model*)
 
 
@@ -362,6 +362,20 @@ testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
+generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing(*//exprDivOnly*);
+
+generateFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]/.Flatten[particlesFeyn]/.MatrixElementsFeyn/.groupFactors//removeMissing;
+
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
+testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
+
+
 result=(s1 (128s^2)/(t s)+s2 (128t^2
  )/(s t)+s3 (128s^2
  )/(u s)+s4 (128t^2
@@ -496,7 +510,12 @@ AppendTo[testList,
 		TestID->"WallGo vs Reference: "<>process]];
 
 
-process="fW->fW"
+(*Importing results from FeynCalc*)
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.lightFermions.test.json"];
+particlesFeyn
+
+
+process="Wf->Wf"
 test["WallGo"][process]=testWallGo[
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"},
@@ -513,6 +532,22 @@ AppendTo[testList,
 		test["WallGo"][process]//Evaluate,
 		test["Reference"][process],
 		TestID->"WallGo vs Reference: "<>process]];
+
+
+test["FeynCalc"][process]=testFeynCalc[
+	{"W","Wbar","Z"},
+	{
+		"t","tbar","b","bbar","tau","taubar","nuTau","nuTaubar",
+		"c","cbar","s","sbar","mu","mubar","nuMu","nuMubar",
+		"u","ubar","d","dbar","e","ebar","nuE","nuEbar"
+	},
+	{"W","Wbar","Z"},
+	{
+		"t","tbar","b","bbar","tau","taubar","nuTau","nuTaubar",
+		"c","cbar","s","sbar","mu","mubar","nuMu","nuMubar",
+		"u","ubar","d","dbar","e","ebar","nuE","nuEbar"
+	}
+]//Simplify//Expand
 
 
 (* ::Subsubsection:: *)
