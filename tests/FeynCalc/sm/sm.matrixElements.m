@@ -91,15 +91,15 @@ zeroMasses=Thread[masses->0]
 SMP[];
 
 
-(* this is where the FeynArts files made by FeynRules can be found, ending in .gen and .mod *)
+(*(* this is where the FeynArts files made by FeynRules can be found, ending in .gen and .mod *)
 modLoc=FileNameJoin[{NotebookDirectory[],model}];
 genericLoc=FileNameJoin[{NotebookDirectory[],model}];
-InitializeModel[modLoc,GenericModel->genericLoc];
+InitializeModel[modLoc,GenericModel->genericLoc];*)
 
 
-Get[modLoc<>".pars"]
+(*Get[modLoc<>".pars"]
 M$ExtParams//MatrixForm
-parameters=Map[#[[1]]&,M$ExtParams]
+parameters=Map[#[[1]]&,M$ExtParams]*)
 
 
 (* sub out Weinberg angle *)
@@ -127,7 +127,7 @@ mapParticleToInteger
 makeMName[process_]:=M[process[[1,1]],process[[1,2]],process[[2,1]],process[[2,2]]]/.mapParticleToInteger
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Automating steps*)
 
 
@@ -292,16 +292,6 @@ symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
 fixConvention[arg_]:=symmetriseTU[arg/.{s->(-t-u)}]//Expand//Simplify//Expand
 
 
-makeAmplitude[{S[1],S[1]}->{S[1],S[1]}];
-makeAmplitudeSquared[{S[1],S[1]}->{S[1],S[1]}]
-
-
-makeAmplitude[{F[3,{1}],-F[3,{1}]}->{V[5],V[5]}];
-makeAmplitudeSquared[{F[3,{1}],-F[3,{1}]}->{V[5],V[5]},All,True]
-(* only the former agrees with the literature *)
-makeAmplitudeSquared[{F[3,{1}],-F[3,{1}]}->{V[5],V[5]},All,False]
-
-
 (* ::Subsection:: *)
 (*VV -> VV*)
 
@@ -445,7 +435,7 @@ mapParticleToName[particleList_]:=Map[ToString[TheLabel[#]]<>If[Head[#]===Times,
 mapParticleToInteger:=Thread[particleTypes->(Range[Length[particleTypes]]-1)];
 
 
-(* squared summed matrix elements with a vector on leg 1 *)
+(* squared summed matrix elements with `particle` on leg 1 *)
 createProcesses[particle_,ingoingParticleList_]:=Module[{processes},
 	processes=makeProcesses[particle,ingoingParticleList];
 	DeleteCases[
@@ -454,6 +444,7 @@ createProcesses[particle_,ingoingParticleList_]:=Module[{processes},
 	{process,processes}],_->0]
 ];
 
+(*all particles on first leg*)
 runProccesses[ingoingParticleList_]:=Module[{i = 0, n = Length[ingoingParticleList], results},
   results = Monitor[
     Table[
@@ -466,8 +457,22 @@ runProccesses[ingoingParticleList_]:=Module[{i = 0, n = Length[ingoingParticleLi
   results
 ];
 
+(*subset of particles on first leg*)
+runProccessesMixed[firstParticleList_,ingoingParticleList_]:=
+Module[{i = 0, n = Length[firstParticleList], results},
+  results = Monitor[
+    Table[
+      i++;
+      createProcesses[particle, ingoingParticleList],
+      {particle, firstParticleList}
+    ],
+    Row[{"Processing ", firstParticleList[[i]], " which is particle ", i, " of ", n, " (", NumberForm[100. (i-1)/n, {3, 1}], "%) "}]
+  ] // Flatten[#, 1] &;
+  results
+];
 
-(* ::Subsection:: *)
+
+(* ::Subsection::Closed:: *)
 (*SU(3) Yang-Mills (on external legs)*)
 
 
@@ -488,7 +493,7 @@ feynAssociation=Association[resultsExport];
 
 
 (*
-	here for the Yukawa model,where the matrix elements are stored in
+	matrix elements are stored in
 	the object called MatrixElements
 *)
 exportParticles = "g";
@@ -497,7 +502,7 @@ toExportAsJSON=makeJsonObject[particleNames,Join[exportParameters,{SUNN}],result
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*QCD with one generation of quarks (on external legs)*)
 
 
@@ -517,7 +522,7 @@ feynAssociation=Association[resultsExport];
 
 
 (*
-	here for the Yukawa model,where the matrix elements are stored in
+	matrix elements are stored in
 	the object called MatrixElements
 *)
 exportParticles = "tbg";
@@ -526,7 +531,7 @@ toExportAsJSON=makeJsonObject[particleNames,Join[exportParameters,{SUNN}],result
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Higgs-tau sector (Subscript[y, tau]=0)*)
 
 
@@ -552,7 +557,7 @@ feynAssociation=Association[resultsExport];
 
 
 (*
-	here for the Yukawa model,where the matrix elements are stored in
+	matrix elements are stored in
 	the object called MatrixElements
 *)
 particleNames=mapParticleToName[particleTypes];
@@ -563,7 +568,7 @@ toExportAsJSON=makeJsonObject[particleNames,Join[exportParameters,{SUNN}],result
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Higgs-top sector (Subscript[y, top]!=0)*)
 
 
@@ -590,7 +595,7 @@ feynAssociation=Association[resultsExport];
 
 
 (*
-	here for the Yukawa model,where the matrix elements are stored in
+	matrix elements are stored in
 	the object called MatrixElements
 *)
 particleNames=mapParticleToName[particleTypes];
@@ -601,7 +606,7 @@ toExportAsJSON=makeJsonObject[particleNames,Join[exportParameters,{SUNN}],result
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Higgs-top-bottom sector (Subscript[y, top]!=0, Subscript[y, bottom]=0)*)
 
 
@@ -628,7 +633,7 @@ feynAssociation=Association[resultsExport];
 
 
 (*
-	here for the Yukawa model,where the matrix elements are stored in
+	matrix elements are stored in
 	the object called MatrixElements
 *)
 particleNames=mapParticleToName[particleTypes];
@@ -639,7 +644,7 @@ toExportAsJSON=makeJsonObject[particleNames,Join[exportParameters,{SUNN}],result
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Electroweak bosons sector*)
 
 
@@ -661,7 +666,7 @@ feynAssociation=Association[resultsExport];
 
 
 (*
-	here for the Yukawa model,where the matrix elements are stored in
+	matrix elements are stored in
 	the object called MatrixElements
 *)
 exportParticleNames=mapParticleToName[particleTypes]
@@ -671,3 +676,58 @@ exportParameters = {gw,gs,yt,lam};
 toExportAsJSON=makeJsonObject[exportParticleNames,Join[exportParameters,{SUNN}],resultsExport//SMPToSymbol];
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
 
+
+
+(* ::Subsection:: *)
+(*Light fermion scattering*)
+
+
+firstParticle={
+	V[3](* W- *),
+	-V[3](* W+ *),
+	V[2](* Z *)
+};
+fermions={
+	F[3,{3}](* t-quark *),
+    -F[3,{3}](* anti-t-quark *),
+    F[4,{3}](* b-quark *),
+    -F[4,{3}](* anti-b-quark *),
+    F[2,{3}](* tauon *),
+    -F[2,{3}](* anti-tauon *),
+    F[1,{3}](* tau-neutrino *),
+    -F[1,{3}](* anti-tau-neutrino *),
+    F[3,{2}](* charm *),
+    -F[3,{2}](* anti-charm *),
+    F[4,{2}](* strange *),
+    -F[4,{2}](* anti-strange *),
+    F[2,{2}](* muon *),
+    -F[2,{2}](* anti-muon *),
+    F[1,{2}](* mu-neutrino *),
+    -F[1,{2}](* anti-mu-neutrino *),
+    F[3,{1}](* up *),
+    -F[3,{1}](* anti-up *),
+    F[4,{1}](* down *),
+    -F[4,{1}](* anti-down *),
+    F[2,{1}](* electron *),
+    -F[2,{1}](* anti-electron *),
+    F[1,{1}](* electron-neutrino *),
+    -F[1,{1}](* anti-electron-neutrino *)
+};
+allParticleTypes={firstParticle,fermions}//Flatten;
+
+
+makeProcesses[V[3],allParticleTypes][[3000]]
+makeAmplitudeSquared[%,All,True]
+
+
+results=runProccessesMixed[firstParticle,allParticleTypes]
+
+
+(*
+	matrix elements are stored in
+	the object called MatrixElements
+*)
+exportParticles = "lightFermions";
+exportParameters = {gw,gs,yt};
+toExportAsJSON=makeJsonObject[particleNames,Join[exportParameters,{SUNN}],resultsExport//SMPToSymbol];
+Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
