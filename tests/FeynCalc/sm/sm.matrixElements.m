@@ -482,6 +482,10 @@ makeJsonObject[fields_, parameters_, results_] :=
 (*Results*)
 
 
+(* ::Subsection:: *)
+(*Setup*)
+
+
 removeIncomplete={Pair[x__]->0};
 removeIncomplete={ };
 
@@ -771,8 +775,48 @@ fermions={
 allParticleTypes={firstParticle,fermions}//Flatten;
 
 
-makeProcesses[V[3],allParticleTypes][[3000]]
-makeAmplitudeSquared[%,All,True]
+results=runProccessesMixed[firstParticle,allParticleTypes]
+
+
+resultsExport=results/.{SMP["g_W"]->gw,SMP["g_s"]->gs,SMP["y_t"]->yt};
+feynAssociation=Association[resultsExport];
+
+
+(*
+	matrix elements are stored in
+	the object called MatrixElements
+*)
+exportParticles = "lightFermions";
+exportParameters = {gw,gs,yt};
+toExportAsJSON=makeJsonObject[particleNames,Join[exportParameters,{SUNN}],resultsExport//SMPToSymbol];
+Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];
+
+
+(* ::Subsection:: *)
+(*Gluon,W,quarks*)
+
+
+firstParticle={
+	V[3](* W- *),
+	-V[3](* W+ *),
+	V[2](* Z *)
+};
+otherParticles={
+	F[3,{3}](* t-quark *),
+    -F[3,{3}](* anti-t-quark *),
+    F[4,{3}](* b-quark *),
+    -F[4,{3}](* anti-b-quark *),
+    F[3,{2}](* charm *),
+    -F[3,{2}](* anti-charm *),
+    F[4,{2}](* strange *),
+    -F[4,{2}](* anti-strange *),
+    F[3,{1}](* up *),
+    -F[3,{1}](* anti-up *),
+    F[4,{1}](* down *),
+    -F[4,{1}](* anti-down *),
+    V[5](* g *)
+};
+allParticleTypes={firstParticle,otherParticles}//Flatten;
 
 
 results=runProccessesMixed[firstParticle,allParticleTypes]
@@ -782,22 +826,11 @@ resultsExport=results/.{SMP["g_W"]->gw,SMP["g_s"]->gs,SMP["y_t"]->yt};
 feynAssociation=Association[resultsExport];
 
 
-resultsExport[[100]]
-
-
-replaceReverse=Thread[Thread[Reverse /@ List @@@ mapParticleToInteger]//#[[1]]->#[[2]]&]
-
-
-resultsExport=results/.{SMP["g_W"]->gw,SMP["g_s"]->gs,SMP["y_t"]->yt};
-resultsExport[[All,1]]=resultsExport[[All,1]]/.replaceReverse//.mapParticleToInteger;
-feynAssociation=Association[resultsExport];
-
-
 (*
 	matrix elements are stored in
 	the object called MatrixElements
 *)
-exportParticles = "lightFermions";
+exportParticles = "gluonWquarks";
 exportParameters = {gw,gs,yt};
 toExportAsJSON=makeJsonObject[particleNames,Join[exportParameters,{SUNN}],resultsExport//SMPToSymbol];
 Export[FileNameJoin[{NotebookDirectory[],StringJoin[model,".",exportParticles,".test.json"]}],toExportAsJSON];

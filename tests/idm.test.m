@@ -309,13 +309,13 @@ powDivEntries[[100]]/. Rule[a_, expr_] :> (a -> exprDivOnly[expr])
 (*Comparison tests*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Translate input*)
 
 
 groupFactors={ };
 UserMasses={mq2,ml2,mg2,mw2};
-customParameters={ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam(*,logDiv->1,powDiv->1*)};
+customParameters={gs->g3,ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam(*,logDiv->1,powDiv->1*)};
 setMassesToZero={Thread[UserMasses->0],Thread[{mChi,mPhi,mPsi}->0],Thread[{mA2,mW2,mG2,mh2}->0]}//Flatten;
 comparisonReplacements={
 	groupFactors,
@@ -336,35 +336,18 @@ fixConvention[arg_]:=symmetriseTU[
 
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
-(*truncateAtLeadingLog[arg_]:=Module[{res,tterms,uterms,crossterms,constterms},
-res[1]=fixConvention[arg];
-(*res[1]=arg;*)
-tterms=Normal[Series[res[1],{t,0,-1}]];
-uterms=Normal[Series[res[1],{u,0,-1}]];
-crossterms=(1/(t u))SeriesCoefficient[res[1],{t,0,-1},{u,0,-1}];
-res[2]=tterms+uterms-crossterms;
-constterms=SeriesCoefficient[res[2],{t,0,0},{u,0,0}];
-res[3]=res[2]-constterms
-];
 
-dropTUCrossTerm[arg_]:=Module[{res},
-(* the reference clearly drops 1/(t u) terms in the scalar matrix elements, so we do too *)
-res[1]=fixConvention[arg];
-res[2]=Normal[Series[res[1],{t,0,-2}]]+Normal[Series[res[1],{u,0,-2}]]
-]*)
-
-
-generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+generateWallGoLL[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
 ]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing//exprDivOnly;
 
-testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
-	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
+testWallGoLL[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateWallGoLL[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
 generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
-]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing(*//exprDivOnly*);
+]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing;
 
 generateFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
 	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
@@ -376,17 +359,7 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
-result=(s1 (128s^2)/(t s)+s2 (128t^2
- )/(s t)+s3 (128s^2
- )/(u s)+s4 (128t^2
- )/(u t)+s5 (128u^2
- )/(s u)+s6 (128u^2 )/(t u)
- )
- result(*//fixConvention*)//truncateAtLeadingLog
- %(*/.Thread[{s1,s2,s3,s4,s5,s6}->1]*)//symmetriseTU
-
-
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Initialize tests*)
 
 
@@ -401,7 +374,7 @@ testList={};
 
 
 process="tt->gg"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL"},
 	{"TopL"},
 	{"Gluon"},
@@ -418,7 +391,7 @@ AppendTo[testList,
 
 
 process="tq->tq"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL"},
 	{"LightQuarks","BotL","BotR"},
 	{"TopL"},
@@ -435,21 +408,42 @@ AppendTo[testList,
 
 
 process="Wg->qq"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"W"},
 	{"Gluon"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"}
 ]/.{logDiv->1,powDiv->1}
-(* missing factor 4 *)
+
+
+(*Importing results from FeynCalc*)
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.gluonWquarks.test.json"];
+
+test["FeynCalc"][process]=testFeynCalc[
+	{"W","Wbar","Z"},
+	{"g"},
+	{
+		"t","tbar","b","bbar",
+		"c","cbar","s","sbar",
+		"u","ubar","d","dbar"
+	},
+	{
+		"t","tbar","b","bbar",
+		"c","cbar","s","sbar",
+		"u","ubar","d","dbar"
+	}
+]//Simplify//Expand
+
+(*(* missing factor 4 *)
 test["Reference"][process]=(
-		-72*g3^2*gw^2*s*t/(t-mq2)^2
-	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
+		-72*g3^2*gw^2*(+s)*t/(t-mq2)^2
+	)/.setMassesToZero//fixConvention//truncateAtLeadingLog*)
+	
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
-		test["Reference"][process],
-		TestID->"WallGo vs Reference: "<>process]];
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
 process="WW->ff"
@@ -459,15 +453,35 @@ test["WallGo"][process]=testWallGo[
 	{"LightLeptons","LightQuarks","BotL","TopL"},
 	{"LightLeptons","LightQuarks","BotL","TopL"}
 ]/.{logDiv->1,powDiv->1}
-(* missing factor 4 *)
+
+(*Importing results from FeynCalc*)
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.lightFermions.test.json"];
+
+test["FeynCalc"][process]=testFeynCalc[
+	{"W","Wbar","Z"},
+	{"W","Wbar","Z"},
+	{
+		"t","tbar","b","bbar","tau","taubar","nuTau","nuTaubar",
+		"c","cbar","s","sbar","mu","mubar","nuMu","nuMubar",
+		"u","ubar","d","dbar","e","ebar","nuE","nuEbar"
+	},
+	{
+		"t","tbar","b","bbar","tau","taubar","nuTau","nuTaubar",
+		"c","cbar","s","sbar","mu","mubar","nuMu","nuMubar",
+		"u","ubar","d","dbar","e","ebar","nuE","nuEbar"
+	}
+]//Simplify//Expand
+
+(*(* missing factor 4 *)
 test["Reference"][process]=(
 		-27/2*gw^4*(3*s/(t-mq2)+s/(t-mq2))
-	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
+	)/.setMassesToZero//fixConvention//truncateAtLeadingLog*)
+	
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
-		test["Reference"][process],
-		TestID->"WallGo vs Reference: "<>process]];
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
 (* ::Subsubsection:: *)
@@ -475,7 +489,7 @@ AppendTo[testList,
 
 
 process="tg->tg"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL"},
 	{"Gluon"},
 	{"TopL"},
@@ -498,21 +512,36 @@ test["WallGo"][process]=testWallGo[
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"Gluon"}
-](*//truncateAtLeadingLog*)
-(*missing factor 2*)
+]/.{logDiv->1,powDiv->1}
+
+(*Importing results from FeynCalc*)
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.gluonWquarks.test.json"];
+
+test["FeynCalc"][process]=testFeynCalc[
+	{"W","Wbar","Z"},
+	{
+		"t","tbar","b","bbar",
+		"c","cbar","s","sbar",
+		"u","ubar","d","dbar"
+	},
+	{
+		"t","tbar","b","bbar",
+		"c","cbar","s","sbar",
+		"u","ubar","d","dbar"
+	},
+	{"g"}
+]//Simplify//Expand
+
+(*(*missing factor 2*)
 test["Reference"][process]=(
 		-72*g3^2*gw^2*s/(t-mq2)
-	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
+	)/.setMassesToZero//fixConvention//truncateAtLeadingLog*)
+	
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
-		test["Reference"][process],
-		TestID->"WallGo vs Reference: "<>process]];
-
-
-(*Importing results from FeynCalc*)
-{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.lightFermions.test.json"];
-particlesFeyn
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
 process="Wf->Wf"
@@ -522,17 +551,9 @@ test["WallGo"][process]=testWallGo[
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"}
 ]/.{logDiv->1,powDiv->1}
-(* have to replace 360 -> 288 in first term and add factor 2 on second term *)
-test["Reference"][process]=(
-		+s1*360*gw^4*(s^2+u^2)/(t-mw2)^2
-		-s2*27/2*gw^4*(3*s/(u-mq2)+s/(u-ml2))
-	)(*/.{s1->1,s2->2}*)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
-AppendTo[testList,
-	TestCreate[
-		test["WallGo"][process]//Evaluate,
-		test["Reference"][process],
-		TestID->"WallGo vs Reference: "<>process]];
 
+(*Importing results from FeynCalc*)
+{particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.lightFermions.test.json"];
 
 test["FeynCalc"][process]=testFeynCalc[
 	{"W","Wbar","Z"},
@@ -550,12 +571,25 @@ test["FeynCalc"][process]=testFeynCalc[
 ]//Simplify//Expand
 
 
+(* have to replace 360 -> 288 in first term and add factor 2 on second term *)
+(*test["Reference"][process]=(
+		+s1*360*gw^4*(s^2+u^2)/(t-mw2)^2
+		-s2*27/2*gw^4*(3*s/(u-mq2)+s/(u-ml2))
+	)(*/.{s1->1,s2->2}*)/.setMassesToZero//fixConvention//truncateAtLeadingLog*)
+	
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
+
+
 (* ::Subsubsection:: *)
 (*FFtoSV*)
 
 
 process="tt->gh"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL"},
 	{"TopR"},
 	{"Gluon"},
@@ -572,7 +606,7 @@ AppendTo[testList,
 
 
 process="tt->g G0"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL"},
 	{"TopR"},
 	{"Gluon"},
@@ -593,7 +627,7 @@ AppendTo[testList,
 
 
 process="tg->th"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL"},
 	{"Gluon"},
 	{"TopR"},
@@ -610,7 +644,7 @@ AppendTo[testList,
 
 
 process="tg->tG0"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL"},
 	{"Gluon"},
 	{"TopR"},
@@ -627,7 +661,7 @@ AppendTo[testList,
 
 
 process="tg->tG+"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL","TopR"},
 	{"Gluon"},
 	{"BotL"},
@@ -648,7 +682,7 @@ AppendTo[testList,
 
 
 process="tG-->bg"
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL","TopR"},
 	{"GoldstoneGpI"},
 	{"BotL"},
@@ -671,32 +705,26 @@ AppendTo[testList,
 process="tb->h,G+"
 (* here we have only u/t but not t/u contribution but there should be both such
 that for similar particles between 12 and 34, the result is correct *)
-test["WallGo"][process]=testWallGo[
+test["WallGo"][process]=testWallGoLL[
 	{"TopL","TopR"},
 	{"BotL","BotR"},
 	{"Higgs"},
 	{"GoldstoneGpR","GoldstoneGpI"}
 ]/.{logDiv->1,powDiv->1}
-test["Reference"][process]=1/2*(
+
+test["FeynCalc"][process]=1/2*(
 		+6 u/t yt1^4
-		(*8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2)*)
-	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
+	)/.setMassesToZero//fixConvention
+	
+(*test["Reference"][process]=1/2*(
+		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
+	)/.setMassesToZero//fixConvention*)
+
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
-		test["Reference"][process],
-		TestID->"WallGo vs Reference: "<>process]];
-
-
-(*this is the Feyncalc result and it shows that only the yt^4 contribution is LL *)
-resFC=(3*u*(gw^2*t + 2*s*yt^2)^2)/(2*s^2*t)//Expand
-%//fixConvention(*//truncateAtLeadingLog*)
-
-
-(*there is no more difference in putting factors before or after LL trunction *)
-s1 resWG- s2 resFC/.{yt->yt1,lam1H->0}//fixConvention//truncateAtLeadingLog
-%/.{s1->2,s2->1}
-s1 resWG- s2 resFC/.{s1->2,s2->1}/.{yt->yt1,lam1H->0}//fixConvention//truncateAtLeadingLog
+		test["FeynCalc"][process],
+		TestID->"WallGo vs FeynCalc: "<>process]];
 
 
 (* ::Subsubsection:: *)
@@ -704,16 +732,17 @@ s1 resWG- s2 resFC/.{s1->2,s2->1}/.{yt->yt1,lam1H->0}//fixConvention//truncateAt
 
 
 process="hh->AA"
-test["WallGo"][process]=testWallGo[
+(*only power divergences kept*)
+test["WallGo"][process]=testWallGoLL[
 	{"Higgs"},
 	{"Higgs"},
 	{"A"},
 	{"A"}
-]/.{lam1H->0}/.{logDiv->1,powDiv->1}
-(* the Reference result drops the 1/(t u) cross term here *)
+]/.{lam1H->0}/.{logDiv->0,powDiv->1}
+(* the Reference result drops the log divergent 1/(t u) cross term here *)
 test["Reference"][process]=2*(
 		lam3H^4*v^4/2*(1/(t-mA2)^2+1/(u-mA2)^2)
-	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
+	)/.setMassesToZero//fixConvention
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -722,16 +751,17 @@ AppendTo[testList,
 
 
 process="Ah->hA"
-test["WallGo"][process]=testWallGo[
+(*only power divergences kept*)
+test["WallGo"][process]=testWallGoLL[
 	{"A"},
 	{"Higgs"},
 	{"Higgs"},
 	{"A"}
-]/.{lam1H->0}/.{logDiv->1,powDiv->1}
-(* the Reference result drops the 1/(t u) cross term here *)
+]/.{lam1H->0}/.{logDiv->0,powDiv->1}
+(* the Reference result drops the log divergent 1/(t u) cross term here *)
 test["Reference"][process]=2*(
 		lam3H^4*v^4/2*(1/(t-mA2)^2)
-	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
+	)/.setMassesToZero//fixConvention
 AppendTo[testList,
 	TestCreate[
 		test["WallGo"][process]//Evaluate,
@@ -747,7 +777,7 @@ report=TestReport[testList]
 report["ResultsDataset"]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Test if the propagator mass is correct*)
 
 
@@ -785,3 +815,51 @@ For[l = 1, l<= Length[vectors], l++,
 ];
 testmasses=TestCreate[Total[testList - Table[0,{i,Length[testList]}]]==0];
 TestEvaluate[testmasses]
+
+
+(* ::Section::Closed:: *)
+(*Truncate leading log tests*)
+
+
+symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
+
+fixConvention[arg_]:=symmetriseTU[
+	arg/.comparisonReplacements/.{s->(-t-u)}
+	]//Expand//Simplify//Expand
+
+removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
+
+truncateAtLeadingLog[arg_]:=Module[{res,tterms,uterms,crossterms,constterms},
+res[1]=fixConvention[arg];
+(*res[1]=arg;*)
+tterms=Normal[Series[res[1],{t,0,-1}]];
+uterms=Normal[Series[res[1],{u,0,-1}]];
+crossterms=(1/(t u))SeriesCoefficient[res[1],{t,0,-1},{u,0,-1}];
+res[2]=tterms+uterms-crossterms;
+constterms=SeriesCoefficient[res[2],{t,0,0},{u,0,0}];
+res[3]=res[2]-constterms
+];
+
+dropTUCrossTerm[arg_]:=Module[{res},
+(* the reference clearly drops 1/(t u) terms in the scalar matrix elements, so we do too *)
+res[1]=fixConvention[arg];
+res[2]=Normal[Series[res[1],{t,0,-2}]]+Normal[Series[res[1],{u,0,-2}]]
+]
+
+
+result=(
+	+s1 (128s^2)/(t s)
+	+s2 (128t^2)/(s t)
+	+s3 (128s^2)/(u s)
+	+s4 (128t^2)/(u t)
+	+s5 (128u^2)/(s u)
+	+s6 (128u^2)/(t u)
+ )
+result(*//fixConvention*)//truncateAtLeadingLog
+LLtest=%/.Thread[{s1,s2,s3,s4,s5,s6}->1]//symmetriseTU
+
+testLLFilter=TestCreate[LLtest==0];
+TestEvaluate[testLLFilter]
+
+
+
