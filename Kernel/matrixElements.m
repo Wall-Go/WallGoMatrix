@@ -1484,7 +1484,7 @@ ExtractOutOfEqElement[particleListAll_,particleListOutOfEq_,ParticleMasses_]:=
 	collisionElementsTotal =
 	  Which[
 	    bTruncateAtLeadingLog && !bTagLeadingLog,
-	      TruncateAtLeadingLogarithm[collisionElementsTotal] /. {logDiv -> 1, powDiv -> 1},
+	      TruncateAtLeadingLogarithm[collisionElementsTotal] /. {logEnhanced -> 1, powerEnhanced -> 1},
 	    bTruncateAtLeadingLog && bTagLeadingLog,
 	      TruncateAtLeadingLogarithm[collisionElementsTotal],
 	    bTagLeadingLog,
@@ -1576,6 +1576,40 @@ Block[{Elements},
 ];
 
 
+TagLeadingLogarithm::usage =
+"TagLeadingLogarithm[MatrixElements] classifies a list of \
+2-to-2 scattering matrix elements according to their enhanced structures in the \
+high-energy limit, retaining only the leading logarithmic contributions.
+
+ \[Bullet] Input: a list of elements of the form {amplitudeExpression, {i,j,k,l}},
+   where the second entry encodes external state indices.
+
+ \[Bullet] The classification follows Algorithm~1 of the accompanying publication [25xx:xxxx], applied when the option TruncateAtLeadingLog -> True is set in ExportMatrixElements.
+
+ \[Bullet] The algorithm distinguishes three cases:
+   - \!\(\*StyleBox[\"Forward channel\", FontSlant -> \"Italic\"]\): when particles a \[Congruent] c and b \[Congruent] d.
+       \[Bullet] If also a \[Congruent] d (fully identical particles):
+         no power enhancement;
+         logarithmic enhancement from 1/t^2 and 1/u^2;
+         terms \[Proportional] 1/t or 1/u are finite.
+       \[Bullet] Otherwise:
+         power enhancement from 1/u^2;
+         logarithmic enhancement from 1/t^2 or 1/u.
+   - \!\(\*StyleBox[\"Crossed channel\", FontSlant -> \"Italic\"]\): when particles a \[Congruent] d and b \[Congruent] c.
+       power enhancement from 1/t^2;
+       logarithmic enhancement from 1/u^2 or 1/t.
+   - \!\(\*StyleBox[\"Generic case\", FontSlant -> \"Italic\"]\):
+       power enhancement from 1/t^2 and 1/u^2;
+       logarithmic enhancement from 1/t or 1/u.
+
+ \[Bullet] Output: a tagged list of the form \
+   {{leadingLogContribution1, {i,j,k,l}}, ...}, \
+   with \!\(\*
+StyleBox[\"powerEnhanced\",\nFontSlant->\"Italic\"]\) for power enhanced structures and \!\(\*
+StyleBox[\"logEnhanced\",\nFontSlant->\"Italic\"]\) for logarithmic enhanced terms.\
+";
+
+
 TagLeadingLogarithm[MatrixElements_]:=Module[
 	{
 		MatrixElementsF,S,T,U
@@ -1590,27 +1624,27 @@ TagLeadingLogarithm[MatrixElements_]:=Module[
 		If[#[[2]][[1]]==#[[2]][[3]]&&#[[2]][[2]]==#[[2]][[4]],
 			If[#[[2]][[1]]==#[[2]][[4]],
 				#[[1]]/.{
-					1/U^2->logDiv/U^2,
-					1/T^2->logDiv/T^2
+					1/U^2->logEnhanced/U^2,
+					1/T^2->logEnhanced/T^2
 					},
 				#[[1]]/.{
-					1/U^2->powDiv/U^2,
-					1/T^2->logDiv/T^2,
-					1/U->logDiv/U
+					1/U^2->powerEnhanced/U^2,
+					1/T^2->logEnhanced/T^2,
+					1/U->logEnhanced/U
 					}
 			],
 			If[#[[2]][[1]]==#[[2]][[4]]&&#[[2]][[2]]==#[[2]][[3]],
 				#[[1]]/.{
-					1/T^2->powDiv/T^2,
-					1/U^2->logDiv/U^2,
-					1/T->logDiv/T
+					1/T^2->powerEnhanced/T^2,
+					1/U^2->logEnhanced/U^2,
+					1/T->logEnhanced/T
 					},
 				#[[1]]/.{
-					1/U^2->powDiv/U^2,
-					1/T^2->powDiv/T^2,
-					1/T/U->logDiv/T/U,
-					1/U->logDiv/U,
-					1/T->logDiv/T
+					1/U^2->powerEnhanced/U^2,
+					1/T^2->powerEnhanced/T^2,
+					1/T/U->logEnhanced/T/U,
+					1/U->logEnhanced/U,
+					1/T->logEnhanced/T
 					}
 			]
 		],
@@ -1618,7 +1652,7 @@ TagLeadingLogarithm[MatrixElements_]:=Module[
 			MatrixElementsF
 		];
 		
-	If[Max[Exponent[#, {logDiv,powDiv}, Max]&/@MatrixElementsF[[All, 1]]] > 1,
+	If[Max[Exponent[#, {logEnhanced,powerEnhanced}, Max]&/@MatrixElementsF[[All, 1]]] > 1,
 		Message[WallGoMatrix::failmsg,
 			"Found mixed log divergences some channels were not correctly leading log-filtered."];
 		Abort[];
@@ -1637,8 +1671,8 @@ TruncateAtLeadingLogarithm[MatrixElements_]:=Module[
 	MatrixElementsF=TagLeadingLogarithm[MatrixElements];
 		
 	MatrixElementsF=Map[{
-			+ powDiv*SeriesCoefficient[#[[1]],{powDiv,0,1}]
-			+ logDiv*SeriesCoefficient[#[[1]],{logDiv,0,1}]
+			+ powerEnhanced*SeriesCoefficient[#[[1]],{powerEnhanced,0,1}]
+			+ logEnhanced*SeriesCoefficient[#[[1]],{logEnhanced,0,1}]
 			,
 			#[[2]]}&,
 			MatrixElementsF

@@ -248,28 +248,43 @@ This function is useful for grouping particles into one collective representatio
 
 
 TruncateAtLeadingLogarithm::usage =
-"TruncateAtLeadingLogarithm[MatrixElements] truncates a list of 2-to-2 \
-scattering matrix elements at the level of their leading logarithmic \
-contribution in the high-energy limit.
+"TruncateAtLeadingLogarithm[MatrixElements] classifies and truncates a list of \
+2-to-2 scattering matrix elements according to their enhanced structures in the \
+high-energy limit, retaining only the leading logarithmic contributions.
 
- \[Bullet] Input: a list of elements of the form {amplitudeExpression, {i,j,k,l}}, \
+ \[Bullet] Input: a list of elements of the form {amplitudeExpression, {i,j,k,l}},
    where the second entry encodes external state indices.
 
- \[Bullet] The function performs the following steps:
-   - Normalizes propagator denominators by introducing auxiliary scaling \
-     variables S, T, U for (s+msq), (t+msq), (u+msq).
-   - Expands each amplitude in the asymptotic large-energy limit using \
-     SeriesCoefficient[\[Ellipsis], {xLarge, \[Infinity], \[Ellipsis]}].
-   - Keeps only the terms generating leading logarithmic growth. If the \
-     external indices coincide, two terms are retained; otherwise only the \
-     leading term.
-   - Discards cross-channel interference terms (S T \[RightArrow] 0, S U \[RightArrow] 0, T U \[RightArrow] 0).
-   - Collects and simplifies expressions in {S, T, U}, then replaces them \
-     by 1.
-   - Removes vanishing entries.
+ \[Bullet] The classification follows Algorithm~1 of the accompanying publication [25xx:xxxx], applied when the option TruncateAtLeadingLog -> True is set in ExportMatrixElements.
 
- \[Bullet] Output: a cleaned list of the form \
-   {{leadingLogContribution1, {i,j,k,l}}, \[Ellipsis]}.
+ \[Bullet] The algorithm distinguishes three cases:
+   - \!\(\*StyleBox[\"Forward channel\", FontSlant -> \"Italic\"]\): when particles a \[Congruent] c and b \[Congruent] d.
+       \[Bullet] If also a \[Congruent] d (fully identical particles):
+         no power enhancement;
+         logarithmic enhancement from 1/t^2 and 1/u^2;
+         terms \[Proportional] 1/t or 1/u are finite.
+       \[Bullet] Otherwise:
+         power enhancement from 1/u^2;
+         logarithmic enhancement from 1/t^2 or 1/u.
+   - \!\(\*StyleBox[\"Crossed channel\", FontSlant -> \"Italic\"]\): when particles a \[Congruent] d and b \[Congruent] c.
+       power enhancement from 1/t^2;
+       logarithmic enhancement from 1/u^2 or 1/t.
+   - \!\(\*StyleBox[\"Generic case\", FontSlant -> \"Italic\"]\):
+       power enhancement from 1/t^2 and 1/u^2;
+       logarithmic enhancement from 1/t or 1/u.
+
+ \[Bullet] Power-enhanced structures are tagged by \!\(\*
+StyleBox[\"powerEnhanced\",\nFontSlant->\"Italic\"]\)\!\(\*
+StyleBox[\".\",\nFontWeight->\"Plain\",\nFontSlant->\"Italic\"]\)
+   Logarithmically-enhanced structures are tagged by \!\(\*
+StyleBox[
+StyleBox[
+RowBox[{\"l\", 
+StyleBox[\"ogEnhanced\",\nFontWeight->\"Plain\"]}]],\nFontSlant->\"Italic\"]\).
+
+ \[Bullet] Output: a truncated list of the form
+   {{leadingLogContribution1, {i,j,k,l}}, ...},
+   containing only terms contributing to leading logarithmic behaviour.\
 ";
 
 
@@ -318,7 +333,7 @@ Options:
 - TruncateAtLeadingLog (Boolean, default \[RightArrow] True):
 	If True, truncates the matrix elements at the leading logarithmic order (default is True).
 - TagLeadingLog (Boolean, default \[RightArrow] False):
-	tag leading-log terms in the output being either power divergent (powDiv or logarithmically divergent (logDiv).
+	tag leading-log terms in the output being either power enhanced (powerEnhanced) or logarithmically enhanced (logEnhanced).
 - NormalizeWithDOF (Boolean, default \[RightArrow] True):
 	If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
 - Replacements (List, default \[RightArrow] { }):
@@ -371,7 +386,7 @@ Options:
     - \"none\": Does not export to a file (default)
 - Verbose (Boolean): If True, lists channels that are currently being computed (default is False).
 - TruncateAtLeadingLog (Boolean): If True, truncates the matrix elements at the leading logarithmic order (default is True).
-- TagLeadingLog (Boolean): tag leading-log terms in the output being either power divergent (powDiv or logarithmically divergent (logDiv).
+- TagLeadingLog (Boolean): tag leading-log terms in the output being either power enhanced (powerEnhanced) or logarithmically enhanced (logEnhanced).
 - NormalizeWithDOF (Boolean): If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
 - Replacements (List): list of replacement rules applied to the generated elements.
 

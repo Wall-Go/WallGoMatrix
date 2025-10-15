@@ -283,14 +283,14 @@ M[5,14,5,14]/.MatrixElements
 M[7,12,8,11]/.MatrixElements
 
 
-(*Show power divergences at variaous places that not only involves cubic scalar coupling*)
-powDivEntries=Select[MatrixElements, ! FreeQ[#[[2]], powDiv] &]
+(*Show power enhancement at variaous places that not only involves cubic scalar coupling*)
+powDivEntries=Select[MatrixElements, ! FreeQ[#[[2]], powerEnhanced] &]
 Length[powDivEntries]
 
 
 exprDivOnly[expr_] := 
-  (*Coefficient[expr, powDiv, 1]*powDiv + Coefficient[expr, logDiv, 1]*logDiv*)
-  Collect[expr, {powDiv,logDiv}]
+  (*Coefficient[expr, powerEnhanced, 1]*powerEnhanced + Coefficient[expr, logEnhanced, 1]*logEnhanced*)
+  Collect[expr, {powerEnhanced,logEnhanced}]
 powDivEntries[[100]]/. Rule[a_, expr_] :> (a -> exprDivOnly[expr])
 
 
@@ -309,13 +309,13 @@ powDivEntries[[100]]/. Rule[a_, expr_] :> (a -> exprDivOnly[expr])
 (*Comparison tests*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Translate input*)
 
 
 groupFactors={ };
 UserMasses={mq2,ml2,mg2,mw2};
-customParameters={gs->g3,ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam(*,logDiv->1,powDiv->1*)};
+customParameters={gs->g3,ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam(*,logEnhanced->1,powerEnhanced->1*)};
 setMassesToZero={Thread[UserMasses->0],Thread[{mChi,mPhi,mPsi}->0],Thread[{mA2,mW2,mG2,mh2}->0]}//Flatten;
 comparisonReplacements={
 	groupFactors,
@@ -325,7 +325,7 @@ comparisonReplacements={
 
 
 exprDivOnly[expr_] := 
-  Coefficient[expr, powDiv, 1]*powDiv + Coefficient[expr, logDiv, 1]*logDiv
+  Coefficient[expr, powerEnhanced, 1]*powerEnhanced + Coefficient[expr, logEnhanced, 1]*logEnhanced
 
 
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
@@ -359,7 +359,7 @@ testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateFeynCalc[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Initialize tests*)
 
 
@@ -379,7 +379,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"TopL"},
 	{"Gluon"},
 	{"Gluon"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 test["Reference"][process]=(
 		128/3*g3^4(u/(t-mq2^2)+t/(u-mq2^2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -396,7 +396,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"LightQuarks","BotL","BotR"},
 	{"TopL"},
 	{"LightQuarks","BotL","BotR"}
-]/.{gw->0,yt1->0}/.{logDiv->1,powDiv->1}
+]/.{gw->0,yt1->0}/.{logEnhanced->1,powerEnhanced->1}
 test["Reference"][process]=(
 		+160*g3^4*(s^2+u^2)/(t-mq2^2)^2
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -413,7 +413,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"Gluon"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 
 
 (*Importing results from FeynCalc*)
@@ -452,7 +452,7 @@ test["WallGo"][process]=testWallGo[
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","TopL"},
 	{"LightLeptons","LightQuarks","BotL","TopL"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.lightFermions.test.json"];
@@ -494,7 +494,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"Gluon"},
 	{"TopL"},
 	{"Gluon"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 test["Reference"][process]=(
 		-128/3*g3^4*(s*u/(u-mg2^2)^2)
 		+96*g3^4*(s^2+u^2)/(t-mq2^2)^2
@@ -512,7 +512,7 @@ test["WallGo"][process]=testWallGo[
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"LightQuarks","BotL","BotR","TopL","TopR"},
 	{"Gluon"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.gluonWquarks.test.json"];
@@ -550,7 +550,7 @@ test["WallGo"][process]=testWallGo[
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"},
 	{"W"},
 	{"LightLeptons","LightQuarks","BotL","BotR","TopL","TopR"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 
 (*Importing results from FeynCalc*)
 {particlesFeyn,parametersFeyn,MatrixElementsFeyn}=ImportMatrixElements["testFiles/SMQCD.lightFermions.test.json"];
@@ -594,7 +594,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"TopR"},
 	{"Gluon"},
 	{"Higgs"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 test["Reference"][process]=(
 		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -611,7 +611,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"TopR"},
 	{"Gluon"},
 	{"GoldstoneG0"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 test["Reference"][process]=(
 		8*yt1^2*g3^2(u/(t-mq2)+t/(u-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -632,7 +632,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"Gluon"},
 	{"TopR"},
 	{"Higgs"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 test["Reference"][process]=(
 		-8*yt1^2*g3^2(s/(t-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -649,7 +649,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"Gluon"},
 	{"TopR"},
 	{"GoldstoneG0"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 test["Reference"][process]=(
 		-8*yt1^2*g3^2(s/(t-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -666,7 +666,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"Gluon"},
 	{"BotL"},
 	{"GoldstoneGpR"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 test["Reference"][process]=(
 		-8*yt1^2*g3^2(s/(t-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -687,7 +687,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"GoldstoneGpI"},
 	{"BotL"},
 	{"Gluon"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 test["Reference"][process]=(
 		-8*yt1^2*g3^2(s/(t-mq2))
 	)/.setMassesToZero//fixConvention(*//truncateAtLeadingLog*)
@@ -710,7 +710,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"BotL","BotR"},
 	{"Higgs"},
 	{"GoldstoneGpR","GoldstoneGpI"}
-]/.{logDiv->1,powDiv->1}
+]/.{logEnhanced->1,powerEnhanced->1}
 
 test["FeynCalc"][process]=1/2*(
 		+6 u/t yt1^4
@@ -738,7 +738,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"Higgs"},
 	{"A"},
 	{"A"}
-]/.{lam1H->0}/.{logDiv->0,powDiv->1}
+]/.{lam1H->0}/.{logEnhanced->0,powerEnhanced->1}
 (* the Reference result drops the log divergent 1/(t u) cross term here *)
 test["Reference"][process]=2*(
 		lam3H^4*v^4/2*(1/(t-mA2)^2+1/(u-mA2)^2)
@@ -757,7 +757,7 @@ test["WallGo"][process]=testWallGoLL[
 	{"Higgs"},
 	{"Higgs"},
 	{"A"}
-]/.{lam1H->0}/.{logDiv->0,powDiv->1}
+]/.{lam1H->0}/.{logEnhanced->0,powerEnhanced->1}
 (* the Reference result drops the log divergent 1/(t u) cross term here *)
 test["Reference"][process]=2*(
 		lam3H^4*v^4/2*(1/(t-mA2)^2)
