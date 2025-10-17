@@ -752,7 +752,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -877,7 +877,7 @@ Block[{
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1S1toF1S1*)
 
 
@@ -1048,7 +1048,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toV1V2*)
 
 
@@ -1559,7 +1559,13 @@ TagLeadingLogarithm[MatrixElements_]:=Module[
 		#[[2]]}&,
 			MatrixElementsF
 		];
-		
+	
+	(* 
+	  Check that no matrix element contains powers higher than 1 in either 
+	  logEnhanced or powerEnhanced. 
+	  This ensures that all channels have been correctly filtered to leading-log order. 
+	  This is an internal consistency check. Such terms should never appear in practice. 
+	*)
 	If[Max[Exponent[#, {logEnhanced,powerEnhanced}, Max]&/@MatrixElementsF[[All, 1]]] > 1,
 		Message[WallGoMatrix::failmsg,
 			"Found mixed log divergences some channels were not correctly leading log-filtered."];
