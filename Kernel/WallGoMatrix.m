@@ -288,64 +288,6 @@ StyleBox[\"ogEnhanced\",\nFontWeight->\"Plain\"]}]],\nFontSlant->\"Italic\"]\).
 ";
 
 
-(*GenerateMatrixElementsData::usage = 
-"Computes all 2\[RightArrow]2 scattering matrix elements for the given sets of \
-out-of-equilibrium and light particles. It returns an association containing \
-the symbolic matrix elements, coupling tensors, particle information, and \
-mass parameters, which can be exported later using ExportMatrixElements.
-
-Usage:
-GenerateMatrixElementsData[\!\(\*
-StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
-StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), OptionsPattern[]]
-
-Arguments:
-- \!\(\*
-StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list specifying the external particles for matrix element generation, formatted as{{\!\(\*
-StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},\!\(\*
-StyleBox[\" \",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\!\(\*
-StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) = {\"V\", \"F\", \"S\"}, \!\(\*
-StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \"\!\(\*
-StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"}, where:
-    - \!\(\*
-StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Indices of the fields involved.
-    - \!\(\*
-StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Type of particle representation (Vector Boson, Fermion, Scalar).
-    - \!\(\*
-StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Mass parameter of the particle.
-    - \!\(\*
-StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the particle.
-- \!\(\*
-StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of light particles involved in the calculations, formatted similarly to \!\(\*
-StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\).
-
-The returned association includes the following keys:
-  \"Cij\" \[RightArrow] coupling tensor representation
-  \"MatrixElementsList\" \[RightArrow] list of computed matrix elements (after replacements)
-  \"particleListAll\" \[RightArrow] combined particle list
-  \"particleNames\" \[RightArrow] particle names
-  \"userCouplings\" \[RightArrow] coupling symbols appearing in the matrix elements
-  \"particleMasses\" \[RightArrow] particle masses grouped by spin type
-
-Options:
-- Verbose (Boolean, default \[RightArrow] False):
-	If True, lists channels that are currently being computed (default is False).
-- TruncateAtLeadingLog (Boolean, default \[RightArrow] True):
-	If True, truncates the matrix elements at the leading logarithmic order (default is True).
-- TagLeadingLog (Boolean, default \[RightArrow] False):
-	tag leading-log terms in the output being either power enhanced (powerEnhanced) or logarithmically enhanced (logEnhanced).
-- NormalizeWithDOF (Boolean, default \[RightArrow] True):
-	If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
-- Replacements (List, default \[RightArrow] { }):
-	list of replacement rules applied to the generated elements.
-
-Example:
-  data = GenerateMatrixElementsData[outOfEqParticles, lightParticles, 
-           NormalizeWithDOF \[RightArrow] True, Verbose \[RightArrow] True];
-  data[\"MatrixElementsList\"]
-";*)
-
-
 ExportMatrixElements::usage = 
 "Generates all possible matrix elements with the external particles specified in particleList, and exports the results to file.
 
@@ -442,9 +384,6 @@ StyleBox[\"Field\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\
   - Fermion: Represents fermionic fields.
   - Scalar: Represents scalar fields.\
 ";
-
-
-ImportMatrixElements::usage="";
 
 
 WallGoMatrix::failmsg =
@@ -932,6 +871,64 @@ extractParticleMasses[particleList_, type_, length_] :=
 	
     Return[resultVector];
   ];
+
+
+GenerateMatrixElementsData::usage = 
+"Computes all 2\[RightArrow]2 scattering matrix elements for the given sets of \
+out-of-equilibrium and light particles. It returns an association containing \
+the symbolic matrix elements, coupling tensors, particle information, and \
+mass parameters, which can be exported later using ExportMatrixElements.
+
+Usage:
+GenerateMatrixElementsData[\!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), OptionsPattern[]]
+
+Arguments:
+- \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list specifying the external particles for matrix element generation, formatted as{{\!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},\!\(\*
+StyleBox[\" \",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) = {\"V\", \"F\", \"S\"}, \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \"\!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"}, where:
+    - \!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Indices of the fields involved.
+    - \!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Type of particle representation (Vector Boson, Fermion, Scalar).
+    - \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Mass parameter of the particle.
+    - \!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the particle.
+- \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of light particles involved in the calculations, formatted similarly to \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\).
+
+The returned association includes the following keys:
+  \"Cij\" \[RightArrow] coupling tensor representation
+  \"MatrixElementsList\" \[RightArrow] list of computed matrix elements (after replacements)
+  \"particleListAll\" \[RightArrow] combined particle list
+  \"particleNames\" \[RightArrow] particle names
+  \"userCouplings\" \[RightArrow] coupling symbols appearing in the matrix elements
+  \"particleMasses\" \[RightArrow] particle masses grouped by spin type
+
+Options:
+- Verbose (Boolean, default \[RightArrow] False):
+	If True, lists channels that are currently being computed (default is False).
+- TruncateAtLeadingLog (Boolean, default \[RightArrow] True):
+	If True, truncates the matrix elements at the leading logarithmic order (default is True).
+- TagLeadingLog (Boolean, default \[RightArrow] False):
+	tag leading-log terms in the output being either power enhanced (powerEnhanced) or logarithmically enhanced (logEnhanced).
+- NormalizeWithDOF (Boolean, default \[RightArrow] True):
+	If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
+- Replacements (List, default \[RightArrow] { }):
+	list of replacement rules applied to the generated elements.
+
+Example:
+  data = GenerateMatrixElementsData[outOfEqParticles, lightParticles, 
+           NormalizeWithDOF \[RightArrow] True, Verbose \[RightArrow] True];
+  data[\"MatrixElementsList\"]
+";
 
 
 GenerateMatrixElementsData[outOfEqParticleList_, lightParticleList_, OptionsPattern[]] :=
