@@ -147,6 +147,7 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
+		TagLeadingLog->True,
 		Replacements->{gw->0,lam4H->0,lam5H->0},
 		Format->{"json","txt"},
 		NormalizeWithDOF->True
@@ -169,7 +170,7 @@ MatrixElements=ExportMatrixElements[
 (*Comparison tests*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Translate input*)
 
 
@@ -200,7 +201,7 @@ testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
 	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Initialize tests*)
 
 
@@ -210,7 +211,7 @@ particles
 testList={};
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*SStoSS*)
 
 
@@ -220,7 +221,7 @@ test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"A"},
 	{"A"}
-]
+]/.{logEnhanced->0,powerEnhanced->1}
 test["Reference"][process]=2*(
 		lam3H^4*v^4/2*(1/(t-mA2)^2+1/(u-mA2)^2)
 	)/.setMassesToZero//fixConvention
@@ -237,7 +238,7 @@ test["WallGo"][process]=testWallGo[
 	{"Higgs"},
 	{"Higgs"},
 	{"A"}
-]/.{lam1H->0,v^2->0}
+]/.{lam1H->0,v^2->0}/.{logEnhanced->0,powerEnhanced->1}
 test["Reference"][process]=2*(
 		lam3H^4*v^4/2*(1/(t-mA2)^2)
 	)/.setMassesToZero//fixConvention
