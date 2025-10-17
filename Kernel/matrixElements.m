@@ -371,7 +371,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
@@ -398,7 +398,10 @@ If[
 	particle4[[2]]!="F",
 	Return[0];
 ,
-	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i,1]], {i,1,4}];
+	Do[
+		partInt[i] = {particle1, particle2, particle3, particle4}[[i,1]],
+		{i, 1, 4}
+	];
 
 (*Propagator masses*)
 	vectorMass=particleMass[[1]];
@@ -524,7 +527,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toV1V2*)
 
 
@@ -551,7 +554,10 @@ If[
 	(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="F"||particle4[[2]]!="F"),
 	Return[0];
 ,
-	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i,1]], {i,1,4}];
+	Do[
+		partInt[i] = {particle1, particle2, particle3, particle4}[[i,1]],
+		{i, 1, 4}
+	];
 If[
 	particle1[[2]]=="V"&&
 	particle2[[2]]=="V"&&
@@ -640,7 +646,10 @@ If[
 	(particle1[[2]]!="V"||particle2[[2]]!="V"||particle3[[2]]!="F"||particle4[[2]]!="F"),
 	Return[0];
 ,
-	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i,1]], {i,1,4}];
+	Do[
+		partInt[i] = {particle1, particle2, particle3, particle4}[[i,1]],
+		{i, 1, 4}
+	];
 If[
 	particle1[[2]]=="V"&&
 	particle2[[2]]=="V"&&
@@ -733,7 +742,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1V1toF1V1*)
 
 
@@ -754,7 +763,10 @@ If[ (
 	(particle3[[2]]=="F"&&particle4[[2]]=="V")||
 	(particle3[[2]]=="V"&&particle4[[2]]=="F")),
 
-	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i]], {i,1,4}];
+	Do[
+		partInt[i] = {particle1, particle2, particle3, particle4}[[i]],
+		{i, 1, 4}
+	];
 
 (*Changing the order of the particles so that it is always FV->FV*)	
 	If[particle1[[2]]=="V"&&particle2[[2]]=="F",
@@ -981,7 +993,7 @@ Block[{
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1S1*)
 
 
@@ -999,7 +1011,10 @@ If[ (
 	(particle3[[2]]=="F"&&particle4[[2]]=="S")||
 	(particle3[[2]]=="S"&&particle4[[2]]=="F")),
 
-	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i]], {i,1,4}];
+	Do[
+		partInt[i] = {particle1, particle2, particle3, particle4}[[i]],
+		{i, 1, 4}
+	];
 (*
 	Changing the order of the particles so that it is always SF->SF.
 	Incidentally the opposite ordering as given in the name of the routine.
@@ -1171,7 +1186,10 @@ If[
 	Return[0];
 ,
 	(* internal particles *)
-	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i,1]], {i,1,4}];
+	Do[
+		partInt[i] = {particle1, particle2, particle3, particle4}[[i,1]],
+		{i, 1, 4}
+	];
 	
 	(* reorder particles so that it is always SS -> VV *)
 	If[
@@ -1243,7 +1261,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1V1toS1V1*)
 
 
@@ -1264,7 +1282,10 @@ If[ (
 	(particle3[[2]]=="S"&&particle4[[2]]=="V")),
 
 	(* internal particles *)
-	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i]], {i,1,4}];
+	Do[
+		partInt[i] = {particle1, particle2, particle3, particle4}[[i]],
+		{i, 1, 4}
+	];
 
 (*Changing the order of the particles so that it is always SV->SV*)	
 	If[particle1[[2]]=="V"&&particle2[[2]]=="S",
@@ -1288,7 +1309,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3V1*)
 
 
@@ -1319,7 +1340,10 @@ If[ (
 	)&&(
 	(particle1[[2]]=="S"&&particle2[[2]]=="S")),
 
-	Table[partInt[i]={particle1,particle2,particle3,particle4}[[i]], {i,1,4}];
+	Do[
+		partInt[i] = {particle1, particle2, particle3, particle4}[[i]],
+		{i, 1, 4}
+	];
 
 (*Changing the order of the particles so that it is always SS->SV*)	
 	If[particle1[[2]]=="V"||particle2[[2]]=="V",
