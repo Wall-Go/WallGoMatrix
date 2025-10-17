@@ -17,7 +17,7 @@ Check[
 ]
 
 
-(* ::Chapter:: *)
+(* ::Title:: *)
 (*SM+sr1*)
 
 
@@ -134,6 +134,9 @@ one right-handed fermion
 *)
 
 
+PrintFieldRepPositions["Scalar"][[1]]
+
+
 (* ::Subsection:: *)
 (*TopL, TopR*)
 
@@ -191,6 +194,10 @@ ParticleList={
 LightParticleList={LightFermions};
 
 
+ParticleList={{{1,3,5,7,8,9},"F",mq2,"Top"},{{2,4,6,10,11,12},"F",mb2,"Bottom"},{{1,2,3,4,5,6,7,8},"V",mg2,"Gluon"},{{9,10,11},"V",mW2,"W"},{{12},"V",mB2,"B"},{{2},"S",mh2,"Higgs"},{{4},"S",mG2,"Goldstone0"},{{1},"S",mGp2,"GoldstonePlus"},{{3},"S",mGm2,"GoldstoneMinus"},{{5},"S",ms2,"Singlet"}}
+LightParticleList={{{13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39},"F",mq2,"LightFermions"}}
+
+
 (*
 	output of matrix elements
 *)
@@ -203,25 +210,31 @@ MatrixElements=ExportMatrixElements[
 	{
 		Verbose->True,
 		TruncateAtLeadingLog->True,
+		TagLeadingLog->False,
 		Replacements->{gw->0,g1->0},
 		NormalizeWithDOF->False,
-		Format->{"json","txt"}}];
+		Format->{"json","txt"}
+	}
+];
 
 
 (* ::Section:: *)
 (*Tests try*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*O(g3^4)*)
 
 
 1/2*M[0,0,2,2]/.MatrixElements/.{mq2->0}//Expand
 1/2*M[0,2,0,2]/.MatrixElements/.{mq2->0}//Expand
-1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{mq2->0,yt->0}//Expand
+1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{mq2->0(*,mGm2->0,mGp2->0*)}/.{(*,yt->0*)}//Expand
 
 
-(* ::Subsubsection:: *)
+M[0,1,0,1]/.MatrixElements/.{mq2->0(*,mGm2->0,mGp2->0*)}/.{(*,yt->0*)}//Expand
+
+
+(* ::Subsubsection::Closed:: *)
 (*O(g3^2*yt^2)*)
 
 
@@ -242,7 +255,7 @@ MatrixElements=ExportMatrixElements[
 1/2*(M[0,7,1,2]+M[0,8,1,2])/.MatrixElements/.{mt2->0}//Expand
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(yt^4)*)
 
 
@@ -273,229 +286,444 @@ MatrixElements=ExportMatrixElements[
 1/2*(M[0,7,7,0]+M[0,8,8,0]+M[0,7,8,0]+M[0,8,7,0])/.MatrixElements/.{mb2->0}//Expand
 
 
-(* ::Section:: *)
+(* ::Chapter:: *)
 (*Tests*)
 
 
+{particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.xsm.json"];
+
+
+(* ::Subsection::Closed:: *)
+(*Translate input*)
+
+
+insertCouplings={g->g,\[Lambda]->lam,gu1->0,mChi->0,mPhi->0,mPsi->0};
+customCouplings={ms2->mPhi^2};
+
+
 symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
-fixConvention[arg_]:=symmetriseTU[arg/.{s->(-t-u)}]//Expand//Simplify//Expand
+
+
+fixConvention[arg_]:=symmetriseTU[
+	arg/.customCouplings/.Thread[UserMasses->0]/.{s->(-t-u)}/.insertCouplings
+	]//Expand//Simplify//Expand
+
+
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
-(* ::Subsection:: *)
-(*Test with [Hyperlink[1506.04741,{URL["https://arxiv.org/pdf/1506.04741"], None},Apply[Sequence, {ActiveStyle -> {"HyperlinkActive"}, BaseStyle -> {"Hyperlink"}, HyperlinkAction -> "Recycled"}]]]*)
+testsRulesWallGo[arg_]:=arg/.Flatten[particles]/.MatrixElements//fixConvention//removeMissing;
+testsRulesFeynCalc[arg_]:=arg/.Flatten[particlesFeyn]/.MatrixElementsFeyn//fixConvention//removeMissing
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]//testsRulesWallGo
+testFeynCalc[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]//testsRulesFeynCalc
+
+
+(* ::Subsection::Closed:: *)
+(*Test with table 1 of  https://arxiv.org/pdf/1506.04741*)
+(*Note that there are no internal Higgs fields propagating*)
+
+
+particles
 
 
 testList={};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(g3^4)*)
 
 
-(*tt->gg*)
+process="tt->gg"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Top"},
+	{"Gluon"},
+	{"Gluon"}
+]//Expand
+test["reference"][process]=128/3 g3^4(u/t+t/u)//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*M[0,0,2,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	128/3 g3^4(u/t+t/u)//fixConvention//removeMissing,
-	TestID->"tt->gg"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*tg->tg*)
+process="tg->tg"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Gluon"},
+	{"Top"},
+	{"Gluon"}
+]//Expand
+test["reference"][process]=-(128/3)g3^4 s/u+96*g3^4 (s^2+u^2)/t^2//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*M[0,2,0,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-(128/3)g3^4 s/u+96*g3^4 (s^2+u^2)/t^2//fixConvention//removeMissing,
-	TestID->"tg->tg"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*tq->tq*)
-(*has additional yt^2 g3^2 term than reference*)
+(*
+	has additional yt^2 g3^2 term than reference due to interference BLL
+	since there the Higgs is not propagating
+*)
+process="tq->tq"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Bottom","LightFermions"},
+	{"Top"},
+	{"Bottom","LightFermions"}
+]/.{yt->0}//Expand
+test["reference"][process]=160*g3^4 (u^2+s^2)/t^2//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*(M[0,1,0,1]+M[0,10,0,10])/.MatrixElements/.{yt->0}/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	160*g3^4 (u^2+s^2)/t^2//fixConvention//removeMissing,
-	TestID->"tq->tq"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
 (* ::Subsubsection::Closed:: *)
 (*O(g3^2*yt^2)*)
 
 
-(*tt->hg*)
+process="tt->hg"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Top"},
+	{"Higgs"},
+	{"Gluon"}
+]//Expand
+test["reference"][process]=8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*M[0,0,5,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing,
-	TestID->"tt->hg"
-]];
-(*tt->\[Phi]0 g*)
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
+
+
+process="tt->\[Phi]0 g"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Top"},
+	{"Goldstone0"},
+	{"Gluon"}
+]//Expand
+test["reference"][process]=8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*M[0,0,6,2]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing,
-	TestID->"tt->\[Phi]0g"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*tt->\[Phi]+ g*)
+process="tt->\[Phi]0 g"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Bottom"},
+	{"GoldstonePlus","GoldstoneMinus"},
+	{"Gluon"}
+]//Expand
+test["reference"][process]=8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*(M[0,1,7,2]+M[0,1,8,2])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	8*yt^2*g3^2(u/t+t/u)//fixConvention//removeMissing,
-	TestID->"tt->\!\(\*SuperscriptBox[\(\[Phi]\), \(+\)]\)g"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*tg->th*)
+process="tg->th"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Gluon"},
+	{"Top"},
+	{"Higgs"}
+]//Expand
+test["reference"][process]=-8*yt^2*g3^2*s/t//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*M[0,2,0,5]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
-	TestID->"tg->th"
-]];
-(*tg->t\[Phi]0*)
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
+
+
+process="tg->t\[Phi]0"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Gluon"},
+	{"Top"},
+	{"Goldstone0"}
+]//Expand
+test["reference"][process]=-8*yt^2*g3^2*s/t//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*M[0,2,0,6]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
-	TestID->"tg->t\[Phi]0"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*tg->b\[Phi]+*)
+process="tg->b\[Phi]+"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Gluon"},
+	{"Bottom"},
+	{"GoldstonePlus","GoldstoneMinus"}
+]//Expand
+test["reference"][process]=-8*yt^2*g3^2*s/t//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*(M[0,2,1,7]+M[0,2,1,8])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
-	TestID->"tg->\!\(\*SuperscriptBox[\(b\[Phi]\), \(+\)]\)"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*t\[Phi]-->bg*)
+process="t\[Phi]-->bg"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"GoldstonePlus","GoldstoneMinus"},
+	{"Bottom"},
+	{"Gluon"}
+]//Expand
+test["reference"][process]=-8*yt^2*g3^2*s/t//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*(M[0,7,1,2]+M[0,8,1,2])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-8*yt^2*g3^2*s/t//fixConvention//removeMissing,
-	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(-\)]\)->bg"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*O(yt^4)*)
 
 
-(*tt->hh*)
+process="tt->hh"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Top"},
+	{"Higgs"},
+	{"Higgs"}
+]//Expand
+test["reference"][process]=(3 t yt^4)/(2 u)+(3 u yt^4)/(2 t)//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*M[0,0,5,5]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	(3 t yt^4)/(2 u)+(3 u yt^4)/(2 t)//fixConvention//removeMissing,
-	TestID->"tt->hh"
-]];
-(*tt->\[Phi]0\[Phi]0*)
-AppendTo[testList,
-TestCreate[
-	1/2*M[0,0,6,6]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	(3 t yt^4)/(2 u)+(3 u yt^4)/(2 t)//fixConvention//removeMissing,
-	TestID->"tt->\[Phi]0\[Phi]0"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*tt->\[Phi]^+\[Phi]^-*)
+process="tt->\[Phi]0\[Phi]0"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Top"},
+	{"Goldstone0"},
+	{"Goldstone0"}
+]//Expand
+test["reference"][process]=(3 t yt^4)/(2 u)+(3 u yt^4)/(2 t)//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*(M[0,0,7,7]+M[0,0,8,8])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	3*yt^4*u/t//fixConvention//removeMissing,
-	TestID->"tt->\!\(\*SuperscriptBox[\(\[Phi]\), \(+\)]\)\!\(\*SuperscriptBox[\(\[Phi]\), \(-\)]\)"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*tt->h\[Phi]0*)
+process="tt->\[Phi]^+\[Phi]^-"
+test["WallGo"][process]=testWallGo[
+	{"Top"},
+	{"Top"},
+	{"GoldstonePlus","GoldStoneMinus"},
+	{"GoldstonePlus","GoldStoneMinus"}
+]
+test["reference"][process]=3*yt^4*u/t//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*M[0,0,5,6]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	(3 t yt^4)/(2 u)+(3 u yt^4)/(2 t)//fixConvention//removeMissing,
-	TestID->"tt->h\[Phi]0"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*tt->h\[Phi]+*)
+process="tt->h\[Phi]0"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Top"},
+	{"Higgs"},
+	{"Goldstone0"}
+]//Expand
+test["reference"][process]=(3 t yt^4)/(2 u)+(3 u yt^4)/(2 t)//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*(M[0,1,5,8]+M[0,1,8,5])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	3/2*yt^4*u/t//fixConvention//removeMissing,
-	TestID->"tt->\!\(\*SuperscriptBox[\(h\[Phi]\), \(+\)]\)"
-]];
-(*tt->\[Phi]0\[Phi]+*)
-AppendTo[testList,
-TestCreate[
-	1/2*(M[0,1,6,8]+M[0,1,8,6])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	3/2*yt^4*u/t//fixConvention//removeMissing,
-	TestID->"tt->\!\(\*SuperscriptBox[\(\[Phi]0\[Phi]\), \(+\)]\)"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*th->ht*)
+process="tt->h\[Phi]+"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Bottom"},
+	{"Higgs","GoldstoneMinus"},
+	{"Higgs","GoldstoneMinus"}
+]//Expand
+test["reference"][process]=3/2*yt^4*u/t//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*M[0,5,5,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-3/2*yt^4*s/t//fixConvention//removeMissing,
-	TestID->"th->th"
-]];
-(*th->\[Phi]0t*)
-AppendTo[testList,
-TestCreate[
-	1/2*M[0,5,6,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-3/2*yt^4*s/t//fixConvention//removeMissing,
-	TestID->"th->\[Phi]0t"
-]];
-(*t\[Phi]0->ht*)
-AppendTo[testList,
-TestCreate[
-	1/2*M[0,6,5,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-3/2*yt^4*s/t//fixConvention//removeMissing,
-	TestID->"t\[Phi]0->ht"
-]];
-(*t\[Phi]0->\[Phi]0t*)
-AppendTo[testList,
-TestCreate[
-	1/2*M[0,6,6,0]/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	-3/2*yt^4*s/t//fixConvention//removeMissing,
-	TestID->"t\[Phi]0->\[Phi]0t"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*t\[Phi]-->hb*)
+process="tt->\[Phi]0\[Phi]+"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Bottom"},
+	{"Goldstone0","GoldstoneMinus"},
+	{"Goldstone0","GoldstoneMinus"}
+]//Expand
+test["reference"][process]=3/2*yt^4*u/t//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*(M[0,7,5,1]+M[0,8,5,1])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	3/2*yt^4*u/t//fixConvention//removeMissing,
-	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(-\)]\)->hb"
-]];
-(*t\[Phi]-->\[Phi]0b*)
-AppendTo[testList,
-TestCreate[
-	1/2*(M[0,7,6,1]+M[0,8,6,1])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	3/2*yt^4*u/t//fixConvention//removeMissing,
-	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(-\)]\)->\[Phi]0b"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
-(*t\[Phi]+->\[Phi]+t*)
+process="th->ht"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Higgs"},
+	{"Higgs"},
+	{"Top"}
+]//Expand
+test["reference"][process]=-3/2*yt^4*s/t//fixConvention//removeMissing
+
 AppendTo[testList,
-TestCreate[
-	1/2*(M[0,7,7,0]+M[0,8,8,0]+M[0,7,8,0]+M[0,8,7,0])/.MatrixElements/.Thread[UserMasses->0]//fixConvention//removeMissing,
-	3*yt^4*u/t//fixConvention//removeMissing,
-	TestID->"\!\(\*SuperscriptBox[\(t\[Phi]\), \(+\)]\)->\!\(\*SuperscriptBox[\(\[Phi]\), \(+\)]\)t"
-]];
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
+
+
+process="th->\[Phi]0t"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Higgs"},
+	{"Goldstone0"},
+	{"Top"}
+]//Expand
+test["reference"][process]=-3/2*yt^4*s/t//fixConvention//removeMissing
+
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
+
+
+process="t\[Phi]0->ht"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Goldstone0"},
+	{"Higgs"},
+	{"Top"}
+]//Expand
+test["reference"][process]=-3/2*yt^4*s/t//fixConvention//removeMissing
+
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
+
+
+process="t\[Phi]0->\[Phi]0t"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"Goldstone0"},
+	{"Goldstone0"},
+	{"Top"}
+]//Expand
+test["reference"][process]=-3/2*yt^4*s/t//fixConvention//removeMissing
+
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
+
+
+(*contains yt^4 contribution in comparision to reference*)
+process="t\[Phi]-->hb"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"GoldstoneMinus","GoldstonePlus"},
+	{"Higgs"},
+	{"Bottom"}
+]/.{yt^4/u->yt^4/u,yt^4/t->yt^4/t,yt^4->0}//Expand
+test["reference"][process]=3/2*yt^4*u/t//fixConvention//removeMissing
+
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
+
+
+(*contains yt^4 contribution in comparision to reference*)
+process="t\[Phi]-->\[Phi]0b"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"GoldstoneMinus","GoldstonePlus"},
+	{"Goldstone0"},
+	{"Bottom"}
+]/.{yt^4/u->yt^4/u,yt^4/t->yt^4/t,yt^4->0}//Expand
+test["reference"][process]=3/2*yt^4*u/t//fixConvention//removeMissing
+
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
+
+
+(*contains yt^4 contribution in comparision to reference*)
+process="t\[Phi]+->\[Phi]+t"
+test["WallGo"][process]=1/2*testWallGo[
+	{"Top"},
+	{"GoldstoneMinus","GoldstonePlus"},
+	{"GoldstoneMinus","GoldstonePlus"},
+	{"Top"}
+]/.{yt^4/u->yt^4/u,yt^4/t->yt^4/t,yt^4->0}//Expand
+test["reference"][process]=3*yt^4*u/t//fixConvention//removeMissing
+
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["reference"][process],
+		TestID->"WallGo vs reference: "<>process]];
 
 
 (* ::Subsection:: *)
-(*Report*)
+(*Test report*)
 
 
 report=TestReport[testList]
 report["ResultsDataset"]
+

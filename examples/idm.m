@@ -7,8 +7,11 @@ If[$InputFileName=="",
 	SetDirectory[NotebookDirectory[]],
 	SetDirectory[DirectoryName[$InputFileName]]
 ];
+(*Put this if you want to create multiple model-files with the same kernel*)
+WallGo`WallGoMatrix`$GroupMathMultipleModels=True;
 Check[
     Get["WallGo`WallGoMatrix`"],
+    (*Get["../Kernel/WallGoMatrix.m"],*)
     Message[Get::noopen, "WallGo`WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -124,6 +127,20 @@ SymmetryBreaking[vev,VevDependentCouplings->True]
 (*Grouping representations*)
 
 
+(* ::Text:: *)
+(*We are interested in the matrix elements for top quarks, weak gauge bosons, and the heavy scalars A and H^+-.*)
+(**)
+(*We thus give the top quark its own representation, and group all other quarks together.*)
+(*The Higgs and Goldstone bosons are not allowed out of equilibrium, and since they have the same *)
+(*thermal mass, they are grouped together in one representation.*)
+(**)
+(*Since we neglect U(1), we treat the W and Z as identical, and group them into one single representation.*)
+(**)
+(*The second Higgs field is split into a representation for the heavy scalars, A, H^+-, which we treat as identical,*)
+(*since we assume lambda4 = lambda5. *)
+(*The CP-even scalar H will not be allowed out-of-equilibrium and  is grouped in its own representation.*)
+
+
 (*
 In DRalgo fermions are Weyl.
 So to create one Dirac we need
@@ -174,5 +191,7 @@ MatrixElements=ExportMatrixElements[
 		TruncateAtLeadingLog->True,
 		Replacements->{lam1H->0,lam2H->0,lam4H->0,lam5H->0},
 		Format->{"json","txt"},
-		NormalizeWithDOF->False}];
+		NormalizeWithDOF->False
+	}
+];
 

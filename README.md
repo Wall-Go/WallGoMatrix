@@ -15,7 +15,9 @@ for computing the bubble wall speed for cosmological phase transitions.
 [**WallGo**](https://github.com/Wall-Go) is an open source code for the
 computation of the bubble wall velocity and bubble wall width in first-order
 cosmological phase transitions. There is a main Python package together with
-two subsidiary software packages. The physical and mathematical details are explained in [the associated paper](https://arxiv.org/abs/2411.04970).
+two subsidiary software packages. The physical and mathematical details are explained in
+[the associated paper](https://doi.org/10.1007/JHEP04(2025)101)
+[[2411.04970](https://arxiv.org/abs/2411.04970)]
 
 - [**WallGo**](https://github.com/Wall-Go/WallGo) is the name of the main Python
 package. This determines the wall velocity and width by
@@ -34,6 +36,8 @@ For WallGoMatrix, the model building
 routines are taken from DRalgo and involve constructing coupling tensors.
 The WallGoMatrix routines then contract these coupling tensors with
 the appropriate kinematic factors to yield the 2-to-2 scattering matrix elements.
+
+> Note: By default, WallGoMatrix simplifies expressions under the assumption that all variables (couplings, masses) are real.
 
 ## Installation
 
@@ -121,7 +125,7 @@ One requirement for the above command is an active `WolframKernel`.
 
 ## License
 
-Copyright (c) 2024 Andreas Ekstedt, Oliver Gould, Joonas Hirvonen,
+Copyright (c) 2025 Andreas Ekstedt, Oliver Gould, Joonas Hirvonen,
 Benoit Laurent, Lauri Niemi, Philipp Schicho, and Jorinde van de Vis.
 
 This program is free software: you can redistribute it and/or modify

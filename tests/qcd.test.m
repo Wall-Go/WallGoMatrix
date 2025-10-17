@@ -104,7 +104,7 @@ fixConvention[arg_]:=symmetriseTU[arg/.{s->(-t-u)}]//Expand//Simplify//Expand
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Test with [hep-ph/0209353]*)
 
 
@@ -155,15 +155,19 @@ TestCreate[
 ]];
 
 
+(* ::Subsection:: *)
+(*Test report*)
+
+
 report=TestReport[testList]
 report["ResultsDataset"]
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Test against FeynCalc*)
 
 
-file=FileNameJoin[{NotebookDirectory[],"qcd.test.json"}];
+file=FileNameJoin[{NotebookDirectory[],"testFiles/qcd.test.json"}];
 {particleNames,parameters,FeynMatrixElements}=ImportMatrixElements[file];
 
 
@@ -210,5 +214,12 @@ TestCreate[
 ]];
 
 
+(* ::Subsection:: *)
+(*Test report*)
+
+
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
+

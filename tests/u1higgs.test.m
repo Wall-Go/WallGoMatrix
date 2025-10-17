@@ -121,7 +121,11 @@ MatrixElements=ExportMatrixElements[
 (*Tests*)
 
 
-file=FileNameJoin[{NotebookDirectory[],"u1higgs.test.json"}];
+(* ::Subsection::Closed:: *)
+(*Translate input*)
+
+
+file=FileNameJoin[{NotebookDirectory[],"testFiles/u1higgs.test.json"}];
 {particleNames,parameters,FeynMatrixElements}=ImportMatrixElements[file];
 
 
@@ -137,8 +141,8 @@ fixConvention[arg_]:=symmetriseTU[arg/.Thread[UserMasses->0]/.{s->(-t-u)}/.inser
 removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
 
 
-(* ::Subsection:: *)
-(*Test hard*)
+(* ::Subsection::Closed:: *)
+(*Initialize tests*)
 
 
 testList={};
@@ -192,6 +196,12 @@ TestCreate[
 ]];
 
 
+(* ::Subsection:: *)
+(*Test report*)
+
+
 report=TestReport[testList]
 report["ResultsDataset"]
+
+
 

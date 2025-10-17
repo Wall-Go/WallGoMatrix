@@ -1,0 +1,200 @@
+(****************************
+        general info
+****************************)
+M$ModelName = "u1higgs-fermion";
+
+M$Information = {
+Authors -> {"O. Gould"},
+Institutions -> {"U. Nottingham"},
+Emails -> {"oliver.gould@nottingham.ac.uk"},
+Date -> "September 16th, 2024"
+};
+
+(****************************
+           indices
+****************************)
+(* only Lorentz *)
+
+(****************************
+        gauge groups
+****************************)
+M$GaugeGroups = {
+    U1 == {
+        Abelian -> True,
+        GaugeBoson -> A,
+        Charge -> Y,
+        CouplingConstant -> g
+    }
+};
+
+(****************************
+        fields
+****************************)
+M$ClassesDescription = {
+    (* Charged scalar *)
+    S[1] == {
+        ClassName -> Phi,
+        PropagatorLabel	-> Phi,
+        SelfConjugate -> False,
+        Mass -> 0,
+        QuantumNumbers -> {Y -> 1}
+    },
+    (* Uncharged scalar *)
+    S[2] == {
+        ClassName -> Chi,
+        PropagatorLabel	-> Chi,
+        SelfConjugate -> True,
+        Mass -> 0
+    },
+    (* Photon *)
+    V[1] == {
+        ClassName -> A,
+        SelfConjugate -> True,
+        Mass -> 0
+    },
+    (* Ghost *)
+    U[1] == {
+        ClassName -> ghostA,
+        SelfConjugate -> False,
+        Ghost -> A,
+        QuantumNumbers -> {GhostNumber -> 1},
+        Mass -> 0
+    },
+    (* Singly charged Dirac fermion *)
+	F[1] == {
+		ClassName -> Psi,
+        PropagatorLabel	-> Psi,
+        PropagatorArrow -> True,
+		SelfConjugate -> False,
+        QuantumNumbers -> {Y},
+		Mass -> 0
+    },
+    (* Doubly charged Dirac fermion *)
+	F[2] == {
+		ClassName -> Xi,
+        PropagatorLabel	-> Xi,
+        PropagatorArrow -> True,
+		SelfConjugate -> False,
+        QuantumNumbers -> {Y},
+		Mass -> 0
+    },
+    (* left-handed projection *)
+    F[3] == {
+        ClassName -> PsiL,
+        Chirality -> Left,
+        PropagatorArrow -> True,
+        SelfConjugate -> False,
+        QuantumNumbers -> {Y -> 1},
+        Mass -> 0,
+        Definitions -> { PsiL[sp1_] :> Module[{sp2}, ProjM[sp1,sp2] Psi[sp2]] }
+    },
+    (* right-handed projection *)
+    F[4] == {
+        ClassName -> PsiR,
+        Chirality -> Right,
+        PropagatorArrow -> True,
+        SelfConjugate -> False,
+        QuantumNumbers -> {Y -> 2},
+        Mass -> 0,
+        Definitions -> { PsiR[sp1_] :> Module[{sp2}, ProjP[sp1,sp2] Xi[sp2]] }
+    }
+};
+
+(****************************
+        gauge parameters
+****************************)
+(* Feynman gauge *)
+GaugeXi[V[_]] = 1;
+GaugeXi[F[_]] = 1;
+GaugeXi[S[_]] = 1;
+
+(****************************
+        parameters
+****************************)
+M$Parameters = {
+    lam == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> lam,
+        Description -> "Phi quartic coupling"
+    },
+    b4 == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> b4,
+        Description -> "Chi quartic coupling"
+    },
+    b3 == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> b3,
+        Description -> "Chi cubic coupling"
+    },
+    a1 == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> a1,
+        Description -> "Chi-Phi-Phi coupling"
+    },
+    a2 == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> a2,
+        Description -> "Chi-Chi-Phi-Phi coupling"
+    },
+    y == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> y,
+        Description -> "Phi-Psi-Xi Yukawa coupling"
+    },
+    g == {
+        ParameterType -> External,
+        ComplexParameter -> False,
+        Value -> g,
+        Description -> "Gauge coupling"
+    }
+};
+
+(****************************
+        lagrangian
+****************************)
+
+(* Gauge Lagrangian *)
+LGauge := Module[{LFsq, LGaugeFixing, LGhost},
+    LFsq = -1/4 FS[A, mu, nu] FS[A, mu, nu];
+    LGaugeFixing = -1/2 (del[A[mu], mu]) (del[A[nu], nu]);
+    LGhost = del[ghostAbar, mu].DC[ghostA, mu];
+    LFsq + LGaugeFixing + LGhost
+];
+
+(* Phi (Higgs) Lagrangian *)
+LPhi := Module[{T, V},
+    T := DC[Phibar, mu] DC[Phi, mu];
+    V := lam (Phibar Phi)^2;
+    T - V
+];
+
+(* Chi (real scalar) Lagrangian *)
+LChi := Module[{T, V},
+    T = 1/2 del[Chi, mu] del[Chi, mu];
+    V = b3/3 Chi^3 + b4/4 Chi^4;
+    T - V
+];
+
+(* Mixed scalar interaction terms *)
+LMixedScalar := -a1/2 Chi (Phibar Phi) - a2 / 2 Chi^2 (Phibar Phi);
+
+(* PsiL (singly charged left-handed fermion) Lagrangian *)
+LPsiL := I PsiLbar[s1].Ga[v,s1,s2].DC[PsiL[s2],v];
+
+(* PsiR (doubly charged right-handed fermion) Lagrangian *)
+LPsiR := I PsiRbar[s1].Ga[v,s1,s2].DC[PsiR[s2],v];
+
+(* Yukawa Lagrangian *)
+(*LYukawa := - y Phibar Psibar[s1].Xi[s1] - HC[y Phibar Psibar[s1].Xi[s1]];*)
+(* LYukawa := - y Phibar Psibar[s1].Xi[s1] - y Phi Xibar[s1].Psi[s1]; *)
+LYukawa := - y Phibar PsiLbar[s1] PsiR[s1] ;
+
+(* Total Lagrangian *)
+L := LGauge + LPhi + LChi + LMixedScalar + LPsiL + LPsiR + LYukawa + HC[LYukawa] ;

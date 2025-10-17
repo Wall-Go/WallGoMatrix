@@ -7,8 +7,11 @@ If[$InputFileName=="",
 	SetDirectory[NotebookDirectory[]],
 	SetDirectory[DirectoryName[$InputFileName]]
 ];
+(*Put this if you want to create multiple model-files with the same kernel*)
+WallGo`WallGoMatrix`$GroupMathMultipleModels=True;
 Check[
     Get["WallGo`WallGoMatrix`"],
+    (*Get["../Kernel/WallGoMatrix.m"],*)
     Message[Get::noopen, "WallGo`WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -18,7 +21,7 @@ Check[
 (*Full Standard Model*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Model*)
 
 
@@ -96,7 +99,13 @@ SymmetryBreaking[vev]
 
 
 (* ::Subsection:: *)
-(*UserInput*)
+(*Grouping representations*)
+
+
+(* ::Text:: *)
+(*We treat all the Standard Model particles as separate particles, and put them into their own representations.*)
+(*Left- and right-handed particles are treated separately. *)
+(*Only the 3 Goldstones are grouped together.*)
 
 
 (*Third generation of fermions*)
@@ -158,7 +167,9 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		TruncateAtLeadingLog->False,
-		Format->{"json","txt"}}];
+		Format->{"json","txt"}
+	}
+];
 
 
 (*
@@ -172,7 +183,9 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
-		Format->{"json","txt"}}];
+		Format->{"json","txt"}
+	}
+];
 
 
 MatrixElements

@@ -7,8 +7,11 @@ If[$InputFileName=="",
 	SetDirectory[NotebookDirectory[]],
 	SetDirectory[DirectoryName[$InputFileName]]
 ];
+(*Put this if you want to create multiple model-files with the same kernel*)
+WallGo`WallGoMatrix`$GroupMathMultipleModels=True;
 Check[
     Get["WallGo`WallGoMatrix`"],
+    (*Get["../Kernel/WallGoMatrix.m"],*)
     Message[Get::noopen, "WallGo`WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -74,7 +77,13 @@ ImportModel[Group,gvvv,gvff,gvss,\[Lambda]1,\[Lambda]3,\[Lambda]4,\[Mu]ij,\[Mu]I
 
 
 (* ::Subsection:: *)
-(*UserInput*)
+(*Grouping representations*)
+
+
+(* ::Text:: *)
+(*We are interested in the matrix elements for quarks and gluons with strong interactions only.*)
+(*Since the top quark will be treated as out-of-equilibrium, and the other quarks are kept in equilibrium,*)
+(*we group the top quark in its own representation, and we group all the other quarks together. *)
 
 
 (* ::Text:: *)
@@ -128,3 +137,16 @@ MatrixElements=ExportMatrixElements[
 	{
 		TruncateAtLeadingLog->True,
 		Format->{"json","txt"}}];
+
+
+
+MatrixElements=ExportMatrixElements[
+	"output/matrixElementsBLL.qcd",
+	ParticleList,
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->False,
+		Format->{"json","txt"}}];
+
+
+MatrixElements

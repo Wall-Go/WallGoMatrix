@@ -7,15 +7,18 @@ If[$InputFileName=="",
 	SetDirectory[NotebookDirectory[]],
 	SetDirectory[DirectoryName[$InputFileName]]
 ];
+(*Put this if you want to create multiple model-files with the same kernel*)
+WallGo`WallGoMatrix`$GroupMathMultipleModels=True;
 Check[
     Get["WallGo`WallGoMatrix`"],
+    (*Get["../Kernel/WallGoMatrix.m"],*)
     Message[Get::noopen, "WallGo`WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
 
 
 (* ::Chapter:: *)
-(*2HDM*)
+(*Scalar sector of the 2HDM*)
 
 
 (*Pure scalar sector of 2211.13142*)
@@ -96,7 +99,11 @@ one right-handed fermoon
 
 
 (* ::Subsection:: *)
-(*TopL, TopR*)
+(*Grouping representations*)
+
+
+(* ::Text:: *)
+(*The Higgs and Goldstones and the scalars of the second doublet are all put in separate representations. Note that this choice may lead to additional power divergences, that are absent when they are grouped together. *)
 
 
 vev={0,v,0,0,0,0,0,0};
@@ -142,4 +149,7 @@ MatrixElements=ExportMatrixElements[
 		TruncateAtLeadingLog->True,
 		Replacements->{gw->0,lam4H->0,lam5H->0},
 		Format->{"json","txt"},
-		NormalizeWithDOF->False}];
+		NormalizeWithDOF->False
+	}
+];
+

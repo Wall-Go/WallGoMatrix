@@ -1,14 +1,17 @@
 (* ::Package:: *)
 
-Quit[];
+(*Quit[];*)
 
 
 If[$InputFileName=="",
 	SetDirectory[NotebookDirectory[]],
 	SetDirectory[DirectoryName[$InputFileName]]
 ];
+(*Put this if you want to create multiple model-files with the same kernel*)
+WallGo`WallGoMatrix`$GroupMathMultipleModels=True;
 Check[
     Get["WallGo`WallGoMatrix`"],
+    (*Get["../Kernel/WallGoMatrix.m"],*)
     Message[Get::noopen, "WallGo`WallGoMatrix` at "<>ToString[$UserBaseDirectory]<>"/Applications"];
     Abort[];
 ]
@@ -70,7 +73,16 @@ SymmetryBreaking[vev]
 
 
 (* ::Subsection:: *)
-(*UserInput*)
+(*Grouping representations*)
+
+
+(* ::Text:: *)
+(*We are interested in the matrix elements for top quarks, weak gauge bosons, gluons and light quarks.*)
+(*We thus give the left-handed and right-handed top quarks their own representation, and group all other quarks together.*)
+(*The Higgs and Goldstone bosons are not allowed out of equilibrium, and since they have the same *)
+(*thermal mass, they are grouped together in one representation.*)
+(**)
+(*Since we neglect U(1), we treat the W and Z as identical, and group them into one single representation.*)
 
 
 (*
@@ -126,7 +138,21 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
-		Format->{"json","txt"}}];
+		Format->{"json","txt"}
+	}
+];
 
 
 MatrixElements//Expand
+
+
+MatrixElements=ExportMatrixElements[
+	None,
+	ParticleList,
+	LightParticleList,
+	{
+		TruncateAtLeadingLog->True,
+		TagLeadingLog->False,
+		Format->{"json","txt"}
+	}
+];

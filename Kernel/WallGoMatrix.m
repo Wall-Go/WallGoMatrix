@@ -6,13 +6,13 @@
 
 (*
 		This software is covered by the GNU General Public License 3.
-		Copyright (C) 2024-2024 Andreas Ekstedt
-		Copyright (C) 2024-2024 Oliver Gould
-		Copyright (C) 2024-2024 Joonas Hirvonen
-		Copyright (C) 2024-2024 Benoit Laurent
-		Copyright (C) 2024-2024 Lauri Niemi
-		Copyright (C) 2024-2024 Philipp Schicho
-		Copyright (C) 2024-2024 Jorinde van de Vis
+		Copyright (C) 2024-2025 Andreas Ekstedt
+		Copyright (C) 2024-2025 Oliver Gould
+		Copyright (C) 2024-2025 Joonas Hirvonen
+		Copyright (C) 2024-2025 Benoit Laurent
+		Copyright (C) 2024-2025 Lauri Niemi
+		Copyright (C) 2024-2025 Philipp Schicho
+		Copyright (C) 2024-2025 Jorinde van de Vis
 *)
 
 (* :Summary:	WallGoMatrix constructs matrix elements for generic models at
@@ -46,45 +46,83 @@ If[! ValueQ[$InstallGroupMath],
 
 
 (*
-	Welcome banner: All credit for this part to GroupMath
+	Welcome banner
 *)
-TexFor[text_]:=Style[text,{GrayLevel[0.3]}]
-result={};
-AppendTo[result,Row[{
-	TexFor["GOGOGOGOGOGOGOGOGOGOGOGO "],
-	TexFor["WallGoMatrix"],
-	TexFor[" GOGOGOGOGOGOGOGOGOGOGGOGOGO"]}]];
-AppendTo[result,Row[{"Authors: "//TexFor,
-    Hyperlink["Andreas Ekstedt","https://inspirehep.net/authors/1799400"],", "//TexFor,
-    Hyperlink["Oliver Gould","https://inspirehep.net/authors/1606373"],", "//TexFor,
-    Hyperlink["Joonas Hirvonen","https://inspirehep.net/authors/1866901"],", "//TexFor,
-    Hyperlink["Benoit Laurent","https://inspirehep.net/authors/1808372"],", "//TexFor,
-    Hyperlink["Lauri Niemi","https://inspirehep.net/authors/1764675"],", "//TexFor,
-    Hyperlink["Philipp Schicho","https://inspirehep.net/authors/1639147"],", "//TexFor,
-    Hyperlink["Jorinde van de Vis","https://inspirehep.net/authors/1589979"]//TexFor
-    }
-  ]];
-AppendTo[result,Row[{"Reference: "//TexFor,
-        Hyperlink["2411.04970 [hep-ph]","https://arxiv.org/abs/2411.04970"]//TexFor}]];
-AppendTo[result,Row[{"Repository link: "//TexFor,
-	Hyperlink[Mouseover[TexFor["github.com/Wall-Go/WallGoMatrix"],Style["github.com/Wall-Go/WallGoMatrix",Bold]],
-	"https://github.com/DR-algo/DRalgo"]}]];
-AppendTo[result,Row[{"Existing model files: "//TexFor,
-	Hyperlink[Mouseover[TexFor["WallGoMatrix/examples"],Style["WallGoMatrix/examples",Bold]],
-	"https://github.com/Wall-Go/WallGoMatrix/tree/main/examples"]}]];
-WallGoMatrixLoad=Image[CompressedData["1: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"],"Byte",ColorSpace->"RGB",Interleaving->True];
-
-AppendTo[result,Style["GOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGGOGOGOGOGOGOGOGO",{GrayLevel[0.3]}]];
+authors[1] = "\!\(\*TemplateBox[{RowBox[{\"Andreas\", \" \", \"Ekstedt\"}], {URL[\"https://inspirehep.net/authors/1799400\"], None}, \"https://inspirehep.net/authors/1799400\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\"HyperlinkTemplate\"]\)";
+authors[2] = "\!\(\*TemplateBox[{RowBox[{\"Oliver\", \" \", \"Gould\"}], {URL[\"https://inspirehep.net/authors/1606373\"], None}, \"https://inspirehep.net/authors/1606373\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\"HyperlinkTemplate\"]\)";
+authors[3] = "\!\(\*TemplateBox[{RowBox[{\"Joonas\", \" \", \"Hirvonen\"}], {URL[\"https://inspirehep.net/authors/1866901\"], None}, \"https://inspirehep.net/authors/1866901\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\"HyperlinkTemplate\"]\)";
+authors[4] = "\!\(\*TemplateBox[{RowBox[{\"Benoit\", \" \", \"Laurent\"}], {URL[\"https://inspirehep.net/authors/1808372\"], None}, \"https://inspirehep.net/authors/1808372\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\"HyperlinkTemplate\"]\)";
+authors[5] = "\n\!\(\*TemplateBox[{RowBox[{\"Lauri\", \" \", \"Niemi\"}], {URL[\"https://inspirehep.net/authors/1764675\"], None}, \"https://inspirehep.net/authors/1764675\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\"HyperlinkTemplate\"]\)";
+authors[6] = "\!\(\*TemplateBox[{RowBox[{\"Philipp\", \" \", \"Schicho\"}], {URL[\"https://inspirehep.net/authors/1639147\"], None}, \"https://inspirehep.net/authors/1639147\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\"HyperlinkTemplate\"]\)";
+authors[7] = "\!\(\*TemplateBox[{RowBox[{\"Jorinde\", \" \", \"van de Vis\"}], {URL[\"https://inspirehep.net/authors/1589979\"], None}, \"https://inspirehep.net/authors/1589979\", \"HyperlinkActionRecycled\", {\"HyperlinkActive\"}, BaseStyle -> {\"Hyperlink\"}, HyperlinkAction -> \"Recycled\"},\"HyperlinkTemplate\"]\)";
 
 
-Print[Grid[
-	{{
-		Image[WallGoMatrixLoad,ImageSize->140],
-		Row[result,"\n",
-			BaseStyle->(FontFamily->"Consolas")]
-	}},
-	Alignment->{Left,Center}]
+(* Helper to split a long string at word boundaries near 80 characters *)
+wrapText[text_String, maxLen_: 80] := Module[
+  {words, lines = {}, current = ""},
+  words = StringSplit[text, " "];
+  Do[
+    If[StringLength[current <> " " <> word] <= maxLen,
+      current = If[current === "", word, current <> " " <> word],
+      AppendTo[lines, current];
+      current = word;
+    ],
+    {word, words}
+  ];
+  AppendTo[lines, current];
+  StringRiffle[lines, "\n"]
 ];
+
+pacletInfo = PacletFind["WallGo/WallGoMatrix"];
+WallGoMatrixLoadImage=Image[CompressedData["1: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"],"Byte",ColorSpace->"RGB",Interleaving->True];
+If[pacletInfo =!= {},
+	infoTable = Normal@KeyTake[
+		      pacletInfo[[1]]["PacletInfo"],
+		      {"Name", "Version", "Description", "WolframVersion", "Creator", "URL"}
+		      ];
+	,
+	infoTable = {
+		"Name"->"WallGo/WallGoMatrix",
+		"Description"->"Computes 2-to-2 scattering matrix amplitudes for arbitrary quantum field theories.",
+		"WolframVersion"->"13.+",
+		"Creator"->StringRiffle[Table[authors[i], {i, 7}], ", "],
+		"URL"->Hyperlink[Mouseover["github.com/Wall-Go/WallGoMatrix",Style["github.com/Wall-Go/WallGoMatrix"]],"https://github.com/Wall-Go/WallGoMatrix"]
+	};
+];
+
+AppendTo[
+  infoTable,
+  "Reference" -> Row[{
+    Hyperlink["JHEP 04 (2025) 101", "https://doi.org/10.1007/JHEP04(2025)101"],
+    " \[Bullet] e-Print: ",
+    Hyperlink["2411.04970 [hep-ph]", "https://arxiv.org/abs/2411.04970"]
+  }]
+];
+AppendTo[infoTable,"Model files"->
+	Hyperlink[Mouseover["WallGoMatrix/examples",Style["WallGoMatrix/examples"]],
+	"https://github.com/Wall-Go/WallGoMatrix/tree/main/examples"]];
+
+
+Print@Panel@Row[{
+  Graphics[WallGoMatrixLoadImage, ImageSize -> 100],
+  Spacer[20],
+  Column[{
+      Row[{
+      Style["GOGOGOGOGOGOGOGOGOGOGOGO ", Bold],
+      Style["WallGoMatrix", Bold, Larger],
+      Style[" GOGOGOGOGOGOGOGOGOGOGGOGOGO", Bold]
+    }],
+    TableForm[
+      infoTable /. {
+        Rule["Description", desc_] :> {"Description:", wrapText[desc]},
+        Rule["Creator", desc_] :> {"Creator:", wrapText[desc]},
+        Rule[k_, v_] :> {k <> ":", v}
+      },
+      TableAlignments -> Left
+    ],
+    Style["GOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGGOGOGOGOGOGOG",Bold]
+  }, Spacings -> 1]
+}];
 
 
 (*List of public functions*)
@@ -209,8 +247,49 @@ StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regu
 This function is useful for grouping particles into one collective representation based on their properties and type.";
 
 
+TruncateAtLeadingLogarithm::usage =
+"TruncateAtLeadingLogarithm[MatrixElements] classifies and truncates a list of \
+2-to-2 scattering matrix elements according to their enhanced structures in the \
+high-energy limit, retaining only the leading logarithmic contributions.
+
+ \[Bullet] Input: a list of elements of the form {amplitudeExpression, {i,j,k,l}},
+   where the second entry encodes external state indices.
+
+ \[Bullet] The classification follows Algorithm~1 of the accompanying publication [25xx:xxxx], applied when the option TruncateAtLeadingLog -> True is set in ExportMatrixElements.
+
+ \[Bullet] The algorithm distinguishes three cases:
+   - \!\(\*StyleBox[\"Forward channel\", FontSlant -> \"Italic\"]\): when particles a \[Congruent] c and b \[Congruent] d.
+       \[Bullet] If also a \[Congruent] d (fully identical particles):
+         no power enhancement;
+         logarithmic enhancement from 1/t^2 and 1/u^2;
+         terms \[Proportional] 1/t or 1/u are finite.
+       \[Bullet] Otherwise:
+         power enhancement from 1/u^2;
+         logarithmic enhancement from 1/t^2 or 1/u.
+   - \!\(\*StyleBox[\"Crossed channel\", FontSlant -> \"Italic\"]\): when particles a \[Congruent] d and b \[Congruent] c.
+       power enhancement from 1/t^2;
+       logarithmic enhancement from 1/u^2 or 1/t.
+   - \!\(\*StyleBox[\"Generic case\", FontSlant -> \"Italic\"]\):
+       power enhancement from 1/t^2 and 1/u^2;
+       logarithmic enhancement from 1/t or 1/u.
+
+ \[Bullet] Power-enhanced structures are tagged by \!\(\*
+StyleBox[\"powerEnhanced\",\nFontSlant->\"Italic\"]\)\!\(\*
+StyleBox[\".\",\nFontWeight->\"Plain\",\nFontSlant->\"Italic\"]\)
+   Logarithmically-enhanced structures are tagged by \!\(\*
+StyleBox[
+StyleBox[
+RowBox[{\"l\", 
+StyleBox[\"ogEnhanced\",\nFontWeight->\"Plain\"]}]],\nFontSlant->\"Italic\"]\).
+
+ \[Bullet] Output: a truncated list of the form
+   {{leadingLogContribution1, {i,j,k,l}}, ...},
+   containing only terms contributing to leading logarithmic behaviour.\
+";
+
+
 ExportMatrixElements::usage = 
-"Generates all possible matrix elements with the external particles specified in particleList.
+"Generates all possible matrix elements with the external particles specified in particleList, and exports the results to file.
 
 Usage:
 ExportMatrixElements[\!\(\*
@@ -249,13 +328,35 @@ Options:
     - \"none\": Does not export to a file (default)
 - Verbose (Boolean): If True, lists channels that are currently being computed (default is False).
 - TruncateAtLeadingLog (Boolean): If True, truncates the matrix elements at the leading logarithmic order (default is True).
+- TagLeadingLog (Boolean): tag leading-log terms in the output being either power enhanced (powerEnhanced) or logarithmically enhanced (logEnhanced).
 - NormalizeWithDOF (Boolean): If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
+- Replacements (List): list of replacement rules applied to the generated elements.
 
 Explanation:
 - Choosing \"all\" exports the result in all possible formats, while choosing \"none\" skips exporting.
 
 Return:
 - A list of generated matrix elements is returned by the function, regardless of the chosen export format.\
+";
+
+
+ImportMatrixElements::usage = 
+"Imports matrix elements from file.
+
+Usage:
+ImportMatrixElements[StyleBox[\"fileName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), OptionsPattern[]]
+\!\(\*
+
+
+Arguments:
+- \!\(\*
+StyleBox[\"fileName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the file to export the matrix elements to.
+- \!\(\*
+
+Return:
+StyleBox[\"particles\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of particle names and their associated indices.
+StyleBox[\"modelParameters\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of model parameters.
+StyleBox[\"results\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The matrix elements.
 ";
 
 
@@ -283,9 +384,6 @@ StyleBox[\"Field\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\
   - Fermion: Represents fermionic fields.
   - Scalar: Represents scalar fields.\
 ";
-
-
-ImportMatrixElements::usage="";
 
 
 WallGoMatrix::failmsg =
@@ -598,7 +696,7 @@ returnString="'matrixElements' keys not {'externalParticles','parameters','expre
 splitJsonMatrixElements::usage="splitJsonMatrixElements[json] splits a JSON object containing matrix elements into a list {particleNames,parameters,results}.";
 splitJsonMatrixElements[json_]:=Module[
 {
-	particles,matrixElements,particleIndices,particleNames,
+	particles,matrixElements,particleIndices,particleNames,particleRules,
 	matrixElementIndices,matrixElementParameters,matrixElementExpressions,
 	parameters,expressions,results
 }
@@ -606,6 +704,7 @@ splitJsonMatrixElements[json_]:=Module[
 particles=json["particles"];
 particleIndices=Map[#["index"]&,json["particles"]];
 particleNames=Map[#["name"]&,json["particles"]];
+particleRules=Map[{#["name"]->#["index"]}&,json["particles"]];
 matrixElements=json["matrixElements"];
 matrixElementIndices=Map[#["externalParticles"]&,json["matrixElements"]];
 matrixElementParameters=Map[#["parameters"]&,json["matrixElements"]];
@@ -614,7 +713,7 @@ parameters=Map[ToExpression,DeleteDuplicates[Flatten[matrixElementParameters]]];
 expressions=Map[ToExpression,StringReplace[matrixElementExpressions,{RegularExpression["(\\W)_s"]->"$1s",RegularExpression["(\\W)_t"]->"$1t",RegularExpression["(\\W)_u"]->"$1u"}]];
 results=Thread[matrixElementIndices->expressions];
 results=Map[M[#[[1]]/.List->Sequence]->#[[2]]&,results];
-{particleNames,parameters,PrintNonPrivate[results]}
+{particleRules,parameters,PrintNonPrivate[results]}
 ];
 
 
@@ -643,9 +742,6 @@ exportJsonMatrixElements[file_,jsonMatrixElements_]:=Module[{test},
 	If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
 	Export[file,jsonMatrixElements]
 ];
-
-
-Range[6]
 
 
 (* ::Subsubsection:: *)
@@ -737,16 +833,27 @@ Block[{
 
 PrintNonPrivate[PrivateExpression_]:=ToExpression[StringReplace[
 	ToString[StandardForm[PrivateExpression]],
-	{"WallGoMatrix`Private`"->"","WallGo`"->""}]];
-ReplaceMandelStam[Expression_]:=StringReplace[ToString[Expression],{"s"->"_s","t"->"_t","u"->"_u"}];
+	{
+		"WallGoMatrix`Private`"->"",
+		"WallGo`"->"",
+		"Global`"->""
+	}]];
+ReplaceMandelStam[Expression_]:=StringReplace[
+	ToString[Expression],{"s"->"_s","t"->"_t","u"->"_u"}
+	];
 
 
-Options[ExportMatrixElements]={
+Options[GenerateMatrixElementsData]={
 	Replacements->{},
 	NormalizeWithDOF->True,
 	TruncateAtLeadingLog->True,
-	Verbose->False,
-	Format->"none"};
+	TagLeadingLog->False,
+	Verbose->False};
+
+
+Options[ExportMatrixElements]={
+	Options[GenerateMatrixElementsData],
+	Format->"none"}//Flatten;
 
 
 extractParticleMasses[particleList_, type_, length_] := 
@@ -766,110 +873,206 @@ extractParticleMasses[particleList_, type_, length_] :=
   ];
 
 
-ExportMatrixElements[file_,outOfEqParticleList_,lightParticleList_,OptionsPattern[]]:=
+GenerateMatrixElementsData::usage = 
+"Computes all 2\[RightArrow]2 scattering matrix elements for the given sets of \
+out-of-equilibrium and light particles. It returns an association containing \
+the symbolic matrix elements, coupling tensors, particle information, and \
+mass parameters, which can be exported later using ExportMatrixElements.
+
+Usage:
+GenerateMatrixElementsData[\!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), OptionsPattern[]]
+
+Arguments:
+- \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list specifying the external particles for matrix element generation, formatted as{{\!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)},\!\(\*
+StyleBox[\" \",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\) = {\"V\", \"F\", \"S\"}, \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\), \"\!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\)\"}, where:
+    - \!\(\*
+StyleBox[\"fieldIndices\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Indices of the fields involved.
+    - \!\(\*
+StyleBox[\"R\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Type of particle representation (Vector Boson, Fermion, Scalar).
+    - \!\(\*
+StyleBox[\"M\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): Mass parameter of the particle.
+    - \!\(\*
+StyleBox[\"particleName\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): The name of the particle.
+- \!\(\*
+StyleBox[\"lightParticleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\): A list of light particles involved in the calculations, formatted similarly to \!\(\*
+StyleBox[\"particleList\",\nFontFamily->\"Times New Roman\",\nFontWeight->\"Regular\",\nFontSlant->\"Italic\"]\).
+
+The returned association includes the following keys:
+  \"Cij\" \[RightArrow] coupling tensor representation
+  \"MatrixElementsList\" \[RightArrow] list of computed matrix elements (after replacements)
+  \"particleListAll\" \[RightArrow] combined particle list
+  \"particleNames\" \[RightArrow] particle names
+  \"userCouplings\" \[RightArrow] coupling symbols appearing in the matrix elements
+  \"particleMasses\" \[RightArrow] particle masses grouped by spin type
+
+Options:
+- Verbose (Boolean, default \[RightArrow] False):
+	If True, lists channels that are currently being computed (default is False).
+- TruncateAtLeadingLog (Boolean, default \[RightArrow] True):
+	If True, truncates the matrix elements at the leading logarithmic order (default is True).
+- TagLeadingLog (Boolean, default \[RightArrow] False):
+	tag leading-log terms in the output being either power enhanced (powerEnhanced) or logarithmically enhanced (logEnhanced).
+- NormalizeWithDOF (Boolean, default \[RightArrow] True):
+	If True, matrix elements are normalized by the number of degrees of freedom of the incoming particle at index 1 (default is True).
+- Replacements (List, default \[RightArrow] { }):
+	list of replacement rules applied to the generated elements.
+
+Example:
+  data = GenerateMatrixElementsData[outOfEqParticles, lightParticles, 
+           NormalizeWithDOF \[RightArrow] True, Verbose \[RightArrow] True];
+  data[\"MatrixElementsList\"]
+";
+
+
+GenerateMatrixElementsData[outOfEqParticleList_, lightParticleList_, OptionsPattern[]] :=
 Block[
-{
-	particleMasses,
-	userCouplings,
-	particleNames,
-	particlesAll,particlesOutOfEq,
-	particleListAll,
-	ExportTXT,ExportH5,
-	Cij,ParticleInfo,particleListFull,
-	CouplingInfo,MatrixElements,
-	particleIndex,
-	RepMasses,RepCouplings,
-	FormatOptions,userFormat,MatrixElementsList,userParameters,
-	privFile=file,commandLineArgs
-},
-	
-	(* Render output verbose again *)
-	$Output = $WallGoMatrixOutput;
-	
-	commandLineArgs = $ScriptCommandLine;
+  {
+    particleMasses,
+    userCouplings,
+    particleNames,
+    particlesAll, particlesOutOfEq,
+    particleListAll,
+    Cij, MatrixElements,
+    MatrixElementsList,
+    VarAsum,
+    RepMasses, RepCouplings
+  },
+  
+  (* Read options *)
+  bNormalizeWithDOF = OptionValue[NormalizeWithDOF];
+  bTruncateAtLeadingLog = OptionValue[TruncateAtLeadingLog];
+  bTagLeadingLog = OptionValue[TagLeadingLog];
+  bVerbose = OptionValue[Verbose];
+  
+  (* Split particles into out-of-eq and light *)
+  ExtractLightParticles[outOfEqParticleList, lightParticleList, particleListAll];
+  
+  (* Separate names and particles *)
+  particleNames = particleListAll[[All, 4]];
+  particlesOutOfEq = outOfEqParticleList[[All, 1 ;; 2]];
+  particlesAll = particleListAll[[All, 1 ;; 2]];
+  
+  (* Collect user couplings *)
+  userCouplings = Variables@Normal@{Ysff, gvss, gvff, gvvv, \[Lambda]4, \[Lambda]3} // DeleteDuplicates;
+  
+  (* Construct particle mass vectors *)
+  particleMasses = {
+    extractParticleMasses[particleListAll, "V", Length[gvff]],
+    extractParticleMasses[particleListAll, "F", Length[gvff[[1]]]],
+    extractParticleMasses[particleListAll, "S", Length[gvss[[1]]]]
+  };
+  
+  (* Real variable assumptions *)
+  VarAsum = {# > 0} & /@ 
+    Variables@Normal@{Ysff, gvss, gvff, gvvv, \[Lambda]4, \[Lambda]3, particleMasses, s, t, u, fsign} //
+    Flatten;
+  
+  (* Ensure particle masses non-empty *)
+  Table[
+    If[particleMasses[[i]] == {}, particleMasses[[i]] = {msq}],
+    {i, 1, 3}
+  ];
+  
+  (* Generate the matrix elements *)
+  GenerateMatrixElements[MatrixElements, Cij, particlesAll, particlesOutOfEq, particleMasses];
+  
+  (* Create replacement list and shift indices *)
+  MatrixElementsList = Table[MatrixElemToC@i //. OptionValue[Replacements], {i, MatrixElements}];
+  MatrixElementsList = DeleteCases[MatrixElementsList, a_ -> 0];
+  
+  <|
+    "Cij" -> Cij,
+    "MatrixElementsList" -> MatrixElementsList,
+    "particleListAll" -> particleListAll,
+    "particleNames" -> particleNames,
+    "userCouplings" -> userCouplings,
+    "particleMasses" -> particleMasses
+  |>
+];
 
-	(*Loop over command line input to overrule output file name for command line usage*)
-	Do[
-		If[
-			commandLineArgs[[i]] == "--outputFile",
-			privFile = commandLineArgs[[i + 1]]], (* Get the value after the flag *)
-		{i, 2, Length[commandLineArgs] - 1} (* Start from 2 and go up to the second-to-last element *)
-	];
 
-(*Specifies if the first particle should be normalized by the number of degrees of freedom*)
-	bNormalizeWithDOF = OptionValue[NormalizeWithDOF];
-	
-(*Specifies if only leading log terms are taken into account or not*)
-	bTruncateAtLeadingLog = OptionValue[TruncateAtLeadingLog];
-	
-(*Specifies if Output should be verbose*)
-	bVerbose = OptionValue[Verbose];
-
-(*All particles*)
-	(*particleListAll=Join[particleList,lightParticleList];*)
-
-(*Splits ParticleList into out-of-eq and light particles*)
-	ExtractLightParticles[outOfEqParticleList,lightParticleList,particleListAll];
-
-(*Separate names and particles*)
-	particleNames=particleListAll[[All,4]];
-	particlesOutOfEq=outOfEqParticleList[[All,1;;2]];
-	particlesAll=particleListAll[[All,1;;2]];
-
-(*Collects all the UserCouplings*)
-	userCouplings=Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3}//DeleteDuplicates;
-	
-(*Make particle masses vector*)
-	particleMasses={
-		extractParticleMasses[particleListAll, "V", Length[gvff]],
-		extractParticleMasses[particleListAll, "F", Length[gvff[[1]]]],
-		extractParticleMasses[particleListAll, "S", Length[gvss[[1]]]]
-		};
-		
-(*Creates an assumption rule for simplifying Conjugate[....] terms*)
-	VarAsum=#>0&/@Variables@Normal@{Ysff,gvss,gvff,gvvv,\[Lambda]4,\[Lambda]3,particleMasses,s,t,u}; (*All variables are assumed to be real*)
-	
-(*Allocates one element for each species mass to avoid errors*)
-	Table[
-		If[particleMasses[[i]]=={},particleMasses[[i]]={msq}],
-		{i,1,3}];
-
-(*Extracting all matrix elements*)	
-	GenerateMatrixElements[MatrixElements,Cij,particlesAll,particlesOutOfEq,particleMasses];
-	
-(*Creates a replacement list and shifts the indices to start at 0.*)
-	MatrixElementsList=Table[MatrixElemToC@i//.OptionValue[Replacements],{i,MatrixElements}];
-	MatrixElementsList=DeleteCases[MatrixElementsList, a_->0];
-
-(*Exporting the matrix elements to the choosen format*)
-	FormatOptions = {"txt", "json", "hdf5", "all", "none"};
-	userFormat = OptionValue[Format];
-	
-	(* Convert userFormat to a list if it's a single value *)
-	userFormatsList = If[ListQ[userFormat], userFormat, {userFormat}];
-	
-	(* Replace "all" with all formats if it is present *)
-	If[MemberQ[userFormatsList, "all"], userFormatsList = {"txt", "json", "hdf5"}];
-	
-	(* Check if all formats in the list are valid *)
-	If[AllTrue[userFormatsList, MemberQ[FormatOptions, #] &],
-	   (* Iterate over each format and perform the export *)
-	   Do[
-	     Switch[fmt,
-	       "txt",
-	       ExportTo["txt"][MatrixElementsList, particleListAll, userCouplings, privFile],
-	       "hdf5",
-	       ExportTo["hdf5"][Cij, outOfEqParticleList, particleNames, userCouplings, privFile],
-	       "json",
-	       userParameters = Flatten[Join[userCouplings, particleMasses]] // DeleteDuplicates;
-	       ExportTo["json"][MatrixElementsList, particleNames, userParameters, privFile]
-	     ],
-	     {fmt, userFormatsList}
-	   ],
-	   Message[WallGoMatrix::failWarning, "The currently allowed formats are: txt, hdf5, and json. Please choose a valid format."];
-	];
-	
-	Return[PrintNonPrivate[MatrixElementsList]]
+ExportMatrixElements[file_: None, outOfEqParticleList_, lightParticleList_, OptionsPattern[]] :=
+Block[
+  {
+    data,
+    userFormat, userFormatsList,
+    FormatOptions,
+    privFile = file,
+    commandLineArgs, userParameters
+  },
+  
+  (* Restore normal output *)
+  $Output = $WallGoMatrixOutput;
+  commandLineArgs = $ScriptCommandLine;
+  
+  (* Allow overriding file name from command line *)
+  Do[
+    If[commandLineArgs[[i]] == "--outputFile", privFile = commandLineArgs[[i + 1]]],
+    {i, 2, Length[commandLineArgs] - 1}
+  ];
+  
+  (* Always generate matrix elements *)
+  data = GenerateMatrixElementsData[
+    outOfEqParticleList, lightParticleList,
+    NormalizeWithDOF   -> OptionValue[NormalizeWithDOF],
+    TruncateAtLeadingLog -> OptionValue[TruncateAtLeadingLog],
+    TagLeadingLog      -> OptionValue[TagLeadingLog],
+    Verbose            -> OptionValue[Verbose],
+    Replacements       -> OptionValue[Replacements]
+  ];
+  
+  (* Export only if file name provided *)
+  If[privFile =!= None && StringQ[privFile] && StringLength[privFile] > 0,
+    
+    FormatOptions = {"txt", "json", "hdf5", "all", "none"};
+    userFormat = OptionValue[Format];
+    userFormatsList = If[ListQ[userFormat], userFormat, {userFormat}];
+    If[MemberQ[userFormatsList, "all"], userFormatsList = {"txt", "json", "hdf5"}];
+    
+    If[
+      AllTrue[userFormatsList, MemberQ[FormatOptions, #] &],
+      Do[
+        Switch[fmt,
+          "txt",
+            ExportTo["txt"][
+              data["MatrixElementsList"],
+              data["particleListAll"],
+              data["userCouplings"],
+              privFile],
+          "hdf5",
+            ExportTo["hdf5"][
+              data["Cij"],
+              outOfEqParticleList,
+              data["particleNames"],
+              data["userCouplings"],
+              privFile],
+          "json",
+            userParameters = Flatten[Join[data["userCouplings"], data["particleMasses"]]] // DeleteDuplicates;
+            ExportTo["json"][
+              data["MatrixElementsList"],
+              data["particleNames"],
+              userParameters,
+              privFile]
+        ],
+        {fmt, userFormatsList}
+      ],
+      Message[WallGoMatrix::failWarning, 
+        "Allowed export formats are: txt, hdf5, and json."]
+    ];
+  ,
+    If[OptionValue[Verbose],
+      Print["No file name provided \[LongDash] skipping export, returning generated data only."]
+    ];
+  ];
+  
+  Return[PrintNonPrivate[data["MatrixElementsList"]]]
 ];
 
 
@@ -887,9 +1090,13 @@ MatrixElemFromC[MatrixElem_]:=Block[{Ind},
 ]
 
 
+(* ::Section:: *)
+(*MatrixElements: Importing the results*)
+
+
 ImportMatrixElements[file_]:=Module[
 {
-	jsonObject,particleNames,parameters,results
+	jsonObject,particles,parameters,results
 },
 	(* Only implemented for JSON *)
 	If[StringTake[file,-5]!=".json",Print["File must end in .json"];Return[]];
@@ -898,14 +1105,14 @@ ImportMatrixElements[file_]:=Module[
 	jsonObject=importJSONMatrixElements[file];
 
 	(* Splitting JSON object *)
-	{particleNames,parameters,results}=splitJsonMatrixElements[jsonObject];
+	{particles,parameters,results}=splitJsonMatrixElements[jsonObject];
 
 	(* Returning results *)
-	Return[{particleNames,parameters,results}]
+	Return[{particles,parameters,results}]
 ];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Private constants*)
 
 

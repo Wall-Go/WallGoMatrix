@@ -17,8 +17,8 @@ Check[
 ]
 
 
-(* ::Chapter:: *)
-(*2HDM*)
+(* ::Title:: *)
+(*2scalar test*)
 
 
 (*Pure scalar sector of 2211.13142*)
@@ -147,6 +147,114 @@ MatrixElements=ExportMatrixElements[
 	LightParticleList,
 	{
 		TruncateAtLeadingLog->True,
+		TagLeadingLog->True,
 		Replacements->{gw->0,lam4H->0,lam5H->0},
 		Format->{"json","txt"},
-		NormalizeWithDOF->False}];
+		NormalizeWithDOF->True
+	}
+];
+
+
+(* ::Chapter:: *)
+(*Tests*)
+
+
+(* ::Section:: *)
+(*Importing results from WallGo*)
+
+
+{particles,parameters,MatrixElements}=ImportMatrixElements["output/matrixElements.2scalars.json"];
+
+
+(* ::Section:: *)
+(*Comparison tests*)
+
+
+(* ::Subsection:: *)
+(*Translate input*)
+
+
+groupFactors={ };
+customParameters={ms2->mPhi^2,mf2->mPsi^2,g->g,\[Lambda]->lam};
+setMassesToZero={Thread[UserMasses->0],Thread[{mChi,mPhi,mPsi}->0]}//Flatten;
+comparisonReplacements={
+	groupFactors,
+	customParameters,
+	setMassesToZero
+	}//Flatten;
+
+
+symmetriseTU[arg_]:=1/2 (arg)+1/2 (arg/.{t->tt}/.{u->t, tt->u})
+
+fixConvention[arg_]:=symmetriseTU[
+	arg/.comparisonReplacements/.{s->(-t-u)}
+	]//Expand//Simplify//Expand
+
+removeMissing[arg_]:=arg/.M[__]->0/.Missing["KeyAbsent", _]->0
+
+
+generateWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=Sum[
+	M[a,b,c,d],{a,particlesA},{b,particlesB},{c,particlesC},{d,particlesD}
+]/.Flatten[particles]/.MatrixElements/.customParameters//removeMissing;
+
+testWallGo[particlesA_,particlesB_,particlesC_,particlesD_]:=
+	generateWallGo[particlesA,particlesB,particlesC,particlesD]//fixConvention
+
+
+(* ::Subsection:: *)
+(*Initialize tests*)
+
+
+particles
+
+
+testList={};
+
+
+(* ::Subsubsection:: *)
+(*SStoSS*)
+
+
+process="HH->AA"
+test["WallGo"][process]=testWallGo[
+	{"Higgs"},
+	{"Higgs"},
+	{"A"},
+	{"A"}
+]/.{logEnhanced->0,powerEnhanced->1}
+test["Reference"][process]=2*(
+		lam3H^4*v^4/2*(1/(t-mA2)^2+1/(u-mA2)^2)
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+process="AH->HA"
+test["WallGo"][process]=testWallGo[
+	{"A"},
+	{"Higgs"},
+	{"Higgs"},
+	{"A"}
+]/.{lam1H->0,v^2->0}/.{logEnhanced->0,powerEnhanced->1}
+test["Reference"][process]=2*(
+		lam3H^4*v^4/2*(1/(t-mA2)^2)
+	)/.setMassesToZero//fixConvention
+AppendTo[testList,
+	TestCreate[
+		test["WallGo"][process]//Evaluate,
+		test["Reference"][process],
+		TestID->"WallGo vs Reference: "<>process]];
+
+
+(* ::Subsection:: *)
+(*Test report*)
+
+
+report=TestReport[testList]
+report["ResultsDataset"]
+
+
+
