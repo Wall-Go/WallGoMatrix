@@ -509,10 +509,14 @@ If[
 	totRes+=-  1/8(s^2-t^2+u^2)*TotalConj[CUyCC Conjugate[CSyCC]  +CSyCC Conjugate[CUyCC]];
 	totRes+=-  1/8(t^2-u^2+s^2)*TotalConj[CSyCC Conjugate[CTyCC]  +CTyCC Conjugate[CSyCC]];	
 	
-(*
-	Result for interfaces between vector and scalar diagrams---
-	Only cross terms between diagrams can contribute
-*)	
+(* 
+	Result for interfaces between vector and scalar diagrams.
+	Only cross terms between diagrams contribute.
+	
+	Updated from v1.0.0 to v1.1.0:
+	- Introduced explicit kinematic prefactors (-2*s*s, -2*t*t, -2*u*u) for each channel,
+    correcting the previous version where these factors and their signs were incorrect.
+*)
 	totRes+=(-2*t*t)*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
 	totRes+=(-2*t*t)*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
 
