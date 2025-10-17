@@ -371,7 +371,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1F2toF3F4*)
 
 
@@ -846,9 +846,6 @@ Block[{
 	CTyC=Contract[YTensor2[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
 	CUyC=Contract[YTensor2[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
 	
-	CTyCC=Contract[YTensor2C[[1,3]] . fermionPropT , YTensor2C[[2,4]],{{3,6}}]//OrderArray[#,1,3,2,4]&;
-	CUyCC=Contract[YTensor2C[[1,4]] . fermionPropU , YTensor2C[[2,3]],{{3,6}}]//OrderArray[#,1,3,4,2]&;
-
 (*Lorentz structures for vector exchanges*)
 (*
 	Due to angular momentum conservation the SS->S->FF diagram does not mix with the other channels.
@@ -1054,7 +1051,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toV1V2*)
 
 
