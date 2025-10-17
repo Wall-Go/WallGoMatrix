@@ -531,6 +531,11 @@ If[
 (*F1F2toV1V2*)
 
 
+(* 
+  Updated from v1.0.0 to v1.1.0:
+  Corrected the implementation of F1 F2 -> V1 V2, where, in the presence of 
+  multiple propagating vector groups, some propagator masses were incorrectly assigned.
+*)
 CreateMatrixElement["F1F2toV1V2"][particle1_,particle2_,particle3_,particle4_,particleMass_]:=
 Block[{
 	s,t,u,gTensorV,gTensorF,gTensorF2,
@@ -752,7 +757,7 @@ If[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toF1F2*)
 
 
@@ -928,7 +933,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*F1S1toF1V1*)
 
 
@@ -1202,7 +1207,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*S1S2toS3V1*)
 
 
