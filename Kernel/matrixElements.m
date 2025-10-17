@@ -516,7 +516,17 @@ If[
 	Updated from v1.0.0 to v1.1.0:
 	- Introduced explicit kinematic prefactors (-2*s*s, -2*t*t, -2*u*u) for each channel,
     correcting the previous version where these factors and their signs were incorrect.
+	
+	v1.0.0 expressions for reference:
+
+    totRes += 1/2*s*t*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
+    totRes += 1/2*u*t*TotalConj[CU*Conjugate[CTyC] + CTyC*Conjugate[CU]];
+    totRes += 1/2*s*u*TotalConj[CS*Conjugate[CUyC] + CUyC*Conjugate[CS]];
+    totRes += 1/2*u*t*TotalConj[CT*Conjugate[CUyC] + CUyC*Conjugate[CT]];
+    totRes += 1/2*s*t*TotalConj[CT*Conjugate[CSyC] + CSyC*Conjugate[CT]];
+    totRes += 1/2*u*s*TotalConj[CU*Conjugate[CSyC] + CSyC*Conjugate[CU]];
 *)
+
 	totRes+=(-2*t*t)*1/2*TotalConj[CS*Conjugate[CTyC] + CTyC*Conjugate[CS]];
 	totRes+=(-2*t*t)*1/2*TotalConj[CUC*Conjugate[CTyC] + CTyC*Conjugate[CUC]];
 
