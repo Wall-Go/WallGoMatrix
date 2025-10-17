@@ -752,7 +752,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toF1F2*)
 
 
@@ -1128,7 +1128,13 @@ If[
 	The coefficients here are the kinematic factors multiplying the 
 	group invariants. These are simplified from more general forms 
 *)
+	(* 
+	  Updated from v1.0.0 to v1.1.0:
+	  Simplified expression for ASS. Replaced (t^2 + 30*t*u + u^2) 
+	  with 32*t*u to reflect the corrected Lorentz structure.
+	*)
 	ASS=-1/2(32*t*u);
+	
 	A=4*s;
 	ASU=+4*s(t+2*u);
 	AST=-4*s(u+2*t);
