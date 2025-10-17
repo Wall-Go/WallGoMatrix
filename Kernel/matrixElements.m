@@ -371,7 +371,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*F1F2toF3F4*)
 
 
@@ -868,7 +868,13 @@ Block[{
 	(*Squared s-channel diagram with a vector boson*)
 	TotRes+= 4*A*TotalConj[CSV*Conjugate[CSV]]; 
 	
-	(*Mix between vector- and fermion-exchange diagrams*)
+	(* 
+	  Mix between vector- and fermion-exchange diagrams.
+	
+	  Updated from v1.0.0: the previous expression contained incorrect relative signs 
+	  between terms. In addition, a conjugated vector coupling (CSVC) was introduced 
+	  to ensure consistent treatment of complex conjugation across channels.
+	*)
 	TotRes+=+2*t*u*I*TotalConj[CSV*Conjugate[CTyC] - CTyC*Conjugate[CSV]];
 	TotRes+=+2*t*u*I*TotalConj[CSVC*Conjugate[CUyC] - CUyC*Conjugate[CSVC]];
 
@@ -1145,7 +1151,7 @@ If[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1V1toS1V1*)
 
 
@@ -1193,7 +1199,7 @@ If[ (
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*S1S2toS3V1*)
 
 
