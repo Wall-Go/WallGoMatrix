@@ -443,11 +443,10 @@ DownloadPackage[url_, targetName_]:=Module[{zipPath, targetFolder, targetDir, ta
 	Functions from GroupMath are used to create the model.
 *)
 If[$LoadGroupMath,
-	Unprotect[BlockDiagonalMatrix];
 	If[$InstallGroupMath,
 		If[
 			Quiet[Check[Needs["GroupMath`"], True]],
-			DownloadPackage["https://renatofonseca.net/groupmath/ProgramVersions/GroupMath-1.1.2.zip","GroupMath"];
+			DownloadPackage["https://renatofonseca.net/groupmath/ProgramVersions/GroupMath-1.1.3.zip","GroupMath"];
 			Print[Style["GroupMath installed.","Text", Red, Bold]];
 		]
 	];
