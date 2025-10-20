@@ -4,7 +4,7 @@
 
 
 (* Define the temporary directory *)
-tempDir = CreateDirectory[FileNameJoin[{NotebookDirectory[], "TempPaclet"}]];
+tempDir = CreateDirectory[FileNameJoin[{NotebookDirectory[], "build", "TempPaclet"}]];
 
 (* Copy Kernel directory and PacletInfo.m to the temporary directory *)
 CopyDirectory[FileNameJoin[{NotebookDirectory[], "Kernel"}], FileNameJoin[{tempDir, "Kernel"}]];
