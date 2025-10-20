@@ -16,6 +16,7 @@ the [WallGo repository](https://github.com/Wall-Go/WallGo):
 - `qcd.m` gives the matrix elements for ManySinglets and SingletStandardModel_Z2
 - `xsm.m` gives the matrix elements for SingletStandardModel_Z2 beyond the QCD sector
 - `yukawa.m` gives the matrix elements for the Yukawa Model
+The WallGo repository contains copies of these example files.
 
 On top of these, we provide several additional example model files that illustrate
 various features of WallGoMatrix:
@@ -24,5 +25,3 @@ various features of WallGoMatrix:
 - `SMFull.m` gives the matrix elements for the StandardModel
 - `SMSimplified.m` gives the matrix elements for the StandardModel (only quarks + gauge bosons)
 - `weak.m` gives the matrix elements for QCD and W-bosons
-
-The WallGo repository contains copies of these example files.i
